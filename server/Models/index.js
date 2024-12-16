@@ -1,11 +1,15 @@
-const User = require("./userSchema");
+const Users = require("./userSchema");
 const Team = require("./teamSchema");
 const DailyContests = require("./dailyContestSchema");
 const Resources = require("./resourcesSchema");
+const Notices = require("./noticeBoardSchema");
+const AllowedEmail = require("./allowedEmailsSchema");
 
 module.exports = {
-  User,
+  Users,
   Team,
   DailyContests,
   Resources,
+  Notices,
+  AllowedEmail,
 };

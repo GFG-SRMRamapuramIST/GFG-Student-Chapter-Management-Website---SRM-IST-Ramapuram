@@ -123,6 +123,6 @@ userSchema.methods.generateAuthtoken = async function () {
 };
 
 // Create & Export user model
-const users = mongoose.model("users", userSchema);
+const Users = mongoose.model("users", userSchema);
 
-module.exports = users;
+module.exports = Users;

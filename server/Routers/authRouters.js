@@ -10,6 +10,9 @@ router.get("/", authControllers.api);
 // Login API
 router.post("/login", loginSignupRateLimiter, authControllers.loginUser);
 
+// Add Emails to register API
+router.post("/add-allowed-emails", authControllers.addAllowedEmails);
+
 // Register
 router.post("/register", authControllers.register);
 
