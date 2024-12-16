@@ -12,7 +12,8 @@ const SECRET_KEY = process.env.SECRET_KEY;
 const userSchema = new mongoose.Schema({
   profilePicture: {
     type: String,
-    default: null,
+    default:
+      "https://res.cloudinary.com/dcmqniwwc/image/upload/v1703640166/yc3f9btxcrjlccq3b7dg.png",
   },
   name: {
     type: String,

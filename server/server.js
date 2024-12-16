@@ -3,14 +3,18 @@ require("dotenv").config();
 const chalk = require("chalk");
 const express = require("express");
 const app = express();
-
 const cors = require("cors");
+
 const connectDB = require("./DB/Connection");
+const { authRouter } = require("./Routers");
 
 const PORT = process.env.PORT || 4002;
 
 app.use(express.json());
 app.use(cors());
+
+// Routers
+app.use("/api/v1/auth", authRouter);
 
 // Connecting to the database and starting the server
 connectDB().then((isConnected) => {
