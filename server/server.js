@@ -6,7 +6,7 @@ const app = express();
 const cors = require("cors");
 
 const connectDB = require("./DB/Connection");
-const { authRouter } = require("./Routers");
+const { authRouter, adminRouter } = require("./Routers");
 
 const PORT = process.env.PORT || 4002;
 
@@ -15,6 +15,7 @@ app.use(cors());
 
 // Routers
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/admin", adminRouter);
 
 // Connecting to the database and starting the server
 connectDB().then((isConnected) => {
