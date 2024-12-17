@@ -1,19 +1,7 @@
 const chalk = require("chalk");
 const bcrypt = require("bcryptjs");
-const nodemailer = require("nodemailer");
 
 const { Users, AllowedEmail } = require("../Models");
-const { verifyAuthToken } = require("../Utilities");
-
-// Configure nodemailer transporter
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: "vitcseguide@gmail.com",
-    pass: "gvdt kqqs zzvr vfib",
-  },
-});
 
 // sample API
 exports.api = async (req, res) => {

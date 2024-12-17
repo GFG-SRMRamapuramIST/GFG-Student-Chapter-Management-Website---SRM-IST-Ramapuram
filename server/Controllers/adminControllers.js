@@ -198,3 +198,90 @@ exports.addAllowedEmails = async (req, res) => {
       .json({ message: "Internal server error", error: error.message });
   }
 };
+
+// Fetch all allowed emails
+exports.fetchAllowedEmails = async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1]; // Extract token from the Authorization header
+    const { page = 1, limit = 10, search = "", sortOrder = 1 } = req.body;
+
+    // Verify the token
+    const authResult = await verifyAuthToken(token);
+    if (authResult.status === "expired") {
+      return res.status(401).json({ message: "Token expired" });
+    }
+
+    if (authResult.status === "invalid" || authResult.role !== "ADMIN") {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    // Pagination and search setup
+    const skip = (page - 1) * limit;
+    const searchFilter = {
+      email: new RegExp(search, "i"), // Case-insensitive search on email field
+    };
+
+    // Fetch emails with pagination, sorting, and search
+    const allowedEmails = await AllowedEmail.find(searchFilter)
+    .sort({ createdAt: parseInt(sortOrder, 10) }) // Apply sort first
+    .skip(skip) // Skip documents based on the page
+    .limit(parseInt(limit, 10)); // Limit the number of documents
+
+    // Count total documents for pagination info
+    const totalEmails = await AllowedEmail.countDocuments(searchFilter);
+
+    // Respond with the data
+    return res.status(200).json({
+      message: "Allowed emails fetched successfully!",
+      data: allowedEmails,
+      totalPages: Math.ceil(totalEmails / limit),
+      currentPage: parseInt(page, 10),
+      limit: parseInt(limit, 10),
+      sortOrder: parseInt(sortOrder, 10),
+    });
+  } catch (error) {
+    console.error(chalk.bgRed.bold.red("Error fetching allowed emails:"), error.message);
+    return res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
+  }
+};
+
+// Delete emails from AllowedEmail schema
+exports.deleteAllowedEmails = async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1]; // Extract token from Authorization header
+    const { ids } = req.body; // Array of _id to delete
+
+    // Validate input
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ message: "Invalid or empty IDs array" });
+    }
+
+    // Verify the token
+    const authResult = await verifyAuthToken(token);
+    if (authResult.status === "expired") {
+      return res.status(401).json({ message: "Token expired" });
+    }
+
+    if (authResult.status === "invalid" || authResult.role !== "ADMIN") {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    // Delete documents with the provided IDs
+    const deletionResult = await AllowedEmail.deleteMany({
+      _id: { $in: ids },
+    });
+
+    // Respond with the result
+    return res.status(200).json({
+      message: "Emails deleted successfully!",
+      deletedCount: deletionResult.deletedCount,
+    });
+  } catch (error) {
+    console.error(chalk.bgRed.bold.red("Error deleting allowed emails:"), error.message);
+    return res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
+  }
+};

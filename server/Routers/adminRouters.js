@@ -29,6 +29,12 @@ router.post(
 );
 
 // Add array of Emails to register API
-router.post("/add-allowed-emails", authControllers.addAllowedEmails);
+router.post("/add-allowed-emails", adminControllers.addAllowedEmails);
+
+// Fetch all allowed emails
+router.post("/fetch-all-allowed-emails", adminControllers.fetchAllowedEmails);
+
+// Delete emails from AllowedEmail schema
+router.post("/delete-allowed-emails", adminControllers.deleteAllowedEmails);
 
 module.exports = router;
