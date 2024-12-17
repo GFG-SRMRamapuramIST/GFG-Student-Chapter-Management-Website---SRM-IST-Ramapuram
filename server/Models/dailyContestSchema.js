@@ -21,6 +21,18 @@ const contestSchema = new mongoose.Schema({
     type: String,
     required: true, // Name of the contest
   },
+  platform: {
+    type: String,
+    required: true,
+    enum: [
+      "CodeChef",
+      "Codeforces",
+      "GeeksForGeeks",
+      "HackerEarth",
+      "HackerRank",
+      "LeetCode",
+    ], // Restrict values to predefined set
+  },
   startTime: {
     type: Date,
     required: true, // Starting time of the contest
@@ -28,6 +40,15 @@ const contestSchema = new mongoose.Schema({
   endTime: {
     type: Date,
     required: true, // Ending time of the contest
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now, // Automatically set the creation time
+  },
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "users", // Reference to the user schema
+    required: true,
   },
   participants: [userPerformanceSchema], // List of users and their performance
 });
