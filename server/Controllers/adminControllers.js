@@ -5,6 +5,23 @@ const csv = require("csvtojson");
 const { Users, AllowedEmail } = require("../Models");
 const { verifyAuthToken } = require("../Utilities");
 
+// Verify and Authorize Auth Token 
+const verifyAndAuthorize = async (token, allowedRoles) => {
+  const authResult = await verifyAuthToken(token);
+  
+  if (authResult.status === "expired") {
+    return { status: 401, message: "Token expired" };
+  }
+  if (authResult.status === "invalid") {
+    return { status: 403, message: "Access denied. Invalid token." };
+  }
+  if (!allowedRoles.includes(authResult.role)) {
+    return { status: 403, message: "Access denied. Unauthorized role." };
+  }
+  
+  return { status: 200, userId: authResult.userId };
+};
+
 // Configure nodemailer transporter
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -23,15 +40,10 @@ exports.uploadCSVAllowedEmails = async (req, res) => {
   }
 
   try {
-    // Verify the admin token
-    const authResult = await verifyAuthToken(token);
-
-    if (authResult.status === "expired") {
-      return res.status(401).json({ message: "Token expired" });
-    }
-
-    if (authResult.status === "invalid" || authResult.role !== "ADMIN") {
-      return res.status(403).json({ message: "Access denied" });
+    // Use the helper function for authorization
+    const authResult = await verifyAndAuthorize(token, ["ADMIN"]);
+    if (authResult.status !== 200) {
+      return res.status(authResult.status).json({ message: authResult.message });
     }
 
     if (!req.file) {
@@ -128,15 +140,10 @@ exports.addAllowedEmails = async (req, res) => {
   }
 
   try {
-    // Verify the admin token
-    const authResult = await verifyAuthToken(token);
-
-    if (authResult.status === "expired") {
-      return res.status(401).json({ message: "Token expired" });
-    }
-
-    if (authResult.status === "invalid" || authResult.role !== "ADMIN") {
-      return res.status(403).json({ message: "Access denied" });
+    // Use the helper function for authorization
+    const authResult = await verifyAndAuthorize(token, ["ADMIN"]);
+    if (authResult.status !== 200) {
+      return res.status(authResult.status).json({ message: authResult.message });
     }
 
     const addedEmails = [];
@@ -205,14 +212,10 @@ exports.fetchAllowedEmails = async (req, res) => {
     const token = req.headers.authorization?.split(" ")[1]; // Extract token from the Authorization header
     const { page = 1, limit = 10, search = "", sortOrder = 1 } = req.body;
 
-    // Verify the token
-    const authResult = await verifyAuthToken(token);
-    if (authResult.status === "expired") {
-      return res.status(401).json({ message: "Token expired" });
-    }
-
-    if (authResult.status === "invalid" || authResult.role !== "ADMIN") {
-      return res.status(403).json({ message: "Access denied" });
+    // Use the helper function for authorization
+    const authResult = await verifyAndAuthorize(token, ["ADMIN", "COREMEMBER"]);
+    if (authResult.status !== 200) {
+      return res.status(authResult.status).json({ message: authResult.message });
     }
 
     // Pagination and search setup
@@ -223,9 +226,9 @@ exports.fetchAllowedEmails = async (req, res) => {
 
     // Fetch emails with pagination, sorting, and search
     const allowedEmails = await AllowedEmail.find(searchFilter)
-    .sort({ createdAt: parseInt(sortOrder, 10) }) // Apply sort first
-    .skip(skip) // Skip documents based on the page
-    .limit(parseInt(limit, 10)); // Limit the number of documents
+      .sort({ createdAt: parseInt(sortOrder, 10) }) // Apply sort first
+      .skip(skip) // Skip documents based on the page
+      .limit(parseInt(limit, 10)); // Limit the number of documents
 
     // Count total documents for pagination info
     const totalEmails = await AllowedEmail.countDocuments(searchFilter);
@@ -240,7 +243,10 @@ exports.fetchAllowedEmails = async (req, res) => {
       sortOrder: parseInt(sortOrder, 10),
     });
   } catch (error) {
-    console.error(chalk.bgRed.bold.red("Error fetching allowed emails:"), error.message);
+    console.error(
+      chalk.bgRed.bold.red("Error fetching allowed emails:"),
+      error.message
+    );
     return res
       .status(500)
       .json({ message: "Internal Server Error", error: error.message });
@@ -258,14 +264,10 @@ exports.deleteAllowedEmails = async (req, res) => {
       return res.status(400).json({ message: "Invalid or empty IDs array" });
     }
 
-    // Verify the token
-    const authResult = await verifyAuthToken(token);
-    if (authResult.status === "expired") {
-      return res.status(401).json({ message: "Token expired" });
-    }
-
-    if (authResult.status === "invalid" || authResult.role !== "ADMIN") {
-      return res.status(403).json({ message: "Access denied" });
+    // Use the helper function for authorization
+    const authResult = await verifyAndAuthorize(token, ["ADMIN", "COREMEMBER"]);
+    if (authResult.status !== 200) {
+      return res.status(authResult.status).json({ message: authResult.message });
     }
 
     // Delete documents with the provided IDs
@@ -279,7 +281,10 @@ exports.deleteAllowedEmails = async (req, res) => {
       deletedCount: deletionResult.deletedCount,
     });
   } catch (error) {
-    console.error(chalk.bgRed.bold.red("Error deleting allowed emails:"), error.message);
+    console.error(
+      chalk.bgRed.bold.red("Error deleting allowed emails:"),
+      error.message
+    );
     return res
       .status(500)
       .json({ message: "Internal Server Error", error: error.message });

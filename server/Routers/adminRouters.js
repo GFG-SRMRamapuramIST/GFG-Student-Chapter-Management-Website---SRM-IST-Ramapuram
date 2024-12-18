@@ -35,6 +35,6 @@ router.post("/add-allowed-emails", adminControllers.addAllowedEmails);
 router.post("/fetch-all-allowed-emails", adminControllers.fetchAllowedEmails);
 
 // Delete emails from AllowedEmail schema
-router.post("/delete-allowed-emails", adminControllers.deleteAllowedEmails);
+router.delete("/delete-allowed-emails", adminControllers.deleteAllowedEmails);
 
 module.exports = router;
