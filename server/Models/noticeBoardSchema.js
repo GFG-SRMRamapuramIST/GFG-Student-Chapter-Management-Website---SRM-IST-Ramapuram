@@ -36,8 +36,9 @@ const noticeSchema = new mongoose.Schema({
     },
   },
   compulsory: {
-    type: Boolean,
-    default: false, // If true, the meeting is mandatory to attend
+    type: String,
+    enum: ["ALL", "MEMBER", "COREMEMBER"], // Allowed values
+    required: true,
   },
   description: {
     type: String,
@@ -47,9 +48,24 @@ const noticeSchema = new mongoose.Schema({
     type: Date,
     default: Date.now, // Automatically stores when the notice was created
   },
-  notify: {
-    type: Boolean,
-    default: true, // Whether to send notifications for this notice
+  MoMLink: {
+    type: String,
+    validate: {
+      validator: function (v) {
+        return !v || /^https?:\/\/.+/.test(v); // Optional, but must be a valid URL if provided
+      },
+      message: "Invalid URL format for MoM link.",
+    },
+    default: null, // Default value is null if MoM is not yet created
+  },
+  MoMCreatedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "users",
+    default: null, // Default value is null if MoM is not yet created
+  },
+  MoMCreatedAt: {
+    type: Date,
+    default: null, // Default value is null if MoM is not yet created
   },
 });
 
