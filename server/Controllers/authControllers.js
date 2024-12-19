@@ -51,7 +51,6 @@ exports.loginUser = async (req, res) => {
 exports.register = async (req, res) => {
   try {
     const {
-      profilePicture,
       name,
       email,
       password,
@@ -82,11 +81,9 @@ exports.register = async (req, res) => {
       !codeforcesProfileLink ||
       !otp // Ensure OTP is provided
     ) {
-      return res
-        .status(400)
-        .json({
-          message: "All required fields, including OTP, must be provided",
-        });
+      return res.status(400).json({
+        message: "All required fields, including OTP, must be provided",
+      });
     }
 
     // Check if the email is allowed and fetch the associated OTP
@@ -110,9 +107,15 @@ exports.register = async (req, res) => {
         .json({ message: "User with this email already exists" });
     }
 
+    // Handle profile picture
+    let profilePicture = undefined;
+    if (req.file) {
+      profilePicture = `/ProfilePicUploads/${req.file.filename}`;
+    }
+
     // Create a new user
     const newUser = new Users({
-      profilePicture: profilePicture || undefined,
+      profilePicture: profilePicture || undefined, // Use uploaded picture or fallback to default from schema
       name,
       email,
       password,
