@@ -3,7 +3,7 @@ const nodemailer = require("nodemailer");
 const csv = require("csvtojson");
 const crypto = require("crypto");
 
-const { Users, AllowedEmail } = require("../Models");
+const { Users, AllowedEmail, BlockedEmails } = require("../Models");
 const { verifyAuthToken } = require("../Utilities");
 
 // Verify and Authorize Auth Token
@@ -217,7 +217,7 @@ exports.addAllowedEmails = async (req, res) => {
   }
 };
 
-// Fetch all allowed emails
+// Fetch all allowed emails API
 exports.fetchAllowedEmails = async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1]; // Extract token from the Authorization header
@@ -226,7 +226,9 @@ exports.fetchAllowedEmails = async (req, res) => {
     // Use the helper function for authorization
     const authResult = await verifyAndAuthorize(token, ["ADMIN", "COREMEMBER"]);
     if (authResult.status !== 200) {
-      return res.status(authResult.status).json({ message: authResult.message });
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
     }
 
     // Pagination and search setup
@@ -264,7 +266,7 @@ exports.fetchAllowedEmails = async (req, res) => {
   }
 };
 
-// Delete emails from AllowedEmail schema
+// Delete emails from AllowedEmail schema API
 exports.deleteAllowedEmails = async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1]; // Extract token from Authorization header
@@ -278,7 +280,9 @@ exports.deleteAllowedEmails = async (req, res) => {
     // Use the helper function for authorization
     const authResult = await verifyAndAuthorize(token, ["ADMIN", "COREMEMBER"]);
     if (authResult.status !== 200) {
-      return res.status(authResult.status).json({ message: authResult.message });
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
     }
 
     // Delete documents with the provided IDs
@@ -299,5 +303,90 @@ exports.deleteAllowedEmails = async (req, res) => {
     return res
       .status(500)
       .json({ message: "Internal Server Error", error: error.message });
+  }
+};
+
+// Block email/user from website API
+exports.blockEmail = async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1]; // Extract token from header
+  const { email } = req.body; // Email to be blocked
+
+  if (!token) {
+    return res.status(401).json({ message: "No token provided" });
+  }
+
+  if (!email) {
+    return res.status(400).json({ message: "No email provided" });
+  }
+
+  try {
+    // Verify and authorize token
+    const authResult = await verifyAndAuthorize(token, ["ADMIN"]);
+    if (authResult.status !== 200) {
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
+    }
+
+    // Check if the email is already blocked
+    const existingBlockedEmail = await BlockedEmails.findOne({ email });
+    if (existingBlockedEmail) {
+      return res.status(400).json({ message: "Email is already blocked" });
+    }
+
+    // Add email to the BlockedEmails collection
+    await BlockedEmails.create({ email });
+
+    // Respond with success
+    res.status(200).json({ message: "Email blocked successfully" });
+  } catch (error) {
+    console.error(chalk.bgRed.bold.red("Error blocking email:"), error.message);
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
+
+// Unblock email/user from website API
+exports.unblockEmail = async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1]; // Extract token from header
+  const { email } = req.body; // Email to be unblocked
+
+  if (!token) {
+    return res.status(401).json({ message: "No token provided" });
+  }
+
+  if (!email) {
+    return res.status(400).json({ message: "No email provided" });
+  }
+
+  try {
+    // Verify and authorize token
+    const authResult = await verifyAndAuthorize(token, ["ADMIN"]);
+    if (authResult.status !== 200) {
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
+    }
+
+    // Check if the email is blocked
+    const existingBlockedEmail = await BlockedEmails.findOne({ email });
+    if (!existingBlockedEmail) {
+      return res.status(400).json({ message: "Email is not blocked" });
+    }
+
+    // Remove email from the BlockedEmails collection
+    await BlockedEmails.deleteOne({ email });
+
+    // Respond with success
+    res.status(200).json({ message: "Email unblocked successfully" });
+  } catch (error) {
+    console.error(
+      chalk.bgRed.bold.red("Error unblocking email:"),
+      error.message
+    );
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };

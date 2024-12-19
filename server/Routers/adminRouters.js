@@ -37,4 +37,10 @@ router.post("/fetch-all-allowed-emails", adminControllers.fetchAllowedEmails);
 // Delete emails from AllowedEmail schema
 router.delete("/delete-allowed-emails", adminControllers.deleteAllowedEmails);
 
+// Block email/user from website API
+router.post("/block-email", adminControllers.blockEmail);
+
+// Unblock email/user from website API
+router.post("/unblock-email", adminControllers.unblockEmail);
+
 module.exports = router;
