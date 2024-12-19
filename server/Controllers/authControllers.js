@@ -3,14 +3,6 @@ const bcrypt = require("bcryptjs");
 
 const { Users, AllowedEmail } = require("../Models");
 
-// sample API
-exports.api = async (req, res) => {
-  res.status(200).json({
-    message:
-      "Welcome to SRM IST Ramapuram's GFG Student Chapter Management Website Server",
-  });
-};
-
 // Login API
 exports.loginUser = async (req, res) => {
   try {

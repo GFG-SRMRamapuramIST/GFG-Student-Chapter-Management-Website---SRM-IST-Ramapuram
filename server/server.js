@@ -14,6 +14,12 @@ app.use(express.json());
 app.use(cors());
 
 // Routers
+app.get("/", (req, res) => {
+  res.status(200).json({
+    message:
+      "Welcome to SRM IST Ramapuram's GFG Student Chapter Management Website Server",
+  });
+});
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/core-member", coreMemberRouter);
