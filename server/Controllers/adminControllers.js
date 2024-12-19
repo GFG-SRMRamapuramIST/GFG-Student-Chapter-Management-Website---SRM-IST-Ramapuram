@@ -334,6 +334,22 @@ exports.blockEmail = async (req, res) => {
       return res.status(400).json({ message: "Email is already blocked" });
     }
 
+    // Remove email from AllowedEmails if it exists
+    const removedFromAllowed = await AllowedEmail.deleteOne({ email });
+    if (removedFromAllowed.deletedCount > 0) {
+      console.log(
+        chalk.bgYellow.bold.yellow(`Email removed from AllowedEmails: ${email}`)
+      );
+    }
+
+    // Remove email from Users if it exists
+    const removedFromUsers = await Users.deleteOne({ email });
+    if (removedFromUsers.deletedCount > 0) {
+      console.log(
+        chalk.bgYellow.bold.yellow(`Email removed from Users: ${email}`)
+      );
+    }
+
     // Add email to the BlockedEmails collection
     await BlockedEmails.create({ email });
 
