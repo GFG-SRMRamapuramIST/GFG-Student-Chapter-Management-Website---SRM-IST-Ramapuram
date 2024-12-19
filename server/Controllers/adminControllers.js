@@ -422,3 +422,186 @@ exports.unblockEmail = async (req, res) => {
       .json({ message: "Internal server error", error: error.message });
   }
 };
+
+//7. Delete Users from website API
+exports.deleteUsers = async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1]; // Extract token from header
+  const { ids } = req.body; // Array of _id to delete
+
+  if (!token) {
+    return res.status(401).json({ message: "No token provided" });
+  }
+
+  if (!Array.isArray(ids) || ids.length === 0) {
+    return res.status(400).json({ message: "Invalid or empty IDs array" });
+  }
+
+  try {
+    // Verify and authorize token
+    const authResult = await verifyAndAuthorize(token, ["ADMIN"]);
+    if (authResult.status !== 200) {
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
+    }
+
+    // Extract the admin's user ID from the token
+    const adminUserId = authResult.userId;
+
+    // Filter out the admin's own account ID from the delete list
+    const idsToDelete = ids.filter((id) => id !== adminUserId);
+    const notDeletedIds = ids.filter((id) => id === adminUserId);
+
+    if (idsToDelete.length === 0) {
+      return res.status(400).json({
+        message: "No valid IDs to delete and you cannot delete your own account.",
+        notDeletedIds,
+      });
+    }
+
+    // Attempt to delete the remaining IDs
+    const deletionResult = await Users.deleteMany({ _id: { $in: idsToDelete } });
+
+    // Track IDs that were not deleted for any other reason (e.g., invalid ID)
+    const failedDeletions = [];
+
+    for (const id of idsToDelete) {
+      const exists = await Users.findById(id);
+      if (exists) {
+        failedDeletions.push(id);
+      }
+    }
+    notDeletedIds.push(...failedDeletions);
+
+    // Respond with the result
+    return res.status(200).json({
+      message: "Users deletion processed successfully.",
+      deletedCount: deletionResult.deletedCount,
+      notDeletedIds,
+    });
+  } catch (error) {
+    console.error(chalk.bgRed.bold.red("Error deleting users:"), error.message);
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
+
+//8. Promote user one rank above API
+exports.promoteUser = async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1]; // Extract token from header
+  const { userId } = req.body; // User ID to promote
+
+  if (!token) {
+    return res.status(401).json({ message: "No token provided" });
+  }
+
+  if (!userId) {
+    return res.status(400).json({ message: "No user ID provided" });
+  }
+
+  try {
+    // Verify and authorize token
+    const authResult = await verifyAndAuthorize(token, ["ADMIN"]);
+    if (authResult.status !== 200) {
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
+    }
+
+    // User cannot promote himself
+    if (authResult.userId === userId) {
+      return res.status(400).json({ message: "Cannot promote yourself" });
+    }
+
+    // Find the user to promote
+    const user = await Users.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Promote the user
+    if (user.role === "MEMBER") {
+      user.role = "COREMEMBER";
+      await user.save();
+      return res.status(200).json({ message: "User promoted successfully from Member to Core-Member" });
+    }else if(user.role === "COREMEMBER"){
+      user.role = "ADMIN";
+      await user.save();
+      return res.status(200).json({ message: "User promoted successfully from Core-Member to Admin" });
+    }else if(user.role === "USER"){
+      user.role = "MEMBER";
+      await user.save();
+      return res.status(200).json({ message: "User promoted successfully from User to Member" });
+    }
+
+    return res
+      .status(400)
+      .json({ message: "User is already at the highest rank" });
+  } catch (error) {
+    console.error(chalk.bgRed.bold.red("Error promoting user:"), error.message);
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
+
+//9. Demote user one rank below API
+exports.demoteUser = async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1]; // Extract token from header
+  const { userId } = req.body; // User ID to demote
+
+  if (!token) {
+    return res.status(401).json({ message: "No token provided" });
+  }
+
+  if (!userId) {
+    return res.status(400).json({ message: "No user ID provided" });
+  }
+
+  try {
+    // Verify and authorize token
+    const authResult = await verifyAndAuthorize(token, ["ADMIN"]);
+    if (authResult.status !== 200) {
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
+    }
+
+    // User cannot demote himself
+    if (authResult.userId === userId) {
+      return res.status(400).json({ message: "Cannot demote yourself" });
+    }
+
+    // Find the user to demote
+    const user = await Users.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Demote the user
+    if (user.role === "ADMIN") {
+      user.role = "COREMEMBER";
+      await user.save();
+      return res.status(200).json({ message: "User demoted successfully from Admin to Core-Member" });
+    }else if(user.role === "COREMEMBER"){
+      user.role = "MEMBER";
+      await user.save();
+      return res.status(200).json({ message: "User demoted successfully from Core-Member to Member" });
+    }else if(user.role === "MEMBER"){
+      user.role = "USER";
+      await user.save();
+      return res.status(200).json({ message: "User demoted successfully from Member to User" });
+    }
+
+    return res
+      .status(400)
+      .json({ message: "User is already at the lowest rank" });
+
+  } catch (error) {
+    console.error(chalk.bgRed.bold.red("Error demoting user:"), error.message);
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+}

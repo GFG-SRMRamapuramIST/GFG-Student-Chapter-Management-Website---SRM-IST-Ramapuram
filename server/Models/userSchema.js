@@ -47,7 +47,7 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ["MEMBER", "COREMEMBER", "ADMIN"],
+    enum: ["USER", "MEMBER", "COREMEMBER", "ADMIN"],
     default: "MEMBER",
   },
   linkedinProfileLink: {

@@ -19,9 +19,9 @@ router.use(express.static(path.resolve(__dirname, "Public")));
 4. Delete emails from AllowedEmail schema API - "{BACKEND_URL}/api/v1/admin/delete-allowed-emails"
 5. Block email/user from website API - "{BACKEND_URL}/api/v1/admin/block-email"
 6. Unblock email/user from website API - "{BACKEND_URL}/api/v1/admin/unblock-email"
-7. Delete Users from website API
-8. Promote user one rank above API
-9. Demote user one rank below API
+7. Delete Users from website API - "{BACKEND_URL}/api/v1/admin/delete-users-accounts"
+8. Promote user one rank above API - "{BACKEND_URL}/api/v1/admin/promote-user"
+9. Demote user one rank below API - "{BACKEND_URL}/api/v1/admin/demote-user"
 
 **********************************************************
 */
@@ -37,26 +37,35 @@ var storage = multer.diskStorage({
 
 var upload = multer({ storage: storage });
 
-// Add Emails using CSV file to register API
+//1. Add Emails using CSV file to register API
 router.post(
   "/upload-csv-allowed-emails",
   upload.single("file"),
   adminControllers.uploadCSVAllowedEmails
 );
 
-// Add array of Emails to register API
+//2. Add array of Emails to register API
 router.post("/add-allowed-emails", adminControllers.addAllowedEmails);
 
-// Fetch all allowed emails
+//3. Fetch all allowed emails
 router.post("/fetch-all-allowed-emails", adminControllers.fetchAllowedEmails);
 
-// Delete emails from AllowedEmail schema
+//4. Delete emails from AllowedEmail schema
 router.delete("/delete-allowed-emails", adminControllers.deleteAllowedEmails);
 
-// Block email/user from website API
+//5. Block email/user from website API
 router.post("/block-email", adminControllers.blockEmail);
 
-// Unblock email/user from website API
+//6. Unblock email/user from website API
 router.post("/unblock-email", adminControllers.unblockEmail);
+
+//7. Delete Users from website API
+router.delete("/delete-users-accounts", adminControllers.deleteUsers)
+
+//8. Promote user one rank above API
+router.post("/promote-user", adminControllers.promoteUser);
+
+//9. Demote user one rank below API
+router.post("/demote-user", adminControllers.demoteUser);
 
 module.exports = router;
