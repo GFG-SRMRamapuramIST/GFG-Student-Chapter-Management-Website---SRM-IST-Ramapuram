@@ -6,6 +6,22 @@ const crypto = require("crypto");
 const { Users, AllowedEmail, BlockedEmails } = require("../Models");
 const { verifyAuthToken } = require("../Utilities");
 
+/*
+************************** APIs **************************
+
+1. Add Emails using CSV file to register API
+2. Add array of Emails to register API
+3. Fetch all allowed emails API
+4. Delete emails from AllowedEmail schema API
+5. Block email/user from website API
+6. Unblock email/user from website API
+7. Delete Users from website API
+8. Promote user one rank above API
+9. Demote user one rank below API
+
+**********************************************************
+*/
+
 // Verify and Authorize Auth Token
 const verifyAndAuthorize = async (token, allowedRoles) => {
   const authResult = await verifyAuthToken(token);
@@ -32,7 +48,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Add Emails using CSV file to register API
+//1. Add Emails using CSV file to register API
 exports.uploadCSVAllowedEmails = async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1]; // Extract token from header
 
@@ -130,7 +146,7 @@ exports.uploadCSVAllowedEmails = async (req, res) => {
   }
 };
 
-// Add array of Emails to register API
+//2. Add array of Emails to register API
 exports.addAllowedEmails = async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1]; // Taking token from the header
   const { emails } = req.body; // Array of emails from the admin
@@ -217,7 +233,7 @@ exports.addAllowedEmails = async (req, res) => {
   }
 };
 
-// Fetch all allowed emails API
+//3. Fetch all allowed emails API
 exports.fetchAllowedEmails = async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1]; // Extract token from the Authorization header
@@ -266,7 +282,7 @@ exports.fetchAllowedEmails = async (req, res) => {
   }
 };
 
-// Delete emails from AllowedEmail schema API
+//4. Delete emails from AllowedEmail schema API
 exports.deleteAllowedEmails = async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1]; // Extract token from Authorization header
@@ -306,7 +322,7 @@ exports.deleteAllowedEmails = async (req, res) => {
   }
 };
 
-// Block email/user from website API
+//5. Block email/user from website API
 exports.blockEmail = async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1]; // Extract token from header
   const { email } = req.body; // Email to be blocked
@@ -363,7 +379,7 @@ exports.blockEmail = async (req, res) => {
   }
 };
 
-// Unblock email/user from website API
+//6. Unblock email/user from website API
 exports.unblockEmail = async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1]; // Extract token from header
   const { email } = req.body; // Email to be unblocked

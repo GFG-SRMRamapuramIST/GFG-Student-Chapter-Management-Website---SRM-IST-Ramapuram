@@ -3,7 +3,16 @@ const bcrypt = require("bcryptjs");
 
 const { Users, AllowedEmail } = require("../Models");
 
-// Login API
+/*
+************************** APIs **************************
+
+1. Login API
+2. Register API
+
+**********************************************************
+*/
+
+//1. Login API
 exports.loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -38,7 +47,7 @@ exports.loginUser = async (req, res) => {
   }
 };
 
-// Register API
+//2. Register API
 exports.register = async (req, res) => {
   try {
     const {

@@ -3,6 +3,22 @@ const chalk = require("chalk");
 const { verifyAuthToken } = require("../Utilities");
 const { DailyContests, Notices } = require("../Models");
 
+/*
+************************** APIs **************************
+
+1. Create a contest API
+2. Edit a contest API
+3. Delete a contest API
+4. Create a Meeting on Notice Board API
+5. Edit meeting on Notice Board API
+6. Delete meeting on Notice Board API
+7. Create MoM for a Meeting on Notice Board API
+8. Edit MoM for a Meeting on Notice Board API
+9. Delete MoM for a Meeting on Notice Board API
+
+**********************************************************
+*/
+
 // Verify and Authorize Auth Token 
 const verifyAndAuthorize = async (token, allowedRoles) => {
   const authResult = await verifyAuthToken(token);
@@ -21,7 +37,7 @@ const verifyAndAuthorize = async (token, allowedRoles) => {
 };
 
 /***************************** CONTEST APIs *******************************/
-// Create a contest API
+//1. Create a contest API
 exports.createContest = async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1]; // Extract token from Authorization header
@@ -108,7 +124,7 @@ exports.createContest = async (req, res) => {
   }
 };
 
-// Edit a contest API
+//2. Edit a contest API
 exports.editContest = async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
@@ -257,7 +273,7 @@ exports.editContest = async (req, res) => {
   }
 };
 
-// Delete a contest API
+//3. Delete a contest API
 exports.deleteContest = async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
@@ -324,7 +340,7 @@ exports.deleteContest = async (req, res) => {
 /**************************************************************************/
 
 /***************************** NOTICE BOARD APIs **************************/
-// Create a Meeting on Notice Board API
+//4. Create a Meeting on Notice Board API
 exports.createNotice = async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
@@ -418,7 +434,7 @@ exports.createNotice = async (req, res) => {
   }
 };
 
-// Edit meeting on Notice Board API
+//5. Edit meeting on Notice Board API
 exports.editNotice = async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
@@ -521,7 +537,7 @@ exports.editNotice = async (req, res) => {
   }
 };
 
-// Delete meeting on Notice Board API
+//6. Delete meeting on Notice Board API
 exports.deleteNotice = async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
@@ -561,7 +577,7 @@ exports.deleteNotice = async (req, res) => {
   }
 };
 
-// Create MoM for a Meeting on Notice Board API
+//7. Create MoM for a Meeting on Notice Board API
 exports.createMoM = async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
@@ -625,7 +641,7 @@ exports.createMoM = async (req, res) => {
   }
 };
 
-// Edit MoM for a Meeting on Notice Board API
+//8. Edit MoM for a Meeting on Notice Board API
 exports.editMoMLink = async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
@@ -684,7 +700,7 @@ exports.editMoMLink = async (req, res) => {
   }
 };
 
-// Delete MoM for a Meeting on Notice Board API
+//9. Delete MoM for a Meeting on Notice Board API
 exports.deleteMoMLink = async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
