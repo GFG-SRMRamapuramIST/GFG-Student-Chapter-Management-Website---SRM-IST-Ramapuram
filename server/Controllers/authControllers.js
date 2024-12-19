@@ -55,6 +55,7 @@ exports.register = async (req, res) => {
       leetcodeProfileLink,
       codechefProfileLink,
       codeforcesProfileLink,
+      otp, // OTP from the request body
     } = req.body;
 
     // Check for required fields
@@ -69,19 +70,27 @@ exports.register = async (req, res) => {
       !codolioProfileLink ||
       !leetcodeProfileLink ||
       !codechefProfileLink ||
-      !codeforcesProfileLink
+      !codeforcesProfileLink ||
+      !otp // Ensure OTP is provided
     ) {
       return res
         .status(400)
-        .json({ message: "All required fields must be provided" });
+        .json({
+          message: "All required fields, including OTP, must be provided",
+        });
     }
 
-    // Check if the email is allowed
+    // Check if the email is allowed and fetch the associated OTP
     const allowedEmail = await AllowedEmail.findOne({ email });
     if (!allowedEmail) {
       return res.status(403).json({
         message: "You are not authorized to register on this platform",
       });
+    }
+
+    // Verify the OTP
+    if (allowedEmail.OTP !== otp) {
+      return res.status(400).json({ message: "Invalid OTP provided" });
     }
 
     // Check if the user already exists

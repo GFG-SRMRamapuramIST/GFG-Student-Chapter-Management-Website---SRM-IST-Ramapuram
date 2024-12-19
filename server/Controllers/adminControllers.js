@@ -1,14 +1,15 @@
 const chalk = require("chalk");
 const nodemailer = require("nodemailer");
 const csv = require("csvtojson");
+const crypto = require("crypto");
 
 const { Users, AllowedEmail } = require("../Models");
 const { verifyAuthToken } = require("../Utilities");
 
-// Verify and Authorize Auth Token 
+// Verify and Authorize Auth Token
 const verifyAndAuthorize = async (token, allowedRoles) => {
   const authResult = await verifyAuthToken(token);
-  
+
   if (authResult.status === "expired") {
     return { status: 401, message: "Token expired" };
   }
@@ -18,7 +19,7 @@ const verifyAndAuthorize = async (token, allowedRoles) => {
   if (!allowedRoles.includes(authResult.role)) {
     return { status: 403, message: "Access denied. Unauthorized role." };
   }
-  
+
   return { status: 200, userId: authResult.userId };
 };
 
@@ -43,7 +44,9 @@ exports.uploadCSVAllowedEmails = async (req, res) => {
     // Use the helper function for authorization
     const authResult = await verifyAndAuthorize(token, ["ADMIN"]);
     if (authResult.status !== 200) {
-      return res.status(authResult.status).json({ message: authResult.message });
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
     }
 
     if (!req.file) {
@@ -80,18 +83,21 @@ exports.uploadCSVAllowedEmails = async (req, res) => {
           continue;
         }
 
-        // Send an email invitation
+        // Generate a random 8-character OTP
+        const OTP = crypto.randomBytes(4).toString("hex");
+
+        // Send an email invitation with the OTP
         const mailOptions = {
           from: "vitcseguide@gmail.com",
           to: email,
           subject: "Invitation to Register",
-          text: `You have been invited to register on our website. Please use your email (${email}) to create an account.`,
+          text: `You have been invited to register on our website. Please use your email (${email}) and the following OTP (${OTP}) to create an account.`,
         };
 
         await transporter.sendMail(mailOptions);
 
-        // Add the email to AllowedEmail schema only if email is sent successfully
-        await AllowedEmail.create({ email, createdAt: new Date() });
+        // Add the email and OTP to AllowedEmail schema only if email is sent successfully
+        await AllowedEmail.create({ email, OTP, createdAt: new Date() });
         addedEmails.push(email);
 
         console.log(chalk.bgGreen.bold.green("Email sent to: "), email);
@@ -143,7 +149,9 @@ exports.addAllowedEmails = async (req, res) => {
     // Use the helper function for authorization
     const authResult = await verifyAndAuthorize(token, ["ADMIN"]);
     if (authResult.status !== 200) {
-      return res.status(authResult.status).json({ message: authResult.message });
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
     }
 
     const addedEmails = [];
@@ -160,20 +168,23 @@ exports.addAllowedEmails = async (req, res) => {
 
       const alreadyAllowed = await AllowedEmail.findOne({ email });
       if (!alreadyAllowed) {
-        // Send an email invitation
+        // Generate a random 8-character OTP
+        const OTP = crypto.randomBytes(4).toString("hex");
+
+        // Send an email invitation with the OTP
         const mailOptions = {
           from: "vitcseguide@gmail.com",
           to: email,
           subject: "Invitation to Register",
-          text: `You have been invited to register on our website. Please use your email (${email}) to create an account.`,
+          text: `You have been invited to register on our website. Please use your email (${email}) and the following OTP (${OTP}) to create an account.`,
         };
 
         try {
           await transporter.sendMail(mailOptions);
           console.log(chalk.bgGreen.bold.green("Email sent to: "), email);
 
-          // Add the email to the allowedEmail collection only after successful email
-          await AllowedEmail.create({ email, createdAt: new Date() });
+          // Add the email and OTP to the allowedEmail collection only after successful email
+          await AllowedEmail.create({ email, OTP, createdAt: new Date() });
           addedEmails.push(email);
         } catch (error) {
           console.error(

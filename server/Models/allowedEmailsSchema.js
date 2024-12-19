@@ -11,6 +11,13 @@ const allowedEmailSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  OTP: {
+    type: String,
+    required: true,
+    trim: true,
+    minlength: 8,
+    maxlength: 8,
+  },
 });
 
 const AllowedEmail = mongoose.model("AllowedEmail", allowedEmailSchema);
