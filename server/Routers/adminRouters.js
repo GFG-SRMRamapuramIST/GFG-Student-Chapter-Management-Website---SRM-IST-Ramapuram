@@ -22,6 +22,7 @@ router.use(express.static(path.resolve(__dirname, "Public")));
 7. Delete Users from website API - "{BACKEND_URL}/api/v1/admin/delete-users-accounts"
 8. Promote user one rank above API - "{BACKEND_URL}/api/v1/admin/promote-user"
 9. Demote user one rank below API - "{BACKEND_URL}/api/v1/admin/demote-user"
+10. Update team size API - "{BACKEND_URL}/api/v1/admin/update-team-size"
 
 **********************************************************
 */
@@ -67,5 +68,8 @@ router.post("/promote-user", adminControllers.promoteUser);
 
 //9. Demote user one rank below API
 router.post("/demote-user", adminControllers.demoteUser);
+
+//10. Update team size API
+router.post("/update-team-size", adminControllers.updateTeamSize);
 
 module.exports = router;

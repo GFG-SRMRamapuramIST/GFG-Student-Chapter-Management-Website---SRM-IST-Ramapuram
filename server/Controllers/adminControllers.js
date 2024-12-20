@@ -3,7 +3,12 @@ const nodemailer = require("nodemailer");
 const csv = require("csvtojson");
 const crypto = require("crypto");
 
-const { Users, AllowedEmail, BlockedEmails } = require("../Models");
+const {
+  Users,
+  AllowedEmail,
+  BlockedEmails,
+  ConstantValue,
+} = require("../Models");
 const { verifyAuthToken } = require("../Utilities");
 
 /*
@@ -18,6 +23,7 @@ const { verifyAuthToken } = require("../Utilities");
 7. Delete Users from website API
 8. Promote user one rank above API
 9. Demote user one rank below API
+10. Update team size API
 
 **********************************************************
 */
@@ -454,13 +460,16 @@ exports.deleteUsers = async (req, res) => {
 
     if (idsToDelete.length === 0) {
       return res.status(400).json({
-        message: "No valid IDs to delete and you cannot delete your own account.",
+        message:
+          "No valid IDs to delete and you cannot delete your own account.",
         notDeletedIds,
       });
     }
 
     // Attempt to delete the remaining IDs
-    const deletionResult = await Users.deleteMany({ _id: { $in: idsToDelete } });
+    const deletionResult = await Users.deleteMany({
+      _id: { $in: idsToDelete },
+    });
 
     // Track IDs that were not deleted for any other reason (e.g., invalid ID)
     const failedDeletions = [];
@@ -524,15 +533,21 @@ exports.promoteUser = async (req, res) => {
     if (user.role === "MEMBER") {
       user.role = "COREMEMBER";
       await user.save();
-      return res.status(200).json({ message: "User promoted successfully from Member to Core-Member" });
-    }else if(user.role === "COREMEMBER"){
+      return res.status(200).json({
+        message: "User promoted successfully from Member to Core-Member",
+      });
+    } else if (user.role === "COREMEMBER") {
       user.role = "ADMIN";
       await user.save();
-      return res.status(200).json({ message: "User promoted successfully from Core-Member to Admin" });
-    }else if(user.role === "USER"){
+      return res.status(200).json({
+        message: "User promoted successfully from Core-Member to Admin",
+      });
+    } else if (user.role === "USER") {
       user.role = "MEMBER";
       await user.save();
-      return res.status(200).json({ message: "User promoted successfully from User to Member" });
+      return res
+        .status(200)
+        .json({ message: "User promoted successfully from User to Member" });
     }
 
     return res
@@ -583,25 +598,79 @@ exports.demoteUser = async (req, res) => {
     if (user.role === "ADMIN") {
       user.role = "COREMEMBER";
       await user.save();
-      return res.status(200).json({ message: "User demoted successfully from Admin to Core-Member" });
-    }else if(user.role === "COREMEMBER"){
+      return res.status(200).json({
+        message: "User demoted successfully from Admin to Core-Member",
+      });
+    } else if (user.role === "COREMEMBER") {
       user.role = "MEMBER";
       await user.save();
-      return res.status(200).json({ message: "User demoted successfully from Core-Member to Member" });
-    }else if(user.role === "MEMBER"){
+      return res.status(200).json({
+        message: "User demoted successfully from Core-Member to Member",
+      });
+    } else if (user.role === "MEMBER") {
       user.role = "USER";
       await user.save();
-      return res.status(200).json({ message: "User demoted successfully from Member to User" });
+      return res
+        .status(200)
+        .json({ message: "User demoted successfully from Member to User" });
     }
 
     return res
       .status(400)
       .json({ message: "User is already at the lowest rank" });
-
   } catch (error) {
     console.error(chalk.bgRed.bold.red("Error demoting user:"), error.message);
     res
       .status(500)
       .json({ message: "Internal server error", error: error.message });
   }
-}
+};
+
+//10. Update team size API
+exports.updateTeamSize = async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1]; // Extract token from header
+  const { teamSize } = req.body; // New team size
+
+  // Check for token
+  if (!token) {
+    return res.status(401).json({ message: "Authorization token is required" });
+  }
+
+  // Validate teamSize
+  if (!teamSize || typeof teamSize !== "number" || teamSize < 1) {
+    return res.status(400).json({ message: "Invalid team size provided" });
+  }
+
+  try {
+    // Verify and authorize token
+    const authResult = await verifyAndAuthorize(token, ["ADMIN"]);
+    if (authResult.status !== 200) {
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
+    }
+
+    // Find the ConstantValue document
+    const constant = await ConstantValue.findOne();
+
+    if (!constant) {
+      return res
+        .status(500)
+        .json({
+          message: "ConstantValue document not found. Please initialize it.",
+        });
+    }
+
+    // Update the teamSize attribute
+    constant.teamSize = teamSize;
+    await constant.save();
+
+    // Send success response
+    return res.status(200).json({ message: "Team size updated successfully" });
+  } catch (error) {
+    console.error("Error updating team size:", error.message);
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
