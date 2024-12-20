@@ -6,6 +6,10 @@ const app = express();
 const cors = require("cors");
 
 const connectDB = require("./DB/Connection");
+
+// Importing scheduled tasks
+const { contestScheduler } = require("./Scheduler");
+
 const {
   authRouter,
   adminRouter,

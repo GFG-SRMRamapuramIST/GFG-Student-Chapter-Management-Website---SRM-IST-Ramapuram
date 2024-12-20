@@ -46,7 +46,9 @@ exports.createContest = async (req, res) => {
     // Use the helper function for authorization
     const authResult = await verifyAndAuthorize(token, ["ADMIN", "COREMEMBER"]);
     if (authResult.status !== 200) {
-      return res.status(authResult.status).json({ message: authResult.message });
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
     }
 
     // Validate input
@@ -71,16 +73,31 @@ exports.createContest = async (req, res) => {
       });
     }
 
-    const contestDate = new Date(date);
-    const currentDate = new Date();
+    // Validate date and time
+    const currentDateTime = new Date();
+    const contestStartDateTime = new Date(`${date}T${startTime}`);
+    const contestEndDateTime = new Date(`${date}T${endTime}`);
 
-    // Ensure the contest is in the current month
+    if (contestStartDateTime < currentDateTime) {
+      return res.status(400).json({
+        message: "Contest start date and time must be in the future.",
+      });
+    }
+
+    if (contestEndDateTime <= contestStartDateTime) {
+      return res.status(400).json({
+        message: "Contest end date and time must be after the start time.",
+      });
+    }
+
+    // Ensure the contest date is within the current month
+    const contestDate = new Date(date);
     if (
-      contestDate.getFullYear() !== currentDate.getFullYear() ||
-      contestDate.getMonth() !== currentDate.getMonth()
+      contestDate.getFullYear() !== currentDateTime.getFullYear() ||
+      contestDate.getMonth() !== currentDateTime.getMonth()
     ) {
       return res.status(400).json({
-        message: "The contest date must be within the current month",
+        message: "The contest date must be within the current month.",
       });
     }
 
@@ -99,8 +116,8 @@ exports.createContest = async (req, res) => {
     dailyContest.contests.push({
       contestName,
       platform,
-      startTime: new Date(startTime),
-      endTime: new Date(endTime),
+      startTime: contestStartDateTime,
+      endTime: contestEndDateTime,
       participants: [],
       createdBy: authResult.userId,
     });
@@ -141,7 +158,9 @@ exports.editContest = async (req, res) => {
     // Use the helper function for authorization
     const authResult = await verifyAndAuthorize(token, ["ADMIN", "COREMEMBER"]);
     if (authResult.status !== 200) {
-      return res.status(authResult.status).json({ message: authResult.message });
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
     }
 
     // Validate required fields
@@ -174,20 +193,48 @@ exports.editContest = async (req, res) => {
       });
     }
 
+    const currentDateTime = new Date();
+    const newContestDateTime = new Date(`${newDate}T${startTime}`);
+    const newContestEndDateTime = new Date(`${newDate}T${endTime}`);
+
+    // Validate date and time
+    if (newContestDateTime < currentDateTime) {
+      return res.status(400).json({
+        message: "Contest start date and time must be in the future.",
+      });
+    }
+
+    if (newContestEndDateTime <= newContestDateTime) {
+      return res.status(400).json({
+        message: "Contest end date and time must be after the start time.",
+      });
+    }
+
+    const newContestDate = new Date(newDate);
     const currentDate = new Date();
+
+    // Validate that the contest date is in the current month
+    if (
+      newContestDate.getFullYear() !== currentDate.getFullYear() ||
+      newContestDate.getMonth() !== currentDate.getMonth()
+    ) {
+      return res.status(400).json({
+        message: "The contest date must be within the current month.",
+      });
+    }
 
     // Find the document by date ID
     const dailyContest = await DailyContests.findById(dateId);
     if (!dailyContest) {
       return res
         .status(404)
-        .json({ message: "No entry found for the given date ID" });
+        .json({ message: "No entry found for the given date ID." });
     }
 
     // Check if the date for this contest has passed
     if (dailyContest.date < currentDate) {
       return res.status(400).json({
-        message: "The date associated with this contest has already passed",
+        message: "The date associated with this contest has already passed.",
       });
     }
 
@@ -195,15 +242,7 @@ exports.editContest = async (req, res) => {
     const contest = dailyContest.contests.id(contestId);
     if (!contest) {
       return res.status(404).json({
-        message: "Contest not found for the given contest_id and date",
-      });
-    }
-
-    // Validate if the new date for the contest is in the future
-    const newContestDate = new Date(newDate);
-    if (newContestDate < currentDate) {
-      return res.status(400).json({
-        message: "The new date for the contest must be in the future",
+        message: "Contest not found for the given contest_id and date.",
       });
     }
 
@@ -234,8 +273,8 @@ exports.editContest = async (req, res) => {
       newDailyContest.contests.push({
         contestName,
         platform,
-        startTime: new Date(startTime),
-        endTime: new Date(endTime),
+        startTime: newContestDateTime,
+        endTime: newContestEndDateTime,
         createdBy: authResult.userId,
       });
       await newDailyContest.save();
@@ -249,8 +288,8 @@ exports.editContest = async (req, res) => {
       // Update the contest details if the date hasn't changed
       contest.contestName = contestName;
       contest.platform = platform;
-      contest.startTime = new Date(startTime);
-      contest.endTime = new Date(endTime);
+      contest.startTime = newContestDateTime;
+      contest.endTime = newContestEndDateTime;
       contest.createdBy = authResult.userId;
 
       // Save the updated document

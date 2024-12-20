@@ -48,7 +48,7 @@ const userSchema = new mongoose.Schema({
   role: {
     type: String,
     enum: ["USER", "MEMBER", "COREMEMBER", "ADMIN"],
-    default: "MEMBER",
+    default: "USER",
   },
   linkedinProfileLink: {
     type: String,
@@ -78,6 +78,10 @@ const userSchema = new mongoose.Schema({
   solvedQuestionsCount: {
     type: Number,
     default: 0,
+  },
+  subscribed: {
+    type: Boolean,
+    default: true,
   },
   authToken: {
     type: String,
