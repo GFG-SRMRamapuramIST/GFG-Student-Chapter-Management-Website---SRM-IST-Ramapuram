@@ -1,7 +1,7 @@
 const chalk = require("chalk");
 
 const { verifyAuthToken } = require("../Utilities");
-const { DailyContests, Notices } = require("../Models");
+const { DailyContests, Notices, ConstantValue } = require("../Models");
 
 /*
 ************************** APIs **************************
@@ -19,10 +19,10 @@ const { DailyContests, Notices } = require("../Models");
 **********************************************************
 */
 
-// Verify and Authorize Auth Token 
+// Verify and Authorize Auth Token
 const verifyAndAuthorize = async (token, allowedRoles) => {
   const authResult = await verifyAuthToken(token);
-  
+
   if (authResult.status === "expired") {
     return { status: 401, message: "Token expired" };
   }
@@ -32,7 +32,7 @@ const verifyAndAuthorize = async (token, allowedRoles) => {
   if (!allowedRoles.includes(authResult.role)) {
     return { status: 403, message: "Access denied. Unauthorized role." };
   }
-  
+
   return { status: 200, userId: authResult.userId };
 };
 
@@ -124,6 +124,13 @@ exports.createContest = async (req, res) => {
 
     // Save the updated document
     await dailyContest.save();
+
+    // Find the ConstantValue document and increment totalContests by 1
+    await ConstantValue.findOneAndUpdate(
+      {}, // Match the first document (assuming there's only one document)
+      { $inc: { totalContests: 1 } }, // Increment totalContests by 1
+      { new: true, upsert: true } // Return the updated document, create if not exists
+    );
 
     return res.status(201).json({
       message: "Contest created successfully!",
@@ -321,7 +328,9 @@ exports.deleteContest = async (req, res) => {
     // Use the helper function for authorization
     const authResult = await verifyAndAuthorize(token, ["ADMIN", "COREMEMBER"]);
     if (authResult.status !== 200) {
-      return res.status(authResult.status).json({ message: authResult.message });
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
     }
 
     // Validate required fields
@@ -353,6 +362,14 @@ exports.deleteContest = async (req, res) => {
     // If the number of contests becomes 0, delete the date entry
     if (dailyContest.contests.length === 0) {
       await DailyContests.findByIdAndDelete(dateId);
+
+      // Find the ConstantValue document and increment totalContests by 1
+      await ConstantValue.findOneAndUpdate(
+        {}, // Match the first document (assuming there's only one document)
+        { $inc: { totalContests: -1 } }, // Increment totalContests by 1
+        { new: true, upsert: true } // Return the updated document, create if not exists
+      );
+
       return res.status(200).json({
         message:
           "Contest deleted successfully, and the date entry was removed as no contests remain.",
@@ -361,6 +378,13 @@ exports.deleteContest = async (req, res) => {
 
     // Save the updated document
     await dailyContest.save();
+
+    // Find the ConstantValue document and increment totalContests by 1
+    await ConstantValue.findOneAndUpdate(
+      {}, // Match the first document (assuming there's only one document)
+      { $inc: { totalContests: -1 } }, // Increment totalContests by 1
+      { new: true, upsert: true } // Return the updated document, create if not exists
+    );
 
     return res.status(200).json({
       message: "Contest deleted successfully!",

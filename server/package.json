@@ -18,6 +18,7 @@
     "chalk": "^4.1.2",
     "cloudinary": "^2.5.1",
     "cors": "^2.8.5",
+    "csv-writer": "^1.6.0",
     "csvtojson": "^2.0.10",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",

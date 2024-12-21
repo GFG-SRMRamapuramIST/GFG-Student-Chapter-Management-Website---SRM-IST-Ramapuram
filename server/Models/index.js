@@ -6,7 +6,6 @@ const Notices = require("./noticeBoardSchema");
 const AllowedEmail = require("./allowedEmailsSchema");
 const BlockedEmails = require("./blockedEmailsSchema");
 const ConstantValue = require("./constantSchema");
-const BackUp = require("./backUpSchema");
 
 module.exports = {
   Users,
@@ -17,5 +16,4 @@ module.exports = {
   AllowedEmail,
   BlockedEmails,
   ConstantValue,
-  BackUp,
 };
