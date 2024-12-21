@@ -8,7 +8,12 @@ const cors = require("cors");
 const connectDB = require("./DB/Connection");
 
 // Importing scheduled tasks
-const { contestScheduler } = require("./Scheduler");
+const {
+  contestScheduler,
+  meetingScheduler,
+  backUpScheduler,
+  resetDataScheduler,
+} = require("./Scheduler");
 
 const {
   authRouter,

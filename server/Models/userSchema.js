@@ -78,6 +78,12 @@ const userSchema = new mongoose.Schema({
   solvedQuestionsCount: {
     type: Number,
     default: 0,
+    min: 0, // Ensures non-negative values
+  },
+  totalContestsParticipated: {
+    type: Number,
+    default: 0,
+    min: 0, // Ensures non-negative values
   },
   subscribed: {
     type: Boolean,
