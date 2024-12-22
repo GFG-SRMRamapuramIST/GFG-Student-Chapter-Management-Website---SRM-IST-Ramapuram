@@ -24,6 +24,9 @@ const { verifyAuthToken } = require("../Utilities");
 8. Promote user one rank above API
 9. Demote user one rank below API
 10. Update team size API
+11. Create team API
+12. Delete team API
+13. Edit team name API
 
 **********************************************************
 */
@@ -626,6 +629,8 @@ exports.demoteUser = async (req, res) => {
   }
 };
 
+//************************** APIs For Teams **************************
+
 //10. Update team size API
 exports.updateTeamSize = async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1]; // Extract token from header
@@ -674,3 +679,147 @@ exports.updateTeamSize = async (req, res) => {
       .json({ message: "Internal server error", error: error.message });
   }
 };
+
+//11. Create team API
+exports.createTeam = async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1]; // Extract token from header
+  const { teamName } = req.body; // Team name
+
+  // Check for token
+  if (!token) {
+    return res.status(401).json({ message: "Authorization token is required" });
+  }
+
+  // Validate teamName
+  if (!teamName || typeof teamName !== "string" || teamName.trim() === "") {
+    return res.status(400).json({ message: "Invalid team name provided" });
+  }
+
+  try {
+    // Verify and authorize token
+    const authResult = await verifyAndAuthorize(token, ["ADMIN"]);
+    if (authResult.status !== 200) {
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
+    }
+
+    // Create the team
+    await Teams.create({ teamName });
+
+    // Send success response
+    return res.status(200).json({ message: "Team created successfully" });
+  } catch (error) {
+    console.error(chalk.bgRed.bold.red("Error creating team:"), error.message);
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
+
+//12. Delete team API
+exports.deleteTeam = async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1]; // Extract token from header
+  const { teamId } = req.body; // Team ID
+
+  // Check for token
+  if (!token) {
+    return res.status(401).json({ message: "Authorization token is required" });
+  }
+
+  // Validate teamId
+  if (!teamId || typeof teamId !== "string" || teamId.trim() === "") {
+    return res.status(400).json({ message: "Invalid team ID provided" });
+  }
+
+  try {
+    // Verify and authorize token
+    const authResult = await verifyAndAuthorize(token, ["ADMIN"]);
+    if (authResult.status !== 200) {
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
+    }
+
+    // Find the team
+    const team = await Teams.findById(teamId);
+
+    if (!team) {
+      return res.status(404).json({ message: "Team not found" });
+    }
+
+    // If team has members, update their teamId to null
+    if (team.teamMembers.length > 0) {
+      await Users.updateMany(
+        { _id: { $in: team.teamMembers } }, // Match user IDs in teamMembers
+        { $set: { teamId: null } } // Set teamId to null
+      );
+      console.log(chalk.green("Updated teamId to null for team members."));
+    }
+
+    // Delete the team
+    await team.delete();
+
+    // Send success response
+    return res.status(200).json({ message: "Team deleted successfully" });
+  } catch (error) {
+    console.error(chalk.bgRed.bold.red("Error deleting team:"), error.message);
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
+
+//13. Edit team name API
+exports.editTeamName = async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1]; // Extract token from header
+  const { teamId, teamName } = req.body; // Team ID and new team name
+
+  // Check for token
+  if (!token) {
+    return res.status(401).json({ message: "Authorization token is required" });
+  }
+
+  // Validate teamId and teamName
+  if (
+    !teamId ||
+    typeof teamId !== "string" ||
+    teamId.trim() === "" ||
+    !teamName ||
+    typeof teamName !== "string" ||
+    teamName.trim() === ""
+  ) {
+    return res.status(400).json({ message: "Invalid team ID or name provided" });
+  }
+
+  try {
+    // Verify and authorize token
+    const authResult = await verifyAndAuthorize(token, ["ADMIN"]);
+    if (authResult.status !== 200) {
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
+    }
+
+    // Find the team
+    const team = await Teams.findById(teamId);
+
+    if (!team) {
+      return res.status(404).json({ message: "Team not found" });
+    }
+
+    // Update the team name
+    team.teamName = teamName;
+    await team.save();
+
+    // Send success response
+    return res.status(200).json({ message: "Team name updated successfully" });
+  } catch (error) {
+    console.error(chalk.bgRed.bold.red("Error updating team name:"), error.message);
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
+
+//********************************************************************

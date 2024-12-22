@@ -23,6 +23,9 @@ router.use(express.static(path.resolve(__dirname, "Public")));
 8. Promote user one rank above API - "{BACKEND_URL}/api/v1/admin/promote-user"
 9. Demote user one rank below API - "{BACKEND_URL}/api/v1/admin/demote-user"
 10. Update team size API - "{BACKEND_URL}/api/v1/admin/update-team-size"
+11. Create a new team API - "{BACKEND_URL}/api/v1/admin/create-team"
+12. Delete a team API - "{BACKEND_URL}/api/v1/admin/delete-team"
+13. Edit team name API - "{BACKEND_URL}/api/v1/admin/edit-team-name"
 
 **********************************************************
 */
@@ -69,7 +72,18 @@ router.post("/promote-user", adminControllers.promoteUser);
 //9. Demote user one rank below API
 router.post("/demote-user", adminControllers.demoteUser);
 
+//************************** APIs For Teams **************************
 //10. Update team size API
 router.post("/update-team-size", adminControllers.updateTeamSize);
+
+//11. Create a new team API
+router.post("/create-team", adminControllers.createTeam);
+
+//12. Delete a team API
+router.delete("/delete-team", adminControllers.deleteTeam);
+
+//13. Edit team name API
+router.post("/edit-team-name", adminControllers.editTeamName);
+//********************************************************************
 
 module.exports = router;

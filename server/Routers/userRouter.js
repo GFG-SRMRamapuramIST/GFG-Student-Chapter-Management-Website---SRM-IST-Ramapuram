@@ -10,6 +10,8 @@ const { userControllers } = require("../Controllers");
 ************************** APIs **************************
 
 1. Edit Profile API - "{BACKEND_URL}/api/v1/user/edit-profile"
+2. Join a Team API - "{BACKEND_URL}/api/v1/user/join-team"
+3. Leave a Team API - "{BACKEND_URL}/api/v1/user/leave-team"
 
 **********************************************************
 */
@@ -28,7 +30,13 @@ const upload = multer({ storage });
 // Middleware to handle profile picture upload
 const uploadProfilePicture = upload.single("profilePicture");
 
-// Edit Profile API
+//1. Edit Profile API
 router.post("/edit-profile", uploadProfilePicture, userControllers.editProfile);
+
+//2. Join a Team API
+router.post("/join-team", userControllers.joinTeam);
+
+//3. Leave a Team API
+router.post("/leave-team", userControllers.leaveTeam);
 
 module.exports = router;
