@@ -13,6 +13,7 @@ const {
   meetingScheduler,
   backUpScheduler,
   resetDataScheduler,
+  teamAllocationScheduler,
 } = require("./Scheduler");
 
 const {
