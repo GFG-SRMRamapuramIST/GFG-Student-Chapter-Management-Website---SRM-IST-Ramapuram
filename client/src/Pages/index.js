@@ -1,5 +1,7 @@
-/*import Logo from "./Logo.jsx";
+import Home from "./Home";
+import LoginPage from "./LoginPage";
 
-export { Logo };*/
-
-// This file will act as single source for importing all the modules/files of this folder and will hence used as a single source for exporting
+export { 
+  Home,
+  LoginPage,
+};
