@@ -19,19 +19,21 @@ exports.loginUser = async (req, res) => {
 
     // Check if email and password are provided
     if (!email || !password) {
-      return res.status(400).json({ error: "Email & password are required !" });
+      return res
+        .status(400)
+        .json({ message: "Email & password are required !" });
     }
 
     // Find user by email
     const user = await Users.findOne({ email });
     if (!user) {
-      return res.status(404).json({ error: "User not found !" });
+      return res.status(404).json({ message: "User not found !" });
     }
 
     // Verify password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return res.status(401).json({ error: "Invalid email or password !" });
+      return res.status(401).json({ message: "Invalid email or password !" });
     }
 
     // Generate auth token using the userSchema method

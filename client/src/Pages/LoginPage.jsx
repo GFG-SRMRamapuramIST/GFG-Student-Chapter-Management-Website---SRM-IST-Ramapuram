@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -8,27 +8,11 @@ import { FaAsterisk, FaSpinner } from "react-icons/fa";
 import "../Styles/Login&SignUp/Login.css";
 import ToastMsg from "../Constants/ToastMsg";
 
+// API
+import { AuthAPIs } from "../Services";
+
 // Redux actions
 import { storeUserData } from "../Actions";
-
-// Mock user data
-const mockUsers = [
-  {
-    registrationNo: "22BCE1411",
-    password: "123456",
-    userToken: "mockUserToken_22BCE1411",
-  },
-  {
-    registrationNo: "21BCE5678",
-    password: "mypassword",
-    userToken: "mockUserToken_21BCE5678",
-  },
-  {
-    registrationNo: "21BCE9101",
-    password: "securepassword",
-    userToken: "mockUserToken_21BCE9101",
-  },
-];
 
 function Login() {
   const navigate = useNavigate();
@@ -40,8 +24,6 @@ function Login() {
     register,
     handleSubmit,
     formState: { errors },
-    setValue,
-    watch,
     reset,
   } = useForm();
 
@@ -49,43 +31,21 @@ function Login() {
   const handleLogin = async (formData) => {
     setFormLoading(true);
     try {
-      const { registrationNo, password } = formData;
-  
-      // Simulated API response
-      const response = await new Promise((resolve) =>
-        setTimeout(() => {
-          // Find the user in the mock data
-          const user = mockUsers.find(
-            (u) =>
-              u.registrationNo === registrationNo.toUpperCase() &&
-              u.password === password
-          );
-  
-          if (user) {
-            resolve({
-              status: 200,
-              data: { userToken: user.userToken },
-            });
-          } else {
-            resolve({ status: 401, message: "Invalid credentials" });
-          }
-        }, 1000)
-      );
-  
+      const { email, password } = formData;
+      const response = await AuthAPIs.loginFunction(email, password);
+      console.log(response);
       if (response.status === 200) {
-        const userToken = response.data.userToken;
-  
-        // Dispatch the token to Redux store
-        dispatch(storeUserData(userToken));
-  
-        console.log("User logged in successfully with token:", userToken);
-        ToastMsg("Login Successful!", "success");
-  
-        // Navigate to the home page
+        const userToken = response.data.token;
+
+        ToastMsg(response.data.message, "success");
+
+        // Store userToken in local/redux storage
+        dispatch(storeUserData({ userToken }));
+
+        // Navigate to dashboard/home page
         navigate("/");
       } else {
-        console.error("Login failed:", response.message);
-        ToastMsg(response.message, "error");
+        ToastMsg(response.response.data.message, "error");
       }
     } catch (error) {
       ToastMsg("Server error! Please try later", "error");
@@ -95,12 +55,6 @@ function Login() {
       reset();
     }
   };
-
-  // Capitalize the registration number
-  const registrationNo = watch("registrationNo");
-  useEffect(() => {
-    setValue("registrationNo", registrationNo?.toUpperCase());
-  }, [registrationNo, setValue]);
 
   return (
     <div className="login-area w-full flex justify-center items-center pt-[80px] sm:pt-[50px] pb-[50px]">
@@ -115,31 +69,26 @@ function Login() {
           onSubmit={handleSubmit(handleLogin)}
           noValidate
         >
-          {/* Registration number */}
+          {/* Email */}
           <div className="mb-3 w-full px-2">
             <label
               className="text-sm font-medium text-gray-700 flex items-center"
               htmlFor="registrationNo"
             >
-              Registration No:{" "}
-              <FaAsterisk className="text-red-500 ml-[2px] text-[6px]" />
+              Email: <FaAsterisk className="text-red-500 ml-[2px] text-[6px]" />
             </label>
             <input
-              className={`form-control ${
-                errors.registrationNo ? "border-red-500" : ""
-              }`}
+              className={`form-control ${errors.email ? "border-red-500" : ""}`}
               name="registrationNo"
               type="text"
-              id="registrationNo"
-              placeholder="Registration No"
-              {...register("registrationNo", {
-                required: "Registration number is required",
+              id="email"
+              placeholder="abcd@gmail.com"
+              {...register("email", {
+                required: "Email is required",
               })}
             />
-            {errors.registrationNo && (
-              <div className="invalid-feedback">
-                {errors.registrationNo.message}
-              </div>
+            {errors.email && (
+              <div className="invalid-feedback">{errors.email.message}</div>
             )}
           </div>
 

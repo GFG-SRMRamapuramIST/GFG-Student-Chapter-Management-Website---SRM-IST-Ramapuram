@@ -9,8 +9,6 @@ import {
 } from "./Pages";
 import { Navbar } from "./Components";
 
-import { ToastMsg } from "./Constants";
-
 const App = () => {
   const userToken = useSelector((state) => state.storedUserData.userToken);
 

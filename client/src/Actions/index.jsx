@@ -7,11 +7,3 @@ export const storeUserData = (userToken) => ({
 export const removeUserData = () => ({
   type: "REMOVE_USER_DATA",
 });
-
-export const tryFetchingData = () => ({
-  type: "TRY_FETCHING",
-});
-
-export const doneFetchingData = () => ({
-  type: "DONE_FETCHING",
-});
