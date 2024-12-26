@@ -105,7 +105,7 @@ function Login() {
   return (
     <div className="login-area w-full flex justify-center items-center pt-[80px] sm:pt-[50px] pb-[50px]">
       {/* Login box */}
-      <div className="box sm:w-full md:max-w-[480px] mx-auto sm:py-[50px]">
+      <div className="box sm:w-full md:w-[480px] mx-auto sm:py-[50px]">
         <h2 className="text-gray-700 outline-none block text-[40px] xl:text-[44px] font-bold mx-auto mb-3 w-full text-center">
           Login
         </h2>

@@ -7,6 +7,8 @@ import {
   Home, 
   LoginPage,
 } from "./Pages";
+import { Navbar } from "./Components";
+
 import { ToastMsg } from "./Constants";
 
 const App = () => {
@@ -31,6 +33,7 @@ const App = () => {
 
   return (
     <BrowserRouter>
+      <Navbar />
       <Routes>
         {/* Protected Home Route */}
         <Route
