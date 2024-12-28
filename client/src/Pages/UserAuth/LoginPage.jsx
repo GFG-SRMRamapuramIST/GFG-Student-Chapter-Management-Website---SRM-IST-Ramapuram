@@ -5,14 +5,14 @@ import { useDispatch } from "react-redux";
 
 import { FaAsterisk, FaSpinner } from "react-icons/fa";
 
-import "../Styles/Login&SignUp/Login.css";
-import ToastMsg from "../Constants/ToastMsg";
+import "../../Styles/Login&SignUp/Login.css";
+import ToastMsg from "../../Utilities/ToastMsg";
 
 // API
-import { AuthAPIs } from "../Services";
+import { AuthAPIs } from "../../Services";
 
 // Redux actions
-import { storeUserData } from "../Actions";
+import { storeUserData } from "../../Actions";
 
 function Login() {
   const navigate = useNavigate();
@@ -82,7 +82,7 @@ function Login() {
               name="registrationNo"
               type="text"
               id="email"
-              placeholder="abcd@gmail.com"
+              placeholder="shashanksharma0402.official@gmail.com"
               {...register("email", {
                 required: "Email is required",
               })}
