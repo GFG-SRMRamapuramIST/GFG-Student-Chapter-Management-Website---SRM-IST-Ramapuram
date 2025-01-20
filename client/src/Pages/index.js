@@ -1,15 +1,13 @@
-import Home from "./Home";
-import LoginPage from "./UserAuth/LoginPage";
-import SignUp from "./UserAuth/SignUp";
-import VerifyEmail from "./ForgotPassword/VerifyEmail";
-import VerifyOtp from "./ForgotPassword/VerifyOTP";
-import ResetPassword from "./ForgotPassword/ResetPassword";
+import LandingPage from "./LandingPage";
+import Dashboard from "./Dashboard";
+import Login from "./Auth/Login";
+import SignUp from "./Auth/SignUp";
+import ForgotPassword from "./Auth/ForgotPassword";
 
 export { 
-  Home,
-  LoginPage,
+  LandingPage,
+  Dashboard,
+  Login,
   SignUp,
-  VerifyEmail,
-  VerifyOtp,
-  ResetPassword,
+  ForgotPassword
 };

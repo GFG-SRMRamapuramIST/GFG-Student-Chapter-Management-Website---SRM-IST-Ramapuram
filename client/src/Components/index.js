@@ -2,7 +2,27 @@
 
 export { Logo };*/
 
-// This file will act as single source for importing all the modules/files of this folder and will hence used as a single source for exporting
-import Navbar from "./Navbar";
+// Single point of import for all components
 
-export { Navbar };
+// Navigation Components
+import Navbar from "./Navigation/Navbar";
+import Footer from "./Navigation/Footer";
+
+export { Navbar, Footer };
+
+// Auth Components
+import AuthBackground from "./Auth/AuthBackground";
+import InputField from "./Auth/InputField";
+
+export { AuthBackground, InputField };
+
+// Landing Page components
+import HeroSection from "./Landing/HeroSection";
+import AboutSection from "./Landing/AboutSection";
+
+export { HeroSection, AboutSection };
+
+// Dashboard Components
+import DashboardHero from "./Dashboard/DashboardHero";
+
+export { DashboardHero };

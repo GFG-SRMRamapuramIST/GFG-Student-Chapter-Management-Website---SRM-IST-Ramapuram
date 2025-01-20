@@ -1,3 +1,4 @@
-import AuthAPIs from "./AuthAPIs";
+// Single point of import for all services
+import AuthService from "./AuthService";
 
-export { AuthAPIs };
+export { AuthService };
