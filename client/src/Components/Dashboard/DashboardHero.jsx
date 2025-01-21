@@ -14,9 +14,6 @@ import {
   SiCodeforces,
   SiGeeksforgeeks
 } from 'react-icons/si';
-import Calendar from '@fullcalendar/react';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import interactionPlugin from '@fullcalendar/interaction';
 import CustomCalendar from '../Calendar/CustomCalendar';
 
 const StatCard = ({ icon: Icon, label, value, change }) => (
@@ -176,24 +173,6 @@ const DashboardHero = () => {
 
           {/* Calendar */}
           <div className="bg-white p-6 rounded-2xl shadow-sm">
-            {/* <Calendar
-              plugins={[dayGridPlugin, interactionPlugin]}
-              initialView="dayGridMonth"
-              headerToolbar={{
-                left: 'prev,next today',
-                center: 'title',
-                right: 'dayGridMonth,dayGridWeek'
-              }}
-              height="500px"
-              events={[
-                { title: 'LeetCode Contest', date: '2025-01-25', color: '#FFA116' },
-                { title: 'Team Meeting', date: '2025-01-22', color: '#00895e' },
-                { title: 'CodeChef Contest', date: '2025-01-28', color: '#5B4638' }
-              ]}
-              eventClassNames="rounded-lg"
-              dayCellClassNames="hover:bg-gfgsc-green-200/20"
-              buttonClassNames="bg-gfgsc-green-200 text-gfgsc-green rounded-lg px-3 py-1"
-            /> */}
             <CustomCalendar events={events} />
           </div>
         </div>
