@@ -26,3 +26,16 @@ export { HeroSection, AboutSection };
 import DashboardHero from "./Dashboard/DashboardHero";
 
 export { DashboardHero };
+
+// Profile Components
+import ProfileHero from "./Profile/ProfileHero";
+import OverviewSection from "./Profile/OverviewSection";
+import UpcomingEvents from "./Profile/UpcomingEvents";
+import PlatformProgress from "./Profile/PlatformProgress";  
+
+export { ProfileHero, OverviewSection, UpcomingEvents, PlatformProgress };
+
+// Calendar Components
+import CustomCalendar from "./Calendar/CustomCalendar";
+
+export { CustomCalendar };

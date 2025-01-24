@@ -6,7 +6,6 @@ import {
   MdGroups,
   MdNotifications,
   MdCalendarToday,
-  MdArrowForward
 } from 'react-icons/md';
 import { 
   SiLeetcode, 
@@ -15,6 +14,92 @@ import {
   SiGeeksforgeeks
 } from 'react-icons/si';
 import CustomCalendar from '../Calendar/CustomCalendar';
+
+// Mock data for API
+const events = [
+  {
+    type: 'contest',
+    platform: 'leetcode',
+    name: 'Weekly Contest 123',
+    time: '2025-01-25T14:30:00',
+    link: 'https://leetcode.com/contest/123'
+  },
+  {
+    type: 'meeting',
+    name: 'Team Sync',
+    time: '2025-01-22T15:00:00',
+    attendees: 'CORE',
+    link: 'https://meet.google.com/xyz',
+  },
+  {
+    type: 'meeting',
+    name: 'DSA Discussion',
+    time: '2025-01-22T17:00:00',
+    attendees: 'ALL',
+    link: 'https://meet.google.com/abc',
+  },
+  {
+    type: 'contest',
+    platform: 'leetcode',
+    name: 'Weekly Contest 123',
+    time: '2025-01-22T17:00:00',
+    link: 'https://leetcode.com/contest/123'
+  },
+];
+
+const notifications = [
+  "Team 'CodeCrusaders' achieved 2nd place in last contest",
+  "New resource shared: Advanced DP Techniques",
+  "Upcoming Contest: LeetCode Weekly on Sunday"
+];
+
+const platformProgress = [
+  {
+    platform: "leetcode",
+    problems: "156",
+    rank: "1,234",
+    progress: 75
+  },
+  {
+    platform: "codechef",
+    problems: "89",
+    rank: "2,567",
+    progress: 60
+  },
+  {
+    platform: "codeforces",
+    problems: "79",
+    rank: "3,123",
+    progress: 45
+  },
+  {
+    platform: "gfg",
+    problems: "102",
+    rank: "892",
+    progress: 80
+  }
+];
+
+const stats = [
+  {
+    icon: MdTrendingUp,
+    label: "Problems Solved",
+    value: "324",
+    change: 12
+  },
+  {
+    icon: MdEmojiEvents,
+    label: "Current Rank",
+    value: "#42",
+    change: 5
+  },
+  {
+    icon: MdGroups,
+    label: "Team Position",
+    value: "#3",
+    change: 2
+  }
+];
 
 const StatCard = ({ icon: Icon, label, value, change }) => (
   <motion.div
@@ -77,54 +162,16 @@ const PlatformCard = ({ platform, problems, rank, progress }) => (
 
 const NotificationItem = ({ message }) => (
   <motion.div
-    whileHover={{ x: 4 }}
+    whileHover={{ x: 2 }}
     className="flex items-center gap-3 p-3 hover:bg-gfgsc-green-200/20 rounded-xl cursor-pointer"
   >
+    
     <div className="w-2 h-2 bg-gfgsc-green rounded-full" />
     <p className="text-sm text-gray-600 flex-1">{message}</p>
-    <MdArrowForward className="text-gfgsc-green" />
   </motion.div>
 );
 
 const DashboardHero = () => {
-
-  const events = [
-    {
-      type: 'contest',
-      platform: 'leetcode',
-      name: 'Weekly Contest 123',
-      time: '2025-01-25T14:30:00',
-      link: 'https://leetcode.com/contest/123'
-    },
-    {
-      type: 'meeting',
-      name: 'Team Sync',
-      time: '2025-01-22T15:00:00',
-      attendees: 'CORE',
-      link: 'https://meet.google.com/xyz',
-    },
-    {
-      type: 'meeting',
-      name: 'DSA Discussion',
-      time: '2025-01-22T17:00:00',
-      attendees: 'ALL',
-      link: 'https://meet.google.com/abc',
-    },
-    {
-      type: 'contest',
-      platform: 'leetcode',
-      name: 'Weekly Contest 123',
-      time: '2025-01-22T17:00:00',
-      link: 'https://leetcode.com/contest/123'
-    },
-  ];
-
-  const notifications = [
-    "Team 'CodeCrusaders' achieved 2nd place in last contest",
-    "New resource shared: Advanced DP Techniques",
-    "Upcoming Contest: LeetCode Weekly on Sunday"
-  ];
-
   return (
     <div className="min-h-screen px-16 pt-24 pb-8 bg-gradient-to-br from-gray-50 to-gfgsc-green-200/20">
       {/* Header Section */}
@@ -151,24 +198,15 @@ const DashboardHero = () => {
         <div className="lg:col-span-8 space-y-6">
           {/* Stats Grid */}
           <div className="grid grid-cols-3 gap-4">
-            <StatCard 
-              icon={MdTrendingUp}
-              label="Problems Solved"
-              value="324"
-              change={12}
-            />
-            <StatCard 
-              icon={MdEmojiEvents}
-              label="Current Rank"
-              value="#42"
-              change={5}
-            />
-            <StatCard 
-              icon={MdGroups}
-              label="Team Position"
-              value="#3"
-              change={2}
-            />
+            {stats.map((stat, index) => (
+              <StatCard 
+                key={index}
+                icon={stat.icon}
+                label={stat.label}
+                value={stat.value}
+                change={stat.change}
+              />
+            ))}
           </div>
 
           {/* Calendar */}
@@ -186,30 +224,15 @@ const DashboardHero = () => {
               <MdCalendarToday className="text-gfgsc-green" />
             </div>
             <div className="space-y-4">
-              <PlatformCard 
-                platform="leetcode"
-                problems="156"
-                rank="1,234"
-                progress={75}
-              />
-              <PlatformCard 
-                platform="codechef"
-                problems="89"
-                rank="2,567"
-                progress={60}
-              />
-              <PlatformCard 
-                platform="codeforces"
-                problems="79"
-                rank="3,123"
-                progress={45}
-              />
-              <PlatformCard 
-                platform="gfg"
-                problems="102"
-                rank="892"
-                progress={80}
-              />
+              {platformProgress.map((platform, index) => (
+                <PlatformCard 
+                  key={index}
+                  platform={platform.platform}
+                  problems={platform.problems}
+                  rank={platform.rank}
+                  progress={platform.progress}
+                />
+              ))}
             </div>
           </div>
 

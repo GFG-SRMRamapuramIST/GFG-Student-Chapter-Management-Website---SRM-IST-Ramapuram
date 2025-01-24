@@ -1,6 +1,6 @@
 import { RouterProvider } from "react-router-dom";
 import { createBrowserRouter } from "react-router-dom";
-import { LandingPage, Dashboard, Login, SignUp, ForgotPassword } from "./Pages";
+import { LandingPage, Dashboard, Login, SignUp, ForgotPassword, Profile } from "./Pages";
 import { AuthLayout, RootLayout } from "./Layouts";
 
 const router = createBrowserRouter([
@@ -14,6 +14,10 @@ const router = createBrowserRouter([
       {
         path: "/dashboard",
         element: <Dashboard />,
+      },
+      {
+        path: "/profile",
+        element: <Profile />,
       },
       {
         path: "/auth",
