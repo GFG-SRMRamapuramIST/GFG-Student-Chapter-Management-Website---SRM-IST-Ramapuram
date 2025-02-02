@@ -14,7 +14,7 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import { IoClose } from "react-icons/io5";
 import { SiGeeksforgeeks } from "react-icons/si";
 import { motion, AnimatePresence } from "framer-motion";
-import { BiSolidDashboard } from "react-icons/bi";
+import { BiSolidDashboard, BiUser, BiUserCircle } from "react-icons/bi";
 import { FiChevronDown, FiBook } from "react-icons/fi";
 import { CgProfile } from "react-icons/cg";
 import { IoLogOutOutline } from "react-icons/io5";
@@ -120,14 +120,15 @@ const Navbar = () => {
               <div className="relative">
                 <button
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300
+                  className={`flex items-center space-x-1 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300
                     ${isProfileOpen ? "text-gfgsc-green bg-gfgsc-green-200" : "text-gfg-black hover:text-gfgsc-green hover:bg-gfgsc-green-200/50"}`}
                 >
-                  <img
+                  {/* <img
                     src="/api/placeholder/32/32"
                     alt="Profile"
                     className="w-6 h-6 rounded-full border-2 border-gfgsc-green"
-                  />
+                  /> */}
+                  <BiUserCircle className="w-6 h-6 rounded-full " />
                   <FiChevronDown className={`transition-transform duration-300 ${isProfileOpen ? "rotate-180" : ""}`} />
                 </button>
 

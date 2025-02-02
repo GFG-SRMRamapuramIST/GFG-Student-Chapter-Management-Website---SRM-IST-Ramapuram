@@ -1,163 +1,177 @@
 import React, { useState } from "react";
-import { motion } from "framer-motion";
-import { FaGithub, FaTrophy, FaCode, FaChartLine } from "react-icons/fa";
+import { FaLinkedin } from "react-icons/fa";
+import { platformIcons } from "../../Constants";
+import { CgCode, CgTrophy } from "react-icons/cg";
+import { IoMailOutline, IoPeopleOutline } from "react-icons/io5";
+import { codolioIcon } from "../../Assets";
 
-// Main Profile Component
 const ProfileHero = ({ userProfile }) => {
   const [activeTab, setActiveTab] = useState("overview");
 
   return (
-    <div className="p-6 font-sans">
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className="max-w-4xl mx-auto bg-white shadow-2xl rounded-2xl overflow-hidden"
-      >
-        <ProfileHeader profile={userProfile} />
-        <ProfileTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-        {activeTab === "overview" && <ProfileOverview profile={userProfile} />}
-        {activeTab === "coding" && <CodingActivity profile={userProfile} />}
-        {activeTab === "achievements" && <Achievements profile={userProfile} />}
-      </motion.div>
-    </div>
-  );
-};
+    <div className="p-6 font-sans antialiased">
+      <div className=" bg-white rounded-xl shadow-sm">
+        {/* Profile Header */}
+        <div className="flex justify-between p-8 bg-emerald-600 text-white rounded-t-xl">
+          <div className="flex items-start space-x-6 ">
+            <img
+              src={userProfile.profilePic}
+              alt={userProfile.name}
+              className="w-24 h-24 rounded-full border-2 border-emerald-400 bg-gfg-white"
+            />
+            <div className="space-y-2">
+              <h1 className="text-2xl font-semibold tracking-tight space-x-2">
+                <span>{userProfile.name}</span>
+                {/* User tag */}
+                <span className="text-sm text-emerald-100 bg-emerald-500 px-2 py-1 rounded-full">
+                  {userProfile.role}
+                </span>
+              </h1>
 
-// Profile Header Component
-const ProfileHeader = ({ profile }) => (
-  <div className="flex items-center p-6 bg-gfgsc-green text-white">
-    <img
-      src={profile.profilePic}
-      alt={profile.name}
-      className="w-24 h-24 rounded-full border-4 border-gfgsc-green-200"
-    />
-    <div className="ml-6">
-      <h1 className="text-3xl font-bold">{profile.name}</h1>
-      <p className="text-gfgsc-green-200">{profile.email}</p>
-      <div className="flex items-center space-x-4 mt-2">
-        <span className="bg-gfgsc-green-400 px-3 py-1 rounded-full text-sm">
-          {profile.year}
-        </span>
-        <span className="bg-gfgsc-green-400 px-3 py-1 rounded-full text-sm">
-          {profile.department}
-        </span>
-      </div>
-    </div>
-  </div>
-);
-
-// Profile Tabs Component
-const ProfileTabs = ({ activeTab, setActiveTab }) => {
-  const tabItems = [
-    { id: "overview", icon: <FaChartLine />, label: "Overview" },
-    { id: "coding", icon: <FaCode />, label: "Coding Activity" },
-    { id: "achievements", icon: <FaTrophy />, label: "Achievements" },
-  ];
-
-  return (
-    <div className="flex border-b border-gray-200">
-      {tabItems.map((tab) => (
-        <button
-          key={tab.id}
-          onClick={() => setActiveTab(tab.id)}
-          className={`flex items-center space-x-2 p-4 ${activeTab === tab.id ? "text-gfgsc-green border-b-2 border-gfgsc-green" : "text-gray-500"}`}
-        >
-          {tab.icon}
-          <span>{tab.label}</span>
-        </button>
-      ))}
-    </div>
-  );
-};
-
-// Profile Overview Component
-const ProfileOverview = ({ profile }) => (
-  <div className="p-6 grid grid-cols-3 gap-6">
-    <StatCard
-      icon={<FaCode />}
-      title="Total Questions"
-      value={profile.stats.totalQuestions}
-    />
-    <StatCard
-      icon={<FaTrophy />}
-      title="Contests"
-      value={profile.stats.contestsParticipated}
-    />
-    <StatCard
-      icon={<FaChartLine />}
-      title="Current Streak"
-      value={profile.stats.currentStreak}
-    />
-  </div>
-);
-
-// Coding Activity Component
-const CodingActivity = ({ profile }) => {
-  // Mock data for activity heatmap
-  const activityData = Array(365)
-    .fill(0)
-    .map(() => Math.floor(Math.random() * 5));
-
-  return (
-    <div className="p-6">
-      <h2 className="text-2xl font-semibold mb-4">Coding Activity Heatmap</h2>
-      <div className="grid grid-cols-52 gap-1">
-        {activityData.map((level, index) => (
-          <div
-            key={index}
-            className={`h-3 rounded-sm ${level === 0 ? "bg-gray-200" : level === 1 ? "bg-green-200" : level === 2 ? "bg-green-400" : level === 3 ? "bg-green-600" : "bg-green-800"}`}
-          />
-        ))}
-      </div>
-      <div className="flex justify-between text-xs text-gray-500 mt-2">
-        <span>Less</span>
-        <span>More</span>
-      </div>
-    </div>
-  );
-};
-
-// Achievements Component
-const Achievements = ({ profile }) => (
-  <div className="p-6">
-    <h2 className="text-2xl font-semibold mb-4">Coding Profiles</h2>
-    <div className="grid md:grid-cols-3 gap-4">
-      {Object.entries(profile.platforms).map(([platform, details]) => (
-        <motion.div
-          key={platform}
-          whileHover={{ scale: 1.05 }}
-          className="bg-hover-gray p-4 rounded-lg shadow-md"
-        >
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="font-bold capitalize">{platform}</h3>
-            {platform === "leetcode" && <FaCode className="text-gfg-green" />}
-            {platform === "codeforces" && <FaTrophy className="text-gfg-green" />}
-            {platform === "github" && <FaGithub className="text-gfg-green" />}
+              <p className="text-emerald-100 text-sm leading-relaxed max-w-md">
+                {userProfile.bio}
+              </p>
+            </div>
           </div>
-          <div className="text-sm">
-            <p>Handle: {details.handle}</p>
-            {details.rating && <p>Rating: {details.rating}</p>}
-            {details.repos && <p>Repositories: {details.repos}</p>}
+
+          <div className="flex flex-col items-end justify-center space-x-4 space-y-2">
+            <div className="flex items-center space-x-1 justify-center">
+              <IoMailOutline className="w-5 h-5" />
+              <a
+                href={`mailto:${userProfile.email}`}
+                className="text-sm pb-1 font-medium"
+              >
+                {userProfile.email}
+              </a>
+            </div>
+
+            <div className="flex items-center space-x-4">
+              {userProfile.social.map(({ platform, url }) => (
+                <a
+                  key={platform}
+                  href={url}
+                  className=" text-emerald-100 hover:text-white hover:scale-105 transition-all"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {platform === "linkedin" && (
+                    <FaLinkedin className="w-5 h-5" />
+                  )}
+                  {platform === "codolio" && (
+                    <img
+                      src={codolioIcon}
+                      alt="codolio"
+                      width={20}
+                      height={20}
+                    />
+                  )}
+                </a>
+              ))}
+            </div>
           </div>
-        </motion.div>
-      ))}
+        </div>
+
+        {/* Tabs */}
+        <div className="border-b border-gray-100">
+          <nav className="flex px-8" aria-label="Tabs">
+            {["Overview", "Coding Profiles"].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab.toLowerCase())}
+                className={`px-4 py-4 text-sm font-medium border-b-2 ${
+                  activeTab === tab.toLowerCase()
+                    ? "border-emerald-500 text-emerald-600"
+                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </nav>
+        </div>
+
+        {/* Tab Content */}
+        <div className="p-8">
+          {activeTab === "overview" ? (
+            <div className="grid grid-cols-3 gap-6">
+              <StatCard
+                icon={<CgCode />}
+                label="Questions Solved"
+                value={userProfile.stats.questions}
+                trend="+5 this week"
+              />
+              <StatCard
+                icon={<CgTrophy />}
+                label="Individual Rank"
+                value={`#${userProfile.stats.individualRank}`}
+                trend="Top 5%"
+              />
+              <StatCard
+                icon={<IoPeopleOutline />}
+                label="Team Rank"
+                value={`#${userProfile.stats.teamRank}`}
+                trend="Top 10%"
+              />
+            </div>
+          ) : (
+            <div className="grid grid-cols-3 gap-6">
+              {["leetcode", "codechef", "codeforces"].map((platform) => (
+                <div
+                  key={platform}
+                  className="p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
+                >
+                  <div className="flex items-center space-x-3 mb-3">
+                    <div className="self-start mt-1 p-2 rounded-lg bg-white">
+                      {React.createElement(platformIcons[platform], {
+                        className: "w-5 h-5 text-emerald-600",
+                      })}
+                    </div>
+                    <div>
+                      <h3 className="font-medium capitalize">{platform}</h3>
+                      <p className="text-sm text-gray-500">
+                        @{userProfile.profiles[platform].handle}
+                      </p>
+                      <div className="flex justify-between items-center mt-1">
+                        <span className="text-sm text-gray-500">Rating</span>
+                        <span className="font-medium text-gray-900">
+                          {userProfile.profiles[platform].rating}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-500">Rank</span>
+                        <span className="font-medium text-gray-900">
+                          #{userProfile.profiles[platform].rank}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const StatCard = ({ icon, label, value, trend }) => (
+  <div className="p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
+    <div className="flex items-center space-x-3">
+      <div className="p-2 rounded-lg bg-white">
+        {React.cloneElement(icon, { className: "w-5 h-5 text-emerald-600" })}
+      </div>
+      <div>
+        <div className="text-sm font-medium text-gray-500">{label}</div>
+        <div className="text-xl font-semibold text-gray-900">{value}</div>
+        {trend && (
+          <div className="text-sm text-emerald-600 font-medium mt-0.5">
+            {trend}
+          </div>
+        )}
+      </div>
     </div>
   </div>
-);
-
-// Stat Card Component
-const StatCard = ({ icon, title, value }) => (
-  <motion.div
-    whileHover={{ scale: 1.05 }}
-    className="bg-hover-gray p-4 rounded-lg shadow-md flex items-center space-x-4"
-  >
-    <div className="text-3xl text-gfg-green">{icon}</div>
-    <div>
-      <p className="text-gray-500 text-sm">{title}</p>
-      <p className="text-2xl font-bold text-gfg-black">{value}</p>
-    </div>
-  </motion.div>
 );
 
 export default ProfileHero;

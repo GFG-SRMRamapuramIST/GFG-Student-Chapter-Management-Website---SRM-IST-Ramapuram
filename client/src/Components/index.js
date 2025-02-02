@@ -29,11 +29,10 @@ export { DashboardHero };
 
 // Profile Components
 import ProfileHero from "./Profile/ProfileHero";
-import OverviewSection from "./Profile/OverviewSection";
-import UpcomingEvents from "./Profile/UpcomingEvents";
-import PlatformProgress from "./Profile/PlatformProgress";  
+import ProfileSecondary from "./Profile/ProfileSecondary";  
+import PlatformPOTDs from "./Profile/PlatformPOTDs";
 
-export { ProfileHero, OverviewSection, UpcomingEvents, PlatformProgress };
+export { ProfileHero, PlatformPOTDs, ProfileSecondary };
 
 // Calendar Components
 import CustomCalendar from "./Calendar/CustomCalendar";

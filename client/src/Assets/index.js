@@ -7,3 +7,10 @@ export { Logo };*/
 import AakashPfp from "./AakashPfp.png";
 
 export { AakashPfp };
+
+// Icons & Logo
+import codolioIcon from "./icons/codolio.svg";
+import codolioBWIcon from "./icons/codolioBW.svg";
+import logo from "./icons/logo.png";
+
+export { codolioIcon, logo, codolioBWIcon };

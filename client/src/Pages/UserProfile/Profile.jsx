@@ -1,117 +1,174 @@
-import { OverviewSection, ProfileHero, UpcomingEvents } from "../../Components";
+import { AakashPfp } from "../../Assets";
+import { PlatformPOTDs, ProfileHero, ProfileSecondary } from "../../Components";
 import { platformIcons } from "../../Constants";
 
 const userProfile = {
-  name: "Ananya Sharma",
-  email: "ananya.sharma@college.edu",
-  year: "3rd Year",
-  department: "Computer Science",
-  profilePic: "/api/placeholder/200/200",
-  platforms: {
-    leetcode: { handle: "ananya_codes", rating: 1872 },
-    codeforces: { handle: "geekgirl", rating: 1625 },
-    github: { handle: "ananyasharma", repos: 24 },
-  },
+  name: "Aakash Kumar",
+  email: "aakashkumar@gfg.com",
+  role: "President",
+  profilePic: AakashPfp,
+  bio: "Full-stack developer passionate about algorithms and competitive programming. Core team member @TechCommunity.",
+  
+  // Social media links
+  social: [
+    {
+      platform: "codolio",
+      url: "https://codolio.com/profile/sarahchen"
+    },
+    {
+      platform: "linkedin",
+      url: "https://linkedin.com/in/sarahchen"
+    }
+  ],
+
+  // Quick stats for the Overview tab
   stats: {
-    totalQuestions: 512,
-    contestsParticipated: 18,
-    currentStreak: 42,
+    questions: 847,
+    individualRank: 234,
+    teamRank: 42
   },
+
+  // Coding platform profiles
+  profiles: {
+    leetcode: {
+      handle: "aakashyadav",
+      rating: 2134,
+      rank: 1542,
+      lastActive: "2024-02-01",
+      contests: 24,
+      questions: 214
+    },
+    codechef: {
+      handle: "aakashkumar",
+      rating: 1876,
+      rank: 2341,
+      lastActive: "2024-01-28",
+      contests: 12,
+      questions: 156
+    },
+    codeforces: {
+      handle: "aakashkyadav",
+      rating: 1654,
+      rank: 3421,
+      lastActive: "2024-01-30",
+      contests: 18,
+      questions: 312
+    }
+  },
+
+  badges: [
+    {
+      id: 1,
+      name: "Gold Medal",
+      type: "gold",
+      date: "2023-12-01",
+      description: "Awarded for outstanding performance in coding contests."
+    },
+    {
+      id: 2,
+      name: "Silver Medal",
+      type: "silver",
+      date: "2023-11-15",
+      description: "Awarded for excellent performance in coding contests."
+    },
+    {
+      id: 3,
+      name: "Bronze Medal",
+      type: "bronze",
+      date: "2023-10-20",
+      description: "Awarded for good performance in coding contests."
+    },
+    {
+      id: 4,
+      name: "Top Coder",
+      type: "gold",
+      date: "2023-09-10",
+      description: "Recognized as a top coder in the community."
+    }
+  ]
 };
 
-const platformData = {
-  leetcode: {
-    name: "LeetCode",
-    profile: "https://leetcode.com/ananya_codes",
-    rating: 1872,
-    contestsParticipated: 24,
-    totalProblems: 214,
-    rank: 3245,
-    potd: {
-      title: "Two Sum",
-      difficulty: "Easy"
+const updatesAndAnnouncements = {
+  updates: [
+    {
+      id: 1,
+      message: "Participated in LeetCode Weekly Contest 342.",
+      date: "2024-02-10"
     },
-    progressData: [
-      { name: "Easy", solved: 100, total: 150, color: "green" },
-      { name: "Medium", solved: 80, total: 100, color: "yellow" },
-      { name: "Hard", solved: 34, total: 50, color: "red" }
-    ]
-  },
-  codeforces: {
-    name: "Codeforces",
-    profile: "https://codeforces.com/profile/geekgirl",
-    rating: 1625,
-    contestsParticipated: 18,
-    totalProblems: 312,
-    rank: 2987,
-    potd: {
-      title: "Div 2 A",
-      difficulty: "Medium"
+    {
+      id: 2,
+      message: "Solved 50 problems on Codeforces.",
+      date: "2024-01-30"
     },
-    progressData: [
-      { name: "Easy", solved: 120, total: 200, color: "green" },
-      { name: "Medium", solved: 150, total: 200, color: "yellow" },
-      { name: "Hard", solved: 42, total: 60, color: "red" }
-    ]
-  },
-  codechef: {
-    name: "CodeChef",
-    profile: "https://codechef.com/users/ananyasharma",
-    rating: 1450,
-    contestsParticipated: 12,
-    totalProblems: 156,
-    rank: 1876,
-    potd: {
-      title: "Chef and Strings",
-      difficulty: "Hard"
-    },
-    progressData: [
-      { name: "Easy", solved: 50, total: 100, color: "green" },
-      { name: "Medium", solved: 60, total: 80, color: "yellow" },
-      { name: "Hard", solved: 46, total: 60, color: "red" }
-    ]
-  }
-};
+    {
+      id: 3,
+      message: "Achieved a new rating on CodeChef.",
+      date: "2024-01-28"
+    }
+  ],
 
-const contestData = [
+  // Announcements
+  announcements: [
+    {
+      id: 1,
+      title: "Upcoming Coding Contest",
+      date: "2024-02-15"
+    },
+    {
+      id: 2,
+      title: "New Features Released",
+      date: "2024-01-25"
+    }
+  ]
+}
+
+// Example usage:
+const platformPOTDs = [
   {
-    id: 1,
     platform: 'LeetCode',
-    name: 'Weekly Contest 342',
-    date: '2024-02-10',
-    time: '19:30 IST',
+    title: 'Maximum Subarray Sum',
+    description: 'Find the contiguous subarray within an array that has the largest sum.',
     difficulty: 'Medium',
-    registeredParticipants: 54,
-    icon: <platformIcons.leetcode className="text-purple-600" />
+    timeLimit: '1 sec',
+    timeLeft: '16h 30m',
+    tags: ['Array', 'Dynamic Programming', 'Divide and Conquer'],
+    date: 'Feb 2, 2025',
+    solved: true,
+    url: '#'
   },
   {
-    id: 2,
     platform: 'CodeChef',
-    name: 'GFGSC College Challenge',
-    date: '2024-02-15',
-    time: '20:00 IST',
-    difficulty: 'Hard',
-    registeredParticipants: 42,
-    icon: <platformIcons.codechef className="text-orange-600" />
+    title: 'Chef and Strings',
+    description: 'Chef has a string S consisting of lowercase English characters. Help Chef calculate the value of his string.',
+    difficulty: 'Easy',
+    timeLimit: '2 sec',
+    timeLeft: '20h 45m',
+    tags: ['Strings', 'Implementation'],
+    date: 'Feb 2, 2025',
+    solved: false,
+    url: '#'
   },
   {
-    id: 3,
-    platform: 'Codeforces',
-    name: 'Div 2 Round',
-    date: '2024-02-18',
-    time: '21:00 IST',
-    difficulty: 'Advanced',
-    registeredParticipants: 36,
-    icon: <platformIcons.codeforces className="text-blue-600" />
+    platform: 'GeeksForGeeks',
+    title: 'Binary Tree Level Order Traversal',
+    description: 'Given a binary tree, return the level order traversal of its nodes values.',
+    difficulty: 'Hard',
+    timeLimit: '1.5 sec',
+    timeLeft: '12h 15m',
+    tags: ['Tree', 'BFS', 'Queue'],
+    date: 'Feb 2, 2025',
+    solved: false,
+    url: '#'
   }
 ];
 
+
 const Profile = () => {
   return (
-    <div className="container px-16 pt-16 min-h-screen bg-gradient-to-br from-gfgsc-green-200/20 to-white">
+    <div className="px-16 md:px-32 pt-16 min-h-screen bg-gradient-to-br from-gfgsc-green-200/20 to-white">
       <ProfileHero userProfile={userProfile} />
-      <OverviewSection platformData={platformData} />
-      <UpcomingEvents contestData={contestData} />
+      <ProfileSecondary userProfile={userProfile} updatesAndAnnouncements={updatesAndAnnouncements} />
+      <PlatformPOTDs problems={platformPOTDs} />
     </div>
   );
 };
