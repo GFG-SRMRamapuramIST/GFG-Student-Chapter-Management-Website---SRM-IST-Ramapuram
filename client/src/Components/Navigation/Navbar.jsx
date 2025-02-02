@@ -18,6 +18,7 @@ import { BiSolidDashboard, BiUser, BiUserCircle } from "react-icons/bi";
 import { FiChevronDown, FiBook } from "react-icons/fi";
 import { CgProfile } from "react-icons/cg";
 import { IoLogOutOutline } from "react-icons/io5";
+import { logo } from "../../Assets";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -69,6 +70,11 @@ const Navbar = () => {
     { name: "Logout", path: "/auth/logout", icon: <IoLogOutOutline /> },
   ];
 
+  // Check if a route is active (including nested routes)
+  const isActiveRoute = (path) => {
+    return location.pathname.startsWith(path);
+  };
+
   return (
     <motion.nav
       initial={{ y: -100 }}
@@ -85,15 +91,8 @@ const Navbar = () => {
             className="flex items-center space-x-3 group"
           >
             <div className="relative">
-              <SiGeeksforgeeks className="text-4xl text-gfgsc-green transition-transform duration-300 group-hover:scale-110" />
-              {/* <motion.div
-                className="absolute -inset-2 bg-gfgsc-green-200 rounded-full -z-10"
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 0.3 }}
-              /> */}
+              <img src={logo} alt="GFGSC" className="p-1 h-12" />
             </div>
-            <span className="font-bold text-2xl text-gfg-black">GFGSC</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -102,16 +101,29 @@ const Navbar = () => {
               <Link
                 key={link.path}
                 to={link.path}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300
-                  ${
-                    location.pathname === link.path
-                      ? "text-gfgsc-green bg-gfgsc-green-200 shadow-sm"
-                      : "text-gfg-black hover:text-gfgsc-green hover:bg-gfgsc-green-200/50"
-                  }
-                ${link.boxed ? "bg-gfgsc-green text-white hover:bg-gfgsc-green/90 shadow-sm" : ""}`}
+                className="relative group"
               >
-                {link.icon && <span>{link.icon}</span>}
-                <span>{link.name}</span>
+                <div className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300
+                  ${
+                    isActiveRoute(link.path)
+                      ? "text-gfgsc-green bg-gfgsc-green-200/50"
+                      : "text-gfg-black hover:text-gfgsc-green hover:bg-gfgsc-green-200/30"
+                  }
+                  ${link.boxed ? "bg-gfgsc-green text-white hover:bg-gfgsc-green/90" : ""}`}
+                >
+                  {link.icon && <span className="transition-transform duration-300 group-hover:scale-110">{link.icon}</span>}
+                  <span>{link.name}</span>
+                </div>
+                {/* Active indicator dot */}
+                {isActiveRoute(link.path) && (
+                  <motion.div
+                    layoutId="activeIndicator"
+                    className="absolute -bottom-1 left-1/2 w-1 h-1 bg-gfgsc-green rounded-full"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.2 }}
+                  />
+                )}
               </Link>
             ))}
 
@@ -120,16 +132,15 @@ const Navbar = () => {
               <div className="relative">
                 <button
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
-                  className={`flex items-center space-x-1 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300
-                    ${isProfileOpen ? "text-gfgsc-green bg-gfgsc-green-200" : "text-gfg-black hover:text-gfgsc-green hover:bg-gfgsc-green-200/50"}`}
+                  className={`relative flex items-center space-x-1 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300
+                    ${isProfileOpen || isActiveRoute("/profile") 
+                      ? "text-gfgsc-green bg-gfgsc-green-200/50" 
+                      : "text-gfg-black hover:text-gfgsc-green hover:bg-gfgsc-green-200/30"}`}
                 >
-                  {/* <img
-                    src="/api/placeholder/32/32"
-                    alt="Profile"
-                    className="w-6 h-6 rounded-full border-2 border-gfgsc-green"
-                  /> */}
-                  <BiUserCircle className="w-6 h-6 rounded-full " />
+                  <BiUserCircle className="w-6 h-6 rounded-full transition-transform duration-300 hover:scale-110" />
                   <FiChevronDown className={`transition-transform duration-300 ${isProfileOpen ? "rotate-180" : ""}`} />
+                  {/* Active indicator for profile section */}
+                  
                 </button>
 
                 <AnimatePresence>
@@ -144,10 +155,13 @@ const Navbar = () => {
                         <Link
                           key={item.path}
                           to={item.path}
-                          className="flex items-center space-x-2 px-4 py-2 text-sm text-gfg-black hover:text-gfgsc-green hover:bg-gfgsc-green-200/50 transition-colors duration-200"
+                          className={`flex items-center space-x-2 px-4 py-2 text-sm transition-colors duration-200
+                            ${isActiveRoute(item.path)
+                              ? "text-gfgsc-green bg-gfgsc-green-200/50"
+                              : "text-gfg-black hover:text-gfgsc-green hover:bg-gfgsc-green-200/30"}`}
                           onClick={() => setIsProfileOpen(false)}
                         >
-                          <span>{item.icon}</span>
+                          <span className="transition-transform duration-300 group-hover:scale-110">{item.icon}</span>
                           <span>{item.name}</span>
                         </Link>
                       ))}
@@ -184,16 +198,27 @@ const Navbar = () => {
                 <Link
                   key={link.path}
                   to={link.path}
-                  className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-base font-medium transition-all duration-200
-                    ${
-                      location.pathname === link.path
-                        ? "text-gfgsc-green bg-gfgsc-green-200"
-                        : "text-gfg-black hover:text-gfgsc-green hover:bg-gfgsc-green-200/50"
-                    }`}
-                  onClick={() => setIsOpen(false)}
+                  className="relative group block"
                 >
-                  {link.icon && <span>{link.icon}</span>}
-                  <span>{link.name}</span>
+                  <div className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-base font-medium transition-all duration-200
+                    ${isActiveRoute(link.path)
+                      ? "text-gfgsc-green bg-gfgsc-green-200/50"
+                      : "text-gfg-black hover:text-gfgsc-green hover:bg-gfgsc-green-200/30"}`}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {link.icon && <span className="transition-transform duration-300 group-hover:scale-110">{link.icon}</span>}
+                    <span>{link.name}</span>
+                  </div>
+                  {/* Mobile active indicator line */}
+                  {isActiveRoute(link.path) && (
+                    <motion.div
+                      layoutId="mobileActiveIndicator"
+                      className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gfgsc-green rounded-r-full"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.2 }}
+                    />
+                  )}
                 </Link>
               ))}
 
@@ -203,11 +228,27 @@ const Navbar = () => {
                     <Link
                       key={item.path}
                       to={item.path}
-                      className="flex items-center space-x-3 px-4 py-3 rounded-lg text-base font-medium text-gfg-black hover:text-gfgsc-green hover:bg-gfgsc-green-200/50 transition-all duration-200"
-                      onClick={() => setIsOpen(false)}
+                      className="relative group block"
                     >
-                      <span>{item.icon}</span>
-                      <span>{item.name}</span>
+                      <div className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-base font-medium transition-all duration-200
+                        ${isActiveRoute(item.path)
+                          ? "text-gfgsc-green bg-gfgsc-green-200/50"
+                          : "text-gfg-black hover:text-gfgsc-green hover:bg-gfgsc-green-200/30"}`}
+                        onClick={() => setIsOpen(false)}
+                      >
+                        <span className="transition-transform duration-300 group-hover:scale-110">{item.icon}</span>
+                        <span>{item.name}</span>
+                      </div>
+                      {/* Mobile active indicator line */}
+                      {isActiveRoute(item.path) && (
+                        <motion.div
+                          layoutId="mobileActiveIndicator"
+                          className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gfgsc-green rounded-r-full"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ duration: 0.2 }}
+                        />
+                      )}
                     </Link>
                   ))}
                 </div>

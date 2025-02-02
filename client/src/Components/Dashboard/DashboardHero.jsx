@@ -14,6 +14,7 @@ import {
   SiGeeksforgeeks
 } from 'react-icons/si';
 import CustomCalendar from '../Calendar/CustomCalendar';
+import NotificationItem from '../ui/NotificationItem';
 
 // Mock data for API
 const events = [
@@ -160,16 +161,7 @@ const PlatformCard = ({ platform, problems, rank, progress }) => (
   </motion.div>
 );
 
-const NotificationItem = ({ message }) => (
-  <motion.div
-    whileHover={{ x: 2 }}
-    className="flex items-center gap-3 p-3 hover:bg-gfgsc-green-200/20 rounded-xl cursor-pointer"
-  >
-    
-    <div className="w-2 h-2 bg-gfgsc-green rounded-full" />
-    <p className="text-sm text-gray-600 flex-1">{message}</p>
-  </motion.div>
-);
+
 
 const DashboardHero = () => {
   return (

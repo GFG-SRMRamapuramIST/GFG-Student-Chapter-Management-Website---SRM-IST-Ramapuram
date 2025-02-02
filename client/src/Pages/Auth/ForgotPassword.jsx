@@ -177,14 +177,37 @@ const ForgotPassword = () => {
         className="flex-1 flex items-center justify-center p-8"
       >
         <div className="w-full max-w-md space-y-8">
-          <div className="text-center space-y-2">
-            <h2 className="text-3xl font-bold text-gray-900">
-              {steps[currentStep].title}
-            </h2>
-            <p className="text-gray-600">
-              {steps[currentStep].description}
-            </p>
+
+        <div className="flex justify-between mb-8">
+            {steps.map((step, index) => (
+              <div
+                key={index}
+                className={`flex-1 text-center ${
+                  index === currentStep
+                    ? 'text-gfgsc-green'
+                    : index < currentStep
+                    ? 'text-gray-500'
+                    : 'text-gray-300'
+                }`}
+              >
+                <div className="relative">
+                  <div
+                    className={`w-8 h-8 mx-auto rounded-full flex items-center justify-center border-2 ${
+                      index === currentStep
+                        ? 'border-gfgsc-green bg-white'
+                        : index < currentStep
+                        ? 'border-gray-500 bg-gray-500 text-white'
+                        : 'border-gray-300'
+                    }`}
+                  >
+                    {index + 1}
+                  </div>
+                </div>
+                <div className="text-xs mt-2">{step.title}</div>
+              </div>
+            ))}
           </div>
+
 
           <AnimatePresence mode="wait">
             <motion.div

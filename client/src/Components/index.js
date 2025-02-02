@@ -4,6 +4,11 @@ export { Logo };*/
 
 // Single point of import for all components
 
+//UI components
+import NotificationItem from "./ui/NotificationItem";
+
+export { NotificationItem };
+
 // Navigation Components
 import Navbar from "./Navigation/Navbar";
 import Footer from "./Navigation/Footer";

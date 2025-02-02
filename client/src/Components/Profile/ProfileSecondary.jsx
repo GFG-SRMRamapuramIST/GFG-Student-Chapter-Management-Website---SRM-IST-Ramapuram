@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { FaTimes, FaChevronRight, FaExternalLinkAlt } from "react-icons/fa";
 import { platformIcons } from "../../Constants";
 import { CgBell, CgCode, CgTrophy } from "react-icons/cg";
+import NotificationItem from "../ui/NotificationItem";
 
 const CustomDialog = ({ open, onClose, children }) => {
   if (!open) return null;
@@ -82,57 +83,14 @@ const ProfileSecondary = ({ userProfile, updatesAndAnnouncements }) => {
     <div className="p-6 font-sans antialiased">
       <div className="grid grid-cols-3 gap-6">
         {/* Platform Profiles */}
-        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-          <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 p-4">
-            <h2 className="text-lg font-semibold text-white flex items-center space-x-2">
-              <CgCode className="w-5 h-5" />
-              <span>Platform Activity</span>
-            </h2>
-          </div>
-          <div className="p-6 space-y-6">
-            {Object.entries(userProfile.profiles).map(([platform, stats]) => (
-              <div
-                key={platform}
-                className="group bg-white shadow-md border-2 p-4 rounded-lg"
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm font-medium capitalize flex items-center space-x-2">
-                    {React.createElement(platformIcons[platform], {
-                      className: "w-5 h-5 text-emerald-600",
-                    })}
-                    <span>{platform}</span>
-                    <span className="text-xs text-gray-500 lowercase">
-                      @{stats.handle}
-                    </span>
-                  </span>
-                  <a
-                    href="#"
-                    className="text-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <FaExternalLinkAlt className="w-3 h-3" />
-                  </a>
-                </div>
-                <div className="flex gap-2 text-sm">
-                  <div className="flex items-center border-2 space-x-1 bg-gray-50 p-2 rounded-md shadow-sm">
-                    <div className="font-semibold">{stats.contests}</div>
-                    <div className="text-gray-500 text-xs">Contests</div>
-                  </div>
-                  <div className="flex items-center border-2 space-x-1 bg-gray-50 p-2 rounded-md shadow-sm">
-                    <div className="font-semibold">{stats.questions}</div>
-                    <div className="text-gray-500 text-xs">Questions</div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <PlatformProfiles userProfile={userProfile} />
 
         {/* Achievements */}
         <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-          <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 p-4">
-            <h2 className="text-lg font-semibold text-white flex items-center space-x-2">
-              <CgTrophy className="w-5 h-5" />
+          <div className="pt-4 px-4">
+            <h2 className="flex justify-between text-lg font-semibold text-black items-center space-x-2">
               <span>Acheivements</span>
+              <CgTrophy className="w-5 h-5" />
             </h2>
           </div>
           <div className="p-6">
@@ -160,24 +118,16 @@ const ProfileSecondary = ({ userProfile, updatesAndAnnouncements }) => {
         <div className="space-y-6">
           {/* Recent Updates */}
           <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-            <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 p-4">
-              <h2 className="text-lg font-semibold text-white flex items-center space-x-2">
-                <CgBell className="w-5 h-5" />
+            <div className="pt-4 px-4">
+              <h2 className="flex justify-between text-lg font-semibold text-black items-center space-x-2">
                 <span>Recent Updates</span>
+                <CgBell className="w-5 h-5" />
               </h2>
             </div>
             <div className="p-4">
               <div className="space-y-2">
                 {updatesAndAnnouncements.updates.map((update) => (
-                  <div
-                    key={update.id}
-                    className="group hover:bg-gray-50 px-3 py-2 rounded-xl transition-colors"
-                  >
-                    <p className="text-sm text-gray-600">{update.message}</p>
-                    <span className="text-xs text-emerald-400 font-medium">
-                      {update.date}
-                    </span>
-                  </div>
+                  <NotificationItem key={update.id} message={update.message} />
                 ))}
               </div>
             </div>
@@ -185,26 +135,19 @@ const ProfileSecondary = ({ userProfile, updatesAndAnnouncements }) => {
 
           {/* Announcements */}
           <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-            <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 p-4">
-              <h2 className="text-lg font-semibold text-white flex items-center space-x-2">
-                <CgBell className="w-5 h-5" />
+            <div className="pt-4 px-4">
+              <h2 className="flex justify-between text-lg font-semibold text-black items-center space-x-2">
                 <span>Announcements</span>
+                <CgBell className="w-5 h-5" />
               </h2>
             </div>
             <div className="p-4">
               <div className="space-y-2">
                 {updatesAndAnnouncements.announcements.map((announcement) => (
-                  <div
+                  <NotificationItem
                     key={announcement.id}
-                    className="group hover:bg-gray-50 px-3 py-2 rounded-xl transition-colors"
-                  >
-                    <p className="text-sm font-medium text-gray-900 transition-colors">
-                      {announcement.title}
-                    </p>
-                    <p className="text-xs text-emerald-400 font-medium mt-1">
-                      {announcement.date}
-                    </p>
-                  </div>
+                    message={announcement.title}
+                  />
                 ))}
               </div>
             </div>
@@ -232,6 +175,97 @@ const ProfileSecondary = ({ userProfile, updatesAndAnnouncements }) => {
           ))}
         </div>
       </CustomDialog>
+    </div>
+  );
+};
+
+const PlatformProfiles = ({ userProfile }) => {
+  // Platform-specific color schemes
+  const platformStyles = {
+    leetcode: {
+      iconColor: "text-[#FFA116]",
+      borderHover: "hover:border-[#FFA116]",
+      shadow: "hover:shadow-[#FFA116]/10",
+      statsBg: "bg-[#FFA116]/5",
+      link: "text-[#FFA116]",
+    },
+    codechef: {
+      iconColor: "text-[#5B4638]",
+      borderHover: "hover:border-[#5B4638]",
+      shadow: "hover:shadow-[#5B4638]/10",
+      statsBg: "bg-[#5B4638]/5",
+      link: "text-[#5B4638]",
+    },
+    codeforces: {
+      iconColor: "text-[#318CE7]",
+      borderHover: "hover:border-[#318CE7]",
+      shadow: "hover:shadow-[#318CE7]/10",
+      statsBg: "bg-[#318CE7]/5",
+      link: "text-[#318CE7]",
+    },
+  };
+
+  return (
+    <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+      <div className="pt-4 px-4">
+        <h2 className="flex justify-between text-lg font-semibold text-black items-center space-x-2">
+          <span>Platform Activity</span>
+          <CgCode className="w-5 h-5" />
+        </h2>
+      </div>
+      <div className="p-6 space-y-6">
+        {Object.entries(userProfile.profiles).map(([platform, stats]) => {
+          const style = platformStyles[platform] || {};
+
+          return (
+            <div
+              key={platform}
+              className={`group bg-white border-2 p-4 rounded-lg transition-all duration-300 
+                ${style.borderHover} ${style.shadow} hover:shadow-lg`}
+            >
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm font-medium capitalize flex items-center space-x-2">
+                  {React.createElement(platformIcons[platform], {
+                    className: `w-5 h-5 ${style.iconColor}`,
+                  })}
+                  <span>{platform}</span>
+                  <span className="text-xs text-gray-500 lowercase">
+                    @{stats.handle}
+                  </span>
+                </span>
+                <a
+                  href="#"
+                  className={`${style.link} opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110`}
+                >
+                  <FaExternalLinkAlt className="w-3 h-3" />
+                </a>
+              </div>
+              <div className="flex gap-2 text-sm">
+                <div
+                  className={`flex items-center border rounded-md ${style.statsBg} p-2 transition-colors duration-300`}
+                >
+                  <div className="font-semibold">{stats.contests}</div>
+                  <div className="text-gray-500 text-xs ml-1">Contests</div>
+                </div>
+                <div
+                  className={`flex items-center border rounded-md ${style.statsBg} p-2 transition-colors duration-300`}
+                >
+                  <div className="font-semibold">{stats.questions}</div>
+                  <div className="text-gray-500 text-xs ml-1">Questions</div>
+                </div>
+                {stats.rating && (
+                  <div
+                    className={`flex items-center border rounded-md ${style.statsBg} p-2 transition-colors duration-300`}
+                  >
+                    <div className="font-semibold">{stats.rating}</div>
+                    <div className="text-gray-500 text-xs ml-1">Rating</div>
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };

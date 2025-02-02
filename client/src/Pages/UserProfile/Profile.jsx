@@ -1,6 +1,5 @@
 import { AakashPfp } from "../../Assets";
 import { PlatformPOTDs, ProfileHero, ProfileSecondary } from "../../Components";
-import { platformIcons } from "../../Constants";
 
 const userProfile = {
   name: "Aakash Kumar",
