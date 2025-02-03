@@ -1,6 +1,6 @@
 import { Outlet, Navigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { Footer, Navbar } from "../Components";
+import { HeikiBackground, Footer, Navbar } from "../Components";
 
 const RootLayout = () => {
   const userToken = useSelector((state) => state.auth?.userToken);
@@ -21,13 +21,21 @@ const RootLayout = () => {
   // }
 
   return (
-    <>
-      <Navbar />
-      <div className="min-h-[50vh]">
-        <Outlet />
+    <div className="relative ">
+      <HeikiBackground
+        primaryColor="#00895e"
+        secondaryColor="#2f8d46"
+        pattern="blocks"
+        opacity={0.2}
+      />
+      <div className="relative">
+        <Navbar />
+        <div className="relative min-h-[50vh]">
+          <Outlet />
+        </div>
+        <Footer />
       </div>
-      <Footer />
-    </>
+    </div>
   );
 };
 

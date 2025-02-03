@@ -25,7 +25,8 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const location = useLocation();
-  const isLoggedIn = location.pathname !== "/" && !location.pathname.startsWith("/auth");
+  const isLoggedIn =
+    location.pathname !== "/" && !location.pathname.startsWith("/auth");
 
   useEffect(() => {
     const handleScroll = () => {
@@ -80,7 +81,9 @@ const Navbar = () => {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       className={`fixed w-full z-50 transition-all duration-300 ${
-        isScrolled ? "bg-white backdrop-blur-lg bg-opacity-80 shadow-lg" : "bg-transparent"
+        isScrolled
+          ? "bg-white backdrop-blur-lg bg-opacity-80 shadow-lg"
+          : "bg-transparent"
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -98,32 +101,27 @@ const Navbar = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-1">
             {navLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className="relative group"
-              >
-                <div className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300
+              <Link key={link.path} to={link.path} className="relative group">
+                <div
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300
                   ${
                     isActiveRoute(link.path)
                       ? "text-gfgsc-green bg-gfgsc-green-200/50"
                       : "text-gfg-black hover:text-gfgsc-green hover:bg-gfgsc-green-200/30"
                   }
-                  ${link.boxed ? "bg-gfgsc-green text-white hover:bg-gfgsc-green/90" : ""}`}
+                  ${
+                    link.boxed
+                      ? "bg-gfgsc-green text-white hover:bg-gfgsc-green/90"
+                      : ""
+                  }`}
                 >
-                  {link.icon && <span className="transition-transform duration-300 group-hover:scale-110">{link.icon}</span>}
+                  {link.icon && (
+                    <span className="transition-transform duration-300 group-hover:scale-110">
+                      {link.icon}
+                    </span>
+                  )}
                   <span>{link.name}</span>
                 </div>
-                {/* Active indicator dot */}
-                {isActiveRoute(link.path) && (
-                  <motion.div
-                    layoutId="activeIndicator"
-                    className="absolute -bottom-1 left-1/2 w-1 h-1 bg-gfgsc-green rounded-full"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.2 }}
-                  />
-                )}
               </Link>
             ))}
 
@@ -133,14 +131,18 @@ const Navbar = () => {
                 <button
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
                   className={`relative flex items-center space-x-1 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300
-                    ${isProfileOpen || isActiveRoute("/profile") 
-                      ? "text-gfgsc-green bg-gfgsc-green-200/50" 
-                      : "text-gfg-black hover:text-gfgsc-green hover:bg-gfgsc-green-200/30"}`}
+                    ${
+                      isProfileOpen || isActiveRoute("/profile")
+                        ? "text-gfgsc-green bg-gfgsc-green-200/50"
+                        : "text-gfg-black hover:text-gfgsc-green hover:bg-gfgsc-green-200/30"
+                    }`}
                 >
                   <BiUserCircle className="w-6 h-6 rounded-full transition-transform duration-300 hover:scale-110" />
-                  <FiChevronDown className={`transition-transform duration-300 ${isProfileOpen ? "rotate-180" : ""}`} />
-                  {/* Active indicator for profile section */}
-                  
+                  <FiChevronDown
+                    className={`transition-transform duration-300 ${
+                      isProfileOpen ? "rotate-180" : ""
+                    }`}
+                  />
                 </button>
 
                 <AnimatePresence>
@@ -156,12 +158,12 @@ const Navbar = () => {
                           key={item.path}
                           to={item.path}
                           className={`flex items-center space-x-2 px-4 py-2 text-sm transition-colors duration-200
-                            ${isActiveRoute(item.path)
-                              ? "text-gfgsc-green bg-gfgsc-green-200/50"
-                              : "text-gfg-black hover:text-gfgsc-green hover:bg-gfgsc-green-200/30"}`}
+                            text-gfg-black hover:text-gfgsc-green hover:bg-gfgsc-green-200/30`}
                           onClick={() => setIsProfileOpen(false)}
                         >
-                          <span className="transition-transform duration-300 group-hover:scale-110">{item.icon}</span>
+                          <span className="transition-transform duration-300 group-hover:scale-110">
+                            {item.icon}
+                          </span>
                           <span>{item.name}</span>
                         </Link>
                       ))}
@@ -200,13 +202,20 @@ const Navbar = () => {
                   to={link.path}
                   className="relative group block"
                 >
-                  <div className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-base font-medium transition-all duration-200
-                    ${isActiveRoute(link.path)
-                      ? "text-gfgsc-green bg-gfgsc-green-200/50"
-                      : "text-gfg-black hover:text-gfgsc-green hover:bg-gfgsc-green-200/30"}`}
+                  <div
+                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-base font-medium transition-all duration-200
+                    ${
+                      isActiveRoute(link.path)
+                        ? "text-gfgsc-green bg-gfgsc-green-200/50"
+                        : "text-gfg-black hover:text-gfgsc-green hover:bg-gfgsc-green-200/30"
+                    }`}
                     onClick={() => setIsOpen(false)}
                   >
-                    {link.icon && <span className="transition-transform duration-300 group-hover:scale-110">{link.icon}</span>}
+                    {link.icon && (
+                      <span className="transition-transform duration-300 group-hover:scale-110">
+                        {link.icon}
+                      </span>
+                    )}
                     <span>{link.name}</span>
                   </div>
                   {/* Mobile active indicator line */}
@@ -230,13 +239,18 @@ const Navbar = () => {
                       to={item.path}
                       className="relative group block"
                     >
-                      <div className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-base font-medium transition-all duration-200
-                        ${isActiveRoute(item.path)
-                          ? "text-gfgsc-green bg-gfgsc-green-200/50"
-                          : "text-gfg-black hover:text-gfgsc-green hover:bg-gfgsc-green-200/30"}`}
+                      <div
+                        className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-base font-medium transition-all duration-200
+                        ${
+                          isActiveRoute(item.path)
+                            ? "text-gfgsc-green bg-gfgsc-green-200/50"
+                            : "text-gfg-black hover:text-gfgsc-green hover:bg-gfgsc-green-200/30"
+                        }`}
                         onClick={() => setIsOpen(false)}
                       >
-                        <span className="transition-transform duration-300 group-hover:scale-110">{item.icon}</span>
+                        <span className="transition-transform duration-300 group-hover:scale-110">
+                          {item.icon}
+                        </span>
                         <span>{item.name}</span>
                       </div>
                       {/* Mobile active indicator line */}

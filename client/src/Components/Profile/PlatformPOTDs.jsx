@@ -1,11 +1,16 @@
-import React from "react";
-import { FaExternalLinkAlt, FaCode, FaCheckCircle, FaClock } from "react-icons/fa";
+import {
+  FaExternalLinkAlt,
+  FaCheckCircle,
+  FaClock,
+} from "react-icons/fa";
 
 const PlatformPOTDs = ({ problems }) => {
   return (
     <div className="p-6 font-sans antialiased">
       <div className="">
-        <h2 className="text-xl font-semibold text-gray-900 mb-6">Problems of the Day</h2>
+        <h2 className="text-xl font-semibold text-gray-900 mb-6">
+          Problems of the Day
+        </h2>
 
         <div className="grid grid-cols-3 gap-6">
           {problems.map((problem) => (
@@ -16,9 +21,13 @@ const PlatformPOTDs = ({ problems }) => {
               {/* Platform Header */}
               <div className={`p-4 ${getPlatformColor(problem.platform)}`}>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-white">{problem.platform}</span>
+                  <span className="text-sm font-medium text-white">
+                    {problem.platform}
+                  </span>
                   <div className="flex items-center space-x-2">
-                    <span className="text-xs text-white/80">{problem.date}</span>
+                    <span className="text-xs text-white/80">
+                      {problem.date}
+                    </span>
                     {problem.solved && (
                       <FaCheckCircle className="w-4 h-4 text-green-200" />
                     )}
@@ -41,7 +50,11 @@ const PlatformPOTDs = ({ problems }) => {
                 <div className="grid grid-cols-2 gap-2 mb-4 text-sm">
                   <div className="bg-gray-50 p-2 rounded-lg text-center">
                     <div className="text-gray-500 text-xs">Difficulty</div>
-                    <div className={`font-medium ${getDifficultyColor(problem.difficulty)}`}>
+                    <div
+                      className={`font-medium ${getDifficultyColor(
+                        problem.difficulty
+                      )}`}
+                    >
                       {problem.difficulty}
                     </div>
                   </div>
@@ -93,23 +106,22 @@ const PlatformPOTDs = ({ problems }) => {
 // Utility functions for dynamic colors
 const getPlatformColor = (platform) => {
   const colors = {
-    'LeetCode': 'bg-[#2d3142]',
-    'CodeChef': 'bg-[#4a2511]',
-    'GeeksForGeeks': 'bg-[#2f8d46]',
-    'default': 'bg-emerald-600'
+    LeetCode: "bg-[#2d3142]",
+    CodeChef: "bg-[#4a2511]",
+    GeeksForGeeks: "bg-[#2f8d46]",
+    default: "bg-emerald-600",
   };
   return colors[platform] || colors.default;
 };
 
 const getDifficultyColor = (difficulty) => {
   const colors = {
-    'Easy': 'text-green-600',
-    'Medium': 'text-yellow-600',
-    'Hard': 'text-red-600',
-    'default': 'text-gray-600'
+    Easy: "text-green-600",
+    Medium: "text-yellow-600",
+    Hard: "text-red-600",
+    default: "text-gray-600",
   };
   return colors[difficulty] || colors.default;
 };
-
 
 export default PlatformPOTDs;

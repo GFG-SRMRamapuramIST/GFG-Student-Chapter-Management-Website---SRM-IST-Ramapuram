@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
@@ -60,6 +60,7 @@ const SignUp = () => {
   const [profilePreview, setProfilePreview] = useState(null);
   const [otpSent, setOtpSent] = useState(false);
   const [otpError, setOtpError] = useState("");
+  const fileInputRef = useRef(null);
 
   const {
     register,
@@ -196,21 +197,43 @@ const SignUp = () => {
   };
 
   const handleProfilePictureChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setValue("profilePicture", event.target.files);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfilePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
+    try {
+      console.log("Profile Picture Change Event Triggered");
+      const file = event.target.files[0];
+      console.log("Selected File:", file);
+
+      if (file) {
+        // Set form value
+        setValue("profilePicture", event.target.files);
+
+        // Create FileReader instance
+        const reader = new FileReader();
+
+        // Add error handling for FileReader
+        reader.onerror = () => {
+          console.error("FileReader error:", reader.error);
+        };
+
+        reader.onloadend = () => {
+          console.log("FileReader completed");
+          setProfilePreview(reader.result);
+        };
+
+        // Start reading the file
+        reader.readAsDataURL(file);
+      }
+    } catch (error) {
+      console.error("Profile picture change error:", error);
     }
+  };
+
+  const triggerFileInput = () => {
+    fileInputRef.current.click();
   };
 
   const sendOTP = async () => {
     try {
       dispatch(setLoading(true));
-      // Simulate OTP sending - replace with actual API call
       await AuthService.sendOTP(getValues("email"));
       setOtpSent(true);
       setOtpError("");
@@ -228,7 +251,28 @@ const SignUp = () => {
       dispatch(setLoading(true));
       const formData = new FormData();
 
-      // Append all form fields except confirmPassword
+      // Detailed console logging of all form fields
+      console.log("Full Form Data Submission:", {
+        name: data.name,
+        email: data.email,
+        phoneNumber: data.phoneNumber,
+        registrationNumber: data.registrationNumber,
+        academicYear: data.academicYear,
+        linkedinUsername: data.linkedinUsername,
+        leetcodeUsername: data.leetcodeUsername,
+        codechefUsername: data.codechefUsername,
+        codeforcesUsername: data.codeforcesUsername,
+        codolioUsername: data.codolioUsername,
+        profilePicture: data.profilePicture[0]
+          ? {
+              name: data.profilePicture[0].name,
+              type: data.profilePicture[0].type,
+              size: data.profilePicture[0].size,
+            }
+          : null,
+      });
+
+      // Append all form fields
       Object.keys(data).forEach((key) => {
         if (key !== "confirmPassword") {
           if (key === "profilePicture") {
@@ -239,11 +283,18 @@ const SignUp = () => {
         }
       });
 
+      // Verify OTP first
+      await AuthService.verifyOTP({
+        email: data.email,
+        otp: data.otp,
+      });
+
       const response = await AuthService.register(formData);
       dispatch(setAuth(response.token));
       navigate("/dashboard");
     } catch (err) {
       dispatch(setError(err.message));
+      ToastMsg(err.message, "error");
     } finally {
       dispatch(setLoading(false));
     }
@@ -262,85 +313,63 @@ const SignUp = () => {
     }
   };
 
+  const renderProfilePictureField = () => {
+    return (
+      <div className="flex flex-col items-center justify-center gap-4">
+        {/* Hidden File Input */}
+        <input
+          type="file"
+          id="profilePicture"
+          accept="image/*"
+          onChange={handleProfilePictureChange}
+          className="hidden"
+          {...register("profilePicture", {
+            ...fieldDetails.profilePicture.validation,
+            onChange: (e) => handleProfilePictureChange(e),
+          })}
+        />
+
+        {/* Image Preview or Upload Button */}
+        <label
+          htmlFor="profilePicture"
+          className="cursor-pointer"
+          onClick={(e) => {
+            console.log("Label clicked");
+            e.currentTarget.querySelector('input[type="file"]')?.click();
+          }}
+        >
+          {profilePreview ? (
+            <div className="relative">
+              <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-gfgsc-green">
+                <img
+                  src={profilePreview}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="absolute inset-0 rounded-full flex items-center justify-center opacity-0 hover:opacity-100 bg-black/40 transition-opacity">
+                <span className="text-white flex items-center gap-2">
+                  <CgEditMarkup className="w-5 h-5" />
+                  Change
+                </span>
+              </div>
+            </div>
+          ) : (
+            <div className="w-32 h-32 rounded-lg border-2 border-dashed border-gray-300 hover:border-gfgsc-green transition-colors flex flex-col items-center justify-center gap-2">
+              <MdAddAPhoto className="w-8 h-8 text-gray-400" />
+              <span className="text-sm text-gray-500">Upload Picture</span>
+            </div>
+          )}
+        </label>
+      </div>
+    );
+  };
+
   const renderField = (name) => {
     const { icon, placeholder, validation } = fieldDetails[name];
 
     if (name === "profilePicture") {
-      return (
-        <div className="space-y-4">
-          <motion.div layout className="relative flex justify-center">
-            <motion.div
-              layout
-              className={`relative ${profilePreview ? "w-32 h-32" : "w-full"}`}
-            >
-              {profilePreview ? (
-                <motion.div
-                  initial={{ borderRadius: "0.5rem", scale: 0.9 }}
-                  animate={{
-                    borderRadius: "50%",
-                    scale: 1,
-                    transition: { duration: 0.3 },
-                  }}
-                  className="relative w-32 h-32 group"
-                >
-                  <div className="w-full h-full overflow-hidden border-2 border-gfgsc-green rounded-full">
-                    <motion.img
-                      initial={{ scale: 1.2 }}
-                      animate={{ scale: 1 }}
-                      transition={{ duration: 0.3 }}
-                      src={profilePreview}
-                      alt="Profile preview"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-
-                  {/* Hover Overlay */}
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    whileHover={{ opacity: 1 }}
-                    className="absolute inset-0 bg-black/30 rounded-full flex items-center justify-center transition-all"
-                  >
-                    <motion.label
-                      whileHover={{ scale: 1.1 }}
-                      className="cursor-pointer flex items-center justify-center gap-2 text-white"
-                    >
-                      <CgEditMarkup className="w-5 h-5" />
-                      <span className="text-sm">Change</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={handleProfilePictureChange}
-                        {...register(name, validation)}
-                      />
-                    </motion.label>
-                  </motion.div>
-                </motion.div>
-              ) : (
-                <motion.label
-                  whileHover={{ scale: 1.02 }}
-                  className="flex items-center gap-2 cursor-pointer px-4 py-3 rounded-lg bg-gray-50 border-2 border-dashed border-gray-200 hover:border-gfgsc-green transition-all w-full justify-center group"
-                >
-                  <MdAddAPhoto className="text-gray-400 group-hover:text-gfgsc-green transition-colors" />
-                  <span className="text-gray-500 group-hover:text-gfgsc-green transition-colors">
-                    Upload Profile Picture
-                  </span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleProfilePictureChange}
-                    {...register(name, validation)}
-                  />
-                </motion.label>
-              )}
-            </motion.div>
-          </motion.div>
-          {errors[name] && (
-            <p className="text-red-500 text-xs mt-1">{errors[name].message}</p>
-          )}
-        </div>
-      );
+      return renderProfilePictureField();
     }
 
     if (name === "otp") {
@@ -425,7 +454,7 @@ const SignUp = () => {
         animate={{ opacity: 1, x: 0 }}
         className="flex-1 flex items-center justify-center p-8"
       >
-        <div className="w-full max-w-xl space-y-8 pt-8">
+        <div className={`w-full max-w-xl space-y-8 pt-8 ${currentStep === 0 && "mt-8"}`}>
           <div className="flex justify-between mb-8">
             {steps.map((step, index) => (
               <div
@@ -457,7 +486,7 @@ const SignUp = () => {
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            <div className="space-y-6">
+            <div className={`space-y-6 `}>
               {steps[currentStep].fields.map((field) => (
                 <React.Fragment key={field}>
                   {renderField(field)}

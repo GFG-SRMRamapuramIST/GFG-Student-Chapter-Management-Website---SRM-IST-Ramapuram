@@ -6,8 +6,9 @@ export { Logo };*/
 
 //UI components
 import NotificationItem from "./ui/NotificationItem";
+import HeikiBackground from "./ui/HeikiBackground";
 
-export { NotificationItem };
+export { NotificationItem, HeikiBackground };
 
 // Navigation Components
 import Navbar from "./Navigation/Navbar";
@@ -31,6 +32,13 @@ export { HeroSection, AboutSection };
 import DashboardHero from "./Dashboard/DashboardHero";
 
 export { DashboardHero };
+
+// Team Components
+import TeamHero from "./Teams/TeamsHero";
+import TeamCard from "./Teams/TeamCard";
+import TeamDetailsModal from "./Teams/TeamDetailsModa";
+
+export { TeamHero, TeamCard, TeamDetailsModal };
 
 // Profile Components
 import ProfileHero from "./Profile/ProfileHero";

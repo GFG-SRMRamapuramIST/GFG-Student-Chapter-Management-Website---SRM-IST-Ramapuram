@@ -1,6 +1,6 @@
 import { RouterProvider } from "react-router-dom";
 import { createBrowserRouter } from "react-router-dom";
-import { LandingPage, Dashboard, Login, SignUp, ForgotPassword, Profile } from "./Pages";
+import { LandingPage, Dashboard, Login, SignUp, ForgotPassword, Profile, EditProfile, Teams } from "./Pages";
 import { AuthLayout, RootLayout } from "./Layouts";
 
 const router = createBrowserRouter([
@@ -16,8 +16,21 @@ const router = createBrowserRouter([
         element: <Dashboard />,
       },
       {
+        path: "/teams",
+        element: <Teams />,
+      },
+      {
         path: "/profile",
-        element: <Profile />,
+        children: [
+          {
+            index: true,
+            element: <Profile />
+          },
+          {
+            path: "edit",
+            element: <EditProfile />
+          }
+        ]
       },
       {
         path: "/auth",

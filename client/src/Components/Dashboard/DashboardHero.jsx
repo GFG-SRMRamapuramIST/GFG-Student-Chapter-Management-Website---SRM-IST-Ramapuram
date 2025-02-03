@@ -22,20 +22,20 @@ const events = [
     type: 'contest',
     platform: 'leetcode',
     name: 'Weekly Contest 123',
-    time: '2025-01-25T14:30:00',
+    time: '2025-02-06T14:30:00',
     link: 'https://leetcode.com/contest/123'
   },
   {
     type: 'meeting',
     name: 'Team Sync',
-    time: '2025-01-22T15:00:00',
+    time: '2025-02-22T15:00:00',
     attendees: 'CORE',
     link: 'https://meet.google.com/xyz',
   },
   {
     type: 'meeting',
     name: 'DSA Discussion',
-    time: '2025-01-22T17:00:00',
+    time: '2025-02-22T17:00:00',
     attendees: 'ALL',
     link: 'https://meet.google.com/abc',
   },
@@ -43,7 +43,7 @@ const events = [
     type: 'contest',
     platform: 'leetcode',
     name: 'Weekly Contest 123',
-    time: '2025-01-22T17:00:00',
+    time: '2025-02-22T17:00:00',
     link: 'https://leetcode.com/contest/123'
   },
 ];
@@ -161,11 +161,9 @@ const PlatformCard = ({ platform, problems, rank, progress }) => (
   </motion.div>
 );
 
-
-
 const DashboardHero = () => {
   return (
-    <div className="min-h-screen px-16 pt-24 pb-8 bg-gradient-to-br from-gray-50 to-gfgsc-green-200/20">
+    <div className="min-h-screen pt-24 pb-8 ">
       {/* Header Section */}
       <div className="flex justify-between items-start mb-8">
         <div>

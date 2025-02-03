@@ -1,9 +1,8 @@
-import React from 'react'
 import { DashboardHero } from '../Components'
 
 function Dashboard() {
   return (
-    <div>
+    <div className='px-16 md:px-32'>
       <DashboardHero />
     </div>
   )

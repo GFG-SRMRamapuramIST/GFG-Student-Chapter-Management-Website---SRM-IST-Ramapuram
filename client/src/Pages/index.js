@@ -4,6 +4,8 @@ import Login from "./Auth/Login";
 import SignUp from "./Auth/SignUp";
 import ForgotPassword from "./Auth/ForgotPassword";
 import Profile from "./UserProfile/Profile";
+import EditProfile from "./UserProfile/EditProfile";
+import Teams from "./Teams";
 
 export { 
   LandingPage,
@@ -11,5 +13,7 @@ export {
   Login,
   SignUp,
   ForgotPassword,
-  Profile
+  Profile,
+  EditProfile,
+  Teams
 };

@@ -5,6 +5,7 @@ export default {
     extend: {
       colors: {
         'gfgsc-green': "#00895e",
+        'gfgsc-blue': "#002b46",
         'gfgsc-green-200': "#b3e6d4",
         'gfgsc-green-400': "#66c7a4",
         'gfg-green': '#2f8d46',

@@ -2,10 +2,10 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { 
   BiLogoLinkedin, 
-  BiLogoGithub, 
-  BiLogoInstagram,
-  BiLogoDiscord 
+  BiLogoInstagram 
 } from 'react-icons/bi';
+import { FaXTwitter } from 'react-icons/fa6';
+import { SiGeeksforgeeks } from 'react-icons/si';
 
 const Footer = () => {
   const year = new Date().getFullYear();
@@ -16,7 +16,10 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Brand Section */}
           <div className="space-y-4">
-            <h3 className="text-2xl font-bold text-gfgsc-green">GFGSC</h3>
+            <div className="flex items-center space-x-3">
+              <SiGeeksforgeeks className="w-12 h-12 text-gfgsc-green-400" />
+              <h3 className="text-2xl font-bold text-gfgsc-green-400">SRM Ramapuram</h3>
+            </div>
             <p className="text-sm text-gray-400 max-w-xs">
               Empowering students through technology, innovation, and collaborative learning.
             </p>
@@ -25,57 +28,66 @@ const Footer = () => {
                 <BiLogoLinkedin className="w-6 h-6" />
               </a>
               <a href="#" className="text-gray-400 hover:text-gfgsc-green transition-colors duration-200">
-                <BiLogoGithub className="w-6 h-6" />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-gfgsc-green transition-colors duration-200">
                 <BiLogoInstagram className="w-6 h-6" />
               </a>
               <a href="#" className="text-gray-400 hover:text-gfgsc-green transition-colors duration-200">
-                <BiLogoDiscord className="w-6 h-6" />
+                <FaXTwitter className="w-5 h-5" />
               </a>
             </div>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
+            <h4 className="text-lg font-semibold mb-4 text-gfgsc-green-400">Quick Links</h4>
             <ul className="space-y-2">
               <li>
-                <Link to="/teams" className="text-gray-400 hover:text-gfgsc-green transition-colors duration-200">
+                <Link to="/dashboard" className="text-gray-400 hover:text-gfgsc-green-400 transition-colors duration-200">
+                  Dashboard
+                </Link>
+              </li>
+              <li>
+                <Link to="/leaderboard" className="text-gray-400 hover:text-gfgsc-green-400 transition-colors duration-200">
+                  Leaderboard
+                </Link>
+              </li>
+              <li>
+                <Link to="/teams" className="text-gray-400 hover:text-gfgsc-green-400 transition-colors duration-200">
                   Teams
                 </Link>
               </li>
               <li>
-                <Link to="/calendar" className="text-gray-400 hover:text-gfgsc-green transition-colors duration-200">
-                  Events Calendar
-                </Link>
-              </li>
-              <li>
-                <Link to="/leaderboard" className="text-gray-400 hover:text-gfgsc-green transition-colors duration-200">
-                  Leaderboard
+                <Link to="/resources" className="text-gray-400 hover:text-gfgsc-green-400 transition-colors duration-200">
+                  Resources
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Contact Section */}
+          {/* Legal & Support Links */}
           <div>
-            <h4 className="text-lg font-semibold mb-4">Join Our Community</h4>
-            <div className="space-y-4">
-              <p className="text-sm text-gray-400">
-                Stay updated with our latest events and achievements.
-              </p>
-              <div className="flex">
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  className="px-4 py-2 bg-gray-800 text-white rounded-l-md focus:outline-none focus:ring-1 focus:ring-gfgsc-green"
-                />
-                <button className="px-4 py-2 bg-gfgsc-green text-white rounded-r-md hover:bg-opacity-90 transition-colors duration-200">
-                  Subscribe
-                </button>
-              </div>
-            </div>
+            <h4 className="text-lg font-semibold mb-4 text-gfgsc-green-400">Support & Policies</h4>
+            <ul className="space-y-2">
+              <li>
+                <Link to="/report-issue" className="text-gray-400 hover:text-gfgsc-green-400 transition-colors duration-200">
+                  Report an Issue
+                </Link>
+              </li>
+              <li>
+                <Link to="/terms" className="text-gray-400 hover:text-gfgsc-green-400 transition-colors duration-200">
+                  Terms & Conditions
+                </Link>
+              </li>
+              <li>
+                <Link to="/user-manual" className="text-gray-400 hover:text-gfgsc-green-400 transition-colors duration-200">
+                  User Manual
+                </Link>
+              </li>
+              <li>
+                <Link to="/privacy" className="text-gray-400 hover:text-gfgsc-green-400 transition-colors duration-200">
+                  Privacy Policy
+                </Link>
+              </li>
+            </ul>
           </div>
         </div>
 

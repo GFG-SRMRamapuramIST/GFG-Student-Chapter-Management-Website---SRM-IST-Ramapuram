@@ -88,7 +88,7 @@ const ProfileSecondary = ({ userProfile, updatesAndAnnouncements }) => {
         {/* Achievements */}
         <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
           <div className="pt-4 px-4">
-            <h2 className="flex justify-between text-lg font-semibold text-black items-center space-x-2">
+            <h2 className="flex justify-between text-lg font-semibold text-gfgsc-green items-center space-x-2">
               <span>Acheivements</span>
               <CgTrophy className="w-5 h-5" />
             </h2>
@@ -119,7 +119,7 @@ const ProfileSecondary = ({ userProfile, updatesAndAnnouncements }) => {
           {/* Recent Updates */}
           <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
             <div className="pt-4 px-4">
-              <h2 className="flex justify-between text-lg font-semibold text-black items-center space-x-2">
+              <h2 className="flex justify-between text-lg font-semibold text-gfgsc-green items-center space-x-2">
                 <span>Recent Updates</span>
                 <CgBell className="w-5 h-5" />
               </h2>
@@ -136,7 +136,7 @@ const ProfileSecondary = ({ userProfile, updatesAndAnnouncements }) => {
           {/* Announcements */}
           <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
             <div className="pt-4 px-4">
-              <h2 className="flex justify-between text-lg font-semibold text-black items-center space-x-2">
+              <h2 className="flex justify-between text-lg font-semibold text-gfgsc-green items-center space-x-2">
                 <span>Announcements</span>
                 <CgBell className="w-5 h-5" />
               </h2>
@@ -208,7 +208,7 @@ const PlatformProfiles = ({ userProfile }) => {
   return (
     <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
       <div className="pt-4 px-4">
-        <h2 className="flex justify-between text-lg font-semibold text-black items-center space-x-2">
+        <h2 className="flex justify-between text-lg font-semibold text-gfgsc-green items-center space-x-2">
           <span>Platform Activity</span>
           <CgCode className="w-5 h-5" />
         </h2>
