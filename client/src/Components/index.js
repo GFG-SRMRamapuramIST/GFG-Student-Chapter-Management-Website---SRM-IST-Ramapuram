@@ -36,7 +36,7 @@ export { DashboardHero };
 // Team Components
 import TeamHero from "./Teams/TeamsHero";
 import TeamCard from "./Teams/TeamCard";
-import TeamDetailsModal from "./Teams/TeamDetailsModa";
+import TeamDetailsModal from "./Teams/TeamDetailsModal";
 
 export { TeamHero, TeamCard, TeamDetailsModal };
 

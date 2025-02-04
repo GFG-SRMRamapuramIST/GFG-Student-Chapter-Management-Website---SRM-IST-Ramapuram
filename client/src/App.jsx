@@ -1,6 +1,6 @@
 import { RouterProvider } from "react-router-dom";
 import { createBrowserRouter } from "react-router-dom";
-import { LandingPage, Dashboard, Login, SignUp, ForgotPassword, Profile, EditProfile, Teams } from "./Pages";
+import { LandingPage, Dashboard, Login, SignUp, ForgotPassword, Profile, EditProfile, Teams, Leaderboard } from "./Pages";
 import { AuthLayout, RootLayout } from "./Layouts";
 
 const router = createBrowserRouter([
@@ -14,6 +14,10 @@ const router = createBrowserRouter([
       {
         path: "/dashboard",
         element: <Dashboard />,
+      },
+      {
+        path: "/leaderboard",
+        element: <Leaderboard />,
       },
       {
         path: "/teams",

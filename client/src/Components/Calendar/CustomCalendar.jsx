@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   RiCalendarLine,
-  RiCloseLine,
   RiVideoLine,
   RiTrophyLine,
   RiTeamLine,
 } from "react-icons/ri";
 import { platformIcons } from "../../Constants";
 import { IoPeople } from "react-icons/io5";
+import { RotatingCloseButton } from "../../Utilities";
 
 const EventModal = ({ selectedDate, events, onClose }) => {
   const meetings = events.filter((e) => e.type === "meeting");
@@ -41,14 +41,7 @@ const EventModal = ({ selectedDate, events, onClose }) => {
               })}
             </h3>
           </div>
-          <motion.button
-            whileHover={{ rotate: 90 }}
-            transition={{ duration: 0.2 }}
-            onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-xl"
-          >
-            <RiCloseLine className="w-5 h-5 text-gray-500" />
-          </motion.button>
+          <RotatingCloseButton onClick={onClose} />
         </div>
 
         <div className="space-y-6">

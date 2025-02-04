@@ -50,7 +50,7 @@ const Teams = () => {
   ];
 
   return (
-    <div className="px-16 md:px-32 pt-24 bg-gfg-white min-h-screen p-6">
+    <div className=" min-h-screen p-6">
       <div className="container mx-auto">
         <TeamHero myTeam={myTeam} />
 

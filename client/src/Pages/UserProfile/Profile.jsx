@@ -5,6 +5,7 @@ const userProfile = {
   name: "Aakash Kumar",
   email: "aakashkumar@gfg.com",
   role: "President",
+  academic_year: "3rd Year",
   profilePic: AakashPfp,
   bio: "Full-stack developer passionate about algorithms and competitive programming. Core team member @TechCommunity.",
   
@@ -164,7 +165,7 @@ const platformPOTDs = [
 
 const Profile = () => {
   return (
-    <div className="px-16 md:px-32 pt-16 min-h-screen bg-gradient-to-br from-gfgsc-green-200/20 to-white">
+    <div className="min-h-screen ">
       <ProfileHero userProfile={userProfile} />
       <ProfileSecondary userProfile={userProfile} updatesAndAnnouncements={updatesAndAnnouncements} />
       <PlatformPOTDs problems={platformPOTDs} />

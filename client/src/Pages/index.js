@@ -6,6 +6,7 @@ import ForgotPassword from "./Auth/ForgotPassword";
 import Profile from "./UserProfile/Profile";
 import EditProfile from "./UserProfile/EditProfile";
 import Teams from "./Teams";
+import Leaderboard from "./Leaderboard";
 
 export { 
   LandingPage,
@@ -15,5 +16,6 @@ export {
   ForgotPassword,
   Profile,
   EditProfile,
-  Teams
+  Teams,
+  Leaderboard
 };

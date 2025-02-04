@@ -163,7 +163,7 @@ const PlatformCard = ({ platform, problems, rank, progress }) => (
 
 const DashboardHero = () => {
   return (
-    <div className="min-h-screen pt-24 pb-8 ">
+    <div className="min-h-screen pb-8 ">
       {/* Header Section */}
       <div className="flex justify-between items-start mb-8">
         <div>

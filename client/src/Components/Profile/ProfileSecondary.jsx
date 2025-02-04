@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { FaTimes, FaChevronRight, FaExternalLinkAlt } from "react-icons/fa";
 import { platformIcons } from "../../Constants";
-import { CgBell, CgCode, CgTrophy } from "react-icons/cg";
+import { CgBell, CgCode, CgLaptop, CgTrophy, CgWorkAlt } from "react-icons/cg";
 import NotificationItem from "../ui/NotificationItem";
 
 const CustomDialog = ({ open, onClose, children }) => {
@@ -38,7 +38,7 @@ const Badge = ({ type, name }) => (
           ? "bg-gradient-to-br from-yellow-200 to-yellow-500"
           : type === "silver"
           ? "bg-gradient-to-br from-gray-200 to-gray-400"
-          : "bg-gradient-to-br from-amber-200 to-amber-600"
+          : "bg-gradient-to-br from-amber-400 to-amber-800"
       }
       shadow-lg group-hover:scale-105 transform transition-all duration-300
     `}
@@ -51,7 +51,7 @@ const Badge = ({ type, name }) => (
             ? "bg-yellow-100"
             : type === "silver"
             ? "bg-gray-100"
-            : "bg-amber-100"
+            : "bg-amber-200"
         }
         shadow-inner
       `}
@@ -64,7 +64,7 @@ const Badge = ({ type, name }) => (
               ? "text-yellow-600"
               : type === "silver"
               ? "text-gray-600"
-              : "text-amber-700"
+              : "text-amber-900"
           }
         `}
         >
@@ -93,24 +93,36 @@ const ProfileSecondary = ({ userProfile, updatesAndAnnouncements }) => {
               <CgTrophy className="w-5 h-5" />
             </h2>
           </div>
+
           <div className="p-6">
-            <div className="grid grid-cols-2 gap-6 mb-6">
-              {userProfile.badges.slice(0, 4).map((badge) => (
-                <div key={badge.id} className="flex flex-col items-center">
-                  <Badge type={badge.type} name={badge.name} />
-                  <div className="mt-2 text-sm font-medium text-center">
-                    {badge.name}
-                  </div>
+            {userProfile.badges.length === 0 ? (
+              <div className="flex flex-col items-center justify-center p-6">
+                <CgLaptop className="w-12 h-12 text-gray-400" />
+                <p className="mt-4 text-gray-500">
+                  No achievements yet. Keep trying harder!
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-2 gap-6 mb-6">
+                  {userProfile.badges.slice(0, 4).map((badge) => (
+                    <div key={badge.id} className="flex flex-col items-center">
+                      <Badge type={badge.type} name={badge.name} />
+                      <div className="mt-2 text-sm font-medium text-center">
+                        {badge.name}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-            <button
-              onClick={() => setShowBadges(true)}
-              className="w-full py-2 px-4 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-100 transition-colors text-sm font-medium flex items-center justify-center space-x-1"
-            >
-              <span>View all achievements</span>
-              <FaChevronRight className="w-3 h-3" />
-            </button>
+                <button
+                  onClick={() => setShowBadges(true)}
+                  className="w-full py-2 px-4 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-100 transition-colors text-sm font-medium flex items-center justify-center space-x-1"
+                >
+                  <span>View all achievements</span>
+                  <FaChevronRight className="w-3 h-3" />
+                </button>
+              </>
+            )}
           </div>
         </div>
 

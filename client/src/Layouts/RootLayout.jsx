@@ -1,6 +1,7 @@
 import { Outlet, Navigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { HeikiBackground, Footer, Navbar } from "../Components";
+import { ScrollToTop } from "../Utilities";
 
 const RootLayout = () => {
   const userToken = useSelector((state) => state.auth?.userToken);
@@ -22,19 +23,23 @@ const RootLayout = () => {
 
   return (
     <div className="relative ">
+      
       <HeikiBackground
         primaryColor="#00895e"
         secondaryColor="#2f8d46"
         pattern="blocks"
         opacity={0.2}
       />
+
       <div className="relative">
+        <ScrollToTop />
         <Navbar />
-        <div className="relative min-h-[50vh]">
+        <div className="relative py-16 px-16 md:px-32 min-h-[50vh]">
           <Outlet />
         </div>
         <Footer />
       </div>
+
     </div>
   );
 };

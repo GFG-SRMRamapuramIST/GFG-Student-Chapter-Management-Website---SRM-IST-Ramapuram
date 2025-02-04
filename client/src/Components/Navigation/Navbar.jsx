@@ -65,10 +65,24 @@ const Navbar = () => {
       ];
 
   const profileMenuItems = [
-    { name: "My Profile", path: "/profile", icon: <CgProfile /> },
-    { name: "Edit Profile", path: "/profile/edit", icon: <FaUsers /> },
-    { name: "My Team", path: "/profile/team", icon: <FaUsers /> },
-    { name: "Logout", path: "/auth/logout", icon: <IoLogOutOutline /> },
+    {
+      name: "My Profile",
+      path: "/profile",
+      icon: <CgProfile />,
+      variant: "default",
+    },
+    {
+      name: "Edit Profile",
+      path: "/profile/edit",
+      icon: <FaUsers />,
+      variant: "default",
+    },
+    {
+      name: "Logout",
+      path: "/auth/logout",
+      icon: <IoLogOutOutline />,
+      variant: "danger",
+    },
   ];
 
   // Check if a route is active (including nested routes)
@@ -158,7 +172,11 @@ const Navbar = () => {
                           key={item.path}
                           to={item.path}
                           className={`flex items-center space-x-2 px-4 py-2 text-sm transition-colors duration-200
-                            text-gfg-black hover:text-gfgsc-green hover:bg-gfgsc-green-200/30`}
+                            ${
+                              item.variant === "danger"
+                                ? "text-red-600 hover:bg-red-50 hover:text-red-700"
+                                : "text-gfg-black hover:text-gfgsc-green hover:bg-gfgsc-green-200/30"
+                            }`}
                           onClick={() => setIsProfileOpen(false)}
                         >
                           <span className="transition-transform duration-300 group-hover:scale-110">
@@ -204,11 +222,11 @@ const Navbar = () => {
                 >
                   <div
                     className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-base font-medium transition-all duration-200
-                    ${
-                      isActiveRoute(link.path)
-                        ? "text-gfgsc-green bg-gfgsc-green-200/50"
-                        : "text-gfg-black hover:text-gfgsc-green hover:bg-gfgsc-green-200/30"
-                    }`}
+                      ${
+                        isActiveRoute(link.path)
+                          ? "text-gfgsc-green bg-gfgsc-green-200/50"
+                          : "text-gfg-black hover:text-gfgsc-green hover:bg-gfgsc-green-200/30"
+                      }`}
                     onClick={() => setIsOpen(false)}
                   >
                     {link.icon && (
@@ -241,11 +259,13 @@ const Navbar = () => {
                     >
                       <div
                         className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-base font-medium transition-all duration-200
-                        ${
-                          isActiveRoute(item.path)
-                            ? "text-gfgsc-green bg-gfgsc-green-200/50"
-                            : "text-gfg-black hover:text-gfgsc-green hover:bg-gfgsc-green-200/30"
-                        }`}
+                          ${
+                            item.variant === "danger"
+                              ? "text-red-600 hover:bg-red-50 hover:text-red-700"
+                              : isActiveRoute(item.path)
+                              ? "text-gfgsc-green bg-gfgsc-green-200/50"
+                              : "text-gfg-black hover:text-gfgsc-green hover:bg-gfgsc-green-200/30"
+                          }`}
                         onClick={() => setIsOpen(false)}
                       >
                         <span className="transition-transform duration-300 group-hover:scale-110">
@@ -253,16 +273,16 @@ const Navbar = () => {
                         </span>
                         <span>{item.name}</span>
                       </div>
-                      {/* Mobile active indicator line */}
-                      {isActiveRoute(item.path) && (
-                        <motion.div
-                          layoutId="mobileActiveIndicator"
-                          className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gfgsc-green rounded-r-full"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          transition={{ duration: 0.2 }}
-                        />
-                      )}
+                      {isActiveRoute(item.path) &&
+                        item.variant !== "danger" && (
+                          <motion.div
+                            layoutId="mobileActiveIndicator"
+                            className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gfgsc-green rounded-r-full"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.2 }}
+                          />
+                        )}
                     </Link>
                   ))}
                 </div>

@@ -26,6 +26,9 @@ const ProfileHero = ({ userProfile }) => {
                 <span className="text-sm text-emerald-100 bg-emerald-500 px-2 py-1 rounded-full">
                   {userProfile.role}
                 </span>
+                <span className="text-sm text-emerald-100 bg-emerald-500 px-2 py-1 rounded-full">
+                  {userProfile.academic_year}
+                </span>
               </h1>
 
               <p className="text-emerald-100 text-sm leading-relaxed max-w-md">
