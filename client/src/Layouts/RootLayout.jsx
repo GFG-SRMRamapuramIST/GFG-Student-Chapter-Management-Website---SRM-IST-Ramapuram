@@ -34,7 +34,7 @@ const RootLayout = () => {
       <div className="relative">
         <ScrollToTop />
         <Navbar />
-        <div className="relative py-16 px-16 md:px-32 min-h-[50vh]">
+        <div className="relative min-h-[50vh]">
           <Outlet />
         </div>
         <Footer />

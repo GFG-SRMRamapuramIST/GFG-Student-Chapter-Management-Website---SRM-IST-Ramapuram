@@ -44,7 +44,7 @@ const mockLeaderboardData = [
   },
   // ... more mock data
 ].concat(
-  Array.from({ length: 17 }, (_, i) => ({
+  Array.from({ length: 107 }, (_, i) => ({
     id: i + 4,
     rank: i + 4,
     name: `Member ${i + 4}`,
