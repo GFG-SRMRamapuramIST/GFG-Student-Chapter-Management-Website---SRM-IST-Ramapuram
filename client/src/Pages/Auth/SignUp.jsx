@@ -3,7 +3,6 @@ import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { setAuth, setError, setLoading } from "../../Reducers/authReducer";
 import {
   MdEmail,
   MdLock,
@@ -15,7 +14,7 @@ import {
 import { AuthBackground } from "../../Components";
 import { FaLinkedin } from "react-icons/fa";
 import { SiCodechef, SiCodeforces, SiLeetcode } from "react-icons/si";
-import { AuthService } from "../../Services";
+import { AuthServices } from "../../Services";
 import { ToastMsg } from "../../Utilities";
 import { CgEditMarkup } from "react-icons/cg";
 // import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -234,7 +233,7 @@ const SignUp = () => {
   const sendOTP = async () => {
     try {
       dispatch(setLoading(true));
-      await AuthService.sendOTP(getValues("email"));
+      await AuthServices.sendOTP(getValues("email"));
       setOtpSent(true);
       setOtpError("");
       ToastMsg("OTP has been sent to your email address", "success");
@@ -247,6 +246,8 @@ const SignUp = () => {
   };
 
   const onSubmit = async (data) => {
+    console.log("Register Form Data:", data);
+    /**
     try {
       dispatch(setLoading(true));
       const formData = new FormData();
@@ -298,6 +299,7 @@ const SignUp = () => {
     } finally {
       dispatch(setLoading(false));
     }
+      **/
   };
 
   const nextStep = async () => {
@@ -454,7 +456,11 @@ const SignUp = () => {
         animate={{ opacity: 1, x: 0 }}
         className="flex-1 flex items-center justify-center p-8"
       >
-        <div className={`w-full max-w-xl space-y-8 pt-8 ${currentStep === 0 && "mt-8"}`}>
+        <div
+          className={`w-full max-w-xl space-y-8 pt-8 ${
+            currentStep === 0 && "mt-8"
+          }`}
+        >
           <div className="flex justify-between mb-8">
             {steps.map((step, index) => (
               <div

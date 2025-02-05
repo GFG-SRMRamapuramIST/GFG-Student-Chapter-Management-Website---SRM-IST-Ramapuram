@@ -1,5 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+
+// Importing Icons ****************************************************
 import {
   FaHome,
   FaUsers,
@@ -13,14 +17,20 @@ import {
 import { GiHamburgerMenu } from "react-icons/gi";
 import { IoClose } from "react-icons/io5";
 import { SiGeeksforgeeks } from "react-icons/si";
-import { motion, AnimatePresence } from "framer-motion";
 import { BiSolidDashboard, BiUser, BiUserCircle } from "react-icons/bi";
 import { FiChevronDown, FiBook } from "react-icons/fi";
 import { CgProfile } from "react-icons/cg";
 import { IoLogOutOutline } from "react-icons/io5";
+// *********************************************************************
+
 import { logo } from "../../Assets";
 
+import { removeUserToken } from "../../Actions";
+
 const Navbar = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -35,6 +45,12 @@ const Navbar = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const handleLogout = () => {
+    // Removing user token from Redux store
+    dispatch(removeUserToken());
+    navigate("/");
+  };
 
   const navLinks = isLoggedIn
     ? [
@@ -82,6 +98,7 @@ const Navbar = () => {
       path: "/auth/logout",
       icon: <IoLogOutOutline />,
       variant: "danger",
+      onClick: handleLogout,
     },
   ];
 
@@ -177,7 +194,10 @@ const Navbar = () => {
                                 ? "text-red-600 hover:bg-red-50 hover:text-red-700"
                                 : "text-gfg-black hover:text-gfgsc-green hover:bg-gfgsc-green-200/30"
                             }`}
-                          onClick={() => setIsProfileOpen(false)}
+                          onClick={(e) => {
+                            setIsProfileOpen(false);
+                            if (item.onClick) item.onClick(e);
+                          }}
                         >
                           <span className="transition-transform duration-300 group-hover:scale-110">
                             {item.icon}
@@ -256,6 +276,9 @@ const Navbar = () => {
                       key={item.path}
                       to={item.path}
                       className="relative group block"
+                      onClick={(e) => {
+                        if (item.onClick) item.onClick(e);
+                      }}
                     >
                       <div
                         className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-base font-medium transition-all duration-200

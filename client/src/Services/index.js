@@ -1,4 +1,3 @@
-// Single point of import for all services
-import AuthService from "./AuthService";
+import AuthServices from "./AuthServices";
 
-export { AuthService };
+export { AuthServices };

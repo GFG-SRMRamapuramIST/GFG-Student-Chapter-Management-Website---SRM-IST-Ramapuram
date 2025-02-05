@@ -1,13 +1,18 @@
+const nodemailer = require("nodemailer");
 const chalk = require("chalk");
 const bcrypt = require("bcryptjs");
 
 const { Users, AllowedEmail } = require("../Models");
+const { sendEmail } = require("../Utilities");
 
 /*
 ************************** APIs **************************
 
 1. Login API
 2. Register API
+3. Send OTP
+4. Verify OTP
+5. Change Password
 
 **********************************************************
 */
@@ -146,5 +151,118 @@ exports.register = async (req, res) => {
     res
       .status(500)
       .json({ message: "Internal server error", error: error.message });
+  }
+};
+
+//3. Send OTP
+exports.sendOTP = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // Check if email is provided
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+
+    // Check if the email is allowed
+    const user = await Users.findOne({ email });
+    if (!user) {
+      return res.status(403).json({
+        message: "User not found !",
+      });
+    }
+
+    // Generate a random 6-digit OTP
+    const OTP = Math.floor(100000 + Math.random() * 900000);
+    const otpExpiry = Date.now() + 10 * 60 * 1000; // OTP expires in 10 minutes
+
+    // Update user OTP and expiry without fetching the entire document
+    await Users.updateOne({ email }, { resetPasswordOTP: OTP, otpExpiry });
+
+    // Send OTP email asynchronously (does not block response)
+    sendEmail(
+      email,
+      "Reset Password OTP",
+      `Your OTP to reset password is: ${OTP}`
+    ).catch((err) =>
+      console.error(chalk.bgRed.bold("Error sending email:"), err.message)
+    );
+
+    return res.status(200).json({ message: "OTP sent successfully" });
+  } catch (error) {
+    console.log(chalk.bgRed.bold.red("Error sending OTP:"), error.message);
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
+
+//4. Verify OTP
+exports.verifyOTP = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    // Check if email and OTP are provided
+    if (!email || !otp) {
+      return res.status(400).json({ message: "Email and OTP are required" });
+    }
+
+    // Find user by email
+    const user = await Users.findOne({ email });
+
+    if (!user || !user.resetPasswordOTP) {
+      return res.status(400).json({ message: "Invalid or expired OTP" });
+    }
+
+    // Check if OTP is expired
+    if (user.otpExpiry && new Date() > user.otpExpiry) {
+      return res.status(400).json({ message: "OTP has expired" });
+    }
+
+    // Verify OTP
+    if (user.resetPasswordOTP !== Number(otp)) {
+      return res.status(400).json({ message: "Invalid OTP" });
+    }
+
+    // Clear OTP fields after successful verification
+    await Users.updateOne(
+      { email },
+      { $unset: { resetPasswordOTP: "", otpExpiry: "" } }
+    );
+
+    return res.status(200).json({ message: "OTP verified successfully" });
+  } catch (error) {
+    console.log(chalk.bgRed.bold("Error verifying OTP:"), error.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+//5. Change Password
+exports.changePassword = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Check if email and password are provided
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ message: "Email & password are required !" });
+    }
+
+    // Find user by email
+    const user = await Users.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found !" });
+    }
+
+    // Update the password
+    user.password = password;
+    await user.save();
+
+    // Respond with success
+    res.status(200).json({ message: "Password changed successfully !" });
+  } catch (error) {
+    console.log(chalk.bgRed.bold("Error verifying OTP:"), error.message);
+    res.status(500).json({ message: "Internal server error" });
   }
 };

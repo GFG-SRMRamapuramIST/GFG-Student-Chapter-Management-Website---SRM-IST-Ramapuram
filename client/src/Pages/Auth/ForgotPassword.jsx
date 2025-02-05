@@ -3,7 +3,6 @@ import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { setError, setLoading } from "../../Reducers/authReducer";
 import { MdEmail, MdLock, MdKeyboardBackspace } from "react-icons/md";
 import { HiKey } from "react-icons/hi";
 import { AuthBackground } from '../../Components';

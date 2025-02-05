@@ -15,6 +15,9 @@ router.use(express.static(path.resolve(__dirname, "Public")));
 
 1. Login API - "{BACKEND_URL}/api/v1/auth/login"
 2. Register API - "{BACKEND_URL}/api/v1/auth/register"
+3. Send OTP - "{BACKEND_URL}/api/v1/auth/send-otp"
+4. Verify OTP - "{BACKEND_URL}/api/v1/auth/verify-otp"
+5. Change Password - "{BACKEND_URL}/api/v1/auth/change-password"
 
 **********************************************************
 */
@@ -39,7 +42,7 @@ var upload = multer({
     }
     cb(null, true);
   },
-  limits: { fileSize: 2 * 1024 * 1024 }, // Limit file size to 2 MB
+  limits: { fileSize: 5 * 1024 * 1024 }, // Limit file size to 5 MB
 });
 
 // Login API
@@ -48,9 +51,30 @@ router.post("/login", loginSignupRateLimiter, authControllers.loginUser);
 // Register API
 router.post(
   "/register",
-  upload.single("file"),
+  upload.single("profilePicture"),
   loginSignupRateLimiter,
   authControllers.register
 );
+
+// Send OTP
+router.post(
+  "/send-otp",
+  loginSignupRateLimiter,
+  authControllers.sendOTP
+)
+
+// Verify OTP
+router.post(
+  "/verify-otp",
+  loginSignupRateLimiter,
+  authControllers.verifyOTP
+)
+
+// Change Password
+router.post(
+  "/change-password",
+  loginSignupRateLimiter,
+  authControllers.changePassword
+)
 
 module.exports = router;

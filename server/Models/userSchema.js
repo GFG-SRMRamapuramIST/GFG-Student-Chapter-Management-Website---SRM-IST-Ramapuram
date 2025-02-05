@@ -93,6 +93,14 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
+  resetPasswordOTP: {
+    type: Number,
+    default: null,
+  },
+  otpExpiry: {
+    type: Date,
+    default: null,
+  },
 });
 
 // Hash password when password is changed/modified
@@ -120,8 +128,7 @@ userSchema.methods.generateAuthtoken = async function () {
       expiresIn: "1h", // 1h sets the expiration to 1 hour (30m for 30 minutes)
     });
 
-    this.authToken = newToken;
-    await this.save();
+    await this.updateOne({ authToken: newToken });
     return newToken;
   } catch (error) {
     console.error(

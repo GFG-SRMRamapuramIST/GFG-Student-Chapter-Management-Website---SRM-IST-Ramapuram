@@ -1,19 +1,29 @@
+import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
-import { AuthBackground, InputField } from "../../Components";
-import { FaEnvelope, FaLock } from "react-icons/fa";
 import { motion } from "framer-motion";
-import { setError, setLoading } from "../../Reducers/authReducer";
-import { useState } from "react";
-import { AuthService } from "../../Services";
+
+// Importing Icons
+import { FaEnvelope, FaLock, FaSpinner } from "react-icons/fa";
+
+import { AuthBackground, InputField } from "../../Components";
+import { ToastMsg } from "../../Utilities";
+
+// Importing APIs
+import { AuthServices } from "../../Services";
+
+import { storeUserToken } from "../../Actions";
 
 const Login = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  // *********** Login Form Handle Starts here ***********
+  const [formLoading, setFormLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -21,21 +31,31 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setFormLoading(true);
 
     try {
-      dispatch(setLoading(true));
-      // Placeholder for API call
-      console.log("Login Data:", formData);
-      const response = await AuthService.register(formData);
-      console.log("Response:", response);
-      // dispatch(setAuth(response.token));
-      // navigate('/dashboard');
-    } catch (err) {
-      dispatch(setError(err.message));
+      const response = await AuthServices.loginFunction(
+        formData.email,
+        formData.password
+      );
+
+      if (response.status === 200) {
+        ToastMsg(response.data.message, "success");
+
+        dispatch(storeUserToken(response.data.token));
+        navigate("/dashboard");
+      } else {
+        ToastMsg(response.response.data.message, "error");
+      }
+    } catch (error) {
+      ToastMsg("Internal Server Error!", "error");
+      console.error("Login Error:", error.message);
     } finally {
-      dispatch(setLoading(false));
+      setFormData({ email: "", password: "" });
+      setFormLoading(false);
     }
   };
+  // *********** Login Form Handle Ends here ***********
 
   return (
     <div className="min-h-screen flex">
@@ -88,13 +108,17 @@ const Login = () => {
 
             <button
               type="submit"
+              disabled={formLoading}
               className="w-full py-3 px-4 rounded-lg bg-gfgsc-green text-white"
             >
+              {formLoading ? (
+                <FaSpinner className="animate-spin inline-block" />
+              ) : null}{" "}
               Login
             </button>
           </form>
           <p className="text-center text-gray-600">
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <Link
               to="/auth/register"
               className="text-gfgsc-green hover:text-gfg-green font-medium"
