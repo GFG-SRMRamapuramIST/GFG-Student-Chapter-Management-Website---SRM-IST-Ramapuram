@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  IoMedal,
   IoPersonOutline,
   IoTelescopeOutline,
   IoChevronForwardOutline,
@@ -57,12 +56,42 @@ const mockLeaderboardData = [
   }))
 );
 
-const LeaderboardHero = ({ topThree }) => {
+const mockTeamData = [
+  {
+    id: 1,
+    rank: 1,
+    name: "Code Warriors",
+    members: [
+      "https://placehold.co/100x100",
+      "https://placehold.co/100x100",
+      "https://placehold.co/100x100",
+      "https://placehold.co/100x100",
+    ],
+    additionalMembers: 2,
+    points: 1250,
+  },
+  // Add more mock team data...
+].concat(
+  Array.from({ length: 27 }, (_, i) => ({
+    id: i + 4,
+    rank: i + 4,
+    name: `Team ${String.fromCharCode(65 + i)}`,
+    members: Array(3).fill("https://placehold.co/100x100"),
+    additionalMembers: Math.floor(Math.random() * 3),
+    points: Math.floor(Math.random() * 1000) + 500,
+  }))
+);
+
+const LeaderboardHero = ({ topThree, isTeam }) => {
   const medalColors = [
-    "bg-gradient-to-br from-yellow-400 to-yellow-600",
-    "bg-gradient-to-br from-gray-300 to-gray-500",
-    "bg-gradient-to-br from-amber-600 to-amber-800",
+    "bg-gradient-to-br from-[#FFD700] to-[#FFA500] border-[#FFD700]",
+    "bg-gradient-to-br from-[#C0C0C0] to-[#A9A9A9] border-[#C0C0C0]",
+    "bg-gradient-to-br from-[#CD7F32] to-[#8B4513] border-[#CD7F32]",
   ];
+
+  const sizes = ["scale-95", "scale-110", "scale-90"];
+  const [silver, gold, bronze] = topThree;
+  const orderedMembers = [silver, gold, bronze];
 
   return (
     <motion.div
@@ -70,33 +99,93 @@ const LeaderboardHero = ({ topThree }) => {
       animate={{ opacity: 1, y: 0 }}
       className="flex justify-center items-center space-x-4 md:space-x-8 mb-8 px-4"
     >
-      {topThree.map((member, index) => (
+      {orderedMembers.map((member, index) => (
         <motion.div
           key={member.id}
-          whileHover={{ scale: 1.05 }}
+          whileHover={{ scale: sizes[index] * 1.02 }}
           className={`
-                    flex flex-col items-center p-4 rounded-xl shadow-lg
-                    transform transition-all duration-300
-                    ${index === 1 ? "scale-110" : "scale-100"}
-                    ${medalColors[index]}
-                `}
+            flex flex-col items-center p-4 rounded-xl shadow-lg
+            transform transition-all duration-200 border-2
+            ${sizes[index]} ${medalColors[index]}
+          `}
         >
-          <div className="relative">
+          {!isTeam && (
             <img
               src={member.pfp}
               alt={member.name}
-              className="w-24 h-24 rounded-full border-4 border-white shadow-md"
+              className="w-20 h-20 rounded-full border-2 border-white shadow-md"
             />
-          </div>
+          )}
           <h3 className="text-white font-bold mt-2">{member.name}</h3>
-          <p className="text-white/80 text-sm">
-            {member.problemsSolved} Problems
+          <p className="text-white/90 text-sm">
+            {isTeam
+              ? `${member.points} Points`
+              : `${member.problemsSolved} Problems`}
           </p>
         </motion.div>
       ))}
     </motion.div>
   );
 };
+
+// Add TeamLeaderboard component
+const TeamLeaderboard = ({ data }) => (
+  <div className="bg-white rounded-xl shadow-md overflow-hidden">
+    <table className="w-full">
+      <thead className="bg-gfgsc-green-200">
+        <tr>
+          <th className="px-4 py-3 text-left text-xs font-medium text-gfg-black uppercase">
+            Rank
+          </th>
+          <th className="px-4 py-3 text-left text-xs font-medium text-gfg-black uppercase">
+            Team
+          </th>
+          <th className="px-4 py-3 text-left text-xs font-medium text-gfg-black uppercase">
+            Members
+          </th>
+          <th className="px-4 py-3 text-right text-xs font-medium text-gfg-black uppercase">
+            Points
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {data.map((team) => (
+          <motion.tr
+            key={team.id}
+            whileHover={{
+              backgroundColor: "#b3e6d4",
+              transition: { duration: 0.1 },
+            }}
+            className="border-b border-gfgsc-green-200"
+          >
+            <td className="px-4 py-4 whitespace-nowrap text-sm">{team.rank}</td>
+            <td className="px-4 py-4 whitespace-nowrap text-sm">{team.name}</td>
+            <td className="px-4 py-4">
+              <div className="flex items-center">
+                {team.members.slice(0, 3).map((pfp, i) => (
+                  <img
+                    key={i}
+                    src={pfp}
+                    alt=""
+                    className="w-8 h-8 rounded-full -ml-2 first:ml-0 border-2 border-white"
+                  />
+                ))}
+                {team.additionalMembers > 0 && (
+                  <span className="ml-1 text-sm text-gray-500">
+                    +{team.additionalMembers}
+                  </span>
+                )}
+              </div>
+            </td>
+            <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
+              {team.points}
+            </td>
+          </motion.tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+);
 
 const Leaderboard = () => {
   const [activeTab, setActiveTab] = useState("individual");
@@ -105,6 +194,11 @@ const Leaderboard = () => {
 
   const topThree = mockLeaderboardData.slice(0, 3);
   const paginatedData = mockLeaderboardData.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const paginatedTeamData = mockTeamData.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
@@ -184,7 +278,7 @@ const Leaderboard = () => {
         </div>
 
         {/* Leaderboard Hero for Top 3 */}
-        <LeaderboardHero topThree={topThree} />
+        <LeaderboardHero topThree={topThree} isTeam={activeTab === "team"} />
 
         {/* Leaderboard Table */}
         <AnimatePresence>
@@ -307,6 +401,16 @@ const Leaderboard = () => {
                   <IoChevronForwardOutline className="w-5 h-5" />
                 </motion.button>
               </div>
+            </motion.div>
+          )}
+
+          {activeTab === "team" && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <TeamLeaderboard data={paginatedTeamData} />
             </motion.div>
           )}
         </AnimatePresence>

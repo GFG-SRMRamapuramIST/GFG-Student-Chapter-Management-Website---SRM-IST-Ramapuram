@@ -42,10 +42,6 @@ const steps = [
       "codolioUsername",
     ],
   },
-  // {
-  //   title: "Profile Picture",
-  //   fields: ["profilePicture"],
-  // },
   {
     title: "Verify Email",
     fields: ["otp"],
@@ -84,7 +80,7 @@ const SignUp = () => {
       codechefUsername: "",
       codeforcesUsername: "",
       codolioUsername: "",
-      profilePicture: null,
+      profilePicture: [],
       otp: "",
     },
   });
@@ -169,17 +165,16 @@ const SignUp = () => {
       icon: <MdAddAPhoto />,
       placeholder: "Upload Profile Picture",
       validation: {
-        required: "Profile picture is required",
+        required: false,
         validate: {
           lessThan2MB: (files) =>
-            !files[0] ||
-            files[0].size <= 2000000 ||
+            files && files[0] && files[0].size <= 2000000 || 
             "Profile picture must be less than 2MB",
           acceptedFormats: (files) =>
-            !files[0] ||
-            ["image/jpeg", "image/png", "image/gif"].includes(files[0]?.type) ||
-            "Only JPG, PNG and GIF files are allowed",
-        },
+            files && files[0] && 
+            ["image/jpeg", "image/png", "image/gif"].includes(files[0].type) || 
+            "Only JPG, PNG and GIF files are allowed"
+        }
       },
     },
     otp: {
@@ -197,24 +192,21 @@ const SignUp = () => {
 
   const handleProfilePictureChange = (event) => {
     try {
-      console.log("Profile Picture Change Event Triggered");
       const file = event.target.files[0];
-      console.log("Selected File:", file);
 
       if (file) {
-        // Set form value
-        setValue("profilePicture", event.target.files);
+        // Set form value as an array to match react-hook-form's file input expectation
+        setValue("profilePicture", [file], { shouldValidate: true });
 
         // Create FileReader instance
         const reader = new FileReader();
 
-        // Add error handling for FileReader
         reader.onerror = () => {
           console.error("FileReader error:", reader.error);
+          setValue("profilePicture", null);
         };
 
         reader.onloadend = () => {
-          console.log("FileReader completed");
           setProfilePreview(reader.result);
         };
 
@@ -223,6 +215,7 @@ const SignUp = () => {
       }
     } catch (error) {
       console.error("Profile picture change error:", error);
+      setValue("profilePicture", null);
     }
   };
 
@@ -230,26 +223,9 @@ const SignUp = () => {
     fileInputRef.current.click();
   };
 
-  const sendOTP = async () => {
-    try {
-      dispatch(setLoading(true));
-      await AuthServices.sendOTP(getValues("email"));
-      setOtpSent(true);
-      setOtpError("");
-      ToastMsg("OTP has been sent to your email address", "success");
-    } catch (err) {
-      setOtpError(err.message);
-      ToastMsg(err.message, "error");
-    } finally {
-      dispatch(setLoading(false));
-    }
-  };
-
   const onSubmit = async (data) => {
     console.log("Register Form Data:", data);
-    /**
     try {
-      dispatch(setLoading(true));
       const formData = new FormData();
 
       // Detailed console logging of all form fields
@@ -285,13 +261,13 @@ const SignUp = () => {
       });
 
       // Verify OTP first
-      await AuthService.verifyOTP({
-        email: data.email,
-        otp: data.otp,
-      });
+      // await AuthService.verifyOTP({
+      //   email: data.email,
+      //   otp: data.otp,
+      // });
 
-      const response = await AuthService.register(formData);
-      dispatch(setAuth(response.token));
+      // const response = await AuthService.register(formData);
+      // dispatch(setAuth(response.token));
       navigate("/dashboard");
     } catch (err) {
       dispatch(setError(err.message));
@@ -299,18 +275,13 @@ const SignUp = () => {
     } finally {
       dispatch(setLoading(false));
     }
-      **/
   };
 
   const nextStep = async () => {
     const fields = steps[currentStep].fields;
     const isValid = await trigger(fields);
-
+  
     if (isValid) {
-      if (currentStep === 3) {
-        // Send OTP before moving to final step
-        await sendOTP();
-      }
       setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
     }
   };
@@ -323,12 +294,10 @@ const SignUp = () => {
           type="file"
           id="profilePicture"
           accept="image/*"
+          ref={fileInputRef}
+          {...register("profilePicture", fieldDetails["profilePicture"].validation)}
           onChange={handleProfilePictureChange}
           className="hidden"
-          {...register("profilePicture", {
-            ...fieldDetails.profilePicture.validation,
-            onChange: (e) => handleProfilePictureChange(e),
-          })}
         />
 
         {/* Image Preview or Upload Button */}
@@ -392,13 +361,6 @@ const SignUp = () => {
           {errors[name] && (
             <p className="text-red-500 text-xs mt-1">{errors[name].message}</p>
           )}
-          <button
-            type="button"
-            onClick={sendOTP}
-            className="w-full mt-2 py-2 px-4 text-sm text-gfgsc-green hover:text-gfg-green transition-colors"
-          >
-            Resend OTP
-          </button>
         </div>
       );
     }
