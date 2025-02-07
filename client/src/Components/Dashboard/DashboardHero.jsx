@@ -235,6 +235,16 @@ const DashboardHero = () => {
               ))}
             </div>
           </div>
+
+          {/* Annoucements */}
+          <div className="bg-white p-6 rounded-2xl shadow-sm">
+            <h3 className="font-semibold text-gfg-black mb-4">Annoucements</h3>
+            <div className="space-y-2">
+              {notifications.map((notification, index) => (
+                <NotificationItem key={index} message={notification} />
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>

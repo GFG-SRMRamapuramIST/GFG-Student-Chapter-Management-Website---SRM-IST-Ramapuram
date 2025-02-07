@@ -1,6 +1,19 @@
 import { RouterProvider } from "react-router-dom";
 import { createBrowserRouter } from "react-router-dom";
-import { LandingPage, Dashboard, Login, SignUp, ForgotPassword, Profile, EditProfile, Teams, Leaderboard } from "./Pages";
+import {
+  LandingPage,
+  Dashboard,
+  Login,
+  SignUp,
+  ForgotPassword,
+  Profile,
+  EditProfile,
+  Teams,
+  Leaderboard,
+  TermsAndConditions,
+  UserManual,
+  PrivacyPolicy,
+} from "./Pages";
 import { AuthLayout, RootLayout, AppLayout } from "./Layouts";
 
 // Auth routes (public)
@@ -10,8 +23,8 @@ const authRoutes = {
   children: [
     { path: "login", element: <Login /> },
     { path: "register", element: <SignUp /> },
-    { path: "forgot-password", element: <ForgotPassword /> }
-  ]
+    { path: "forgot-password", element: <ForgotPassword /> },
+  ],
 };
 
 // App routes (protected)
@@ -25,22 +38,26 @@ const appRoutes = {
       path: "profile",
       children: [
         { index: true, element: <Profile /> },
-        { path: "edit", element: <EditProfile /> }
-      ]
-    }
-  ]
+        { path: "edit", element: <EditProfile /> },
+      ],
+    },
+    {
+      path: "support",
+      children: [
+        { path: "terms", element: <TermsAndConditions /> },
+        { path: "user-manual", element: <UserManual /> },
+        { path: "privacy", element: <PrivacyPolicy /> },
+      ],
+    },
+  ],
 };
 
 // Root router configuration
 const router = createBrowserRouter([
   {
     element: <RootLayout />,
-    children: [
-      { path: "/", element: <LandingPage /> },
-      authRoutes,
-      appRoutes
-    ]
-  }
+    children: [{ path: "/", element: <LandingPage /> }, authRoutes, appRoutes],
+  },
 ]);
 
 const App = () => {

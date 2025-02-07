@@ -68,22 +68,22 @@ const Footer = () => {
             <h4 className="text-lg font-semibold mb-4 text-gfgsc-green-400">Support & Policies</h4>
             <ul className="space-y-2">
               <li>
-                <Link to="/report-issue" className="text-gray-400 hover:text-gfgsc-green-400 transition-colors duration-200">
+                <Link to="/support/report-issue" className="text-gray-400 hover:text-gfgsc-green-400 transition-colors duration-200">
                   Report an Issue
                 </Link>
               </li>
               <li>
-                <Link to="/terms" className="text-gray-400 hover:text-gfgsc-green-400 transition-colors duration-200">
+                <Link to="/support/terms" className="text-gray-400 hover:text-gfgsc-green-400 transition-colors duration-200">
                   Terms & Conditions
                 </Link>
               </li>
               <li>
-                <Link to="/user-manual" className="text-gray-400 hover:text-gfgsc-green-400 transition-colors duration-200">
+                <Link to="/support/user-manual" className="text-gray-400 hover:text-gfgsc-green-400 transition-colors duration-200">
                   User Manual
                 </Link>
               </li>
               <li>
-                <Link to="/privacy" className="text-gray-400 hover:text-gfgsc-green-400 transition-colors duration-200">
+                <Link to="/support/privacy" className="text-gray-400 hover:text-gfgsc-green-400 transition-colors duration-200">
                   Privacy Policy
                 </Link>
               </li>

@@ -40,7 +40,7 @@ const mockLeaderboardData = [
   },
   // ... more mock data
 ].concat(
-  Array.from({ length: 40 }, (_, i) => ({
+  Array.from({ length: 100 }, (_, i) => ({
     id: i + 4,
     rank: i + 4,
     name: `Member ${i + 4}`,
@@ -51,13 +51,13 @@ const mockLeaderboardData = [
     problemsSolved: Math.floor(Math.random() * 200) + 100,
   }))
 ).concat(
-  Array.from({ length: 15 }, (_, i) => ({
+  Array.from({ length: 50 }, (_, i) => ({
     id: i + 4,
     rank: i + 4,
     name: `User ${i + 4}`,
     pfp: "https://placehold.co/100x100",
     position: "User",
-    academicYear: `${Math.floor(Math.random() * 4) + 1}st Year`,
+    academicYear: `${Math.floor(Math.random() * 3) + 1}st Year`,
     team: `Team ${String.fromCharCode(65 + Math.floor(i / 3))}`,
     problemsSolved: Math.floor(Math.random() * 200) + 100,
   }))

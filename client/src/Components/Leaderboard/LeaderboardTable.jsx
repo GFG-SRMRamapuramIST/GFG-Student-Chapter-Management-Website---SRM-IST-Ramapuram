@@ -13,7 +13,7 @@ const LeaderboardTable = ({ data, isTeam }) => {
     { key: 'position', label: 'Position' },
     { key: 'academicYear', label: 'Academic Year' },
     { key: 'team', label: 'Team' },
-    { key: 'problemsSolved', label: 'Problems Solved', align: 'right' }
+    { key: 'points', label: 'Points', align: 'right' }
   ];
 
   const getPositionStyle = (position) => {
