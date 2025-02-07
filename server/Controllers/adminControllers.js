@@ -108,8 +108,8 @@ exports.uploadCSVAllowedEmails = async (req, res) => {
           continue;
         }
 
-        // Generate a random 8-character OTP
-        const OTP = crypto.randomBytes(4).toString("hex");
+        // Generate a random 6 digit OTP
+        const OTP = Math.floor(100000 + Math.random() * 900000).toString();
 
         // Send an email invitation with the OTP
         const mailOptions = {
@@ -193,8 +193,8 @@ exports.addAllowedEmails = async (req, res) => {
 
       const alreadyAllowed = await AllowedEmail.findOne({ email });
       if (!alreadyAllowed) {
-        // Generate a random 8-character OTP
-        const OTP = crypto.randomBytes(4).toString("hex");
+        // Generate a random 6 digit OTP
+        const OTP = Math.floor(100000 + Math.random() * 900000).toString();
 
         // Send an email invitation with the OTP
         const mailOptions = {

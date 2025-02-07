@@ -50,23 +50,23 @@ const userSchema = new mongoose.Schema({
     enum: ["USER", "MEMBER", "COREMEMBER", "ADMIN"],
     default: "USER",
   },
-  linkedinProfileLink: {
+  linkedinUsername: {
     type: String,
     default: null,
   },
-  codolioProfileLink: {
+  codolioUsername: {
     type: String,
     default: null,
   },
-  leetcodeProfileLink: {
+  leetcodeUsername: {
     type: String,
     default: null,
   },
-  codechefProfileLink: {
+  codechefUsername: {
     type: String,
     default: null,
   },
-  codeforcesProfileLink: {
+  codeforcesUsername: {
     type: String,
     default: null,
   },

@@ -1,8 +1,9 @@
 import React, { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
+
+// Importing Icons
 import {
   MdEmail,
   MdLock,
@@ -11,13 +12,15 @@ import {
   MdCode,
   MdAddAPhoto,
 } from "react-icons/md";
-import { AuthBackground } from "../../Components";
-import { FaLinkedin } from "react-icons/fa";
+import { FaLinkedin, FaSpinner } from "react-icons/fa";
 import { SiCodechef, SiCodeforces, SiLeetcode } from "react-icons/si";
-import { AuthServices } from "../../Services";
-import { ToastMsg } from "../../Utilities";
 import { CgEditMarkup } from "react-icons/cg";
-// import { Alert, AlertDescription } from "@/components/ui/alert";
+
+import { AuthBackground } from "../../Components";
+import { ToastMsg } from "../../Utilities";
+
+// Importing APIs
+import { AuthServices } from "../../Services";
 
 const steps = [
   {
@@ -49,14 +52,15 @@ const steps = [
 ];
 
 const SignUp = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const [loading, setLoading] = useState(false);
+
   const [currentStep, setCurrentStep] = useState(0);
   const [profilePreview, setProfilePreview] = useState(null);
-  const [otpSent, setOtpSent] = useState(false);
-  const [otpError, setOtpError] = useState("");
   const fileInputRef = useRef(null);
 
+  // ********** Sign Up Form Configuration Starts Here **********
   const {
     register,
     handleSubmit,
@@ -64,7 +68,7 @@ const SignUp = () => {
     formState: { errors },
     trigger,
     setValue,
-    getValues,
+    reset,
   } = useForm({
     mode: "onChange",
     defaultValues: {
@@ -85,6 +89,7 @@ const SignUp = () => {
     },
   });
 
+  // Declaring/defining all our input fields
   const fieldDetails = {
     name: {
       icon: <MdPerson />,
@@ -168,13 +173,16 @@ const SignUp = () => {
         required: false,
         validate: {
           lessThan2MB: (files) =>
-            files && files[0] && files[0].size <= 2000000 || 
+            (files && files[0] && files[0].size <= 2000000) ||
             "Profile picture must be less than 2MB",
           acceptedFormats: (files) =>
-            files && files[0] && 
-            ["image/jpeg", "image/png", "image/gif"].includes(files[0].type) || 
-            "Only JPG, PNG and GIF files are allowed"
-        }
+            (files &&
+              files[0] &&
+              ["image/jpeg", "image/png", "image/gif"].includes(
+                files[0].type
+              )) ||
+            "Only JPG, PNG and GIF files are allowed",
+        },
       },
     },
     otp: {
@@ -189,153 +197,7 @@ const SignUp = () => {
       },
     },
   };
-
-  const handleProfilePictureChange = (event) => {
-    try {
-      const file = event.target.files[0];
-
-      if (file) {
-        // Set form value as an array to match react-hook-form's file input expectation
-        setValue("profilePicture", [file], { shouldValidate: true });
-
-        // Create FileReader instance
-        const reader = new FileReader();
-
-        reader.onerror = () => {
-          console.error("FileReader error:", reader.error);
-          setValue("profilePicture", null);
-        };
-
-        reader.onloadend = () => {
-          setProfilePreview(reader.result);
-        };
-
-        // Start reading the file
-        reader.readAsDataURL(file);
-      }
-    } catch (error) {
-      console.error("Profile picture change error:", error);
-      setValue("profilePicture", null);
-    }
-  };
-
-  const triggerFileInput = () => {
-    fileInputRef.current.click();
-  };
-
-  const onSubmit = async (data) => {
-    console.log("Register Form Data:", data);
-    try {
-      const formData = new FormData();
-
-      // Detailed console logging of all form fields
-      console.log("Full Form Data Submission:", {
-        name: data.name,
-        email: data.email,
-        phoneNumber: data.phoneNumber,
-        registrationNumber: data.registrationNumber,
-        academicYear: data.academicYear,
-        linkedinUsername: data.linkedinUsername,
-        leetcodeUsername: data.leetcodeUsername,
-        codechefUsername: data.codechefUsername,
-        codeforcesUsername: data.codeforcesUsername,
-        codolioUsername: data.codolioUsername,
-        profilePicture: data.profilePicture[0]
-          ? {
-              name: data.profilePicture[0].name,
-              type: data.profilePicture[0].type,
-              size: data.profilePicture[0].size,
-            }
-          : null,
-      });
-
-      // Append all form fields
-      Object.keys(data).forEach((key) => {
-        if (key !== "confirmPassword") {
-          if (key === "profilePicture") {
-            formData.append(key, data[key][0]);
-          } else {
-            formData.append(key, data[key]);
-          }
-        }
-      });
-
-      // Verify OTP first
-      // await AuthService.verifyOTP({
-      //   email: data.email,
-      //   otp: data.otp,
-      // });
-
-      // const response = await AuthService.register(formData);
-      // dispatch(setAuth(response.token));
-      navigate("/dashboard");
-    } catch (err) {
-      dispatch(setError(err.message));
-      ToastMsg(err.message, "error");
-    } finally {
-      dispatch(setLoading(false));
-    }
-  };
-
-  const nextStep = async () => {
-    const fields = steps[currentStep].fields;
-    const isValid = await trigger(fields);
-  
-    if (isValid) {
-      setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
-    }
-  };
-
-  const renderProfilePictureField = () => {
-    return (
-      <div className="flex flex-col items-center justify-center gap-4">
-        {/* Hidden File Input */}
-        <input
-          type="file"
-          id="profilePicture"
-          accept="image/*"
-          ref={fileInputRef}
-          {...register("profilePicture", fieldDetails["profilePicture"].validation)}
-          onChange={handleProfilePictureChange}
-          className="hidden"
-        />
-
-        {/* Image Preview or Upload Button */}
-        <label
-          htmlFor="profilePicture"
-          className="cursor-pointer"
-          onClick={(e) => {
-            console.log("Label clicked");
-            e.currentTarget.querySelector('input[type="file"]')?.click();
-          }}
-        >
-          {profilePreview ? (
-            <div className="relative">
-              <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-gfgsc-green">
-                <img
-                  src={profilePreview}
-                  alt="Profile"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="absolute inset-0 rounded-full flex items-center justify-center opacity-0 hover:opacity-100 bg-black/40 transition-opacity">
-                <span className="text-white flex items-center gap-2">
-                  <CgEditMarkup className="w-5 h-5" />
-                  Change
-                </span>
-              </div>
-            </div>
-          ) : (
-            <div className="w-32 h-32 rounded-lg border-2 border-dashed border-gray-300 hover:border-gfgsc-green transition-colors flex flex-col items-center justify-center gap-2">
-              <MdAddAPhoto className="w-8 h-8 text-gray-400" />
-              <span className="text-sm text-gray-500">Upload Picture</span>
-            </div>
-          )}
-        </label>
-      </div>
-    );
-  };
-
+  // Function to render our fields
   const renderField = (name) => {
     const { icon, placeholder, validation } = fieldDetails[name];
 
@@ -407,6 +269,138 @@ const SignUp = () => {
         )}
       </div>
     );
+  };
+
+  // Function to handle our From submission
+  const onSubmit = async (data) => {
+    setLoading(true);
+
+    // Append all fields in a FormData object
+    const formData = new FormData();
+    Object.keys(data).forEach((key) => {
+      if (key !== "confirmPassword") {
+        if (key === "profilePicture") {
+          formData.append(key, data[key][0]);
+        } else {
+          formData.append(key, data[key]);
+        }
+      }
+    });
+
+    try {
+      const response = await AuthServices.registerFunction(formData);
+
+      if (response.status === 200) {
+        ToastMsg(response.data.message, "success");
+      } else {
+        ToastMsg(response.response.data.message, "error");
+        console.log("Sign-Up Error:", response.response.data.message);
+      }
+
+      navigate("/auth/login");
+    } catch (error) {
+      ToastMsg("Internal Server Error!", "error");
+      console.error("Sign-Up Error:", error.message);
+    } finally {
+      setLoading(false);
+      reset();
+    }
+  };
+  // ********** Sign Up Form Configuration Ends Here **********
+
+  // ********** Profile Picture Handler Starts Here **********
+  const handleProfilePictureChange = (event) => {
+    try {
+      const file = event.target.files[0];
+
+      if (file) {
+        // Set form value as an array to match react-hook-form's file input expectation
+        setValue("profilePicture", [file], { shouldValidate: true });
+
+        // Create FileReader instance
+        const reader = new FileReader();
+
+        reader.onerror = () => {
+          console.error("FileReader error:", reader.error);
+          setValue("profilePicture", null);
+        };
+
+        reader.onloadend = () => {
+          setProfilePreview(reader.result);
+        };
+
+        // Start reading the file
+        reader.readAsDataURL(file);
+      }
+    } catch (error) {
+      console.error("Profile picture change error:", error);
+      setValue("profilePicture", null);
+    }
+  };
+
+  const renderProfilePictureField = () => {
+    return (
+      <div className="flex flex-col items-center justify-center gap-4">
+        {/* Hidden File Input */}
+        <input
+          type="file"
+          id="profilePicture"
+          accept="image/*"
+          ref={fileInputRef}
+          {...register(
+            "profilePicture",
+            fieldDetails["profilePicture"].validation
+          )}
+          onChange={handleProfilePictureChange}
+          className="hidden"
+        />
+
+        {/* Image Preview or Upload Button */}
+        <label
+          htmlFor="profilePicture"
+          className="cursor-pointer"
+          onClick={(e) => {
+            console.log("Label clicked");
+            e.currentTarget.querySelector('input[type="file"]')?.click();
+          }}
+        >
+          {profilePreview ? (
+            <div className="relative">
+              <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-gfgsc-green">
+                <img
+                  src={profilePreview}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="absolute inset-0 rounded-full flex items-center justify-center opacity-0 hover:opacity-100 bg-black/40 transition-opacity">
+                <span className="text-white flex items-center gap-2">
+                  <CgEditMarkup className="w-5 h-5" />
+                  Change
+                </span>
+              </div>
+            </div>
+          ) : (
+            <div className="w-32 h-32 rounded-lg border-2 border-dashed border-gray-300 hover:border-gfgsc-green transition-colors flex flex-col items-center justify-center gap-2">
+              <MdAddAPhoto className="w-8 h-8 text-gray-400" />
+              <span className="text-sm text-gray-500">Upload Picture</span>
+            </div>
+          )}
+        </label>
+      </div>
+    );
+  };
+  // ********** Profile Picture Handler Ends Here ************
+
+  // Function to move to the next section in the form
+  const nextStep = async () => {
+    /*const fields = steps[currentStep].fields;
+    const isValid = await trigger(fields);
+  
+    if (isValid) {
+      setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
+    }*/
+    setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
   };
 
   return (
@@ -485,8 +479,12 @@ const SignUp = () => {
               ) : (
                 <button
                   type="submit"
+                  disabled={loading}
                   className="flex-1 py-3 px-4 rounded-lg bg-gfgsc-green text-white hover:bg-gfg-green transition-colors"
                 >
+                  {loading ? (
+                    <FaSpinner className="animate-spin inline-block" />
+                  ) : null}{" "}
                   Create Account
                 </button>
               )}

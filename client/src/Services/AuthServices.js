@@ -13,7 +13,7 @@ const loginFunction = async (email, password) => {
 const registerFunction = async (formData) => {
   return await commonrequest(
     "POST",
-    `${BACKEND_URL}/api/v1/register`,
+    `${BACKEND_URL}/api/v1/auth/register`,
     formData,
     {
       "Content-Type": "multipart/form-data",

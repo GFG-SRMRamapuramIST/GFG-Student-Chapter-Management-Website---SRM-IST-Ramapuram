@@ -1,9 +1,9 @@
-const nodemailer = require("nodemailer");
 const chalk = require("chalk");
 const bcrypt = require("bcryptjs");
 
 const { Users, AllowedEmail } = require("../Models");
-const { sendEmail } = require("../Utilities");
+
+const { sendEmail, cloudinary } = require("../Utilities");
 
 /*
 ************************** APIs **************************
@@ -56,6 +56,13 @@ exports.loginUser = async (req, res) => {
 
 //2. Register API
 exports.register = async (req, res) => {
+  let upload;
+  if (req.file) {
+    upload = await cloudinary.uploader.upload(req.file.path);
+  } else {
+    upload = null;
+  }
+
   try {
     const {
       name,
@@ -64,11 +71,11 @@ exports.register = async (req, res) => {
       registrationNumber,
       academicYear,
       phoneNumber,
-      linkedinProfileLink,
-      codolioProfileLink,
-      leetcodeProfileLink,
-      codechefProfileLink,
-      codeforcesProfileLink,
+      linkedinUsername,
+      codolioUsername,
+      leetcodeUsername,
+      codechefUsername,
+      codeforcesUsername,
       otp, // OTP from the request body
     } = req.body;
 
@@ -80,11 +87,11 @@ exports.register = async (req, res) => {
       !registrationNumber ||
       !academicYear ||
       !phoneNumber ||
-      !linkedinProfileLink ||
-      !codolioProfileLink ||
-      !leetcodeProfileLink ||
-      !codechefProfileLink ||
-      !codeforcesProfileLink ||
+      !linkedinUsername ||
+      !codolioUsername ||
+      !leetcodeUsername ||
+      !codechefUsername ||
+      !codeforcesUsername ||
       !otp // Ensure OTP is provided
     ) {
       return res.status(400).json({
@@ -101,7 +108,7 @@ exports.register = async (req, res) => {
     }
 
     // Verify the OTP
-    if (allowedEmail.OTP !== otp) {
+    if (allowedEmail.OTP !== otp.toString()) {
       return res.status(400).json({ message: "Invalid OTP provided" });
     }
 
@@ -113,15 +120,9 @@ exports.register = async (req, res) => {
         .json({ message: "User with this email already exists" });
     }
 
-    // Handle profile picture
-    let profilePicture = undefined;
-    if (req.file) {
-      profilePicture = `/ProfilePicUploads/${req.file.filename}`;
-    }
-
     // Create a new user
     const newUser = new Users({
-      profilePicture: profilePicture || undefined, // Use uploaded picture or fallback to default from schema
+      profilePicture: upload.secure_url || undefined, // Use uploaded picture or fallback to default from schema
       name,
       email,
       password,
@@ -129,11 +130,11 @@ exports.register = async (req, res) => {
       academicYear,
       phoneNumber: phoneNumber || null,
       role: "USER",
-      linkedinProfileLink: linkedinProfileLink || null,
-      codolioProfileLink: codolioProfileLink || null,
-      leetcodeProfileLink: leetcodeProfileLink || null,
-      codechefProfileLink: codechefProfileLink || null,
-      codeforcesProfileLink: codeforcesProfileLink || null,
+      linkedinUsername: linkedinUsername || null,
+      codolioUsername: codolioUsername || null,
+      leetcodeUsername: leetcodeUsername || null,
+      codechefUsername: codechefUsername || null,
+      codeforcesUsername: codeforcesUsername || null,
     });
 
     // Save the user to the database

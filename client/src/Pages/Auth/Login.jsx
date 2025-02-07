@@ -19,7 +19,7 @@ const Login = () => {
   const navigate = useNavigate();
 
   // *********** Login Form Handle Starts here ***********
-  const [formLoading, setFormLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -31,7 +31,7 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setFormLoading(true);
+    setLoading(true);
 
     try {
       const response = await AuthServices.loginFunction(
@@ -52,7 +52,7 @@ const Login = () => {
       console.error("Login Error:", error.message);
     } finally {
       setFormData({ email: "", password: "" });
-      setFormLoading(false);
+      setLoading(false);
     }
   };
   // *********** Login Form Handle Ends here ***********
@@ -108,10 +108,10 @@ const Login = () => {
 
             <button
               type="submit"
-              disabled={formLoading}
+              disabled={loading}
               className="w-full py-3 px-4 rounded-lg bg-gfgsc-green text-white"
             >
-              {formLoading ? (
+              {loading ? (
                 <FaSpinner className="animate-spin inline-block" />
               ) : null}{" "}
               Login
