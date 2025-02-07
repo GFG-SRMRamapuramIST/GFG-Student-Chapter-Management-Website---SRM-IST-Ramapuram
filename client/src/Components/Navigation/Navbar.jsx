@@ -76,7 +76,7 @@ const Navbar = () => {
         },
       ]
     : [
-        { name: "Contact", path: "/about" },
+        { name: "About", path: "/about" },
         { name: "Login", path: "/auth/login", boxed: true },
       ];
 

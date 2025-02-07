@@ -3,6 +3,7 @@ import { FaTimes, FaChevronRight, FaExternalLinkAlt } from "react-icons/fa";
 import { platformIcons } from "../../Constants";
 import { CgBell, CgCode, CgLaptop, CgTrophy, CgWorkAlt } from "react-icons/cg";
 import NotificationItem from "../ui/NotificationItem";
+import { BiError } from "react-icons/bi";
 
 const CustomDialog = ({ open, onClose, children }) => {
   if (!open) return null;
@@ -94,10 +95,10 @@ const ProfileSecondary = ({ userProfile, updatesAndAnnouncements }) => {
             </h2>
           </div>
 
-          <div className="p-6">
+          <div className="p-6 h-full">
             {userProfile.badges.length === 0 ? (
-              <div className="flex flex-col items-center justify-center p-6">
-                <CgLaptop className="w-12 h-12 text-gray-400" />
+              <div className="flex flex-col h-full pb-16 md:pb-24 text-center items-center justify-center p-6">
+                <BiError className="w-12 h-12 text-gray-400" />
                 <p className="mt-4 text-gray-500">
                   No achievements yet. Keep trying harder!
                 </p>

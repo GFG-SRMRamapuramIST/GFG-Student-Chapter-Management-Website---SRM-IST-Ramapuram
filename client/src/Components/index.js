@@ -47,6 +47,13 @@ import PlatformPOTDs from "./Profile/PlatformPOTDs";
 
 export { ProfileHero, PlatformPOTDs, ProfileSecondary };
 
+// Leaderboard Components
+import LeaderboardHero from "./Leaderboard/LeaderboardHero";
+import LeaderboardTable from "./Leaderboard/LeaderboardTable";
+import LeaderboardPagination from "./Leaderboard/LeaderboardPagination";
+
+export { LeaderboardHero, LeaderboardTable, LeaderboardPagination };
+
 // Calendar Components
 import CustomCalendar from "./Calendar/CustomCalendar";
 

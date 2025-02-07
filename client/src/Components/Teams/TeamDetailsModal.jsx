@@ -1,8 +1,12 @@
 import { motion } from "framer-motion";
 import {
+  IoAlertCircleOutline,
   IoClose,
   IoCodeWorking,
+  IoCreateOutline,
+  IoExitOutline,
   IoPeople,
+  IoPersonAddOutline,
   IoPersonCircle,
   IoStatsChart,
   IoTrophy,
@@ -10,6 +14,34 @@ import {
 import { RotatingCloseButton } from "../../Utilities";
 
 const TeamDetailsModal = ({ team, onClose }) => {
+
+  const userActions = [
+    {
+      icon: <IoExitOutline className="text-red-500" />,
+      text: "Leave Team",
+      onClick: () => {/* Implementation */},
+      className: "text-red-500 hover:bg-red-50"
+    },
+    {
+      icon: <IoPersonAddOutline className="text-gfgsc-green" />,
+      text: "Join Team",
+      onClick: () => {/* Implementation */},
+      className: "text-gfgsc-green hover:bg-gfgsc-green-50"
+    },
+    {
+      icon: <IoCreateOutline className="text-blue-500" />,
+      text: "Change Team Name",
+      onClick: () => {/* Implementation */},
+      className: "text-blue-500 hover:bg-blue-50"
+    },
+    {
+      icon: <IoAlertCircleOutline className="text-yellow-500" />,
+      text: "Report Issue",
+      onClick: () => {/* Implementation */},
+      className: "text-yellow-500 hover:bg-yellow-50"
+    }
+  ];
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -102,6 +134,27 @@ const TeamDetailsModal = ({ team, onClose }) => {
                 <p className="text-sm text-gray-500">Rank: {member.rank}</p>
                 <p className="text-sm">Problems Solved: {member.solved}</p>
               </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-6 border-t pt-4">
+          <div className="flex justify-center space-x-4">
+            {userActions.map((action, index) => (
+              <motion.button
+                key={index}
+                onClick={action.onClick}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className={`
+                  flex items-center space-x-2 px-3 py-2 
+                  rounded-lg text-sm transition-all duration-300
+                  ${action.className}
+                `}
+              >
+                {action.icon}
+                <span>{action.text}</span>
+              </motion.button>
             ))}
           </div>
         </div>
