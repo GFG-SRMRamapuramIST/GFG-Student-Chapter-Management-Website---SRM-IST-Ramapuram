@@ -12,6 +12,7 @@ router.use(express.static(path.resolve(__dirname, "Public")));
 
 /*
 ************************** APIs **************************
+0. Verify Auth Token - "{BACKEND_URL}/api/v1/auth/verify-auth-token"
 
 1. Login API - "{BACKEND_URL}/api/v1/auth/login"
 2. Register API - "{BACKEND_URL}/api/v1/auth/register"
@@ -44,6 +45,9 @@ var upload = multer({
   },
   limits: { fileSize: 5 * 1024 * 1024 }, // Limit file size to 5 MB
 });
+
+// Verify Auth Token
+router.get("/verify-auth-token", authControllers.verifyAuthToken);
 
 // Login API
 router.post("/login", loginSignupRateLimiter, authControllers.loginUser);

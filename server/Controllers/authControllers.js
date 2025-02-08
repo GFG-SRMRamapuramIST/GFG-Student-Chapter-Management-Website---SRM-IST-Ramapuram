@@ -3,10 +3,11 @@ const bcrypt = require("bcryptjs");
 
 const { Users, AllowedEmail } = require("../Models");
 
-const { sendEmail, cloudinary } = require("../Utilities");
+const { sendEmail, cloudinary, verifyAuthToken } = require("../Utilities");
 
 /*
 ************************** APIs **************************
+0. Verify Auth Token
 
 1. Login API
 2. Register API
@@ -16,6 +17,30 @@ const { sendEmail, cloudinary } = require("../Utilities");
 
 **********************************************************
 */
+
+//0. Verify Auth Token
+exports.verifyAuthToken = async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1]; // Extract token from header
+
+    const response = await verifyAuthToken(token);
+    if (response.status == "not expired") {
+      return res.status(200).json({
+        message: "Token is valid",
+      });
+    } else {
+      return res.status(400).json({ message: "Token is not valid" });
+    }
+  } catch (error) {
+    console.error(
+      chalk.bgRed.bold.red("Error verifying token:"),
+      error.message
+    );
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
 
 //1. Login API
 exports.loginUser = async (req, res) => {

@@ -1,6 +1,16 @@
 import { commonrequest } from "./APIConfig";
 import { BACKEND_URL } from "./Helper";
 
+// Verify Auth Token
+const verifyAuthToken = async (token) => {
+  return await commonrequest(
+    "GET",
+    `${BACKEND_URL}/api/v1/auth/verify-auth-token`,
+    null,
+    { Authorization: `Bearer ${token}` }
+  );
+}
+
 // Login API
 const loginFunction = async (email, password) => {
   return await commonrequest("POST", `${BACKEND_URL}/api/v1/auth/login`, {
@@ -46,6 +56,7 @@ const changePassword = async (email, password) => {
 
 // Exporting all the APIs under AuthServices
 const AuthServices = {
+  verifyAuthToken,
   loginFunction,
   registerFunction,
   verifyEmailAndSendOTP,
