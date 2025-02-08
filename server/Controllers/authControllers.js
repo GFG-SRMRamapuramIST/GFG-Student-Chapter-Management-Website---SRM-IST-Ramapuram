@@ -175,7 +175,7 @@ exports.sendOTP = async (req, res) => {
 
     // Generate a random 6-digit OTP
     const OTP = Math.floor(100000 + Math.random() * 900000);
-    const otpExpiry = Date.now() + 10 * 60 * 1000; // OTP expires in 10 minutes
+    const otpExpiry = Date.now() + 2 * 60 * 1000; // OTP expires in 2 minutes
 
     // Update user OTP and expiry without fetching the entire document
     await Users.updateOne({ email }, { resetPasswordOTP: OTP, otpExpiry });

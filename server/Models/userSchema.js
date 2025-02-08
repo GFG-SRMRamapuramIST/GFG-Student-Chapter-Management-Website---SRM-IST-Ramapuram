@@ -12,8 +12,7 @@ const SECRET_KEY = process.env.SECRET_KEY;
 const userSchema = new mongoose.Schema({
   profilePicture: {
     type: String,
-    default:
-      "https://res.cloudinary.com/dcmqniwwc/image/upload/v1703640166/yc3f9btxcrjlccq3b7dg.png",
+    default: null,
   },
   name: {
     type: String,
@@ -47,7 +46,14 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ["USER", "MEMBER", "COREMEMBER", "ADMIN"],
+    enum: [
+      "USER",
+      "MEMBER",
+      "COREMEMBER",
+      "VICEPRESIDENT",
+      "PRESIDENT",
+      "ADMIN",
+    ],
     default: "USER",
   },
   linkedinUsername: {
