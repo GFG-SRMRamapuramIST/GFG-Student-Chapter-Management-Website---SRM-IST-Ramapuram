@@ -110,9 +110,9 @@ const TeamDetailsModal = ({ team, onClose }) => {
                   <IoCodeWorking className="text-white text-xl" />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-600">Problems</p>
+                  <p className="text-xs text-gray-600">Points</p>
                   <p className="text-xl font-bold text-gfg-black">
-                    {team.totalQuestionsSolved}
+                    {team.totalPoints}
                   </p>
                 </div>
               </div>
@@ -132,7 +132,7 @@ const TeamDetailsModal = ({ team, onClose }) => {
                 <IoPersonCircle className="text-6xl mx-auto text-gfgsc-green mb-2" />
                 <h4 className="font-bold text-gfg-black">{member.name}</h4>
                 <p className="text-sm text-gray-500">Rank: {member.rank}</p>
-                <p className="text-sm">Problems Solved: {member.solved}</p>
+                <p className="text-sm">Points: {member.points}</p>
               </div>
             ))}
           </div>

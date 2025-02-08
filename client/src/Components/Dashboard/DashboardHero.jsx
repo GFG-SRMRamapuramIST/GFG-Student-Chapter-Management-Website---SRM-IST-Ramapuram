@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
   MdTrendingUp, 
@@ -6,6 +6,7 @@ import {
   MdGroups,
   MdNotifications,
   MdCalendarToday,
+  MdNotificationsOff,
 } from 'react-icons/md';
 import { 
   SiLeetcode, 
@@ -15,6 +16,7 @@ import {
 } from 'react-icons/si';
 import CustomCalendar from '../Calendar/CustomCalendar';
 import NotificationItem from '../ui/NotificationItem';
+import { ToastMsg } from '../../Utilities';
 
 // Mock data for API
 const events = [
@@ -84,7 +86,7 @@ const platformProgress = [
 const stats = [
   {
     icon: MdTrendingUp,
-    label: "Problems Solved",
+    label: "Points",
     value: "324",
     change: 12
   },
@@ -143,7 +145,7 @@ const PlatformCard = ({ platform, problems, rank, progress }) => (
       <div className="flex-1">
         <div className="flex justify-between items-center mb-2">
           <span className="font-medium text-gfg-black">
-            {problems} solved
+            {problems} points
           </span>
           <span className="text-sm bg-gfgsc-green-200/50 text-gfgsc-green px-2 py-0.5 rounded-full">
             Rank #{rank}
@@ -162,6 +164,16 @@ const PlatformCard = ({ platform, problems, rank, progress }) => (
 );
 
 const DashboardHero = () => {
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+
+  const toggleNotifications = () => {
+    setNotificationsEnabled(!notificationsEnabled);
+    ToastMsg(
+      `Notifications ${!notificationsEnabled ? 'enabled' : 'disabled'}!`,
+      !notificationsEnabled ? 'success' : 'info'
+    );
+  };
+
   return (
     <div className="min-h-screen pb-8 ">
       {/* Header Section */}
@@ -176,10 +188,21 @@ const DashboardHero = () => {
         </div>
         <motion.button
           whileHover={{ scale: 1.05 }}
-          className="relative p-3 bg-white rounded-xl shadow-sm"
+          whileTap={{ scale: 0.95 }}
+          onClick={toggleNotifications}
+          className={`
+            relative p-3 rounded-xl shadow-sm transition-colors duration-300
+            ${notificationsEnabled ? 'bg-white' : 'bg-gray-100'}
+          `}
         >
-          <MdNotifications className="text-xl text-gfgsc-green" />
-          <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full" />
+          {notificationsEnabled ? (
+            <MdNotifications className="text-xl text-gfgsc-green" />
+          ) : (
+            <MdNotificationsOff className="text-xl text-gray-400" />
+          )}
+          {notificationsEnabled && notifications.length > 0 && (
+            <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full" />
+          )}
         </motion.button>
       </div>
 

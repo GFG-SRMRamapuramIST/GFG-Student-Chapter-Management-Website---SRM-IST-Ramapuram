@@ -104,7 +104,7 @@ const LeaderboardTable = ({ data, isTeam }) => {
                   <td className="px-4 py-4 whitespace-nowrap text-sm">{item.academicYear}</td>
                   <td className="px-4 py-4 whitespace-nowrap text-sm">{item.team}</td>
                   <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    {item.problemsSolved}
+                    {item.points}
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap text-right">
                     <motion.button

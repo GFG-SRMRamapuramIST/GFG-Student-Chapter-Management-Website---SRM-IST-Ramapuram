@@ -2,7 +2,7 @@ import { DashboardHero } from '../Components'
 
 function Dashboard() {
   return (
-    <div className=''>
+    <div>
       <DashboardHero />
     </div>
   )

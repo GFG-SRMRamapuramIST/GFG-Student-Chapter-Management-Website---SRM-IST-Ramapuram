@@ -1,17 +1,28 @@
 import React from "react";
+import {
+  SiCodechef,
+  SiCodeforces,
+  SiCplusplus,
+  SiGeeksforgeeks,
+  SiHackerrank,
+  SiJavascript,
+  SiLeetcode,
+  SiPython,
+} from "react-icons/si";
+import { CgCode } from "react-icons/cg";
 
 /**
- * HeikiBackground component generates a subtle background pattern with either a grid or building-like blocks.
- * It supports random shapes for added visual interest.
+ * HeikiBackground component generates a subtle background pattern with floating CP platform icons.
+ * Icons float with subtle animations for visual interest.
  *
  * NOTE: Ensure the parent element has `relative` positioning.
  * Any child elements other than HeikiBackground should also have `relative` positioning.
- * 
+ *
  * @param {string} primaryColor - The primary color for the pattern (default: "#00895e").
  * @param {string} secondaryColor - The secondary color for the pattern (default: "#2f8d46").
  * @param {string} backgroundColor - The background color (default: "#ffffff").
  * @param {number} opacity - The opacity of the shapes and blocks (default: 0.1).
- * @param {string} density - The density of the shapes ('sparse', 'medium', 'dense') (default: 'medium').
+ * @param {string} density - The density of the icons ('sparse', 'medium', 'dense') (default: 'medium').
  * @param {string} pattern - The pattern type ('grid' or 'blocks') (default: 'blocks').
  */
 const HeikiBackground = ({
@@ -19,50 +30,67 @@ const HeikiBackground = ({
   secondaryColor = "#2f8d46",
   backgroundColor = "#ffffff",
   opacity = 0.1,
-  density = "medium", // 'sparse', 'medium', 'dense'
-  pattern = "blocks", // 'grid' or 'blocks'
+  density = "medium",
+  pattern = "blocks",
 }) => {
-  // Generate random positions for shapes
-  const getRandomShapes = () => {
+  // Array of CP platform icons using Lucide icons
+  const cpIcons = [
+    { icon: SiCodeforces, name: "CodeForces" },
+    { icon: SiLeetcode, name: "LeetCode" },
+    { icon: SiGeeksforgeeks, name: "GeeksForGeeks" },
+    { icon: SiCodechef, name: "CodeChef" },
+    { icon: SiHackerrank, name: "HackerRank" },
+    { icon: SiJavascript, name: "Javascript" },
+    { icon: SiPython, name: "Python" },
+    { icon: SiCplusplus, name: "C++" },
+  ];
+
+  // Generate floating icons based on density
+  const getFloatingIcons = () => {
     const densityMap = {
-      sparse: 24,
-      medium: 40,
-      dense: 64,
+      sparse: 12,
+      medium: 24,
+      dense: 40,
     };
 
     const count = densityMap[density] || densityMap.medium;
-    const shapes = [];
+    const icons = [];
 
     for (let i = 0; i < count; i++) {
-      const shape = {
-        type: Math.random() > 0.7 ? "square" : "dot",
-        x: `${Math.random() * 100}%`,
-        y: `${Math.random() * 100}%`,
-        rotation: Math.random() * 45,
-        size: Math.random() * (10 - 4) + 4,
+      const randomIcon = cpIcons[Math.floor(Math.random() * cpIcons.length)];
+      const icon = {
+        Icon: randomIcon.icon,
+        name: randomIcon.name,
+        x: `${Math.random() * 90 + 5}%`,
+        y: `${Math.random() * 90 + 5}%`,
+        size: Math.random() * (24 - 16) + 16,
         color: Math.random() > 0.5 ? primaryColor : secondaryColor,
+        animationDelay: Math.random() * -20,
+        animationDuration: Math.random() * (12 - 8) + 8, // Slightly faster animation
+        floatDistance: Math.random() * (12 - 7) + 7, // Very little distance increase
+        floatDirection: Math.random() > 0.5 ? "x" : "y",
       };
-      shapes.push(shape);
+      icons.push(icon);
     }
 
-    return shapes;
+    return icons;
   };
 
   // Generate random blocks for the buildings pattern
   const getRandomBlocks = () => {
     const blocks = [];
-    const columns = 12; // Number of columns
-    const maxHeight = 8; // Maximum number of blocks in height
+    const columns = 12;
+    const maxHeight = 8;
 
     for (let col = 0; col < columns; col++) {
-      const height = Math.floor(Math.random() * maxHeight) + 3; // Minimum 3 blocks high
+      const height = Math.floor(Math.random() * maxHeight) + 3;
       for (let row = 0; row < height; row++) {
         blocks.push({
           x: `${(col / columns) * 100}%`,
           y: `${100 - (row + 1) * (100 / maxHeight)}%`,
           width: `${(1 / columns) * 100}%`,
           height: `${(1 / maxHeight) * 100}%`,
-          opacity: Math.random() * 0.04 + 0.02, // Random opacity between 0.02 and 0.06
+          opacity: Math.random() * 0.04 + 0.02,
           color: Math.random() > 0.5 ? primaryColor : secondaryColor,
         });
       }
@@ -78,39 +106,64 @@ const HeikiBackground = ({
     >
       {/* Pattern: either grid or blocks */}
       {pattern === "grid" ? (
-        // Grid pattern
+        // Grid pattern with floating icons
         <>
-          {/* Random ambient shapes (kept for both patterns) */}
-          {getRandomShapes().map((shape, index) => (
-            <div
-              key={`shape-${index}`}
-              className="absolute"
-              style={{
-                left: shape.x,
-                top: shape.y,
-                opacity,
-                transform: `rotate(${shape.rotation}deg)`,
-                width: shape.type === "square" ? `${shape.size}px` : "2px",
-                height: shape.type === "square" ? `${shape.size}px` : "2px",
-                backgroundColor: shape.color,
-                borderRadius: shape.type === "dot" ? "50%" : "1px",
-              }}
-            />
-          ))}
           <div
             className="absolute inset-0"
             style={{
               backgroundImage: `
-              linear-gradient(to right, ${primaryColor} 1px, transparent 1px),
-              linear-gradient(to bottom, ${primaryColor} 1px, transparent 1px)
-            `,
+                linear-gradient(to right, ${primaryColor} 1px, transparent 1px),
+                linear-gradient(to bottom, ${primaryColor} 1px, transparent 1px)
+              `,
               backgroundSize: "40px 40px",
               opacity: opacity / 2,
             }}
           />
+          {getFloatingIcons().map((icon, index) => (
+            <div
+              key={`icon-${index}`}
+              className="absolute transition-transform duration-1000"
+              style={{
+                left: icon.x,
+                top: icon.y,
+                opacity,
+                animation:
+                  icon.floatDirection === "x"
+                    ? `floatX ${icon.animationDuration}s ease-in-out infinite`
+                    : `floatY ${icon.animationDuration}s ease-in-out infinite`,
+                animationDelay: `${icon.animationDelay}s`,
+              }}
+            >
+              <icon.Icon
+                size={icon.size}
+                color={icon.color}
+                className="transform transition-transform hover:scale-110"
+              />
+            </div>
+          ))}
+          <style jsx>{`
+            @keyframes floatX {
+              0%,
+              100% {
+                transform: translateX(0px);
+              }
+              50% {
+                transform: translateX(10px);
+              }
+            }
+            @keyframes floatY {
+              0%,
+              100% {
+                transform: translateY(0px);
+              }
+              50% {
+                transform: translateY(10px);
+              }
+            }
+          `}</style>
         </>
       ) : (
-        // Blocks pattern (building-like)
+        // Blocks pattern with floating icons
         <div className="absolute inset-0">
           {getRandomBlocks().map((block, index) => (
             <div
@@ -128,6 +181,48 @@ const HeikiBackground = ({
               }}
             />
           ))}
+          {getFloatingIcons().map((icon, index) => (
+            <div
+              key={`icon-${index}`}
+              className="absolute transition-transform duration-1000"
+              style={{
+                left: icon.x,
+                top: icon.y,
+                opacity,
+                animation:
+                  icon.floatDirection === "x"
+                    ? `floatX ${icon.animationDuration}s ease-in-out infinite`
+                    : `floatY ${icon.animationDuration}s ease-in-out infinite`,
+                animationDelay: `${icon.animationDelay}s`,
+              }}
+            >
+              <icon.Icon
+                size={icon.size}
+                color={icon.color}
+                className="transform transition-transform hover:scale-110"
+              />
+            </div>
+          ))}
+          <style jsx>{`
+            @keyframes floatX {
+              0%,
+              100% {
+                transform: translateX(0px);
+              }
+              50% {
+                transform: translateX(10px);
+              }
+            }
+            @keyframes floatY {
+              0%,
+              100% {
+                transform: translateY(0px);
+              }
+              50% {
+                transform: translateY(10px);
+              }
+            }
+          `}</style>
         </div>
       )}
     </div>

@@ -57,34 +57,34 @@ const userProfile = {
   },
 
   badges: [
-    // {
-    //   id: 1,
-    //   name: "Gold Medal",
-    //   type: "gold",
-    //   date: "2023-12-01",
-    //   description: "Awarded for outstanding performance in coding contests."
-    // },
-    // {
-    //   id: 2,
-    //   name: "Silver Medal",
-    //   type: "silver",
-    //   date: "2023-11-15",
-    //   description: "Awarded for excellent performance in coding contests."
-    // },
-    // {
-    //   id: 3,
-    //   name: "Bronze Medal",
-    //   type: "bronze",
-    //   date: "2023-10-20",
-    //   description: "Awarded for good performance in coding contests."
-    // },
-    // {
-    //   id: 4,
-    //   name: "Top Coder",
-    //   type: "gold",
-    //   date: "2023-09-10",
-    //   description: "Recognized as a top coder in the community."
-    // }
+    {
+      id: 1,
+      name: "Gold Medal",
+      type: "gold",
+      date: "2023-12-01",
+      description: "Awarded for outstanding performance in coding contests."
+    },
+    {
+      id: 2,
+      name: "Silver Medal",
+      type: "silver",
+      date: "2023-11-15",
+      description: "Awarded for excellent performance in coding contests."
+    },
+    {
+      id: 3,
+      name: "Bronze Medal",
+      type: "bronze",
+      date: "2023-10-20",
+      description: "Awarded for good performance in coding contests."
+    },
+    {
+      id: 4,
+      name: "Top Coder",
+      type: "gold",
+      date: "2023-09-10",
+      description: "Recognized as a top coder in the community."
+    }
   ]
 };
 

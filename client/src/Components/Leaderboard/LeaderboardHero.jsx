@@ -45,9 +45,7 @@ const LeaderboardHero = ({ topThree, isTeam }) => {
           <div className="text-center pb-4">
             <h3 className="text-white font-bold">{member.name}</h3>
             <p className="text-white/90 text-sm">
-              {isTeam
-                ? `${member.points} Points`
-                : `${member.problemsSolved} Problems`}
+            {member.points} Points
             </p>
           </div>
         </motion.div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion, useAnimation } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import {
@@ -8,95 +8,136 @@ import {
   SiReact,
   SiTailwindcss,
 } from "react-icons/si";
-import { FaCode, FaArrowRight, FaBrain, FaUserGraduate } from "react-icons/fa";
+import { FaCode, FaArrowRight, FaBrain, FaUserGraduate, FaCrown, FaTrophy, FaMedal } from "react-icons/fa";
 
-const CodeBlock = () => {
-  const [text, setText] = useState("");
-  const codeString = `class GFGSC {
-  this.motto = "Code, Crack, Conquer";
-  return "Success!";
-}`;
+const TopPerformerCard = ({ rank, performer, delay }) => {
+  const getRankData = () => {
+    switch(rank) {
+      case 1:
+        return {
+          icon: FaCrown,
+          color: "from-yellow-400 to-amber-500",
+          borderGlow: "rgba(251, 191, 36, 0.5)",
+          label: "Gold",
+          scale: 1.1,
+          zIndex: 30
+        };
+      case 2:
+        return {
+          icon: FaTrophy,
+          color: "from-gray-300 to-gray-400",
+          borderGlow: "rgba(156, 163, 175, 0.5)",
+          label: "Silver",
+          scale: 1,
+          zIndex: 20
+        };
+      case 3:
+        return {
+          icon: FaMedal,
+          color: "from-amber-700 to-amber-800",
+          borderGlow: "rgba(180, 83, 9, 0.5)",
+          label: "Bronze",
+          scale: 1,
+          zIndex: 20
+        };
+    }
+  };
 
-  useEffect(() => {
-    let index = 0;
-    let isDeleting = false;
-    const timer = setInterval(() => {
-      if (!isDeleting) {
-        setText(codeString.slice(0, index).replace(/\n/g, "<br/>").replace(/ /g, "&nbsp;"));
-        index++;
-        if (index > codeString.length) {
-          setTimeout(() => {
-            isDeleting = true;
-          }, 1000);
-          index--;
-        }
-      } else {
-        setText(codeString.slice(0, index).replace(/\n/g, "<br/>").replace(/ /g, "&nbsp;"));
-        index-= 3;
-        if (index < 0) {
-          setTimeout(() => {
-            isDeleting = false;
-          }, 500);
-          index = 0;
-        }
-      }
-    }, 50);
-    return () => clearInterval(timer);
-  }, []);
+  const rankData = getRankData();
+  const Icon = rankData.icon;
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="bg-gfg-black/90 rounded-xl p-4 font-mono text-sm text-gfgsc-green-200"
+      initial={{ opacity: 0, y: 50 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: delay, duration: 0.5 }}
+      className={`relative ${rank === 1 ? '-mt-8' : ''}`}
+      style={{ zIndex: rankData.zIndex }}
     >
-      <div dangerouslySetInnerHTML={{ __html: text }} className="inline" />
-      <motion.span
-        animate={{ opacity: [1, 0] }}
-        transition={{ repeat: Infinity, duration: 0.8 }}
-        className="inline-block w-2 h-4 bg-gfgsc-green ml-1"
-      />
-    </motion.div>
-  );
-};
+      <motion.div
+        whileHover={{ scale: 1.05, y: -5 }}
+        className={`
+          relative w-fit md:whitespace-nowrap p-6 rounded-xl
+          bg-gradient-to-br ${rankData.color}
+          shadow-lg
+        `}
+        style={{
+          boxShadow: `0 0 20px ${rankData.borderGlow}`,
+        }}
+      >
 
-const FloatingTechIcon = ({ Icon, delay, duration }) => {
-  return (
-    <motion.div
-      initial={{ y: 0 }}
-      animate={{
-        y: [-10, 10, -10],
-        rotate: [-5, 5, -5],
-      }}
-      transition={{
-        repeat: Infinity,
-        duration,
-        delay,
-        ease: "easeInOut",
-      }}
-      className="absolute text-2xl text-gfgsc-green/40"
-    >
-      <Icon />
+        {/* Content */}
+        <div className="relative z-10">
+          <div className="flex justify-between items-start mb-4">
+            <Icon className="text-white text-3xl" />
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: delay + 0.3, type: "spring" }}
+              className="bg-white/20 px-3 py-1 rounded-full"
+            >
+              <span className="text-white text-sm font-medium">
+                {rankData.label}
+              </span>
+            </motion.div>
+          </div>
+
+          <div className="flex flex-col justify-center text-center items-center px-4">
+            <div className=" relative">
+              <div className="w-16 h-16 rounded-full bg-white/20 overflow-hidden">
+                <img
+                  src={performer.pfp}
+                  alt={performer.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <motion.div
+                className="absolute -bottom-1 -right-1 bg-white/90 rounded-full px-2 py-1"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: delay + 0.5 }}
+              >
+                <span className="text-xs font-bold">#{rank}</span>
+              </motion.div>
+            </div>
+
+            <div className="flex flex-col items-center justify-center text-center">
+              <h3 className="text-white font-bold text-lg">{performer.name}</h3>
+              <div className="flex items-center text-center">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: delay + 0.4 }}
+                  className="bg-white/20 px-2 py-0.5 rounded-full"
+                >
+                  <span className="text-white font-semibold">{performer.points}</span>
+                  <span className="text-white/80 text-sm ml-1">points</span>
+                </motion.div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </motion.div>
     </motion.div>
   );
 };
 
 const HeroSection = () => {
   const navigate = useNavigate();
-  const controls = useAnimation();
   const [hovered, setHovered] = useState(false);
+
+  // Sample top performers data
+  const topPerformers = [
+    { id: 2, name: "Aakash Kumar", points: 2840, monthlyRank: 2, pfp: "https://placehold.co/100x100" },
+    { id: 1, name: "Sanjana Jaldu", points: 3120, monthlyRank: 1, pfp: "https://placehold.co/100x100" },
+    { id: 3, name: "Rachit Dhaka", points: 2695, monthlyRank: 3, pfp: "https://placehold.co/100x100" },
+  ];
 
   const floatingIcons = [
     { Icon: SiJavascript, top: "20%", left: "10%", delay: 0, duration: 4 },
     { Icon: SiPython, bottom: "30%", left: "5%", delay: 0.5, duration: 5 },
     { Icon: SiReact, top: "30%", right: "15%", delay: 1, duration: 3.5 },
-    {
-      Icon: SiTailwindcss,
-      bottom: "20%",
-      right: "10%",
-      delay: 1.5,
-      duration: 4.5,
-    },
+    { Icon: SiTailwindcss, bottom: "20%", right: "10%", delay: 1.5, duration: 4.5 },
   ];
 
   return (
@@ -113,7 +154,7 @@ const HeroSection = () => {
             top: icon.top,
             left: icon.left,
             right: icon.right,
-            bottom : icon.bottom,
+            bottom: icon.bottom,
           }}
         >
           <FloatingTechIcon {...icon} />
@@ -190,56 +231,50 @@ const HeroSection = () => {
             </motion.div>
           </motion.div>
 
+          {/* Right Section - Top Performers Display */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="relative"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="relative flex flex-col justify-evenly h-full items-center"
           >
-            <div className="relative z-10 bg-gradient-to-br from-gfgsc-green to-gfg-green p-1 rounded-2xl">
-              <div className="bg-white rounded-xl p-6">
-                <CodeBlock />
-
-                {/* Stats Cards */}
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 1 }}
-                  className="grid grid-cols-3 gap-4 mt-6"
-                >
-                  {[
-                    { label: "Active Members", value: "1000+" },
-                    { label: "Projects", value: "100+" },
-                    { label: "Events", value: "50+" },
-                  ].map((stat, index) => (
-                    <div
-                      key={index}
-                      className="bg-gray-50 p-3 rounded-lg text-center"
-                    >
-                      <div className="text-gfgsc-green font-bold">
-                        {stat.value}
-                      </div>
-                      <div className="text-sm text-gray-600">{stat.label}</div>
-                    </div>
-                  ))}
-                </motion.div>
-              </div>
+            <div className="flex flex-col items-center text-2xl font-bold">
+              Top Performers of Feb 2025
             </div>
-
-            {/* Decorative Elements */}
-            <motion.div
-              className="absolute -right-4 -bottom-4 w-full h-full bg-gfgsc-green/10 rounded-2xl -z-10"
-              animate={{ right: ["-3%", "-2%", "-4%"], bottom: ["-3%", "-2%", "-4%"] }}
-              transition={{ duration: 2, ease: "easeInOut" }}
-            />
-            <motion.div
-              className="absolute -right-8 -bottom-8 w-full h-full bg-gfgsc-green/5 rounded-2xl -z-20"
-              animate={{ right: ["-6%", "-4%", "-8%"], bottom: ["-6%", "-4%", "-8%"] }}
-              transition={{ duration: 2, ease: "easeInOut" }}
-            />
+            <div className="flex space-x-4 items-center">
+              {[topPerformers[1], topPerformers[0], topPerformers[2]].map((performer, index) => (
+                <TopPerformerCard
+                  key={performer.id}
+                  rank={index === 0 ? 2 : index === 1 ? 1 : 3}
+                  performer={performer}
+                  delay={0.2 + index * 0.2}
+                />
+              ))}
+            </div>
           </motion.div>
         </div>
       </div>
     </div>
+  );
+};
+
+const FloatingTechIcon = ({ Icon, delay, duration }) => {
+  return (
+    <motion.div
+      initial={{ y: 0 }}
+      animate={{
+        y: [-10, 10, -10],
+        rotate: [-5, 5, -5],
+      }}
+      transition={{
+        repeat: Infinity,
+        duration,
+        delay,
+        ease: "easeInOut",
+      }}
+      className="absolute text-2xl text-gfgsc-green/40"
+    >
+      <Icon />
+    </motion.div>
   );
 };
 

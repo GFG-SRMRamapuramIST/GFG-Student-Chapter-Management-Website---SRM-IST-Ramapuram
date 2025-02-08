@@ -16,7 +16,7 @@ const mockLeaderboardData = [
     position: "President",
     academicYear: "3rd Year",
     team: "Code Warriors",
-    problemsSolved: 342,
+    points: 342,
   },
   {
     id: 2,
@@ -26,7 +26,7 @@ const mockLeaderboardData = [
     position: "Vice President",
     academicYear: "3rd Year",
     team: "Tech Titans",
-    problemsSolved: 326,
+    points: 326,
   },
   {
     id: 3,
@@ -36,7 +36,7 @@ const mockLeaderboardData = [
     position: "Technical Head",
     academicYear: "2nd Year",
     team: "Code Ninjas",
-    problemsSolved: 312,
+    points: 312,
   },
   // ... more mock data
 ].concat(
@@ -48,7 +48,7 @@ const mockLeaderboardData = [
     position: "Member",
     academicYear: `${Math.floor(Math.random() * 4) + 1}st Year`,
     team: `Team ${String.fromCharCode(65 + Math.floor(i / 3))}`,
-    problemsSolved: Math.floor(Math.random() * 200) + 100,
+    points: Math.floor(Math.random() * 200) + 100,
   }))
 ).concat(
   Array.from({ length: 50 }, (_, i) => ({

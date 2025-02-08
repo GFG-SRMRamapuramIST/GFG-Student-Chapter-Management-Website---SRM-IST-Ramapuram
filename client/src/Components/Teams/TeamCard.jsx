@@ -24,7 +24,7 @@ const TeamCard = ({ team, onDetails }) => {
         </div>
         <div className="flex items-center space-x-2">
           <IoCodeWorking className="text-gfg-green text-xl" />
-          <span>{team.totalQuestionsSolved} Problems</span>
+          <span>{team.totalPoints} Points</span>
         </div>
       </div>
       <div className="mt-4 flex space-x-2">
