@@ -265,7 +265,7 @@ const HeroSection = () => {
           </motion.div>
 
           {/* Right Section - Top Performers Display */}
-          <div className="flex flex-col h-full items-center justify-between">
+          <div className="flex flex-col h-full items-center justify-evenly">
             <div className="flex space-x-4 items-center">
               {[topPerformers[1], topPerformers[0], topPerformers[2]].map(
                 (performer, index) => (
@@ -285,11 +285,10 @@ const HeroSection = () => {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5 }}
             >
-              <FaTrophy className="text-4xl text-gfgsc-green mb-2" />
-              <h2 className="text-3xl font-extrabold tracking-tight">
+              <h2 className="text-3xl font-bold tracking-tight">
                 TOP PERFORMERS
               </h2>
-              <p className="text-lg font-medium text-gray-600 tracking-wider">
+              <p className="text-lg font-black text-gfgsc-green tracking-wider">
                 FEBRUARY 2025
               </p>
             </motion.div>
