@@ -95,7 +95,7 @@ const Navbar = () => {
     },
     {
       name: "Logout",
-      path: "/auth/logout",
+      path: "/",
       icon: <IoLogOutOutline />,
       variant: "danger",
       onClick: handleLogout,
