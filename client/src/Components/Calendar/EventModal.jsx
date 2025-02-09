@@ -15,13 +15,12 @@ import {
 import { RotatingCloseButton } from "../../Utilities";
 import { platformIcons } from "../../Constants";
 import { useState } from "react";
-import ReactMarkdown from "react-markdown";
 
 const EventModal = ({ selectedDate, events, onClose }) => {
   const meetings = events.filter((e) => e.type === "meeting");
   const contests = events.filter((e) => e.type === "contest");
   const [expandedMeeting, setExpandedMeeting] = useState(null);
-  const [markdownContent, setMarkdownContent] = useState("");
+  const [momContent, setMomContent] = useState("");
   const [showEditor, setShowEditor] = useState(false);
   const [momEditedBy, setMomEditedBy] = useState(null);
 
@@ -31,7 +30,7 @@ const EventModal = ({ selectedDate, events, onClose }) => {
   };
 
   const handleSave = () => {
-    console.log("Markdown content:", markdownContent);
+    console.log("MoM content:", momContent);
     setMomEditedBy("John Doe"); // Replace with actual user
     setShowEditor(false);
   };
@@ -221,41 +220,31 @@ const EventModal = ({ selectedDate, events, onClose }) => {
                               </div>
                             )}
 
-                            {/* Markdown Content Preview (when not editing) */}
-                            {markdownContent && !showEditor && (
+                            {/* mom Content Preview (when not editing) */}
+                            {momContent && !showEditor && (
                               <div className="prose prose-sm max-w-none p-4 bg-gray-50 rounded-lg">
-                                <ReactMarkdown className="markdown-preview">
-                                  {markdownContent}
-                                </ReactMarkdown>
+                                <div className="mom-preview">
+                                  {momContent}
+                                </div>
                               </div>
                             )}
 
-                            {/* Markdown Editor */}
+                            {/* MoM Editor */}
                             {showEditor && (
                               <div className="space-y-3">
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="flex flex-col w-full gap-4">
                                   <div className="space-y-2">
                                     <div className="text-sm text-gray-500 font-medium">
                                       Editor
                                     </div>
                                     <textarea
                                       className="w-full h-64 p-3 border border-gray-200 rounded-lg text-sm font-mono resize-none focus:outline-none focus:ring-2 focus:ring-gfgsc-green"
-                                      placeholder="Write your MOM in markdown..."
-                                      value={markdownContent}
+                                      placeholder="Write your MOM here..."
+                                      value={momContent}
                                       onChange={(e) =>
-                                        setMarkdownContent(e.target.value)
+                                        setMomContent(e.target.value)
                                       }
                                     />
-                                  </div>
-                                  <div className="space-y-2">
-                                    <div className="text-sm text-gray-500 font-medium">
-                                      Preview
-                                    </div>
-                                    <div className="w-full h-64 p-3 border border-gray-200 rounded-lg text-sm overflow-y-auto prose prose-sm max-w-none">
-                                      <ReactMarkdown className="markdown-preview">
-                                        {markdownContent}
-                                      </ReactMarkdown>
-                                    </div>
                                   </div>
                                 </div>
                                 <div className="flex justify-end">
