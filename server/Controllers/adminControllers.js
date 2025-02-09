@@ -1,7 +1,6 @@
 const chalk = require("chalk");
 const nodemailer = require("nodemailer");
 const csv = require("csvtojson");
-const crypto = require("crypto");
 
 const {
   Users,
@@ -17,16 +16,17 @@ const { verifyAuthToken } = require("../Utilities");
 1. Add Emails using CSV file to register API
 2. Add array of Emails to register API
 3. Fetch all allowed emails API
-4. Delete emails from AllowedEmail schema API
-5. Block email/user from website API
-6. Unblock email/user from website API
-7. Delete Users from website API
-8. Promote user one rank above API
-9. Demote user one rank below API
-10. Update team size API
-11. Create team API
-12. Delete team API
-13. Edit team name API
+4. Fetch all users API
+5. Delete emails from AllowedEmail schema API
+6. Block email/user from website API
+7. Unblock email/user from website API
+8. Delete Users from website API
+9. Promote user one rank above API
+10. Demote user one rank below API
+11. Update team size API
+12. Create team API
+13. Delete team API
+14. Edit team name API
 
 **********************************************************
 */
@@ -245,53 +245,94 @@ exports.addAllowedEmails = async (req, res) => {
 //3. Fetch all allowed emails API
 exports.fetchAllowedEmails = async (req, res) => {
   try {
-    const token = req.headers.authorization?.split(" ")[1]; // Extract token from the Authorization header
-    const { page = 1, limit = 10, search = "", sortOrder = 1 } = req.body;
+    // Extract token and validate
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(401).json({ message: "No token provided" });
 
-    // Use the helper function for authorization
-    const authResult = await verifyAndAuthorize(token, ["ADMIN", "COREMEMBER"]);
+    const authResult = await verifyAndAuthorize(token, ["ADMIN"]);
     if (authResult.status !== 200) {
-      return res
-        .status(authResult.status)
-        .json({ message: authResult.message });
+      return res.status(authResult.status).json({ message: authResult.message });
     }
 
-    // Pagination and search setup
+    // Extract query params with default values
+    let { page = 1, limit = 10, search = "", sortOrder = 1 } = req.body;
+    page = parseInt(page, 10);
+    limit = parseInt(limit, 10);
+    sortOrder = parseInt(sortOrder, 10);
+
+    const searchFilter = search ? { email: new RegExp(search, "i") } : {};
     const skip = (page - 1) * limit;
-    const searchFilter = {
-      email: new RegExp(search, "i"), // Case-insensitive search on email field
-    };
 
-    // Fetch emails with pagination, sorting, and search
-    const allowedEmails = await AllowedEmail.find(searchFilter)
-      .sort({ createdAt: parseInt(sortOrder, 10) }) // Apply sort first
-      .skip(skip) // Skip documents based on the page
-      .limit(parseInt(limit, 10)); // Limit the number of documents
+    // Fetch emails and total count concurrently
+    const [allowedEmails, totalEmails] = await Promise.all([
+      AllowedEmail.find(searchFilter)
+        .sort({ createdAt: sortOrder })
+        .skip(skip)
+        .limit(limit)
+        .lean(), // Optimized query performance
+      AllowedEmail.countDocuments(searchFilter),
+    ]);
 
-    // Count total documents for pagination info
-    const totalEmails = await AllowedEmail.countDocuments(searchFilter);
-
-    // Respond with the data
     return res.status(200).json({
       message: "Allowed emails fetched successfully!",
       data: allowedEmails,
       totalPages: Math.ceil(totalEmails / limit),
-      currentPage: parseInt(page, 10),
-      limit: parseInt(limit, 10),
-      sortOrder: parseInt(sortOrder, 10),
+      currentPage: page,
+      limit,
+      sortOrder,
     });
   } catch (error) {
-    console.error(
-      chalk.bgRed.bold.red("Error fetching allowed emails:"),
-      error.message
-    );
-    return res
-      .status(500)
-      .json({ message: "Internal Server Error", error: error.message });
+    console.error("Error fetching allowed emails:", error.message);
+    return res.status(500).json({ message: "Internal Server Error", error: error.message });
   }
 };
 
-//4. Delete emails from AllowedEmail schema API
+//4. Fetach all users API
+exports.fetchAllUsers = async (req, res) => {
+  try {
+    // Extract token and validate
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(401).json({ message: "No token provided" });
+
+    const authResult = await verifyAndAuthorize(token, ["ADMIN"]);
+    if (authResult.status !== 200) {
+      return res.status(authResult.status).json({ message: authResult.message });
+    }
+
+    // Extract query params with default values
+    let { page = 1, limit = 10, search = "", sortOrder = 1 } = req.body;
+    page = parseInt(page, 10);
+    limit = parseInt(limit, 10);
+    sortOrder = parseInt(sortOrder, 10);
+
+    const searchFilter = search ? { email: new RegExp(search, "i") } : {};
+    const skip = (page - 1) * limit;
+
+    // Fetch users and total count simultaneously
+    const [users, totalUsers] = await Promise.all([
+      Users.find(searchFilter)
+        .sort({ createdAt: sortOrder })
+        .skip(skip)
+        .limit(limit)
+        .lean(), // Optimized query performance
+      Users.countDocuments(searchFilter),
+    ]);
+
+    return res.status(200).json({
+      message: "Allowed users fetched successfully!",
+      data: users,
+      totalPages: Math.ceil(totalUsers / limit),
+      currentPage: page,
+      limit,
+      sortOrder,
+    });
+  } catch (error) {
+    console.error("Error fetching users:", error.message);
+    return res.status(500).json({ message: "Internal Server Error", error: error.message });
+  }
+};
+
+//5. Delete emails from AllowedEmail schema API
 exports.deleteAllowedEmails = async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1]; // Extract token from Authorization header
@@ -331,7 +372,7 @@ exports.deleteAllowedEmails = async (req, res) => {
   }
 };
 
-//5. Block email/user from website API
+//6. Block email/user from website API
 exports.blockEmail = async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1]; // Extract token from header
   const { email } = req.body; // Email to be blocked
@@ -388,7 +429,7 @@ exports.blockEmail = async (req, res) => {
   }
 };
 
-//6. Unblock email/user from website API
+//7. Unblock email/user from website API
 exports.unblockEmail = async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1]; // Extract token from header
   const { email } = req.body; // Email to be unblocked
@@ -432,7 +473,7 @@ exports.unblockEmail = async (req, res) => {
   }
 };
 
-//7. Delete Users from website API
+//8. Delete Users from website API
 exports.deleteUsers = async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1]; // Extract token from header
   const { ids } = req.body; // Array of _id to delete
@@ -499,139 +540,105 @@ exports.deleteUsers = async (req, res) => {
   }
 };
 
-//8. Promote user one rank above API
+//9. Promote user one rank above API
 exports.promoteUser = async (req, res) => {
-  const token = req.headers.authorization?.split(" ")[1]; // Extract token from header
-  const { userId } = req.body; // User ID to promote
-
-  if (!token) {
-    return res.status(401).json({ message: "No token provided" });
-  }
-
-  if (!userId) {
-    return res.status(400).json({ message: "No user ID provided" });
-  }
-
   try {
+    const token = req.headers.authorization?.split(" ")[1];
+    const { userId } = req.body;
+
+    if (!token) return res.status(401).json({ message: "No token provided" });
+    if (!userId) return res.status(400).json({ message: "No user ID provided" });
+
     // Verify and authorize token
     const authResult = await verifyAndAuthorize(token, ["ADMIN"]);
     if (authResult.status !== 200) {
-      return res
-        .status(authResult.status)
-        .json({ message: authResult.message });
+      return res.status(authResult.status).json({ message: authResult.message });
     }
 
-    // User cannot promote himself
     if (authResult.userId === userId) {
       return res.status(400).json({ message: "Cannot promote yourself" });
     }
 
-    // Find the user to promote
+    // Find the user
     const user = await Users.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // Define the promotion hierarchy
+    const promotionMap = {
+      USER: "MEMBER",
+      MEMBER: "COREMEMBER",
+      COREMEMBER: "VICEPRESIDENT",
+      VICEPRESIDENT: "PRESIDENT",
+    };
+
+    if (!promotionMap[user.role]) {
+      return res.status(400).json({ message: "User is already at the highest rank" });
     }
 
     // Promote the user
-    if (user.role === "MEMBER") {
-      user.role = "COREMEMBER";
-      await user.save();
-      return res.status(200).json({
-        message: "User promoted successfully from Member to Core-Member",
-      });
-    } else if (user.role === "COREMEMBER") {
-      user.role = "ADMIN";
-      await user.save();
-      return res.status(200).json({
-        message: "User promoted successfully from Core-Member to Admin",
-      });
-    } else if (user.role === "USER") {
-      user.role = "MEMBER";
-      await user.save();
-      return res
-        .status(200)
-        .json({ message: "User promoted successfully from User to Member" });
-    }
+    user.role = promotionMap[user.role];
+    await user.save();
 
-    return res
-      .status(400)
-      .json({ message: "User is already at the highest rank" });
+    return res.status(200).json({ message: `User promoted successfully to ${user.role}` });
+
   } catch (error) {
     console.error(chalk.bgRed.bold.red("Error promoting user:"), error.message);
-    res
-      .status(500)
-      .json({ message: "Internal server error", error: error.message });
+    return res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
 
-//9. Demote user one rank below API
+
+//10. Demote user one rank below API
 exports.demoteUser = async (req, res) => {
-  const token = req.headers.authorization?.split(" ")[1]; // Extract token from header
-  const { userId } = req.body; // User ID to demote
-
-  if (!token) {
-    return res.status(401).json({ message: "No token provided" });
-  }
-
-  if (!userId) {
-    return res.status(400).json({ message: "No user ID provided" });
-  }
-
   try {
+    const token = req.headers.authorization?.split(" ")[1];
+    const { userId } = req.body;
+
+    if (!token) return res.status(401).json({ message: "No token provided" });
+    if (!userId) return res.status(400).json({ message: "No user ID provided" });
+
     // Verify and authorize token
     const authResult = await verifyAndAuthorize(token, ["ADMIN"]);
     if (authResult.status !== 200) {
-      return res
-        .status(authResult.status)
-        .json({ message: authResult.message });
+      return res.status(authResult.status).json({ message: authResult.message });
     }
 
-    // User cannot demote himself
     if (authResult.userId === userId) {
       return res.status(400).json({ message: "Cannot demote yourself" });
     }
 
-    // Find the user to demote
+    // Find the user
     const user = await Users.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // Define the demotion hierarchy
+    const demotionMap = {
+      PRESIDENT: "VICEPRESIDENT",
+      VICEPRESIDENT: "COREMEMBER",
+      COREMEMBER: "MEMBER",
+      MEMBER: "USER",
+    };
+
+    if (!demotionMap[user.role]) {
+      return res.status(400).json({ message: "User is already at the lowest rank" });
     }
 
     // Demote the user
-    if (user.role === "ADMIN") {
-      user.role = "COREMEMBER";
-      await user.save();
-      return res.status(200).json({
-        message: "User demoted successfully from Admin to Core-Member",
-      });
-    } else if (user.role === "COREMEMBER") {
-      user.role = "MEMBER";
-      await user.save();
-      return res.status(200).json({
-        message: "User demoted successfully from Core-Member to Member",
-      });
-    } else if (user.role === "MEMBER") {
-      user.role = "USER";
-      await user.save();
-      return res
-        .status(200)
-        .json({ message: "User demoted successfully from Member to User" });
-    }
+    user.role = demotionMap[user.role];
+    await user.save();
 
-    return res
-      .status(400)
-      .json({ message: "User is already at the lowest rank" });
+    return res.status(200).json({ message: `User demoted successfully to ${user.role}` });
+
   } catch (error) {
     console.error(chalk.bgRed.bold.red("Error demoting user:"), error.message);
-    res
-      .status(500)
-      .json({ message: "Internal server error", error: error.message });
+    return res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
 
+
 //************************** APIs For Teams **************************
 
-//10. Update team size API
+//11. Update team size API
 exports.updateTeamSize = async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1]; // Extract token from header
   const { teamSize } = req.body; // New team size
@@ -680,7 +687,7 @@ exports.updateTeamSize = async (req, res) => {
   }
 };
 
-//11. Create team API
+//12. Create team API
 exports.createTeam = async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1]; // Extract token from header
   const { teamName } = req.body; // Team name
@@ -717,7 +724,7 @@ exports.createTeam = async (req, res) => {
   }
 };
 
-//12. Delete team API
+//13. Delete team API
 exports.deleteTeam = async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1]; // Extract token from header
   const { teamId } = req.body; // Team ID
@@ -770,7 +777,7 @@ exports.deleteTeam = async (req, res) => {
   }
 };
 
-//13. Edit team name API
+//14. Edit team name API
 exports.editTeamName = async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1]; // Extract token from header
   const { teamId, teamName } = req.body; // Team ID and new team name
