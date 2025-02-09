@@ -6,5 +6,6 @@ export { Logo };*/
 import ToastMsg from "./ToastMsg";
 import ScrollToTop from "./ScrollToTop";
 import RotatingCloseButton from "./RotatingCloseButton";
+import ConfirmationPopup from "./ConfirmationPopups/ConfirmationPopup";
 
-export { ToastMsg, ScrollToTop, RotatingCloseButton };
+export { ToastMsg, ScrollToTop, RotatingCloseButton, ConfirmationPopup };

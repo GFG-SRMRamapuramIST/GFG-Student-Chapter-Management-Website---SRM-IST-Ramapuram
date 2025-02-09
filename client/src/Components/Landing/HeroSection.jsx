@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { motion, useAnimation } from "framer-motion";
+import { useState } from "react";
+import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import {
   SiGeeksforgeeks,
@@ -8,11 +8,19 @@ import {
   SiReact,
   SiTailwindcss,
 } from "react-icons/si";
-import { FaCode, FaArrowRight, FaBrain, FaUserGraduate, FaCrown, FaTrophy, FaMedal } from "react-icons/fa";
+import {
+  FaCode,
+  FaArrowRight,
+  FaBrain,
+  FaUserGraduate,
+  FaCrown,
+  FaTrophy,
+  FaMedal,
+} from "react-icons/fa";
 
 const TopPerformerCard = ({ rank, performer, delay }) => {
   const getRankData = () => {
-    switch(rank) {
+    switch (rank) {
       case 1:
         return {
           icon: FaCrown,
@@ -20,7 +28,7 @@ const TopPerformerCard = ({ rank, performer, delay }) => {
           borderGlow: "rgba(251, 191, 36, 0.5)",
           label: "Gold",
           scale: 1.1,
-          zIndex: 30
+          zIndex: 30,
         };
       case 2:
         return {
@@ -29,7 +37,7 @@ const TopPerformerCard = ({ rank, performer, delay }) => {
           borderGlow: "rgba(156, 163, 175, 0.5)",
           label: "Silver",
           scale: 1,
-          zIndex: 20
+          zIndex: 20,
         };
       case 3:
         return {
@@ -38,7 +46,7 @@ const TopPerformerCard = ({ rank, performer, delay }) => {
           borderGlow: "rgba(180, 83, 9, 0.5)",
           label: "Bronze",
           scale: 1,
-          zIndex: 20
+          zIndex: 20,
         };
     }
   };
@@ -51,7 +59,7 @@ const TopPerformerCard = ({ rank, performer, delay }) => {
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: delay, duration: 0.5 }}
-      className={`relative ${rank === 1 ? '-mt-8' : ''}`}
+      className={`relative ${rank === 1 ? "-mt-8" : ""}`}
       style={{ zIndex: rankData.zIndex }}
     >
       <motion.div
@@ -65,7 +73,6 @@ const TopPerformerCard = ({ rank, performer, delay }) => {
           boxShadow: `0 0 20px ${rankData.borderGlow}`,
         }}
       >
-
         {/* Content */}
         <div className="relative z-10">
           <div className="flex justify-between items-start mb-4">
@@ -110,7 +117,9 @@ const TopPerformerCard = ({ rank, performer, delay }) => {
                   transition={{ delay: delay + 0.4 }}
                   className="bg-white/20 px-2 py-0.5 rounded-full"
                 >
-                  <span className="text-white font-semibold">{performer.points}</span>
+                  <span className="text-white font-semibold">
+                    {performer.points}
+                  </span>
                   <span className="text-white/80 text-sm ml-1">points</span>
                 </motion.div>
               </div>
@@ -128,16 +137,40 @@ const HeroSection = () => {
 
   // Sample top performers data
   const topPerformers = [
-    { id: 2, name: "Aakash Kumar", points: 2840, monthlyRank: 2, pfp: "https://placehold.co/100x100" },
-    { id: 1, name: "Sanjana Jaldu", points: 3120, monthlyRank: 1, pfp: "https://placehold.co/100x100" },
-    { id: 3, name: "Rachit Dhaka", points: 2695, monthlyRank: 3, pfp: "https://placehold.co/100x100" },
+    {
+      id: 2,
+      name: "Aakash Kumar",
+      points: 2840,
+      monthlyRank: 2,
+      pfp: "https://placehold.co/100x100",
+    },
+    {
+      id: 1,
+      name: "Sanjana Jaldu",
+      points: 3120,
+      monthlyRank: 1,
+      pfp: "https://placehold.co/100x100",
+    },
+    {
+      id: 3,
+      name: "Rachit Dhaka",
+      points: 2695,
+      monthlyRank: 3,
+      pfp: "https://placehold.co/100x100",
+    },
   ];
 
   const floatingIcons = [
     { Icon: SiJavascript, top: "20%", left: "10%", delay: 0, duration: 4 },
     { Icon: SiPython, bottom: "30%", left: "5%", delay: 0.5, duration: 5 },
     { Icon: SiReact, top: "30%", right: "15%", delay: 1, duration: 3.5 },
-    { Icon: SiTailwindcss, bottom: "20%", right: "10%", delay: 1.5, duration: 4.5 },
+    {
+      Icon: SiTailwindcss,
+      bottom: "20%",
+      right: "10%",
+      delay: 1.5,
+      duration: 4.5,
+    },
   ];
 
   return (
@@ -232,25 +265,35 @@ const HeroSection = () => {
           </motion.div>
 
           {/* Right Section - Top Performers Display */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="relative flex flex-col justify-evenly h-full items-center"
-          >
-            <div className="flex flex-col items-center text-2xl font-bold">
-              Top Performers of Feb 2025
-            </div>
+          <div className="flex flex-col h-full items-center justify-between">
             <div className="flex space-x-4 items-center">
-              {[topPerformers[1], topPerformers[0], topPerformers[2]].map((performer, index) => (
-                <TopPerformerCard
-                  key={performer.id}
-                  rank={index === 0 ? 2 : index === 1 ? 1 : 3}
-                  performer={performer}
-                  delay={0.2 + index * 0.2}
-                />
-              ))}
+              {[topPerformers[1], topPerformers[0], topPerformers[2]].map(
+                (performer, index) => (
+                  <TopPerformerCard
+                    key={performer.id}
+                    rank={index === 0 ? 2 : index === 1 ? 1 : 3}
+                    performer={performer}
+                    delay={0.2 + index * 0.2}
+                  />
+                )
+              )}
             </div>
-          </motion.div>
+
+            <motion.div
+              className="flex flex-col items-center space-y-2"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              <FaTrophy className="text-4xl text-gfgsc-green mb-2" />
+              <h2 className="text-3xl font-extrabold tracking-tight">
+                TOP PERFORMERS
+              </h2>
+              <p className="text-lg font-medium text-gray-600 tracking-wider">
+                FEBRUARY 2025
+              </p>
+            </motion.div>
+          </div>
         </div>
       </div>
     </div>

@@ -127,6 +127,12 @@ const Navbar = () => {
             <div className="relative">
               <img src={logo} alt="GFGSC" className="p-1 h-12" />
             </div>
+
+            {/* <div className={`relative ${!isScrolled && "bg-white shadow-lg rounded-xl p-1"}`}>
+              <div className={`p-1 ${!isScrolled && "bg-gray-200  rounded-xl" }`}>
+                <img src={logo} alt="GFGSC" className="p-1 h-12" />
+              </div>
+            </div> */}
           </Link>
 
           {/* Desktop Navigation */}

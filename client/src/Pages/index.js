@@ -1,4 +1,5 @@
 import LandingPage from "./LandingPage";
+import AdminPanel from "./AdminPanel";
 
 // Auth Routes
 import Login from "./Auth/Login";
@@ -18,8 +19,12 @@ import TermsAndConditions from "./UserSupport/TermsAndConditions";
 import PrivacyPolicy from "./UserSupport/PrivacyPolicy";
 import UserManual from "./UserSupport/UserManual";
 
+// Errors
+import NotFound from "./Errors/NotFound";
+
 export { 
   LandingPage,
+  AdminPanel,
   Dashboard,
   Login,
   SignUp,
@@ -30,5 +35,6 @@ export {
   Leaderboard,
   TermsAndConditions,
   PrivacyPolicy,
-  UserManual
+  UserManual,
+  NotFound
 };

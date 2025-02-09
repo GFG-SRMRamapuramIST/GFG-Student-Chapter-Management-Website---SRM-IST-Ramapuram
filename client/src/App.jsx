@@ -14,6 +14,8 @@ import {
   TermsAndConditions,
   UserManual,
   PrivacyPolicy,
+  AdminPanel,
+  NotFound,
 } from "./Pages";
 import { AuthLayout, RootLayout, AppLayout } from "./Layouts";
 
@@ -32,6 +34,7 @@ const authRoutes = {
 const appRoutes = {
   element: <AppLayout />,
   children: [
+    { path: "admin", element: <AdminPanel /> },
     { path: "dashboard", element: <Dashboard /> },
     { path: "leaderboard", element: <Leaderboard /> },
     { path: "teams", element: <Teams /> },
@@ -57,7 +60,12 @@ const appRoutes = {
 const router = createBrowserRouter([
   {
     element: <RootLayout />,
-    children: [{ path: "/", element: <LandingPage /> }, authRoutes, appRoutes],
+    children: [
+      { path: "/", element: <LandingPage /> },
+      authRoutes,
+      appRoutes,
+      { path: "*", element: <NotFound /> },
+    ],
   },
 ]);
 

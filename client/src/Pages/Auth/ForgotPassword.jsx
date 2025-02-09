@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -35,6 +35,8 @@ const ForgotPassword = () => {
   const [loading, setLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [email, setEmail] = useState("");
+  const [timer, setTimer] = useState(120); // 2 minutes in seconds
+  const [isTimerActive, setIsTimerActive] = useState(false);
 
   const {
     register,
@@ -45,6 +47,21 @@ const ForgotPassword = () => {
   } = useForm({
     mode: "onChange",
   });
+
+  // timer logic
+  useEffect(() => {
+    let interval;
+    if (isTimerActive && timer > 0) {
+      interval = setInterval(() => {
+        setTimer((prev) => prev - 1);
+      }, 1000);
+    } else if (timer === 0) {
+      setIsTimerActive(false);
+      setCurrentStep(0);
+      ToastMsg("OTP expired! Please try again.", "error");
+    }
+    return () => clearInterval(interval);
+  }, [isTimerActive, timer]);
 
   const slideVariants = {
     enter: { x: 20, opacity: 0 },
@@ -58,6 +75,10 @@ const ForgotPassword = () => {
     try {
       console.log("Sending OTP to:", email);
       const response = await AuthServices.verifyEmailAndSendOTP(email);
+
+      // Start timer
+      setTimer(120);
+      setIsTimerActive(true);
 
       if (response.status === 200) {
         ToastMsg(response.data.message, "success");
@@ -194,10 +215,24 @@ const ForgotPassword = () => {
                     message: "Please enter a valid 6-digit code",
                   },
                 })}
-                className="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-50 border border-gray-200 focus:border-gfgsc-green focus:ring-2 focus:ring-gfgsc-green-200"
-                placeholder="Enter 6-digit code"
+                className="w-full pl-10 pr-4 py-3 rounded-lg bg-gray-50 border border-gray-200 
+                     focus:border-gfgsc-green focus:ring-2 focus:ring-gfgsc-green-200
+                     text-center tracking-[1em] font-mono text-xl"
+                placeholder="000000"
                 maxLength={6}
               />
+            </div>
+            {/* Timer Display */}
+            <div className="flex justify-end items-center ">
+              <motion.div
+                initial={{ scale: 0.95 }}
+                animate={{ scale: 1 }}
+              >
+                <span className="text-red-600 font-medium">
+                  {Math.floor(timer / 60)}:
+                  {(timer % 60).toString().padStart(2, "0")}
+                </span>
+              </motion.div>
             </div>
             {errors.otp && (
               <p className="text-red-500 text-sm">{errors.otp.message}</p>

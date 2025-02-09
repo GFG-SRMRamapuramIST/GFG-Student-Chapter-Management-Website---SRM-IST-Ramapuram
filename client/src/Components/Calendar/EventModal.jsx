@@ -7,20 +7,37 @@ import {
   RiLinkM,
   RiTimeLine,
   RiUserLine,
-  RiGroupLine,
   RiFileTextLine,
+  RiSaveLine,
+  RiInformationLine,
+  RiEditLine,
 } from "react-icons/ri";
 import { RotatingCloseButton } from "../../Utilities";
 import { platformIcons } from "../../Constants";
 import { useState } from "react";
+import ReactMarkdown from "react-markdown";
 
 const EventModal = ({ selectedDate, events, onClose }) => {
   const meetings = events.filter((e) => e.type === "meeting");
   const contests = events.filter((e) => e.type === "contest");
   const [expandedMeeting, setExpandedMeeting] = useState(null);
+  const [markdownContent, setMarkdownContent] = useState("");
+  const [showEditor, setShowEditor] = useState(false);
+  const [momEditedBy, setMomEditedBy] = useState(null);
 
   const toggleMeetingExpand = (idx) => {
     setExpandedMeeting(expandedMeeting === idx ? null : idx);
+    setShowEditor(false); // Reset editor state when collapsing/expanding meetings
+  };
+
+  const handleSave = () => {
+    console.log("Markdown content:", markdownContent);
+    setMomEditedBy("John Doe"); // Replace with actual user
+    setShowEditor(false);
+  };
+
+  const handleEditClick = () => {
+    setShowEditor(true);
   };
 
   return (
@@ -35,9 +52,10 @@ const EventModal = ({ selectedDate, events, onClose }) => {
         initial={{ scale: 0.95, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.95, opacity: 0, y: 20 }}
-        className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl max-h-[80vh] overflow-y-auto"
+        className="bg-white rounded-3xl p-6 max-w-3xl w-full shadow-2xl max-h-[80vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* ... header ... */}
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-3">
             <div className="bg-gfgsc-green-200 p-3 rounded-2xl">
@@ -54,6 +72,7 @@ const EventModal = ({ selectedDate, events, onClose }) => {
         </div>
 
         <div className="space-y-6">
+          {/* ... Contests section ... */}
           {contests.length > 0 && (
             <div>
               <div className="flex items-center gap-2 mb-3">
@@ -131,47 +150,125 @@ const EventModal = ({ selectedDate, events, onClose }) => {
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: "auto" }}
                           exit={{ opacity: 0, height: 0 }}
-                          className="bg-white border border-gray-200 rounded-xl p-4 space-y-3"
+                          className="bg-white border border-gray-200 rounded-xl p-4 space-y-4"
                         >
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <RiLinkM className="w-4 h-4" />
-                            <a
-                              href={meeting.link}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-blue-600 hover:underline"
-                            >
-                              Join Meeting
-                            </a>
-                          </div>
-                          
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <RiTimeLine className="w-4 h-4" />
-                            <span>
-                              {new Date(meeting.time).toLocaleString("en-US", {
-                                dateStyle: "full",
-                                timeStyle: "short",
-                              })}
-                            </span>
-                          </div>
-
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <RiUserLine className="w-4 h-4" />
-                            <div className="flex items-center gap-2">
-                              <span>Created by John Doe</span>
-                            </div>
-                          </div>
-
+                          {/* Meeting Description */}
                           <div className="space-y-2">
                             <div className="flex items-center gap-2 text-sm text-gray-600">
-                              <RiFileTextLine className="w-4 h-4" />
-                              <span>Minutes of Meeting</span>
+                              <RiInformationLine className="w-4 h-4" />
+                              <span className="font-medium">Description</span>
                             </div>
-                            <textarea
-                              className="w-full p-2 border border-gray-200 rounded-lg text-sm"
-                              placeholder="Add MOM notes here..."
-                              rows="3"
-                            />
+                            <p className="text-sm text-gray-700 pl-6">
+                              {meeting.description || "No description provided"}
+                            </p>
+                          </div>
+
+                          {/* Meeting Details */}
+                          <div className="flex flex-col gap-2">
+                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                              <RiLinkM className="w-4 h-4" />
+                              <a
+                                href={meeting.link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 hover:underline"
+                              >
+                                Join Meeting
+                              </a>
+                            </div>
+
+                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                              <RiTimeLine className="w-4 h-4" />
+                              <span>
+                                {new Date(meeting.time).toLocaleString(
+                                  "en-US",
+                                  {
+                                    dateStyle: "full",
+                                    timeStyle: "short",
+                                  }
+                                )}
+                              </span>
+                            </div>
+
+                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                              <RiUserLine className="w-4 h-4" />
+                              <span>
+                                Created by {meeting.createdBy || "John Doe"}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Minutes of Meeting Section */}
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2 text-sm text-gray-600">
+                                <RiFileTextLine className="w-4 h-4" />
+                                <span>Minutes of Meeting</span>
+                              </div>
+                              <button
+                                onClick={handleEditClick}
+                                className="flex items-center gap-1 px-3 py-1 bg-gfgsc-green text-white rounded-lg text-sm hover:bg-gfgsc-green-600 transition-colors"
+                              >
+                                <RiEditLine className="w-4 h-4" />
+                                {momEditedBy ? "Edit MoM" : "Create MoM"}
+                              </button>
+                            </div>
+
+                            {/* Show last edited by if MoM exists */}
+                            {momEditedBy && !showEditor && (
+                              <div className="text-sm text-gray-500">
+                                Last edited by {momEditedBy}
+                              </div>
+                            )}
+
+                            {/* Markdown Content Preview (when not editing) */}
+                            {markdownContent && !showEditor && (
+                              <div className="prose prose-sm max-w-none p-4 bg-gray-50 rounded-lg">
+                                <ReactMarkdown className="markdown-preview">
+                                  {markdownContent}
+                                </ReactMarkdown>
+                              </div>
+                            )}
+
+                            {/* Markdown Editor */}
+                            {showEditor && (
+                              <div className="space-y-3">
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div className="space-y-2">
+                                    <div className="text-sm text-gray-500 font-medium">
+                                      Editor
+                                    </div>
+                                    <textarea
+                                      className="w-full h-64 p-3 border border-gray-200 rounded-lg text-sm font-mono resize-none focus:outline-none focus:ring-2 focus:ring-gfgsc-green"
+                                      placeholder="Write your MOM in markdown..."
+                                      value={markdownContent}
+                                      onChange={(e) =>
+                                        setMarkdownContent(e.target.value)
+                                      }
+                                    />
+                                  </div>
+                                  <div className="space-y-2">
+                                    <div className="text-sm text-gray-500 font-medium">
+                                      Preview
+                                    </div>
+                                    <div className="w-full h-64 p-3 border border-gray-200 rounded-lg text-sm overflow-y-auto prose prose-sm max-w-none">
+                                      <ReactMarkdown className="markdown-preview">
+                                        {markdownContent}
+                                      </ReactMarkdown>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="flex justify-end">
+                                  <button
+                                    onClick={handleSave}
+                                    className="flex items-center gap-1 px-4 py-2 bg-gfgsc-green text-white rounded-lg text-sm hover:bg-gfgsc-green-600 transition-colors"
+                                  >
+                                    <RiSaveLine className="w-4 h-4" />
+                                    Save
+                                  </button>
+                                </div>
+                              </div>
+                            )}
                           </div>
                         </motion.div>
                       )}
