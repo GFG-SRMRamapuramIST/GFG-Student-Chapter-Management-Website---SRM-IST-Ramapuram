@@ -44,8 +44,9 @@ export { TeamHero, TeamCard, TeamDetailsModal };
 import ProfileHero from "./Profile/ProfileHero";
 import ProfileSecondary from "./Profile/ProfileSecondary";  
 import PlatformPOTDs from "./Profile/PlatformPOTDs";
+import PasswordChangeModal from "./Profile/PasswordChangeModal";
 
-export { ProfileHero, PlatformPOTDs, ProfileSecondary };
+export { ProfileHero, PlatformPOTDs, ProfileSecondary, PasswordChangeModal };
 
 // Leaderboard Components
 import LeaderboardHero from "./Leaderboard/LeaderboardHero";
