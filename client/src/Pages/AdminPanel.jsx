@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   AllowedEmailsForm,
   AllowedEmailsTable,
@@ -145,42 +145,73 @@ const AdminPanel = () => {
   const handleAddEmail = () => {
     if (!emailInput.trim()) return;
 
-    // Split the input by commas and clean up each email
+    // Split and validate emails first
     const emails = emailInput
       .split(",")
       .map((email) => email.trim())
       .filter((email) => {
-        // Basic email validation
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return email && emailRegex.test(email);
       });
 
     if (emails.length === 0) return;
 
-    // Filter out duplicates and add new emails
+    // Filter duplicates
     const newEmails = emails
       .filter(
         (email) => !allowedEmails.some((existing) => existing.email === email)
       )
       .map((email) => ({
-        id: Date.now() + Math.random(), // Ensure unique IDs
+        id: Date.now() + Math.random(),
         email: email,
       }));
 
     if (newEmails.length > 0) {
-      setAllowedEmails([...allowedEmails, ...newEmails]);
-      setEmailInput(""); // Clear input after successful addition
+      setConfirmationState({
+        isOpen: true,
+        type: "info",
+        title: "Add Email(s)",
+        message: `Are you sure you want to add ${newEmails.length} email${
+          newEmails.length > 1 ? "s" : ""
+        } to the allowed list?`,
+        onConfirm: () => {
+          setAllowedEmails([...allowedEmails, ...newEmails]);
+          setEmailInput("");
+        },
+      });
     }
   };
 
   const handleCsvUpload = (event) => {
     const file = event.target.files[0];
-    // Handle CSV processing here
-    setCsvFile(file);
+    if (file) {
+      setConfirmationState({
+        isOpen: true,
+        type: "info",
+        title: "Upload CSV",
+        message: `Are you sure you want to process ${file.name}? This will add new emails to the allowed list.`,
+        onConfirm: () => {
+          setCsvFile(file);
+          // Here you would add the CSV processing logic
+          event.target.value = null; // Reset file input
+        },
+      });
+    }
   };
 
   const handleDeleteAllowedEmail = (id) => {
-    setAllowedEmails(allowedEmails.filter((e) => e.id !== id));
+    const emailToDelete = allowedEmails.find((e) => e.id === id);
+    if (emailToDelete) {
+      setConfirmationState({
+        isOpen: true,
+        type: "danger",
+        title: "Delete Email",
+        message: `Are you sure you want to remove ${emailToDelete.email} from the allowed list?`,
+        onConfirm: () => {
+          setAllowedEmails(allowedEmails.filter((e) => e.id !== id));
+        },
+      });
+    }
   };
 
   const Tab = ({ label, isActive, onClick }) => (

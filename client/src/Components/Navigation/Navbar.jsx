@@ -26,6 +26,7 @@ import { IoLogOutOutline } from "react-icons/io5";
 import { logo } from "../../Assets";
 
 import { removeUserToken } from "../../Actions";
+import { MdAdminPanelSettings } from "react-icons/md";
 
 const Navbar = () => {
   const dispatch = useDispatch();
@@ -73,6 +74,11 @@ const Navbar = () => {
           name: "Resources",
           path: "/resources",
           icon: <FiBook className="text-lg" />,
+        },
+        {
+          name: "Admin",
+          path: "/admin",
+          icon: <MdAdminPanelSettings className="text-lg" />,
         },
       ]
     : [
