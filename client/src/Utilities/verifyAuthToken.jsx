@@ -1,9 +1,9 @@
 import { removeUserToken } from "../Actions";
 import { AuthServices } from "../Services";
 
-import ToastMsg from "../utils/ToastMsg";
+import ToastMsg from "./ToastMsg";
 
-export const verifyUserToken = async (userToken, dispatch, navigate) => {
+const verifyUserToken = async (userToken, dispatch, navigate) => {
   try {
     const response = await AuthServices.verifyAuthToken(userToken);
 
@@ -27,3 +27,5 @@ export const verifyUserToken = async (userToken, dispatch, navigate) => {
     navigate("/"); // Redirect to login
   }
 };
+
+export default verifyUserToken;
