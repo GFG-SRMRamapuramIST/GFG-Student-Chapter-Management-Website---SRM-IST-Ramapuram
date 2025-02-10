@@ -285,7 +285,7 @@ const AdminPanel = () => {
           );
           console.error("Error in deleting the allowed email: ", error.message);
         } finally {
-          fetchUsersData();
+          fetchAllowedEmailsData();
         }
       },
     });
