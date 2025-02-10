@@ -296,7 +296,9 @@ exports.fetchAllUsers = async (req, res) => {
 
     const authResult = await verifyAndAuthorize(token, ["ADMIN"]);
     if (authResult.status !== 200) {
-      return res.status(authResult.status).json({ message: authResult.message });
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
     }
 
     // Extract query params with default values
@@ -305,16 +307,23 @@ exports.fetchAllUsers = async (req, res) => {
     limit = parseInt(limit, 10);
     sortOrder = parseInt(sortOrder, 10);
 
-    const searchFilter = search ? { email: new RegExp(search, "i") } : {};
+    const searchFilter = search
+      ? {
+          $or: [
+            { name: new RegExp(search, "i") },
+            { email: new RegExp(search, "i") },
+          ],
+        }
+      : {};
     const skip = (page - 1) * limit;
 
     // Fetch users and total count simultaneously
     const [users, totalUsers] = await Promise.all([
       Users.find(searchFilter)
-        .sort({ createdAt: sortOrder })
+        .sort({ name: sortOrder }) // Sort by name instead of createdAt
         .skip(skip)
         .limit(limit)
-        .lean(), // Optimized query performance
+        .lean(),
       Users.countDocuments(searchFilter),
     ]);
 
@@ -328,42 +337,48 @@ exports.fetchAllUsers = async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching users:", error.message);
-    return res.status(500).json({ message: "Internal Server Error", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
   }
 };
 
-//5. Delete emails from AllowedEmail schema API
-exports.deleteAllowedEmails = async (req, res) => {
+//5. Delete email from AllowedEmail schema API
+exports.deleteAllowedEmail = async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1]; // Extract token from Authorization header
-    const { ids } = req.body; // Array of _id to delete
+    const { userId } = req.body; // Single userId to delete
 
     // Validate input
-    if (!Array.isArray(ids) || ids.length === 0) {
-      return res.status(400).json({ message: "Invalid or empty IDs array" });
+    if (!userId) {
+      return res.status(400).json({ message: "Invalid or missing userId" });
     }
 
     // Use the helper function for authorization
-    const authResult = await verifyAndAuthorize(token, ["ADMIN", "COREMEMBER"]);
+    const authResult = await verifyAndAuthorize(token, ["ADMIN"]);
     if (authResult.status !== 200) {
       return res
         .status(authResult.status)
         .json({ message: authResult.message });
     }
 
-    // Delete documents with the provided IDs
-    const deletionResult = await AllowedEmail.deleteMany({
-      _id: { $in: ids },
-    });
+    // Delete the specified userId
+    const deletionResult = await AllowedEmail.deleteOne({ _id: userId });
 
-    // Respond with the result
+    if (deletionResult.deletedCount === 0) {
+      return res
+        .status(404)
+        .json({ message: "User not found or already deleted" });
+    }
+
+    // Respond with success
     return res.status(200).json({
-      message: "Emails deleted successfully!",
+      message: "Email deleted successfully!",
       deletedCount: deletionResult.deletedCount,
     });
   } catch (error) {
     console.error(
-      chalk.bgRed.bold.red("Error deleting allowed emails:"),
+      chalk.bgRed.bold.red("Error deleting allowed email:"),
       error.message
     );
     return res
@@ -474,16 +489,16 @@ exports.unblockEmail = async (req, res) => {
 };
 
 //8. Delete Users from website API
-exports.deleteUsers = async (req, res) => {
+exports.deleteUser = async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1]; // Extract token from header
-  const { ids } = req.body; // Array of _id to delete
+  const { userId } = req.body; // Single userId to delete
 
   if (!token) {
     return res.status(401).json({ message: "No token provided" });
   }
 
-  if (!Array.isArray(ids) || ids.length === 0) {
-    return res.status(400).json({ message: "Invalid or empty IDs array" });
+  if (!userId) {
+    return res.status(400).json({ message: "User ID is required" });
   }
 
   try {
@@ -495,46 +510,29 @@ exports.deleteUsers = async (req, res) => {
         .json({ message: authResult.message });
     }
 
-    // Extract the admin's user ID from the token
-    const adminUserId = authResult.userId;
+    // Extract admin's user ID from the token
+    const adminUserId = authResult.userId.toString();
 
-    // Filter out the admin's own account ID from the delete list
-    const idsToDelete = ids.filter((id) => id !== adminUserId);
-    const notDeletedIds = ids.filter((id) => id === adminUserId);
-
-    if (idsToDelete.length === 0) {
-      return res.status(400).json({
-        message:
-          "No valid IDs to delete and you cannot delete your own account.",
-        notDeletedIds,
-      });
+    // Prevent admin from deleting themselves
+    if (userId.toString() === adminUserId) {
+      return res
+        .status(400)
+        .json({ message: "You cannot delete your own account." });
     }
 
-    // Attempt to delete the remaining IDs
-    const deletionResult = await Users.deleteMany({
-      _id: { $in: idsToDelete },
-    });
+    // Delete the user
+    const deletionResult = await Users.deleteOne({ _id: userId });
 
-    // Track IDs that were not deleted for any other reason (e.g., invalid ID)
-    const failedDeletions = [];
-
-    for (const id of idsToDelete) {
-      const exists = await Users.findById(id);
-      if (exists) {
-        failedDeletions.push(id);
-      }
+    if (deletionResult.deletedCount === 0) {
+      return res
+        .status(404)
+        .json({ message: "User not found or already deleted." });
     }
-    notDeletedIds.push(...failedDeletions);
 
-    // Respond with the result
-    return res.status(200).json({
-      message: "Users deletion processed successfully.",
-      deletedCount: deletionResult.deletedCount,
-      notDeletedIds,
-    });
+    return res.status(200).json({ message: "User deleted successfully." });
   } catch (error) {
-    console.error(chalk.bgRed.bold.red("Error deleting users:"), error.message);
-    res
+    console.error("Error deleting user:", error.message);
+    return res
       .status(500)
       .json({ message: "Internal server error", error: error.message });
   }
@@ -547,15 +545,18 @@ exports.promoteUser = async (req, res) => {
     const { userId } = req.body;
 
     if (!token) return res.status(401).json({ message: "No token provided" });
-    if (!userId) return res.status(400).json({ message: "No user ID provided" });
+    if (!userId)
+      return res.status(400).json({ message: "No user ID provided" });
 
     // Verify and authorize token
     const authResult = await verifyAndAuthorize(token, ["ADMIN"]);
     if (authResult.status !== 200) {
-      return res.status(authResult.status).json({ message: authResult.message });
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
     }
 
-    if (authResult.userId === userId) {
+    if (authResult.userId.toString() === userId.toString()) {
       return res.status(400).json({ message: "Cannot promote yourself" });
     }
 
@@ -569,24 +570,29 @@ exports.promoteUser = async (req, res) => {
       MEMBER: "COREMEMBER",
       COREMEMBER: "VICEPRESIDENT",
       VICEPRESIDENT: "PRESIDENT",
+      PRESIDENT: "ADMIN",
     };
 
     if (!promotionMap[user.role]) {
-      return res.status(400).json({ message: "User is already at the highest rank" });
+      return res
+        .status(400)
+        .json({ message: "User is already at the highest rank" });
     }
 
     // Promote the user
     user.role = promotionMap[user.role];
     await user.save();
 
-    return res.status(200).json({ message: `User promoted successfully to ${user.role}` });
-
+    return res
+      .status(200)
+      .json({ message: `User promoted successfully to ${user.role}` });
   } catch (error) {
     console.error(chalk.bgRed.bold.red("Error promoting user:"), error.message);
-    return res.status(500).json({ message: "Internal server error", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
-
 
 //10. Demote user one rank below API
 exports.demoteUser = async (req, res) => {
@@ -595,15 +601,18 @@ exports.demoteUser = async (req, res) => {
     const { userId } = req.body;
 
     if (!token) return res.status(401).json({ message: "No token provided" });
-    if (!userId) return res.status(400).json({ message: "No user ID provided" });
+    if (!userId)
+      return res.status(400).json({ message: "No user ID provided" });
 
     // Verify and authorize token
     const authResult = await verifyAndAuthorize(token, ["ADMIN"]);
     if (authResult.status !== 200) {
-      return res.status(authResult.status).json({ message: authResult.message });
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
     }
 
-    if (authResult.userId === userId) {
+    if (authResult.userId.toString() === userId.toString()) {
       return res.status(400).json({ message: "Cannot demote yourself" });
     }
 
@@ -613,6 +622,7 @@ exports.demoteUser = async (req, res) => {
 
     // Define the demotion hierarchy
     const demotionMap = {
+      ADMIN: "PRESIDENT",
       PRESIDENT: "VICEPRESIDENT",
       VICEPRESIDENT: "COREMEMBER",
       COREMEMBER: "MEMBER",
@@ -620,21 +630,25 @@ exports.demoteUser = async (req, res) => {
     };
 
     if (!demotionMap[user.role]) {
-      return res.status(400).json({ message: "User is already at the lowest rank" });
+      return res
+        .status(400)
+        .json({ message: "User is already at the lowest rank" });
     }
 
     // Demote the user
     user.role = demotionMap[user.role];
     await user.save();
 
-    return res.status(200).json({ message: `User demoted successfully to ${user.role}` });
-
+    return res
+      .status(200)
+      .json({ message: `User demoted successfully to ${user.role}` });
   } catch (error) {
     console.error(chalk.bgRed.bold.red("Error demoting user:"), error.message);
-    return res.status(500).json({ message: "Internal server error", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
-
 
 //************************** APIs For Teams **************************
 

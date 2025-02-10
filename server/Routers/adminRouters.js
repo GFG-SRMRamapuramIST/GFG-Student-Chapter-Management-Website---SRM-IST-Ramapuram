@@ -20,7 +20,7 @@ router.use(express.static(path.resolve(__dirname, "Public")));
 5. Delete emails from AllowedEmail schema API - "{BACKEND_URL}/api/v1/admin/delete-allowed-emails"
 6. Block email/user from website API - "{BACKEND_URL}/api/v1/admin/block-email"
 7. Unblock email/user from website API - "{BACKEND_URL}/api/v1/admin/unblock-email"
-8. Delete Users from website API - "{BACKEND_URL}/api/v1/admin/delete-users-accounts"
+8. Delete Users from website API - "{BACKEND_URL}/api/v1/admin/delete-user-account"
 9. Promote user one rank above API - "{BACKEND_URL}/api/v1/admin/promote-user"
 10. Demote user one rank below API - "{BACKEND_URL}/api/v1/admin/demote-user"
 
@@ -60,7 +60,7 @@ router.post("/fetch-all-allowed-emails", adminControllers.fetchAllowedEmails);
 router.post("/fetch-all-users", adminControllers.fetchAllUsers);
 
 //5. Delete emails from AllowedEmail schema
-router.delete("/delete-allowed-emails", adminControllers.deleteAllowedEmails);
+router.delete("/delete-allowed-email", adminControllers.deleteAllowedEmail);
 
 //6. Block email/user from website API
 router.post("/block-email", adminControllers.blockEmail);
@@ -69,7 +69,7 @@ router.post("/block-email", adminControllers.blockEmail);
 router.post("/unblock-email", adminControllers.unblockEmail);
 
 //8. Delete Users from website API
-router.delete("/delete-users-accounts", adminControllers.deleteUsers)
+router.delete("/delete-user-account", adminControllers.deleteUser)
 
 //9. Promote user one rank above API
 router.post("/promote-user", adminControllers.promoteUser);

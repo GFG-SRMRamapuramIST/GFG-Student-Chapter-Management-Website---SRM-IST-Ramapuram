@@ -1,5 +1,9 @@
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+
+// Importing Icons
 import { IoWarning, IoInformation, IoCheckmark } from "react-icons/io5";
+import { FaSpinner } from "react-icons/fa";
 
 const ConfirmationPopup = ({
   isOpen,
@@ -11,6 +15,14 @@ const ConfirmationPopup = ({
   confirmText = "Confirm",
   cancelText = "Cancel",
 }) => {
+  const [loading, setLoading] = useState(false); // Loading state for API call
+
+  const handleConfirm = async () => {
+    setLoading(true);
+    await onConfirm(); // Call the passed confirm function
+    setLoading(false);
+  };
+
   const getTypeStyles = () => {
     switch (type) {
       case "success":
@@ -18,21 +30,21 @@ const ConfirmationPopup = ({
           icon: IoCheckmark,
           bg: "bg-green-100",
           iconColor: "text-green-500",
-          buttonColor: "bg-green-500 hover:bg-green-600"
+          buttonColor: "bg-green-500 hover:bg-green-600",
         };
       case "danger":
         return {
           icon: IoWarning,
           bg: "bg-red-100",
           iconColor: "text-red-500",
-          buttonColor: "bg-red-500 hover:bg-red-600"
+          buttonColor: "bg-red-500 hover:bg-red-600",
         };
       default:
         return {
           icon: IoInformation,
           bg: "bg-blue-100",
           iconColor: "text-blue-500",
-          buttonColor: "bg-blue-500 hover:bg-blue-600"
+          buttonColor: "bg-blue-500 hover:bg-blue-600",
         };
     }
   };
@@ -82,12 +94,15 @@ const ConfirmationPopup = ({
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={() => {
-                  onConfirm();
+                onClick={async () => {
+                  await handleConfirm(); // Wait for API to finish before closing modal
                   onClose();
                 }}
                 className={`px-4 py-2 rounded-lg text-white ${buttonColor} transition-colors`}
               >
+                {loading ? (
+                  <FaSpinner className="animate-spin inline-block" />
+                ) : null}{" "}
                 {confirmText}
               </motion.button>
             </div>

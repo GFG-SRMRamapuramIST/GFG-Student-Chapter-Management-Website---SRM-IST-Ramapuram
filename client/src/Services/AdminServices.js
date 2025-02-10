@@ -29,11 +29,11 @@ const fetchAllowedEmails = async (
 };
 
 // Delete emails from AllowedEmail schema API
-const deleteAllowedEmails = async (ids, userToken) => {
+const deleteAllowedEmail = async ({ userId }, userToken) => {
   return await commonrequest(
     "DELETE",
-    `${BACKEND_URL}/api/v1/admin/delete-allowed-emails`,
-    { ids },
+    `${BACKEND_URL}/api/v1/admin/delete-allowed-email`,
+    { userId },
     { Authorization: `Bearer ${userToken}` }
   );
 };
@@ -52,7 +52,7 @@ const fetchAllUsers = async (
 };
 
 // Promote user one rank above API
-const promoteUser = async (userId, userToken) => {
+const promoteUser = async ({ userId }, userToken) => {
   return await commonrequest(
     "POST",
     `${BACKEND_URL}/api/v1/admin/promote-user`,
@@ -62,10 +62,20 @@ const promoteUser = async (userId, userToken) => {
 };
 
 // Demote user one rank below API
-const demoteUser = async (userId, userToken) => {
+const demoteUser = async ({ userId }, userToken) => {
   return await commonrequest(
     "POST",
     `${BACKEND_URL}/api/v1/admin/demote-user`,
+    { userId },
+    { Authorization: `Bearer ${userToken}` }
+  );
+};
+
+// Delete a user from the website
+const deleteUserAccount = async ({ userId }, userToken) => {
+  return await commonrequest(
+    "DELETE",
+    `${BACKEND_URL}/api/v1/admin/delete-user-account`,
     { userId },
     { Authorization: `Bearer ${userToken}` }
   );
@@ -78,26 +88,12 @@ const AdminServices = () => {
   return {
     addAllowedEmails: (emails) => addAllowedEmails(emails, userToken),
     fetchAllowedEmails: (params) => fetchAllowedEmails(params, userToken),
-    deleteAllowedEmails: (ids) => deleteAllowedEmails(ids, userToken),
+    deleteAllowedEmail: (params) => deleteAllowedEmail(params, userToken),
     fetchAllUsers: (params) => fetchAllUsers(params, userToken),
-    promoteUser: (userId) => promoteUser(userId, userToken),
-    demoteUser: (userId) => demoteUser(userId, userToken),
+    promoteUser: (params) => promoteUser(params, userToken),
+    demoteUser: (params) => demoteUser(params, userToken),
+    deleteUserAccount: (params) => deleteUserAccount(params, userToken),
   };
 };
 
 export default AdminServices;
-
-/*
-import { AdminServices } from "./AdminServices";
-import { useEffect } from "react";
-
-const AdminDashboard = () => {
-  const { fetchAllowedEmails } = AdminServices();
-
-  useEffect(() => {
-    fetchAllowedEmails({ page: 1 }).then(console.log);
-  }, []);
-
-  return <div>Admin Dashboard</div>;
-};
-*/

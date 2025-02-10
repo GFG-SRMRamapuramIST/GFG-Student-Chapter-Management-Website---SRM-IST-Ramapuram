@@ -1,66 +1,76 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
+
+// Importing Icons
+import { FaSpinner } from "react-icons/fa";
+
 import {
   AllowedEmailsForm,
   AllowedEmailsTable,
   UserTable,
 } from "../Components";
-import { ConfirmationPopup } from "../Utilities";
+import { ConfirmationPopup, ToastMsg, verifyUserToken } from "../Utilities";
+
+// Importing APIs
+import { AdminServices } from "../Services";
 
 const AdminPanel = () => {
-  // Sample data
-  const [users, setUsers] = useState(
-    [
-      {
-        id: 1,
-        name: "Aakash",
-        email: "john@example.com",
-        position: "MEMBER",
-        blocked: false,
-      },
-      {
-        id: 2,
-        name: "Sanjana",
-        email: "jane@example.com",
-        position: "CORE",
-        blocked: false,
-      },
-      {
-        id: 3,
-        name: "Rachit",
-        email: "bob@example.com",
-        position: "USER",
-        blocked: true,
-      },
-    ].concat(
-      Array.from({ length: 20 }, (_, i) => ({
-        id: i + 4,
-        name: `User${i + 4}`,
-        email: `user${i + 4}@example.com`,
-        position: ["USER", "MEMBER", "CORE", "ADMIN"][
-          Math.floor(Math.random() * 4)
-        ],
-        blocked: Math.random() > 0.5,
-      }))
-    )
-  );
+  const {
+    fetchAllUsers,
+    promoteUser,
+    demoteUser,
+    deleteUserAccount,
+    fetchAllowedEmails,
+    deleteAllowedEmail,
+  } = AdminServices();
 
-  const [allowedEmails, setAllowedEmails] = useState([
-    { id: 1, email: "allowed1@example.com" },
-    { id: 2, email: "allowed2@example.com" },
-  ]);
+  const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState("users");
+
+  // ******************* Fetch & Operate on User Data Starts Here ***************
+  const [users, setUsers] = useState([]);
 
   // Position hierarchy for promotion/demotion
-  const positions = ["USER", "MEMBER", "CORE", "ADMIN"];
+  const positions = [
+    "USER",
+    "MEMBER",
+    "COREMEMBER",
+    "VICEPRESIDENT",
+    "PRESIDENT",
+    "ADMIN",
+  ];
 
-  // States for tabs, pagination, sorting, etc.
-  const [activeTab, setActiveTab] = useState("users");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [sortField, setSortField] = useState("name");
-  const [sortDirection, setSortDirection] = useState("asc");
-  const [showBlockedUsers, setShowBlockedUsers] = useState(true);
-  const [emailInput, setEmailInput] = useState("");
-  const [csvFile, setCsvFile] = useState(null);
+  const fetchUsersData = async () => {
+    try {
+      setLoading(true);
+      const response = await fetchAllUsers({
+        page: pageInfo.currentPage,
+        limit: pageInfo.itemsPerPage,
+        search: debouncedSearchUser,
+        sortOrder: sortDirection === "asc" ? 1 : -1,
+      });
+
+      if (response.status === 200) {
+        setUsers(response.data.data);
+        //console.log("Users Data: ", response.data.data);
+        setPageInfo({
+          currentPage: parseInt(response.data.currentPage, 10),
+          itemsPerPage: parseInt(response.data.limit, 10),
+          totalPages: parseInt(response.data.totalPages, 10),
+        });
+      } else {
+        ToastMsg("Error in fetching Users data, please try later!", "error");
+        console.error(
+          "Fetch Users Data Error: ",
+          response.response.data.message
+        );
+      }
+    } catch (error) {
+      ToastMsg("Internal Server Error!", "error");
+      console.error("Fetch Users Data Error: ", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const [confirmationState, setConfirmationState] = useState({
     isOpen: false,
@@ -70,76 +80,130 @@ const AdminPanel = () => {
     onConfirm: () => {},
   });
 
-  // Modified handler functions
+  // Promote a user pop
   const handlePromote = (user) => {
-    const nextPosition = positions[positions.indexOf(user.position) + 1];
+    const nextPosition = positions[positions.indexOf(user.role) + 1];
     setConfirmationState({
       isOpen: true,
       type: "info",
       title: "Promote User",
-      message: `Are you sure you want to promote ${user.name} from ${user.position} to ${nextPosition}?`,
-      onConfirm: () => {
-        const currentIndex = positions.indexOf(user.position);
-        if (currentIndex < positions.length - 1) {
-          const updatedUsers = users.map((u) =>
-            u.id === user.id
-              ? { ...u, position: positions[currentIndex + 1] }
-              : u
-          );
-          setUsers(updatedUsers);
+      message: `Are you sure you want to promote ${user.name} from ${user.role} to ${nextPosition}?`,
+      onConfirm: async () => {
+        try {
+          const response = await promoteUser({ userId: user._id });
+          if (response.status == 200) {
+            ToastMsg(response.data.message, "success");
+          } else {
+            ToastMsg(response.response.data.message, "error");
+            //console.log(response.response.data);
+          }
+        } catch (error) {
+          ToastMsg("Error in promoting user! Please try later", "error");
+          console.error("Error in promoting user: ", error.message);
+        } finally {
+          fetchUsersData();
         }
       },
     });
   };
 
+  // Demote a user pop
   const handleDemote = (user) => {
-    const prevPosition = positions[positions.indexOf(user.position) - 1];
+    const prevPosition = positions[positions.indexOf(user.role) - 1];
     setConfirmationState({
       isOpen: true,
       type: "warning",
       title: "Demote User",
-      message: `Are you sure you want to demote ${user.name} from ${user.position} to ${prevPosition}?`,
-      onConfirm: () => {
-        const currentIndex = positions.indexOf(user.position);
-        if (currentIndex > 0) {
-          const updatedUsers = users.map((u) =>
-            u.id === user.id
-              ? { ...u, position: positions[currentIndex - 1] }
-              : u
-          );
-          setUsers(updatedUsers);
+      message: `Are you sure you want to demote ${user.name} from ${user.role} to ${prevPosition}?`,
+      onConfirm: async () => {
+        try {
+          const response = await demoteUser({ userId: user._id });
+          if (response.status == 200) {
+            ToastMsg(response.data.message, "success");
+          } else {
+            ToastMsg(response.response.data.message, "error");
+            //console.log(response.response.data);
+          }
+        } catch (error) {
+          ToastMsg("Error in demoting user! Please try later", "error");
+          console.error("Error in demoting user: ", error.message);
+        } finally {
+          fetchUsersData();
         }
       },
     });
   };
 
-  const handleBlock = (user) => {
-    setConfirmationState({
-      isOpen: true,
-      type: "danger",
-      title: user.blocked ? "Unblock User" : "Block User",
-      message: `Are you sure you want to ${
-        user.blocked ? "unblock" : "block"
-      } ${user.name}?`,
-      onConfirm: () => {
-        const updatedUsers = users.map((u) =>
-          u.id === user.id ? { ...u, blocked: !u.blocked } : u
-        );
-        setUsers(updatedUsers);
-      },
-    });
-  };
-
+  // Delete a user's account from the website
   const handleDelete = (user) => {
     setConfirmationState({
       isOpen: true,
       type: "danger",
       title: "Delete User",
       message: `Are you sure you want to delete ${user.name}? This action cannot be undone.`,
-      onConfirm: () => {
-        setUsers(users.filter((u) => u.id !== user.id));
+      onConfirm: async () => {
+        try {
+          const response = await deleteUserAccount({ userId: user._id });
+          if (response.status == 200) {
+            ToastMsg(response.data.message, "success");
+          } else {
+            ToastMsg(response.response.data.message, "error");
+            //console.log(response.response.data);
+          }
+        } catch (error) {
+          ToastMsg(
+            "Error in deleting user's account! Please try later",
+            "error"
+          );
+          console.error("Error in deleting user's account: ", error.message);
+        } finally {
+          fetchUsersData();
+        }
       },
     });
+  };
+  // ******************** Fetch & Operate on User Data Ends Here *****************
+
+  // **************** Fetch & Operate on Allowed Emails Data Starts Here **********
+  const [allowedEmails, setAllowedEmails] = useState([]);
+
+  const [emailInput, setEmailInput] = useState("");
+  const [csvFile, setCsvFile] = useState(null);
+
+  const fetchAllowedEmailsData = async () => {
+    try {
+      setLoading(true);
+      const response = await fetchAllowedEmails({
+        page: pageInfo.currentPage,
+        limit: pageInfo.itemsPerPage,
+        search: debouncedSearchUser,
+        sortOrder: sortDirection === "asc" ? 1 : -1,
+      });
+
+      if (response.status === 200) {
+        setAllowedEmails(response.data.data);
+        //console.log("Allowed Emails Data: ", response.data.data);
+        setPageInfo({
+          currentPage: parseInt(response.data.currentPage, 10),
+          itemsPerPage: parseInt(response.data.limit, 10),
+          totalPages: parseInt(response.data.totalPages, 10),
+        });
+      } else {
+        ToastMsg(
+          "Error in fetching Allowed Emails data, please try later!",
+          "error"
+        );
+        console.error(
+          "Fetch Allowed Emails Data Error: ",
+          response.response.data.message
+        );
+      }
+    } catch (error) {
+      ToastMsg("Internal Server Error!", "error");
+      console.error("Fetch Allowed Emails Data Error: ", error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleAddEmail = () => {
@@ -179,9 +243,94 @@ const AdminPanel = () => {
     setCsvFile(file);
   };
 
-  const handleDeleteAllowedEmail = (id) => {
-    setAllowedEmails(allowedEmails.filter((e) => e.id !== id));
+  const handleDeleteAllowedEmail = (email, id) => {
+    setConfirmationState({
+      isOpen: true,
+      type: "danger",
+      title: "Delete User",
+      message: `Are you sure you want to delete ${email}? This action cannot be undone.`,
+      onConfirm: async () => {
+        try {
+          const response = await deleteAllowedEmail({ userId: id });
+          if (response.status == 200) {
+            ToastMsg(response.data.message, "success");
+          } else {
+            ToastMsg(response.response.data.message, "error");
+            //console.log(response.response.data);
+          }
+        } catch (error) {
+          ToastMsg(
+            "Error in deleting the allowed email! Please try later",
+            "error"
+          );
+          console.error("Error in deleting the allowed email: ", error.message);
+        } finally {
+          fetchUsersData();
+        }
+      },
+    });
   };
+
+  // **************** Fetch & Operate on Allowed Emails Data Ends Here **********
+
+  // **************** Table Display Opertions Starts Here ********************
+  const [pageInfo, setPageInfo] = useState({
+    currentPage: 1,
+    itemsPerPage: 10,
+    totalPage: null,
+  });
+  const [searchUser, setSearchUser] = useState("");
+  const [debouncedSearchUser, setDebouncedSearchUser] = useState(searchUser);
+  const [sortDirection, setSortDirection] = useState("asc");
+
+  // Fetch user data or allowed emails data baed on active tab on initial load
+  useEffect(() => {
+    verifyUserToken;
+    if (activeTab == "users") {
+      fetchUsersData();
+    } else {
+      fetchAllowedEmailsData();
+    }
+  }, [
+    pageInfo.currentPage,
+    pageInfo.itemsPerPage,
+    debouncedSearchUser,
+    sortDirection,
+    activeTab,
+  ]);
+
+  // Debounce mechanism for serach input
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchUser(searchUser);
+    }, 1000); // 1s debounce time
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchUser]);
+
+  // Pagination - next btn
+  const handleNextBtnClick = () => {
+    setPageInfo((prevState) => ({
+      ...prevState,
+      currentPage: prevState.currentPage + 1,
+    }));
+  };
+  // Pagination - prev btn
+  const handlePrevBtnClick = () => {
+    setPageInfo((prevState) => ({
+      ...prevState,
+      currentPage: prevState.currentPage - 1,
+    }));
+  };
+
+  // Sorting
+  const handleSortOrderChange = () => {
+    setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+  };
+
+  // ***************** Table Operations Ends Here *************************
 
   const Tab = ({ label, isActive, onClick }) => (
     <button
@@ -225,39 +374,47 @@ const AdminPanel = () => {
         </div>
       </div>
 
-      {activeTab === "users" && (
-        <UserTable
-          users={users}
-          handlePromote={handlePromote}
-          handleDemote={handleDemote}
-          handleBlock={handleBlock}
-          handleDelete={handleDelete}
-          showBlockedUsers={showBlockedUsers}
-          setShowBlockedUsers={setShowBlockedUsers}
-          itemsPerPage={itemsPerPage}
-          setItemsPerPage={setItemsPerPage}
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
-          sortField={sortField}
-          setSortField={setSortField}
-          sortDirection={sortDirection}
-        />
-      )}
+      {activeTab === "users" &&
+        (loading ? (
+          <FaSpinner className="animate-spin inline-block" />
+        ) : (
+          <UserTable
+            users={users}
+            handlePromote={handlePromote}
+            handleDemote={handleDemote}
+            handleDelete={handleDelete}
+            handleNextBtnClick={handleNextBtnClick}
+            handlePrevBtnClick={handlePrevBtnClick}
+            handleSortOrderChange={handleSortOrderChange}
+            pageData={{ pageInfo, setPageInfo }}
+            searchData={{ searchUser, setSearchUser }}
+            sortDirection={sortDirection}
+          />
+        ))}
 
-      {activeTab === "emails" && (
-        <div className="space-y-6">
-          <AllowedEmailsForm
-            emailInput={emailInput}
-            setEmailInput={setEmailInput}
-            handleAddEmail={handleAddEmail}
-            handleCsvUpload={handleCsvUpload}
-          />
-          <AllowedEmailsTable
-            allowedEmails={allowedEmails}
-            handleDeleteAllowedEmail={handleDeleteAllowedEmail}
-          />
-        </div>
-      )}
+      {activeTab === "emails" &&
+        (loading ? (
+          <FaSpinner className="animate-spin inline-block" />
+        ) : (
+          <div className="space-y-6">
+            <AllowedEmailsForm
+              emailInput={emailInput}
+              setEmailInput={setEmailInput}
+              handleAddEmail={handleAddEmail}
+              handleCsvUpload={handleCsvUpload}
+            />
+            <AllowedEmailsTable
+              allowedEmails={allowedEmails}
+              handleDeleteAllowedEmail={handleDeleteAllowedEmail}
+              handleNextBtnClick={handleNextBtnClick}
+              handlePrevBtnClick={handlePrevBtnClick}
+              handleSortOrderChange={handleSortOrderChange}
+              pageData={{ pageInfo, setPageInfo }}
+              searchData={{ searchUser, setSearchUser }}
+              sortDirection={sortDirection}
+            />
+          </div>
+        ))}
     </div>
   );
 };
