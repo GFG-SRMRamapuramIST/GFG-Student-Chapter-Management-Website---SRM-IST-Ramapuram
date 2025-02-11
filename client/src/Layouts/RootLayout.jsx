@@ -39,8 +39,9 @@ const RootLayout = () => {
   // ************ Verify User Token Ends Here ************
 
   const isAuthRoute = pathname.startsWith("/auth");
+  const isSupportRoute = pathname.startsWith("/support");
   const isLandingPage = pathname === "/";
-  const isProtectedRoute = !isAuthRoute && !isLandingPage;
+  const isProtectedRoute = !isAuthRoute && !isLandingPage && !isSupportRoute;
 
   //Redirect authenticated users away from public routes
   if (userToken && tokenVerified && (isAuthRoute || isLandingPage)) {

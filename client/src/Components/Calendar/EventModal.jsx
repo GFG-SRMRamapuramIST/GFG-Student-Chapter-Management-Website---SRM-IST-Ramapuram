@@ -1,4 +1,8 @@
 import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
+import PropTypes from 'prop-types';
+
+// Icons
 import {
   RiCalendarLine,
   RiVideoLine,
@@ -12,9 +16,10 @@ import {
   RiInformationLine,
   RiEditLine,
 } from "react-icons/ri";
-import { RotatingCloseButton } from "../../Utilities";
 import { platformIcons } from "../../Constants";
-import { useState } from "react";
+
+// Components
+import { RotatingCloseButton } from "../../Utilities";
 
 const EventModal = ({ selectedDate, events, onClose }) => {
   const meetings = events.filter((e) => e.type === "meeting");
@@ -271,6 +276,26 @@ const EventModal = ({ selectedDate, events, onClose }) => {
       </motion.div>
     </motion.div>
   );
+};
+
+EventModal.propTypes = {
+  selectedDate: PropTypes.instanceOf(Date).isRequired,
+  events: PropTypes.arrayOf(
+    PropTypes.shape({
+      type: PropTypes.oneOf(['meeting', 'contest']).isRequired,
+      name: PropTypes.string.isRequired,
+      time: PropTypes.string.isRequired,
+      link: PropTypes.string.isRequired,
+      // For meetings
+      description: PropTypes.string,
+      attendees: PropTypes.oneOf(['ALL', 'CORE']),
+      createdBy: PropTypes.string,
+      // For contests
+      platform: PropTypes.oneOf(['leetcode', 'codechef', 'codeforces']),
+      endTime: PropTypes.string
+    })
+  ).isRequired,
+  onClose: PropTypes.func.isRequired
 };
 
 export default EventModal;

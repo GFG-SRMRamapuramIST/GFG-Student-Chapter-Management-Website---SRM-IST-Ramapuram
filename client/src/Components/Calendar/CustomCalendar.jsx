@@ -1,12 +1,9 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  RiCalendarLine,
-  RiVideoLine,
-  RiTrophyLine,
-} from "react-icons/ri";
+import { RiCalendarLine, RiVideoLine, RiTrophyLine, RiAddLine } from "react-icons/ri";
 import { IoPeople } from "react-icons/io5";
 import EventModal from "./EventModal";
+import EventCreationModal from "./EventCreationModal";
 
 const TodayView = ({ events }) => {
   const todayEvents = events
@@ -78,6 +75,11 @@ const TodayView = ({ events }) => {
 const CustomCalendar = ({ events }) => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [currentView, setCurrentView] = useState("month");
+  const [showEventCreation, setShowEventCreation] = useState(false);
+
+  const handleAddEvent = (eventData) => {
+    console.log(eventData);
+  };
 
   const getCurrentMonthDates = () => {
     const today = new Date();
@@ -126,8 +128,15 @@ const CustomCalendar = ({ events }) => {
           </h2>
           <p className="text-gray-500 mt-1">Plan your coding journey</p>
         </div>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => setShowEventCreation(true)}
+            className="flex items-center gap-2  text-gfgsc-green rounded-xl hover:underline underline-offset-8"
+          >
+            <RiAddLine className="w-4 h-4" />
+            <span>Add Event</span>
+          </button>
 
-        <div className="flex items-center gap-2">
           <div className="flex bg-gray-100 p-1 rounded-2xl">
             <button
               onClick={() => setCurrentView("month")}
@@ -230,6 +239,12 @@ const CustomCalendar = ({ events }) => {
           />
         )}
       </AnimatePresence>
+
+      <EventCreationModal
+        isOpen={showEventCreation}
+        onClose={() => setShowEventCreation(false)}
+        onSave={handleAddEvent}
+      />
     </div>
   );
 };

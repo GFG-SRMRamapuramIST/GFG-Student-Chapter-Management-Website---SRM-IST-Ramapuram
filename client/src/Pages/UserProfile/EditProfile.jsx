@@ -1,15 +1,20 @@
 import { useState } from "react";
+import PropTypes from "prop-types";
+
+// Components
+import { PasswordChangeModal } from "../../Components";
+
+// Assets and Icons
+import { AakashPfp, codolioIcon } from "../../Assets";
 import {
   RiPencilLine,
   RiCheckLine,
   RiCloseLine,
   RiImageAddLine,
   RiLockPasswordLine,
-  RiLinkedinBoxLine,
-  RiGithubLine,
+  RiLinkedinBoxFill,
+  RiGithubFill,
 } from "react-icons/ri";
-import { AakashPfp } from "../../Assets";
-import { PasswordChangeModal } from "../../Components";
 import { platformIcons } from "../../Constants";
 
 const EditProfile = () => {
@@ -23,31 +28,31 @@ const EditProfile = () => {
     profilePic: AakashPfp,
 
     // Coding Profiles
-    leetcode: {
-      handle: "aakashyadav",
-    },
-    codechef: {
-      handle: "aakashkumar",
-    },
-    codeforces: {
-      handle: "aakashkyadav",
+    coding: {
+      leetcode: "aakashyadav",
+      codechef: "aakashkumar",
+      codeforces: "aakashkyadav",
     },
 
     // Social Links
-    linkedin: "https://linkedin.com/in/aakashkumar",
-    codolio: "https://codolio.com/aakashkumar",
+    social: {
+      linkedin: "aakashkumar",
+      github: "aakashkumar",
+      codolio: "aakashkumar",
+    },
 
     // Password Management
     currentPassword: "123454",
-    newPassword: "",
-    confirmPassword: "",
   });
+
+  // Constants
+  const academic_years_list = ["1st Year", "2nd Year", "3rd Year", "4th Year"];
 
   // State to manage which fields are currently being edited
   const [editingFields, setEditingFields] = useState({});
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
 
-  // ** Edit Profile Handles **
+  // ***** Edit Profile Handles *****
 
   // Generic field edit handler
   const handleFieldEdit = (section, field, value) => {
@@ -79,7 +84,7 @@ const EditProfile = () => {
     // Add your API call here
   };
 
-  // ** Edit Profile Handle END**
+  // ***** Edit Profile Handle END *****
 
   // Edit Mode Toggle
   const toggleEditMode = (section, field) => {
@@ -97,6 +102,7 @@ const EditProfile = () => {
     field,
     type = "text",
     icon: Icon,
+    options,
   }) => {
     const [localValue, setLocalValue] = useState(value);
     const isEditing = editingFields[`${section}-${field}`];
@@ -109,7 +115,7 @@ const EditProfile = () => {
     };
 
     return (
-        <div className="flex items-center space-x-2">
+      <div className="flex items-center space-x-2">
         {!isEditing ? (
           <>
             <div className="flex-1 flex items-center bg-white rounded-lg p-2">
@@ -125,12 +131,26 @@ const EditProfile = () => {
           </>
         ) : (
           <>
-            <input
-              type={type}
-              value={localValue}
-              onChange={(e) => setLocalValue(e.target.value)}
-              className="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gfgsc-green bg-white"
-            />
+            {options ? (
+              <select
+                value={localValue}
+                onChange={(e) => setLocalValue(e.target.value)}
+                className="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gfgsc-green bg-white"
+              >
+                {options.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <input
+                type={type}
+                value={localValue}
+                onChange={(e) => setLocalValue(e.target.value)}
+                className="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gfgsc-green bg-white"
+              />
+            )}
             <button
               onClick={handleSave}
               className="flex p-2 text-green-600 hover:bg-green-100 rounded-full transition-colors"
@@ -151,7 +171,7 @@ const EditProfile = () => {
 
   return (
     <div className="min-h-screen p-8">
-      <div className="max-w-4xl mx-auto space-y-8">
+      <div className="mx-auto space-y-8">
         <h1 className="text-4xl font-bold text-gfg-black mb-8">Edit Profile</h1>
 
         {/* Personal Information Section */}
@@ -184,10 +204,10 @@ const EditProfile = () => {
             </div>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-2 gap-4 bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-lg">
             {/* Name */}
             <div>
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Name
               </label>
               <EditableInput
@@ -200,7 +220,7 @@ const EditProfile = () => {
 
             {/* Bio */}
             <div>
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Bio
               </label>
               <EditableInput
@@ -213,7 +233,7 @@ const EditProfile = () => {
 
             {/* Phone Number */}
             <div>
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Phone Number
               </label>
               <EditableInput
@@ -229,7 +249,7 @@ const EditProfile = () => {
 
             {/* Academic Year */}
             <div>
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Academic Year
               </label>
               <EditableInput
@@ -239,6 +259,7 @@ const EditProfile = () => {
                 }
                 section="personal"
                 field="academicYear"
+                options={academic_years_list}
               />
             </div>
           </div>
@@ -261,11 +282,14 @@ const EditProfile = () => {
               </div>
               <div className="space-y-2">
                 <EditableInput
-                  value={profileData.leetcode.handle}
-                  onSave={(val) => handleFieldEdit("leetcode", "handle", val)}
-                  section="leetcode"
-                  field="handle"
+                  value={profileData.coding.leetcode}
+                  onSave={(val) => handleFieldEdit("coding", "leetcode", val)}
+                  section="coding"
+                  field="leetcode"
                 />
+                <div className="text-xs text-gray-500">
+                  leetcode.com/u/{profileData.coding.leetcode}
+                </div>
               </div>
             </div>
 
@@ -279,11 +303,14 @@ const EditProfile = () => {
               </div>
               <div className="space-y-2">
                 <EditableInput
-                  value={profileData.codechef.handle}
-                  onSave={(val) => handleFieldEdit("codechef", "handle", val)}
-                  section="codechef"
-                  field="handle"
+                  value={profileData.coding.codechef}
+                  onSave={(val) => handleFieldEdit("coding", "codechef", val)}
+                  section="coding"
+                  field="codechef"
                 />
+                <div className="text-xs text-gray-500">
+                  codechef.com/users/{profileData.coding.codechef}
+                </div>
               </div>
             </div>
 
@@ -297,11 +324,14 @@ const EditProfile = () => {
               </div>
               <div className="space-y-2">
                 <EditableInput
-                  value={profileData.codeforces.handle}
-                  onSave={(val) => handleFieldEdit("codeforces", "handle", val)}
-                  section="codeforces"
-                  field="handle"
+                  value={profileData.coding.codeforces}
+                  onSave={(val) => handleFieldEdit("coding", "codeforces", val)}
+                  section="coding"
+                  field="codeforces"
                 />
+                <div className="text-xs text-gray-500">
+                  codeforces.com/profile/{profileData.coding.codeforces}
+                </div>
               </div>
             </div>
           </div>
@@ -313,33 +343,65 @@ const EditProfile = () => {
             Social Links
           </h2>
 
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-3 gap-6">
             {/* LinkedIn */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                LinkedIn
-              </label>
-              <EditableInput
-                value={profileData.linkedin}
-                onSave={(val) => handleFieldEdit("linkedin", "linkedin", val)}
-                section="social"
-                field="linkedin"
-                icon={RiLinkedinBoxLine}
-              />
+            <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-xl ">
+              <div className="flex items-center space-x-3 mb-3">
+                <RiLinkedinBoxFill className="text-[#0A66C2] text-2xl" />
+                <label className="font-medium text-gray-800">LinkedIn</label>
+              </div>
+              <div className="space-y-2">
+                <EditableInput
+                  value={profileData.social.linkedin}
+                  onSave={(val) => handleFieldEdit("social", "linkedin", val)}
+                  section="social"
+                  field="linkedin"
+                />
+                <div className="text-xs text-gray-500">
+                  linkedin.com/in/{profileData.social.linkedin}
+                </div>
+              </div>
+            </div>
+
+            {/* GitHub */}
+            <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-xl ">
+              <div className="flex items-center space-x-3 mb-3">
+                <RiGithubFill className="text-[#171515] text-2xl" />
+                <label className="font-medium text-gray-800">GitHub</label>
+              </div>
+              <div className="space-y-2">
+                <EditableInput
+                  value={profileData.social.github}
+                  onSave={(val) => handleFieldEdit("social", "github", val)}
+                  section="social"
+                  field="github"
+                />
+                <div className="text-xs text-gray-500">
+                  github.com/{profileData.social.github}
+                </div>
+              </div>
             </div>
 
             {/* Codolio */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Codolio
-              </label>
-              <EditableInput
-                value={profileData.codolio}
-                onSave={(val) => handleFieldEdit("codolio", "codolio", val)}
-                section="social"
-                field="codolio"
-                icon={RiGithubLine}
-              />
+            <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-xl">
+              <div className="flex items-center space-x-3 mb-3">
+                <img
+                  src={codolioIcon}
+                  className="h-4 text-[#171515] text-2xl"
+                />
+                <label className="font-medium text-gray-800">Codolio</label>
+              </div>
+              <div className="space-y-2">
+                <EditableInput
+                  value={profileData.social.codolio}
+                  onSave={(val) => handleFieldEdit("social", "codolio", val)}
+                  section="social"
+                  field="codolio"
+                />
+                <div className="text-xs text-gray-500">
+                  codolio.com/profile/{profileData.social.codolio}
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -368,6 +430,29 @@ const EditProfile = () => {
       />
     </div>
   );
+};
+
+EditProfile.propTypes = {
+  initialData: PropTypes.shape({
+    personal: PropTypes.shape({
+      name: PropTypes.string,
+      bio: PropTypes.string,
+      phoneNumber: PropTypes.string,
+      academicYear: PropTypes.string,
+      profilePic: PropTypes.string,
+    }),
+    coding: PropTypes.shape({
+      leetcode: PropTypes.string,
+      codechef: PropTypes.string,
+      codeforces: PropTypes.string,
+    }),
+    social: PropTypes.shape({
+      linkedin: PropTypes.string,
+      github: PropTypes.string,
+      codolio: PropTypes.string,
+    }),
+    currentPassword: PropTypes.string,
+  }),
 };
 
 export default EditProfile;

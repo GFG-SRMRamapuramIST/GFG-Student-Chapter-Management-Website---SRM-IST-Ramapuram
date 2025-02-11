@@ -49,10 +49,10 @@ const appRoutes = {
       path: "support",
       children: [
         { path: "terms", element: <TermsAndConditions /> },
-        { path: "user-manual", element: <UserManual /> },
         { path: "privacy", element: <PrivacyPolicy /> },
       ],
     },
+    { path: "user-manual", element: <UserManual /> },
   ],
 };
 
