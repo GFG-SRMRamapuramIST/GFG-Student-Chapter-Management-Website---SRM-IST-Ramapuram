@@ -87,6 +87,9 @@ const UserTable = ({
                 Email
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Phone No.
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Position
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -113,12 +116,11 @@ const UserTable = ({
                     </span>
                   </div>
                 </td>
-                <td
-                  className={`px-6 py-4 whitespace-nowrap ${
-                    user.blocked ? "text-red-500" : "text-gray-500"
-                  }`}
-                >
+                <td className="px-6 py-4 whitespace-nowrap text-gray-500">
                   {user.email}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-gray-500">
+                  {user.phoneNumber}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span

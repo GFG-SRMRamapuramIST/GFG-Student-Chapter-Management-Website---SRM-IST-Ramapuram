@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 // Importing Icons
 import { FaSpinner } from "react-icons/fa";
@@ -14,7 +16,13 @@ import { ConfirmationPopup, ToastMsg, verifyUserToken } from "../Utilities";
 import { AdminServices } from "../Services";
 
 const AdminPanel = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const userToken = useSelector((state) => state.auth?.userToken);
+
   const {
+    addAllowedEmails,
     fetchAllUsers,
     promoteUser,
     demoteUser,
@@ -221,14 +229,9 @@ const AdminPanel = () => {
     if (emails.length === 0) return;
 
     // Filter duplicates
-    const newEmails = emails
-      .filter(
-        (email) => !allowedEmails.some((existing) => existing.email === email)
-      )
-      .map((email) => ({
-        id: Date.now() + Math.random(),
-        email: email,
-      }));
+    const newEmails = emails.filter(
+      (email) => !allowedEmails.some((existing) => existing.email === email)
+    );
 
     if (newEmails.length > 0) {
       setConfirmationState({
@@ -238,9 +241,24 @@ const AdminPanel = () => {
         message: `Are you sure you want to add ${newEmails.length} email${
           newEmails.length > 1 ? "s" : ""
         } to the allowed list?`,
-        onConfirm: () => {
-          setAllowedEmails([...allowedEmails, ...newEmails]);
-          setEmailInput("");
+        onConfirm: async () => {
+          //console.log(emails);
+
+          try {
+            const response = await addAllowedEmails({ emails: newEmails });
+            if (response.status == 200) {
+              ToastMsg(response.data.message, "success");
+            } else {
+              ToastMsg(response.response.data.message, "error");
+              //console.log(response.response.data);
+            }
+          } catch (error) {
+            ToastMsg("Error in adding emails! Please try later", "error");
+            console.error("Error in adding emails: ", error.message);
+          } finally {
+            setEmailInput("");
+            fetchAllowedEmailsData();
+          }
         },
       });
     }
@@ -305,13 +323,26 @@ const AdminPanel = () => {
 
   // Fetch user data or allowed emails data baed on active tab on initial load
   useEffect(() => {
-    verifyUserToken;
-    if (activeTab == "users") {
-      fetchUsersData();
-    } else {
-      fetchAllowedEmailsData();
-    }
+    const fetchData = async () => {
+      const response = await verifyUserToken(userToken, dispatch, navigate);
+      //console.log(response);
+
+      if (response?.role !== "ADMIN") {
+        ToastMsg("Un-authorized access! Only ADMIN allowed!", "error");
+        navigate("/");
+        return;
+      }
+
+      if (activeTab === "users") {
+        fetchUsersData();
+      } else {
+        fetchAllowedEmailsData();
+      }
+    };
+
+    fetchData();
   }, [
+    userToken,
     pageInfo.currentPage,
     pageInfo.itemsPerPage,
     debouncedSearchUser,

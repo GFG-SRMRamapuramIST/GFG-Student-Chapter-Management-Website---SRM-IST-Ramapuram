@@ -27,6 +27,8 @@ exports.verifyAuthToken = async (req, res) => {
     if (response.status == "not expired") {
       return res.status(200).json({
         message: "Token is valid",
+        userId: response.userId,
+        role: response.role,
       });
     } else {
       return res.status(400).json({ message: "Token is not valid" });

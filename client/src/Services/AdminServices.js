@@ -6,7 +6,7 @@ import { BACKEND_URL } from "./Helper";
 const useAuthToken = () => useSelector((state) => state.auth?.userToken);
 
 // Add array of Emails to register API
-const addAllowedEmails = async (emails, userToken) => {
+const addAllowedEmails = async ({ emails }, userToken) => {
   return await commonrequest(
     "POST",
     `${BACKEND_URL}/api/v1/admin/add-allowed-emails`,
@@ -86,7 +86,7 @@ const AdminServices = () => {
   const userToken = useAuthToken();
 
   return {
-    addAllowedEmails: (emails) => addAllowedEmails(emails, userToken),
+    addAllowedEmails: (params) => addAllowedEmails(params, userToken),
     fetchAllowedEmails: (params) => fetchAllowedEmails(params, userToken),
     deleteAllowedEmail: (params) => deleteAllowedEmail(params, userToken),
     fetchAllUsers: (params) => fetchAllUsers(params, userToken),
