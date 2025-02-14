@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 
 // Components
 import { PasswordChangeModal } from "../../Components";
 
 // Assets and Icons
-import { AakashPfp, codolioIcon } from "../../Assets";
+import { codolioIcon } from "../../Assets";
+import { FaSpinner } from "react-icons/fa";
 import {
   RiPencilLine,
   RiCheckLine,
@@ -13,37 +14,42 @@ import {
   RiImageAddLine,
   RiLockPasswordLine,
   RiLinkedinBoxFill,
-  RiGithubFill,
 } from "react-icons/ri";
 import { platformIcons } from "../../Constants";
 
+import { ToastMsg } from "../../Utilities";
+
+// Importing APIs
+import { UserServices } from "../../Services";
+
 const EditProfile = () => {
+  const {
+    getEditProfilePageDataFuncion,
+    editProfileFunction,
+    changePasswordFunction,
+  } = UserServices();
+
+  const [loading, setLoading] = useState(true);
+
   // State management for different profile sections
-  const [profileData, setProfileData] = useState({
-    // Personal Info
-    name: "Aakash Kumar",
-    bio: "Full-stack developer passionate about algorithms and competitive programming.",
-    phoneNumber: "+91 9876543210",
-    academicYear: "3rd Year",
-    profilePic: AakashPfp,
+  const [profileData, setProfileData] = useState({});
 
-    // Coding Profiles
-    coding: {
-      leetcode: "aakashyadav",
-      codechef: "aakashkumar",
-      codeforces: "aakashkyadav",
-    },
-
-    // Social Links
-    social: {
-      linkedin: "aakashkumar",
-      github: "aakashkumar",
-      codolio: "aakashkumar",
-    },
-
-    // Password Management
-    currentPassword: "123454",
-  });
+  const getEditProfilePageData = async () => {
+    setLoading(true);
+    try {
+      const response = await getEditProfilePageDataFuncion();
+      //console.log(response.data);
+      setProfileData(response.data);
+    } catch (error) {
+      ToastMsg("Internal Server Error!", "error");
+      console.error("Login Error:", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    getEditProfilePageData();
+  }, []);
 
   // Constants
   const academic_years_list = ["1st Year", "2nd Year", "3rd Year", "4th Year"];
@@ -53,17 +59,6 @@ const EditProfile = () => {
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
 
   // ***** Edit Profile Handles *****
-
-  // Generic field edit handler
-  const handleFieldEdit = (section, field, value) => {
-    setProfileData((prev) => ({
-      ...prev,
-      [section]:
-        typeof prev[section] === "object"
-          ? { ...prev[section], [field]: value }
-          : value,
-    }));
-  };
 
   // Profile Picture Upload Handler
   const handleProfilePicUpload = (event) => {
@@ -78,10 +73,31 @@ const EditProfile = () => {
     }
   };
 
-  const handlePasswordChange = (passwords) => {
-    // TODO: Implement password change logic
-    console.log("Changing password:", passwords);
-    // Add your API call here
+  // Password change handler
+  const handlePasswordChange = async (passwords) => {
+    //console.log(passwords);
+    try {
+      setLoading(true);
+      const response = await changePasswordFunction({
+        currentPassword: passwords.current,
+        newPassword: passwords.new,
+      });
+
+      if (response.status === 200) {
+        ToastMsg("Password updated successfully!", "success");
+      } else {
+        ToastMsg(
+          response.response.data.message || "Failed to update password!",
+          "error"
+        );
+      }
+    } catch (error) {
+      ToastMsg("Internal Server Error!", "error");
+      console.error("Password Update Error:", error);
+    } finally {
+      getEditProfilePageData();
+      setLoading(false);
+    }
   };
 
   // ***** Edit Profile Handle END *****
@@ -97,7 +113,6 @@ const EditProfile = () => {
   // Editable Input Component
   const EditableInput = ({
     value,
-    onSave,
     section,
     field,
     type = "text",
@@ -107,11 +122,29 @@ const EditProfile = () => {
     const [localValue, setLocalValue] = useState(value);
     const isEditing = editingFields[`${section}-${field}`];
 
-    const handleSave = () => {
-      onSave(localValue);
+    const handleSave = async () => {
       toggleEditMode(section, field);
-      // TODO: Backend save logic
-      console.log(`Saving ${section} - ${field}:`, localValue);
+      //console.log(`Saving ${section} - ${field}:`, localValue);
+      setLoading(true);
+
+      try {
+        const response = await editProfileFunction({ [field]: localValue });
+
+        if (response.status === 200) {
+          ToastMsg("Profile updated successfully!", "success");
+        } else {
+          ToastMsg(
+            response.response.data.message || "Failed to update profile!",
+            "error"
+          );
+        }
+      } catch (error) {
+        ToastMsg("Internal Server Error!", "error");
+        console.error("Profile Update Error:", error);
+      } finally {
+        getEditProfilePageData();
+        setLoading(false);
+      }
     };
 
     return (
@@ -137,7 +170,7 @@ const EditProfile = () => {
                 onChange={(e) => setLocalValue(e.target.value)}
                 className="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gfgsc-green bg-white"
               >
-                {options.map((option) => (
+                {options?.map((option) => (
                   <option key={option} value={option}>
                     {option}
                   </option>
@@ -183,11 +216,15 @@ const EditProfile = () => {
           {/* Profile Picture */}
           <div className="flex items-center space-x-6">
             <div className="relative">
-              <img
-                src={profileData.profilePic || "https://placehold.co/100x100"}
-                alt="Profile"
-                className="w-32 h-32 rounded-full object-cover border-4 border-gfgsc-green-200"
-              />
+              {loading ? (
+                <FaSpinner className="animate-spin inline-block" />
+              ) : (
+                <img
+                  src={profileData.profilePic || "https://placehold.co/100x100"}
+                  alt="Profile"
+                  className="w-32 h-32 rounded-full object-cover border-4 border-gfgsc-green-200"
+                />
+              )}
               <label
                 htmlFor="profilePicUpload"
                 className="absolute bottom-0 right-0 bg-gfgsc-green text-white p-2 rounded-full cursor-pointer"
@@ -210,12 +247,15 @@ const EditProfile = () => {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Name
               </label>
-              <EditableInput
-                value={profileData.name}
-                onSave={(val) => handleFieldEdit("name", "name", val)}
-                section="personal"
-                field="name"
-              />
+              {loading ? (
+                <FaSpinner className="animate-spin inline-block" />
+              ) : (
+                <EditableInput
+                  value={profileData.name}
+                  section="personal"
+                  field="name"
+                />
+              )}
             </div>
 
             {/* Bio */}
@@ -223,12 +263,15 @@ const EditProfile = () => {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Bio
               </label>
-              <EditableInput
-                value={profileData.bio}
-                onSave={(val) => handleFieldEdit("bio", "bio", val)}
-                section="personal"
-                field="bio"
-              />
+              {loading ? (
+                <FaSpinner className="animate-spin inline-block" />
+              ) : (
+                <EditableInput
+                  value={profileData.bio}
+                  section="personal"
+                  field="bio"
+                />
+              )}
             </div>
 
             {/* Phone Number */}
@@ -236,15 +279,16 @@ const EditProfile = () => {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Phone Number
               </label>
-              <EditableInput
-                value={profileData.phoneNumber}
-                onSave={(val) =>
-                  handleFieldEdit("phoneNumber", "phoneNumber", val)
-                }
-                section="personal"
-                field="phoneNumber"
-                type="tel"
-              />
+              {loading ? (
+                <FaSpinner className="animate-spin inline-block" />
+              ) : (
+                <EditableInput
+                  value={profileData.phoneNumber}
+                  section="personal"
+                  field="phoneNumber"
+                  type="tel"
+                />
+              )}
             </div>
 
             {/* Academic Year */}
@@ -252,15 +296,16 @@ const EditProfile = () => {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Academic Year
               </label>
-              <EditableInput
-                value={profileData.academicYear}
-                onSave={(val) =>
-                  handleFieldEdit("academicYear", "academicYear", val)
-                }
-                section="personal"
-                field="academicYear"
-                options={academic_years_list}
-              />
+              {loading ? (
+                <FaSpinner className="animate-spin inline-block" />
+              ) : (
+                <EditableInput
+                  value={profileData.academicYear}
+                  section="personal"
+                  field="academicYear"
+                  options={academic_years_list}
+                />
+              )}
             </div>
           </div>
         </div>
@@ -281,14 +326,17 @@ const EditProfile = () => {
                 <label className="font-medium text-gray-800">LeetCode</label>
               </div>
               <div className="space-y-2">
-                <EditableInput
-                  value={profileData.coding.leetcode}
-                  onSave={(val) => handleFieldEdit("coding", "leetcode", val)}
-                  section="coding"
-                  field="leetcode"
-                />
+                {loading ? (
+                  <FaSpinner className="animate-spin inline-block" />
+                ) : (
+                  <EditableInput
+                    value={profileData.coding.leetcode}
+                    section="coding"
+                    field="leetcodeUsername"
+                  />
+                )}
                 <div className="text-xs text-gray-500">
-                  leetcode.com/u/{profileData.coding.leetcode}
+                  leetcode.com/u/{loading ? null : profileData.coding.leetcode}
                 </div>
               </div>
             </div>
@@ -302,14 +350,18 @@ const EditProfile = () => {
                 <label className="font-medium text-gray-800">CodeChef</label>
               </div>
               <div className="space-y-2">
-                <EditableInput
-                  value={profileData.coding.codechef}
-                  onSave={(val) => handleFieldEdit("coding", "codechef", val)}
-                  section="coding"
-                  field="codechef"
-                />
+                {loading ? (
+                  <FaSpinner className="animate-spin inline-block" />
+                ) : (
+                  <EditableInput
+                    value={profileData.coding.codechef}
+                    section="coding"
+                    field="codechefUsername"
+                  />
+                )}
                 <div className="text-xs text-gray-500">
-                  codechef.com/users/{profileData.coding.codechef}
+                  codechef.com/users/
+                  {loading ? null : profileData.coding.codechef}
                 </div>
               </div>
             </div>
@@ -323,14 +375,18 @@ const EditProfile = () => {
                 <label className="font-medium text-gray-800">Codeforces</label>
               </div>
               <div className="space-y-2">
-                <EditableInput
-                  value={profileData.coding.codeforces}
-                  onSave={(val) => handleFieldEdit("coding", "codeforces", val)}
-                  section="coding"
-                  field="codeforces"
-                />
+                {loading ? (
+                  <FaSpinner className="animate-spin inline-block" />
+                ) : (
+                  <EditableInput
+                    value={profileData.coding.codeforces}
+                    section="coding"
+                    field="codeforcesUsername"
+                  />
+                )}
                 <div className="text-xs text-gray-500">
-                  codeforces.com/profile/{profileData.coding.codeforces}
+                  codeforces.com/profile/
+                  {loading ? null : profileData.coding.codeforces}
                 </div>
               </div>
             </div>
@@ -351,33 +407,17 @@ const EditProfile = () => {
                 <label className="font-medium text-gray-800">LinkedIn</label>
               </div>
               <div className="space-y-2">
-                <EditableInput
-                  value={profileData.social.linkedin}
-                  onSave={(val) => handleFieldEdit("social", "linkedin", val)}
-                  section="social"
-                  field="linkedin"
-                />
+                {loading ? (
+                  <FaSpinner className="animate-spin inline-block" />
+                ) : (
+                  <EditableInput
+                    value={profileData.social.linkedin}
+                    section="social"
+                    field="linkedinUsername"
+                  />
+                )}
                 <div className="text-xs text-gray-500">
-                  linkedin.com/in/{profileData.social.linkedin}
-                </div>
-              </div>
-            </div>
-
-            {/* GitHub */}
-            <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-xl ">
-              <div className="flex items-center space-x-3 mb-3">
-                <RiGithubFill className="text-[#171515] text-2xl" />
-                <label className="font-medium text-gray-800">GitHub</label>
-              </div>
-              <div className="space-y-2">
-                <EditableInput
-                  value={profileData.social.github}
-                  onSave={(val) => handleFieldEdit("social", "github", val)}
-                  section="social"
-                  field="github"
-                />
-                <div className="text-xs text-gray-500">
-                  github.com/{profileData.social.github}
+                  linkedin.com/in/{loading ? null : profileData.social.linkedin}
                 </div>
               </div>
             </div>
@@ -392,14 +432,18 @@ const EditProfile = () => {
                 <label className="font-medium text-gray-800">Codolio</label>
               </div>
               <div className="space-y-2">
-                <EditableInput
-                  value={profileData.social.codolio}
-                  onSave={(val) => handleFieldEdit("social", "codolio", val)}
-                  section="social"
-                  field="codolio"
-                />
+                {loading ? (
+                  <FaSpinner className="animate-spin inline-block" />
+                ) : (
+                  <EditableInput
+                    value={profileData.social.codolio}
+                    section="social"
+                    field="codolioUsername"
+                  />
+                )}
                 <div className="text-xs text-gray-500">
-                  codolio.com/profile/{profileData.social.codolio}
+                  codolio.com/profile/
+                  {loading ? null : profileData.social.codolio}
                 </div>
               </div>
             </div>

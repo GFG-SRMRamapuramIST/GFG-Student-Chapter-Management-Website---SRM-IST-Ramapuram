@@ -2,7 +2,10 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from 'framer-motion';
 
+// Importing Icons
+import { FaSpinner } from "react-icons/fa";
 import { RiLockPasswordLine } from 'react-icons/ri';
+
 import { RotatingCloseButton } from '../../Utilities';
 
 const PasswordChangeModal = ({ isOpen, onClose, onSubmit }) => {
@@ -12,29 +15,38 @@ const PasswordChangeModal = ({ isOpen, onClose, onSubmit }) => {
     confirm: ''
   });
 
+  const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
   const validateForm = () => {
     const newErrors = {};
-    if (!passwords.current) newErrors.current = 'Current password is required';
-    if (!passwords.new) newErrors.new = 'New password is required';
-    if (!passwords.confirm) newErrors.confirm = 'Please confirm your new password';
+    if (!passwords.current) newErrors.current = "Current password is required";
+    if (!passwords.new) newErrors.new = "New password is required";
+    if (!passwords.confirm)
+      newErrors.confirm = "Please confirm your new password";
     if (passwords.new !== passwords.confirm) {
-      newErrors.confirm = 'Passwords do not match';
+      newErrors.confirm = "Passwords do not match";
     }
     if (passwords.new && passwords.new.length < 6) {
-      newErrors.new = 'Password must be at least 6 characters';
+      newErrors.new = "Password must be at least 6 characters";
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
-      onSubmit(passwords);
-      onClose();
-      setPasswords({ current: '', new: '', confirm: '' });
+      setLoading(true);
+      try {
+        await onSubmit(passwords);
+      } catch (error) {
+        console.error("Error:", error);
+      } finally {
+        onClose();
+        setPasswords({ current: "", new: "", confirm: "" });
+        setLoading(false);
+      }
     }
   };
 
@@ -130,8 +142,14 @@ const PasswordChangeModal = ({ isOpen, onClose, onSubmit }) => {
                 </button>
                 <button
                   type="submit"
+                  disabled={loading}
                   className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
                 >
+                  {
+                    loading ? (
+                      <FaSpinner className="animate-spin inline-block" />
+                    ) : null
+                  }
                   Update Password
                 </button>
               </div>

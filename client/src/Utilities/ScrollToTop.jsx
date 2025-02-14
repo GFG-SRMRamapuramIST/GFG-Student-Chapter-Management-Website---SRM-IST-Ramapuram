@@ -1,9 +1,20 @@
 import { useEffect, useState } from "react";
-import { FaArrowUp } from "react-icons/fa";
+import { useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
+
+import { FaArrowUp } from "react-icons/fa";
 
 const ScrollToTop = () => {
   const [backToTop, setBackToTop] = useState(false);
+  const location = useLocation();
+
+  // Scroll to the top on route change
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }, [location.pathname]); // Trigger when the pathname changes
 
   useEffect(() => {
     const handleScroll = () => {

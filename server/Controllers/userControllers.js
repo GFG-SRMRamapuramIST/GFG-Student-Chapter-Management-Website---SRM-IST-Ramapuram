@@ -1,52 +1,135 @@
 const chalk = require("chalk");
+const bcrypt = require("bcryptjs");
 
 const { Users } = require("../Models");
-const { verifyAuthToken } = require("../Utilities");
+const { verifyAuthToken, cloudinary } = require("../Utilities");
 
 /*
 ************************** APIs **************************
+0. Get Edit Profile Page Data
+
 1. Edit Profile API
-2. Join a Team API
-3. Leave a Team API
+2. Change Password API
+3. Edit Profile Picture
+4. Join a Team API
+5. Leave a Team API
 **********************************************************
 */
 
-//1. Edit Profile API
-exports.editProfile = async (req, res) => {
+//0. Get Edit Profile Page Data
+exports.getEditProfilePageData = async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1]; // Extract token
-  const { userId } = req.body; // ID of the user whose profile is to be edited
-  const updates = req.body; // Fields to update
-
   if (!token) {
     return res.status(401).json({ message: "No token provided" });
-  }
-
-  if (!userId) {
-    return res.status(400).json({ message: "No user ID provided" });
   }
 
   try {
     // Verify the auth token
     const authResult = await verifyAuthToken(token);
-    if (authResult.status !== 200) {
+    if (authResult.status !== "not expired") {
       return res
-        .status(authResult.status)
+        .status(400)
         .json({ message: authResult.message });
     }
 
-    // Ensure the email cannot be updated
-    if (updates.email) {
+    const userId = authResult.userId;
+    const user = await Users.findById(userId).select(
+      "name bio phoneNumber academicYear profilePicture linkedinUsername codolioUsername leetcodeUsername codechefUsername codeforcesUsername"
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Formatting academic year
+    const academicYearMapping = {
+      1: "1st Year",
+      2: "2nd Year",
+      3: "3rd Year",
+      4: "4th Year",
+    };
+
+    const formattedResponse = {
+      name: user.name,
+      bio: user.bio,
+      phoneNumber: user.phoneNumber,
+      academicYear: academicYearMapping[user.academicYear] || "Unknown",
+      profilePic: user.profilePicture,
+
+      // Coding Profiles
+      coding: {
+        leetcode: user.leetcodeUsername,
+        codechef: user.codechefUsername,
+        codeforces: user.codeforcesUsername,
+      },
+
+      // Social Links
+      social: {
+        linkedin: user.linkedinUsername,
+        codolio: user.codolioUsername,
+      },
+    };
+
+    res.status(200).json(formattedResponse);
+  } catch (error) {
+    console.error("Error getting edit-profile-page data:", error.message);
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
+
+//1. Edit Profile API
+exports.editProfile = async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1]; // Extract token
+  const updates = req.body; // Extract update fields
+  //console.log(updates)
+
+  if (!token) {
+    return res.status(401).json({ message: "No token provided" });
+  }
+
+  try {
+    // Verify the auth token
+    const authResult = await verifyAuthToken(token);
+    if (authResult.status !== "not expired") {
+      return res.status(400).json({ message: authResult.message });
+    }
+
+    const userId = authResult.userId; // Extract userId from token
+
+    // Allowed fields for update
+    const allowedFields = {
+      name: "Name",
+      phoneNumber: "Phone Number",
+      registrationNumber: "Registration Number",
+      academicYear: "Academic Year",
+      linkedinUsername: "LinkedIn Username",
+      codolioUsername: "Codolio Username",
+      leetcodeUsername: "LeetCode Username",
+      codechefUsername: "CodeChef Username",
+      codeforcesUsername: "Codeforces Username",
+      bio: "Bio",
+    };
+
+    // Ensure exactly one field is being updated
+    const updateKeys = Object.keys(updates);
+    console.log(updateKeys)
+    if (updateKeys.length !== 1) {
+      return res.status(400).json({ message: "You can update only one field at a time" });
+    }
+
+    const fieldToUpdate = updateKeys[0];
+    console.log(allowedFields[fieldToUpdate])
+    if (!allowedFields[fieldToUpdate]) {
+      return res.status(400).json({ message: "Invalid field for update" });
+    }
+
+    if (fieldToUpdate === "email") {
       return res.status(400).json({ message: "Email cannot be edited" });
     }
 
-    // Handle profile picture update
-    let profilePicture = undefined;
-    if (req.file) {
-      profilePicture = `/ProfilePicUploads/${req.file.filename}`;
-      updates.profilePicture = profilePicture;
-    }
-
-    // Update the user's details
+    // Perform update
     const updatedUser = await Users.findByIdAndUpdate(userId, updates, {
       new: true, // Return the updated document
       runValidators: true, // Ensure validation rules in schema are applied
@@ -56,23 +139,111 @@ exports.editProfile = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Respond with success
     return res.status(200).json({
-      message: "Profile updated successfully",
+      message: `${allowedFields[fieldToUpdate]} updated successfully`,
       user: updatedUser,
     });
   } catch (error) {
-    console.error(
-      chalk.bgRed.bold.red("Error updating profile:"),
-      error.message
-    );
+    console.error("Error updating profile:", error.message);
+    return res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+};
+
+//2. Change Pasword API
+exports.changePassword = async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1]; // Extract token
+  const {currentPassword, newPassword } = req.body;
+
+  if (!token) {
+    return res.status(401).json({ message: "No token provided" });
+  }
+  if ( !currentPassword || !newPassword) {
+    return res.status(400).json({ message: "Missing required fields" });
+  }
+
+  try {
+    // Verify the auth token
+    const authResult = await verifyAuthToken(token);
+    if (authResult.status !== "not expired") {
+      return res
+        .status(400)
+        .json({ message: authResult.message });
+    }
+
+    const userId = authResult.userId;
+
+    // Fetch user from DB
+    const user = await Users.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Check if current password matches
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Current password is incorrect" });
+    }
+
+    // Update password and save
+    user.password = newPassword;
+    await user.save();
+
+    return res.status(200).json({ message: "Password updated successfully" });
+  } catch (error) {
+    console.error("Error changing password:", error.message);
     return res
       .status(500)
       .json({ message: "Internal server error", error: error.message });
   }
 };
 
-//2. Join a Team API
+//3. Edit Profile Picture
+exports.editProfilePicture = async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1]; // Extract token
+
+  if (!token) {
+    return res.status(401).json({ message: "No token provided" });
+  }
+
+  try {
+    // Verify the auth token
+    const authResult = await verifyAuthToken(token);
+    if (authResult.status !== "not expired") {
+      return res.status(400).json({ message: authResult.message });
+    }
+
+    const userId = authResult.userId;
+
+    let profilePicture = null;
+
+    if (req.file) {
+      // Upload the new profile picture to Cloudinary
+      const uploadResult = await cloudinary.uploader.upload(req.file.path);
+      profilePicture = uploadResult.secure_url;
+    }
+
+    // Update the user's profile picture (set to null if removed)
+    const updatedUser = await Users.findByIdAndUpdate(
+      userId,
+      { profilePicture },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).json({
+      message: req.file ? "Profile picture updated successfully" : "Profile picture removed successfully",
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error("Error updating profile picture:", error.message);
+    return res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+};
+
+//4. Join a Team API
 exports.joinTeam = async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1]; // Extract token
   const { userId, teamId } = req.body; // ID of the user and team to join
@@ -150,7 +321,7 @@ exports.joinTeam = async (req, res) => {
   }
 };
 
-//3. Leave a Team API
+//5. Leave a Team API
 exports.leaveTeam = async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1]; // Extract token
   const { userId, teamId } = req.body; // ID of the user and team to join

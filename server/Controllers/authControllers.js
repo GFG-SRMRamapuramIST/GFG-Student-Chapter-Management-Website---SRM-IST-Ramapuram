@@ -149,7 +149,8 @@ exports.register = async (req, res) => {
 
     // Create a new user
     const newUser = new Users({
-      profilePicture: upload.secure_url || undefined, // Use uploaded picture or fallback to default from schema
+      profilePicture:
+        upload && upload.secure_url ? upload.secure_url : undefined, // Use uploaded picture or fallback to default from schema
       name,
       email,
       password,
