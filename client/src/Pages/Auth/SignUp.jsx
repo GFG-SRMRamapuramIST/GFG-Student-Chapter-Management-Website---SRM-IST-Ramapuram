@@ -11,6 +11,7 @@ import {
   MdPhone,
   MdCode,
   MdAddAPhoto,
+  MdDescription,
 } from "react-icons/md";
 import { FaLinkedin, FaSpinner } from "react-icons/fa";
 import { SiCodechef, SiCodeforces, SiLeetcode } from "react-icons/si";
@@ -25,7 +26,7 @@ import { AuthServices } from "../../Services";
 const steps = [
   {
     title: "Basic Information",
-    fields: ["profilePicture", "name", "email", "password", "confirmPassword"],
+    fields: ["profilePicture", "name", "bio", "email", "password", "confirmPassword"],
   },
   {
     title: "Contact Details",
@@ -66,13 +67,13 @@ const SignUp = () => {
     handleSubmit,
     watch,
     formState: { errors },
-    trigger,
     setValue,
     reset,
   } = useForm({
     mode: "onChange",
     defaultValues: {
       name: "",
+      bio: "",
       email: "",
       password: "",
       confirmPassword: "",
@@ -95,6 +96,17 @@ const SignUp = () => {
       icon: <MdPerson />,
       placeholder: "Full Name",
       validation: { required: "Name is required" },
+    },
+    bio: {
+      icon: <MdDescription />,
+      placeholder: "Tell us about yourself",
+      validation: {
+        required: "Bio is required",
+        maxLength: {
+          value: 100,
+          message: "Bio must be less than 100 characters"
+        }
+      },
     },
     email: {
       icon: <MdEmail />,

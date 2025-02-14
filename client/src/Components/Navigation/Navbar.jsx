@@ -75,11 +75,6 @@ const Navbar = () => {
           path: "/resources",
           icon: <FiBook className="text-lg" />,
         },
-        {
-          name: "Admin",
-          path: "/admin",
-          icon: <MdAdminPanelSettings className="text-lg" />,
-        },
       ]
     : [
         { name: "About", path: "/about" },

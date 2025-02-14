@@ -10,6 +10,10 @@ import Dashboard from "./Dashboard";
 import Teams from "./Teams";
 import Leaderboard from "./Leaderboard";
 
+// Resources Route
+import AllResources from "./Resources/AllResources";
+import Resource from "./Resources/Resource";
+
 // User Profile Routes
 import Profile from "./UserProfile/Profile";
 import EditProfile from "./UserProfile/EditProfile";
@@ -36,5 +40,7 @@ export {
   TermsAndConditions,
   PrivacyPolicy,
   UserManual,
-  NotFound
+  NotFound,
+  AllResources,
+  Resource
 };
