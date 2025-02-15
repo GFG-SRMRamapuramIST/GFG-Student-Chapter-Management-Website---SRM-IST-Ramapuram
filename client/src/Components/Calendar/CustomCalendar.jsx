@@ -1,9 +1,22 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { RiCalendarLine, RiVideoLine, RiTrophyLine, RiAddLine } from "react-icons/ri";
+
+// Importing icons
+import {
+  RiCalendarLine,
+  RiVideoLine,
+  RiTrophyLine,
+  RiAddLine,
+} from "react-icons/ri";
 import { IoPeople } from "react-icons/io5";
+import { FaClosedCaptioning } from "react-icons/fa";
+
 import EventModal from "./EventModal";
 import EventCreationModal from "./EventCreationModal";
+import { ToastMsg } from "../../Utilities";
+
+// Importing APIs
+import { CoreMemberServices } from "../../Services";
 
 const TodayView = ({ events }) => {
   const todayEvents = events
@@ -73,13 +86,46 @@ const TodayView = ({ events }) => {
 };
 
 const CustomCalendar = ({ events }) => {
+  const { meetingCreationFunction } = CoreMemberServices();
+
   const [selectedDate, setSelectedDate] = useState(null);
   const [currentView, setCurrentView] = useState("month");
   const [showEventCreation, setShowEventCreation] = useState(false);
 
-  const handleAddEvent = (eventData) => {
-    console.log(eventData);
+  // *************** Event Creation Handler Starts Here *******************
+
+  const handleMeetingCreationFunction = async (meetingData) => {
+    try {
+      const response = await meetingCreationFunction(meetingData);
+      //console.log(response)
+      
+      if (response.status == 200) {
+        ToastMsg(response.data.message, "success");
+      } else {
+        ToastMsg(response.response.data.message, "error");
+        console.log(response.response.data.message);
+      }
+    } catch (error) {
+      ToastMsg("Internal Server Error!", "error");
+      console.error("Meeting creation error:", error);
+    }
   };
+
+  const handleAddEvent = async (eventData) => {
+    //console.log(eventData);
+    if (eventData.type == "meeting") {
+      const formatedMeetingData = {
+        title: eventData.name,
+        description: eventData.description,
+        meetingLink: eventData.link,
+        meetingDate: eventData.date,
+        meetingTime: eventData.time,
+        compulsory: eventData.attendees,
+      };
+      await handleMeetingCreationFunction(formatedMeetingData);
+    }
+  };
+  // *************** Event Creation Handler Ends Here *********************
 
   const getCurrentMonthDates = () => {
     const today = new Date();

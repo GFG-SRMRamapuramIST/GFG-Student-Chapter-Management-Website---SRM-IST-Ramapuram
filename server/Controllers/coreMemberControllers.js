@@ -424,9 +424,16 @@ exports.createNotice = async (req, res) => {
     } = req.body;
 
     // Use the helper function for authorization
-    const authResult = await verifyAndAuthorize(token, ["ADMIN", "COREMEMBER"]);
+    const authResult = await verifyAndAuthorize(token, [
+      "ADMIN",
+      "COREMEMBER",
+      "VICEPRESIDENT",
+      "PRESIDENT",
+    ]);
     if (authResult.status !== 200) {
-      return res.status(authResult.status).json({ message: authResult.message });
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
     }
 
     // Validate required fields
@@ -489,13 +496,13 @@ exports.createNotice = async (req, res) => {
     // Save notice to database
     await newNotice.save();
 
-    return res.status(201).json({
-      message: "Notice created successfully.",
+    return res.status(200).json({
+      message: "Meeting created successfully.",
       data: newNotice,
     });
   } catch (error) {
     console.error(
-      chalk.bgRed.bold.red("Error creating notice:"),
+      chalk.bgRed.bold.red("Error creating meeting:"),
       error.message
     );
     return res

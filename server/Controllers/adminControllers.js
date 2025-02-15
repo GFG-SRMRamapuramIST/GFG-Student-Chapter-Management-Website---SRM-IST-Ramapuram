@@ -8,7 +8,7 @@ const {
   BlockedEmails,
   ConstantValue,
 } = require("../Models");
-const { verifyAuthToken } = require("../Utilities");
+const { verifyAuthToken, sendEmail } = require("../Utilities");
 
 /*
 ************************** APIs **************************
@@ -344,10 +344,10 @@ exports.addAllowedEmails = async (req, res) => {
                       Join our evergrowing unstoppable community
                   </div>
                       <div class="social-icons">
-                        <a href="https://www.instagram.com/geeksforgeeks_srm_rmp/"><img width="50" height="50" src="https://img.icons8.com/ios/100/instagram-new--v1.png" alt="instagram-new--v1"/></a>
-                        <a href="https://www.linkedin.com/company/geeksforgeeks-srm-rmp"><img width="50" height="50" src="https://img.icons8.com/material-outlined/100/linkedin.png" alt="linkedin"/></a>
-                        <a href="https://x.com/GFG_SRM_RMP"><img width="50" height="50" src="https://img.icons8.com/ios/100/twitterx--v2.png" alt="twitterx--v2"/></a>
-                        <a href="https://gfgsrmrmp.vercel.app/"><img width="50" height="50" src="https://img.icons8.com/ios/100/domain.png" alt="domain"/></a>                        
+                        <a href="https://www.instagram.com/geeksforgeeks_srm_rmp/"><img width="24" height="24" src="https://res.cloudinary.com/du1b2thra/image/upload/v1739607885/wudcidksorrlsc43i0hn.png" alt="instagram-new--v1"/></a>
+                        <a href="https://www.linkedin.com/company/geeksforgeeks-srm-rmp"><img width="24" height="24" src="https://res.cloudinary.com/du1b2thra/image/upload/v1739608002/lpdxsqycyrszaufpfrap.png" alt="linkedin"/></a>
+                        <a href="https://x.com/GFG_SRM_RMP"><img width="24" height="24" src="https://res.cloudinary.com/du1b2thra/image/upload/v1739608105/dnbjvcdmxstrj9yhoy7e.png" alt="twitterx--v2"/></a>
+                        <a href="https://gfgsrmrmp.vercel.app/"><img width="24" height="24" src="https://res.cloudinary.com/du1b2thra/image/upload/v1739608156/iorqcssxpnwvgftktnkt.png" alt="domain"/></a>                        
                     </div>
                   <div class="footer-bottom" style="height: 200px; overflow: hidden;">
                       <div>Queries? We're just one email away: <span style="color: #00895e;">geeksforgeeks.srmistrmp@gmail.com</span> </div>
@@ -406,7 +406,9 @@ exports.fetchAllowedEmails = async (req, res) => {
 
     const authResult = await verifyAndAuthorize(token, ["ADMIN"]);
     if (authResult.status !== 200) {
-      return res.status(authResult.status).json({ message: authResult.message });
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
     }
 
     // Extract query params with default values
@@ -438,7 +440,9 @@ exports.fetchAllowedEmails = async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching allowed emails:", error.message);
-    return res.status(500).json({ message: "Internal Server Error", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
   }
 };
 
@@ -684,6 +688,171 @@ exports.deleteUser = async (req, res) => {
         .json({ message: "User not found or already deleted." });
     }
 
+    // Send email notification
+    const subject = "Account Deletion Notification";
+    const message = `<!DOCTYPE html>
+          <html lang="en">
+          <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+            
+              <style>
+                  body {
+                      font-family: Arial, sans-serif;
+                      background-color:#b3e6d4 ;
+                      margin: 0;
+                      padding: 0;
+                  }
+                  .container {
+                      width: 100%;
+                      max-width: 600px;
+                      margin: 0 auto;
+                      background-color: #ffffff;
+                      padding: 20px;
+                      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                      border-radius: 10px;
+                  }
+                  .header {
+                      text-align: center;
+                      background-color:white;
+                      border-radius: 10px;
+                      color: white;
+                      padding: 0;
+                      overflow: hidden;
+                      
+                  
+                  }
+                  .header h1 {
+                      margin: 0;
+                  }
+                  .content {
+                      padding: 20px;
+                      padding-top: 0px;
+                      text-align: center;
+                  }
+                  .content p {
+                  
+                      color: #555555;
+              text-align: justify;
+              line-height: 1.4;
+              word-break: break-word;
+                  }
+                
+                  .footer {
+                      text-align: center;
+                      padding: 10px;
+                      color: #777777;
+                  }
+                  .footer a {
+                      color: #007bff;
+                      text-decoration: none;
+                  }
+              
+                  .header img{
+                      height: 100px;
+                      width: 400px;
+                  }
+                  
+                  /* Footer Styling */
+                  .footer-container {
+                      max-width: 1200px;
+                      margin: 0 auto;
+                      padding: 40px 20px;
+                      padding-top: 5px;
+                      text-align: center;
+                      font-family: Arial, sans-serif;
+                      background-color: #f8f8f8;
+                      
+                  }
+
+                  .footer-logo {
+                      width: 120px;
+                      margin-bottom: 30px;
+                  }
+
+                  .community-text {
+                      font-size: 16px;
+                      color: #666;
+                      margin-bottom: 20px;
+                  }
+
+                  .social-icons {
+                      display: flex;
+                      justify-content: center;
+                      gap: 20px;
+                      margin-bottom: 20px;
+                  }
+                  .social-icons i {
+                      font-size: 32px;
+                      color: #666;
+                      transition: transform 0.2s;
+                  }
+                  .social-icons i:hover {
+                      transform: scale(1.1);
+                      color:#00895e;
+                  }
+
+
+                  .footer-bottom {
+                  
+                      height: 100px;
+                  
+                      padding-top: 10px;
+                      border-top: 1px solid #eee;
+                      color: #666;
+                      font-size: 14px;
+                      overflow: hidden;
+                    
+                  
+                  }
+
+          </style>
+          </head>
+          <body>
+              <div class="container">
+                  <div class="header">
+                      <img src="https://res.cloudinary.com/du1b2thra/image/upload/v1739372825/dyq9xw2oatp9rjthimf4.png">
+                  </div>
+                  <div class="content">
+                    <h2 style="color: #d10000;">Account Deletion Notice</h2>
+                
+                    <h3 style="text-align: left;">Hi <span style="color: #d10000;">${user.name}</span>,</h3>
+                    <p>
+                        We regret to inform you that your account has been <span style="background-color:#f5b3b3; font-weight:bold;">permanently deleted</span>.
+                    </p>
+                    <p>
+                        This action has been taken as per our policies and guidelines. You will no longer have access to your account or its associated data.
+                    </p>
+                    <p>
+                        If you believe this was a mistake or need further assistance, please contact our support team.
+                    </p>
+                </div>
+                
+
+              <!-- Footer Section -->
+              <footer class="footer-container" style="height: 100px; overflow: hidden;">
+              
+                  
+                  <div class="community-text">
+                      Join our evergrowing unstoppable community
+                  </div>
+                      <div class="social-icons">
+                        <a href="https://www.instagram.com/geeksforgeeks_srm_rmp/"><img width="24" height="24" src="https://res.cloudinary.com/du1b2thra/image/upload/v1739607885/wudcidksorrlsc43i0hn.png" alt="instagram-new--v1"/></a>
+                        <a href="https://www.linkedin.com/company/geeksforgeeks-srm-rmp"><img width="24" height="24" src="https://res.cloudinary.com/du1b2thra/image/upload/v1739608002/lpdxsqycyrszaufpfrap.png" alt="linkedin"/></a>
+                        <a href="https://x.com/GFG_SRM_RMP"><img width="24" height="24" src="https://res.cloudinary.com/du1b2thra/image/upload/v1739608105/dnbjvcdmxstrj9yhoy7e.png" alt="twitterx--v2"/></a>
+                        <a href="https://gfgsrmrmp.vercel.app/"><img width="24" height="24" src="https://res.cloudinary.com/du1b2thra/image/upload/v1739608156/iorqcssxpnwvgftktnkt.png" alt="domain"/></a>                        
+                    </div>
+                  <div class="footer-bottom" style="height: 200px; overflow: hidden;">
+                      <div>Queries? We're just one email away: <span style="color: #00895e;">geeksforgeeks.srmistrmp@gmail.com</span> </div>
+                      <div>© 2025 GFG Student Chapter. All rights reserved.</div>
+                  </div>
+              </footer>
+              </div>
+          </body>
+      </html>`;
+    await sendEmail(user.email, subject, message);
+
     return res.status(200).json({ message: "User deleted successfully." });
   } catch (error) {
     console.error("Error deleting user:", error.message);
@@ -737,6 +906,172 @@ exports.promoteUser = async (req, res) => {
     // Promote the user
     user.role = promotionMap[user.role];
     await user.save();
+
+    // Send email notification
+    const subject = "Promotion Notification";
+    const message = `
+    <!DOCTYPE html>
+          <html lang="en">
+          <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+            
+              <style>
+                  body {
+                      font-family: Arial, sans-serif;
+                      background-color:#b3e6d4 ;
+                      margin: 0;
+                      padding: 0;
+                  }
+                  .container {
+                      width: 100%;
+                      max-width: 600px;
+                      margin: 0 auto;
+                      background-color: #ffffff;
+                      padding: 20px;
+                      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                      border-radius: 10px;
+                  }
+                  .header {
+                      text-align: center;
+                      background-color:white;
+                      border-radius: 10px;
+                      color: white;
+                      padding: 0;
+                      overflow: hidden;
+                      
+                  
+                  }
+                  .header h1 {
+                      margin: 0;
+                  }
+                  .content {
+                      padding: 20px;
+                      padding-top: 0px;
+                      text-align: center;
+                  }
+                  .content p {
+                  
+                      color: #555555;
+              text-align: justify;
+              line-height: 1.4;
+              word-break: break-word;
+                  }
+                
+                  .footer {
+                      text-align: center;
+                      padding: 10px;
+                      color: #777777;
+                  }
+                  .footer a {
+                      color: #007bff;
+                      text-decoration: none;
+                  }
+              
+                  .header img{
+                      height: 100px;
+                      width: 400px;
+                  }
+                  
+                  /* Footer Styling */
+                  .footer-container {
+                      max-width: 1200px;
+                      margin: 0 auto;
+                      padding: 40px 20px;
+                      padding-top: 5px;
+                      text-align: center;
+                      font-family: Arial, sans-serif;
+                      background-color: #f8f8f8;
+                      
+                  }
+
+                  .footer-logo {
+                      width: 120px;
+                      margin-bottom: 30px;
+                  }
+
+                  .community-text {
+                      font-size: 16px;
+                      color: #666;
+                      margin-bottom: 20px;
+                  }
+
+                  .social-icons {
+                      display: flex;
+                      justify-content: center;
+                      gap: 20px;
+                      margin-bottom: 20px;
+                  }
+                  .social-icons i {
+                      font-size: 32px;
+                      color: #666;
+                      transition: transform 0.2s;
+                  }
+                  .social-icons i:hover {
+                      transform: scale(1.1);
+                      color:#00895e;
+                  }
+
+
+                  .footer-bottom {
+                  
+                      height: 100px;
+                  
+                      padding-top: 10px;
+                      border-top: 1px solid #eee;
+                      color: #666;
+                      font-size: 14px;
+                      overflow: hidden;
+                    
+                  
+                  }
+
+          </style>
+          </head>
+          <body>
+              <div class="container">
+                  <div class="header">
+                      <img src="https://res.cloudinary.com/du1b2thra/image/upload/v1739372825/dyq9xw2oatp9rjthimf4.png">
+                  </div>
+                  <div class="content">
+                    <h2 style="color: #00895e;">Congratulations!</h2>
+                
+                    <h3 style="text-align: left;">Hi <span style="color: #00895e;">${user.name}</span>,</h3>
+                    <p>
+                        We are delighted to inform you that you have been <span style="background-color:#b3e6d4; font-weight:bold;">promoted to the position of ${user.role}</span>!
+                    </p>
+                    <p>
+                        Your hard work, dedication, and contributions have been truly commendable, and this promotion is a testament to your excellence.
+                    </p>
+                    <p>
+                        We look forward to seeing you excel in your new role and continue making a remarkable impact!
+                    </p>
+                </div>
+                
+
+              <!-- Footer Section -->
+              <footer class="footer-container" style="height: 100px; overflow: hidden;">
+              
+                  
+                  <div class="community-text">
+                      Join our evergrowing unstoppable community
+                  </div>
+                      <div class="social-icons">
+                        <a href="https://www.instagram.com/geeksforgeeks_srm_rmp/"><img width="24" height="24" src="https://res.cloudinary.com/du1b2thra/image/upload/v1739607885/wudcidksorrlsc43i0hn.png" alt="instagram-new--v1"/></a>
+                        <a href="https://www.linkedin.com/company/geeksforgeeks-srm-rmp"><img width="24" height="24" src="https://res.cloudinary.com/du1b2thra/image/upload/v1739608002/lpdxsqycyrszaufpfrap.png" alt="linkedin"/></a>
+                        <a href="https://x.com/GFG_SRM_RMP"><img width="24" height="24" src="https://res.cloudinary.com/du1b2thra/image/upload/v1739608105/dnbjvcdmxstrj9yhoy7e.png" alt="twitterx--v2"/></a>
+                        <a href="https://gfgsrmrmp.vercel.app/"><img width="24" height="24" src="https://res.cloudinary.com/du1b2thra/image/upload/v1739608156/iorqcssxpnwvgftktnkt.png" alt="domain"/></a>                        
+                    </div>
+                  <div class="footer-bottom" style="height: 200px; overflow: hidden;">
+                      <div>Queries? We're just one email away: <span style="color: #00895e;">geeksforgeeks.srmistrmp@gmail.com</span> </div>
+                      <div>© 2025 GFG Student Chapter. All rights reserved.</div>
+                  </div>
+              </footer>
+              </div>
+          </body>
+      </html>`;
+    await sendEmail(user.email, subject, message);
 
     return res
       .status(200)
@@ -794,6 +1129,202 @@ exports.demoteUser = async (req, res) => {
     user.role = demotionMap[user.role];
     await user.save();
 
+    // Send email notification
+    const subject = "Demotion Notification";
+    const message = `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #b3e6d4;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+      }
+      .header {
+        text-align: center;
+        background-color: white;
+        border-radius: 10px;
+        color: white;
+        padding: 0;
+        overflow: hidden;
+      }
+      .header h1 {
+        margin: 0;
+      }
+      .content {
+        padding: 20px;
+        padding-top: 0px;
+        text-align: center;
+      }
+      .content p {
+        color: #555555;
+        text-align: justify;
+        line-height: 1.4;
+        word-break: break-word;
+      }
+
+      .footer {
+        text-align: center;
+        padding: 10px;
+        color: #777777;
+      }
+      .footer a {
+        color: #007bff;
+        text-decoration: none;
+      }
+
+      .header img {
+        height: 100px;
+        width: 400px;
+      }
+
+      /* Footer Styling */
+      .footer-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 20px;
+        padding-top: 5px;
+        text-align: center;
+        font-family: Arial, sans-serif;
+        background-color: #f8f8f8;
+      }
+
+      .footer-logo {
+        width: 120px;
+        margin-bottom: 30px;
+      }
+
+      .community-text {
+        font-size: 16px;
+        color: #666;
+        margin-bottom: 20px;
+      }
+
+      .social-icons {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-bottom: 20px;
+      }
+      .social-icons i {
+        font-size: 32px;
+        color: #666;
+        transition: transform 0.2s;
+      }
+      .social-icons i:hover {
+        transform: scale(1.1);
+        color: #00895e;
+      }
+
+      .footer-bottom {
+        height: 100px;
+
+        padding-top: 10px;
+        border-top: 1px solid #eee;
+        color: #666;
+        font-size: 14px;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <img
+          src="https://res.cloudinary.com/du1b2thra/image/upload/v1739372825/dyq9xw2oatp9rjthimf4.png"
+        />
+      </div>
+      <div class="content">
+        <h2 style="color: #d10000">Role Demotion Notification</h2>
+
+        <h3 style="text-align: left">
+          Hi <span style="color: #d10000">${user.name}</span>,
+        </h3>
+        <p>
+          We regret to inform you that you have been
+          <span style="background-color: #f5b3b3; font-weight: bold"
+            >demoted from the position of ${user.role}</span
+          >.
+        </p>
+        <p>
+          This decision was made after careful consideration of various factors.
+          We appreciate your efforts and contributions, and we encourage you to
+          take this as an opportunity for growth.
+        </p>
+        <p>
+          We hope to see you continue striving for excellence and making
+          valuable contributions to the team.
+        </p>
+      </div>
+
+      <!-- Footer Section -->
+      <footer class="footer-container" style="height: 100px; overflow: hidden">
+        <div class="community-text">
+          Join our evergrowing unstoppable community
+        </div>
+        <div class="social-icons">
+          <a href="https://www.instagram.com/geeksforgeeks_srm_rmp/"
+            ><img
+              width="24"
+              height="24"
+              src="https://res.cloudinary.com/du1b2thra/image/upload/v1739607885/wudcidksorrlsc43i0hn.png"
+              alt="instagram-new--v1"
+          /></a>
+          <a href="https://www.linkedin.com/company/geeksforgeeks-srm-rmp"
+            ><img
+              width="24"
+              height="24"
+              src="https://res.cloudinary.com/du1b2thra/image/upload/v1739608002/lpdxsqycyrszaufpfrap.png"
+              alt="linkedin"
+          /></a>
+          <a href="https://x.com/GFG_SRM_RMP"
+            ><img
+              width="24"
+              height="24"
+              src="https://res.cloudinary.com/du1b2thra/image/upload/v1739608105/dnbjvcdmxstrj9yhoy7e.png"
+              alt="twitterx--v2"
+          /></a>
+          <a href="https://gfgsrmrmp.vercel.app/"
+            ><img
+              width="24"
+              height="24"
+              src="https://res.cloudinary.com/du1b2thra/image/upload/v1739608156/iorqcssxpnwvgftktnkt.png"
+              alt="domain"
+          /></a>
+        </div>
+        <div class="footer-bottom" style="height: 200px; overflow: hidden">
+          <div>
+            Queries? We're just one email away:
+            <span style="color: #00895e"
+              >geeksforgeeks.srmistrmp@gmail.com</span
+            >
+          </div>
+          <div>© 2025 GFG Student Chapter. All rights reserved.</div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>
+`;
+    await sendEmail(user.email, subject, message);
+
     return res
       .status(200)
       .json({ message: `User demoted successfully to ${user.role}` });
@@ -835,11 +1366,9 @@ exports.updateTeamSize = async (req, res) => {
     const constant = await ConstantValue.findOne();
 
     if (!constant) {
-      return res
-        .status(500)
-        .json({
-          message: "ConstantValue document not found. Please initialize it.",
-        });
+      return res.status(500).json({
+        message: "ConstantValue document not found. Please initialize it.",
+      });
     }
 
     // Update the teamSize attribute
@@ -965,7 +1494,9 @@ exports.editTeamName = async (req, res) => {
     typeof teamName !== "string" ||
     teamName.trim() === ""
   ) {
-    return res.status(400).json({ message: "Invalid team ID or name provided" });
+    return res
+      .status(400)
+      .json({ message: "Invalid team ID or name provided" });
   }
 
   try {
@@ -991,7 +1522,10 @@ exports.editTeamName = async (req, res) => {
     // Send success response
     return res.status(200).json({ message: "Team name updated successfully" });
   } catch (error) {
-    console.error(chalk.bgRed.bold.red("Error updating team name:"), error.message);
+    console.error(
+      chalk.bgRed.bold.red("Error updating team name:"),
+      error.message
+    );
     return res
       .status(500)
       .json({ message: "Internal server error", error: error.message });

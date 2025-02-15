@@ -6,11 +6,14 @@ import PropTypes from 'prop-types';
 import {
   RiCalendarLine,
 } from "react-icons/ri";
+import { FaSpinner } from "react-icons/fa";
 
 // Components
 import { RotatingCloseButton } from "../../Utilities";
 
 const EventCreationModal = ({ isOpen, onClose, onSave }) => {
+  const [loading, setLoading] = useState(false);
+
   const [eventType, setEventType] = useState("meeting");
 
   const [formData, setFormData] = useState({
@@ -25,15 +28,15 @@ const EventCreationModal = ({ isOpen, onClose, onSave }) => {
   });
 
   // *** Event Creation Modal Handles ***
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const timeStr = formData.startTime;
-    const dateTimeStr = `${formData.date}T${timeStr}`;
+    setLoading(true); // Start loading
 
     const eventData = {
       name: formData.title,
       link: formData.link,
-      time: new Date(dateTimeStr).toISOString(),
+      date: formData.date, // Fixed key typo from 'data' to 'date'
+      time: formData.startTime,
       type: eventType,
       ...(eventType === "meeting"
         ? {
@@ -42,12 +45,28 @@ const EventCreationModal = ({ isOpen, onClose, onSave }) => {
           }
         : {
             platform: formData.platform,
-            endTime: `${formData.date}T${formData.endTime}`,
+            endTime: formData.endTime,
           }),
     };
 
-    onSave(eventData);
-    onClose();
+    try {
+      await onSave(eventData); // Call API
+    } catch (error) {
+      console.error("Error saving event:", error);
+    } finally {
+      setLoading(false); // Stop loading
+      setFormData({
+        title: "",
+        link: "",
+        date: "",
+        startTime: "",
+        endTime: "",
+        description: "",
+        attendees: "all",
+        platform: "leetcode",
+      });
+      onClose();
+    }
   };
 
   const handleInputChange = (e) => {
@@ -231,8 +250,9 @@ const EventCreationModal = ({ isOpen, onClose, onSave }) => {
                       className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gfgsc-green"
                       required
                     >
-                      <option value="all">All Members</option>
-                      <option value="core">Core Team</option>
+                      <option value="ALL">Users</option>
+                      <option value="MEMBER">Members</option>
+                      <option value="COREMEMBER">Core Members</option>
                     </select>
                   </div>
                 </>
@@ -241,8 +261,12 @@ const EventCreationModal = ({ isOpen, onClose, onSave }) => {
               <div className="flex justify-end pt-4">
                 <button
                   type="submit"
+                  disabled={loading}
                   className="px-6 py-2 bg-gfgsc-green text-white rounded-xl hover:bg-gfgsc-green-600 transition-colors"
                 >
+                  {loading ? (
+                    <FaSpinner className="animate-spin inline-block" />
+                  ) : null}{" "}
                   Schedule
                 </button>
               </div>

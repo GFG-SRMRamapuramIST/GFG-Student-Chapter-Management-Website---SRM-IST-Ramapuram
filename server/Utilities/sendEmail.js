@@ -3,10 +3,10 @@ const chalk = require("chalk");
 
 // Configuration for nodemailer
 const transporter = nodemailer.createTransport({
-  service: "gmail", // Replace with your email service (e.g., Outlook, Yahoo)
+  service: "gmail",
   auth: {
-    user: "vitcseguide@gmail.com",
-    pass: "gvdt kqqs zzvr vfib", // Use environment variables in production
+    user: "geeksforgeeks.srmistrmp@gmail.com",
+    pass: "fgvh olam gxvk ilds", // Use environment variables in production
   },
 });
 
@@ -14,10 +14,10 @@ const sendEmail = async (recipients, subject, message) => {
   try {
     // Mail options
     const mailOptions = {
-      from: "vitcseguide@gmail.com", // Sender's email address
+      from: "geeksforgeeks.srmistrmp@gmail.com", // Sender's email address
       to: recipients, // Comma-separated list of recipients
       subject, // Email subject
-      text: message, // Plain text body
+      html: message, // HTML form to message
     };
 
     // Send email
