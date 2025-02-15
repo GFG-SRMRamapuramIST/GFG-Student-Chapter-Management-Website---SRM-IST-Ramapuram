@@ -93,6 +93,7 @@ exports.register = async (req, res) => {
   try {
     const {
       name,
+      bio,
       email,
       password,
       registrationNumber,
@@ -109,6 +110,7 @@ exports.register = async (req, res) => {
     // Check for required fields
     if (
       !name ||
+      !bio ||
       !email ||
       !password ||
       !registrationNumber ||
@@ -152,6 +154,7 @@ exports.register = async (req, res) => {
       profilePicture:
         upload && upload.secure_url ? upload.secure_url : undefined, // Use uploaded picture or fallback to default from schema
       name,
+      bio,
       email,
       password,
       registrationNumber,

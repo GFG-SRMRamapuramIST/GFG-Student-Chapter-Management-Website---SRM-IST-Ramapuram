@@ -13,8 +13,10 @@ const { userControllers } = require("../Controllers");
 1. Edit Profile API - "{BACKEND_URL}/api/v1/user/edit-profile"
 2. Change Password API - "{BACKEND_URL}/api/v1/user/change-password"
 3. Edit Profile Picture API - "{BACKEND_URL}/api/v1/user/edit-profile-picture"
-4. Join a Team API - "{BACKEND_URL}/api/v1/user/join-team"
-5. Leave a Team API - "{BACKEND_URL}/api/v1/user/leave-team"
+4. Toggle Subscibe API - "{BACKEND_URL}/api/v1/user/toggle-subscribe-btn"
+
+ Join a Team API - "{BACKEND_URL}/api/v1/user/join-team"
+ Leave a Team API - "{BACKEND_URL}/api/v1/user/leave-team"
 
 **********************************************************
 */
@@ -56,10 +58,15 @@ router.post("/change-password", userControllers.changePassword);
 //3. Edit Profile Picture API
 router.post("/edit-profile-picture", uploadProfilePicture, userControllers.editProfilePicture);
 
+//4. Toggle Subscribe API
+router.post("/toggle-subscribe-btn", userControllers.toggleSubscribeOption)
+
+/*
 //4. Join a Team API
 router.post("/join-team", userControllers.joinTeam);
 
 //5. Leave a Team API
 router.post("/leave-team", userControllers.leaveTeam);
+*/
 
 module.exports = router;

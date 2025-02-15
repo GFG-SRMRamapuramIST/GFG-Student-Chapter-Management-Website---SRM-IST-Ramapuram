@@ -21,17 +21,14 @@ const contestSchema = new mongoose.Schema({
     type: String,
     required: true, // Name of the contest
   },
+  contestLink: {
+    type: String,
+    required: true,
+  },
   platform: {
     type: String,
     required: true,
-    enum: [
-      "CodeChef",
-      "Codeforces",
-      "GeeksForGeeks",
-      "HackerEarth",
-      "HackerRank",
-      "LeetCode",
-    ], // Restrict values to predefined set
+    enum: ["CodeChef", "Codeforces", "LeetCode"], // Restrict values to predefined set
   },
   startTime: {
     type: Date,
