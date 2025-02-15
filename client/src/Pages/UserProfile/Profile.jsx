@@ -24,8 +24,8 @@ const userProfile = {
   // Quick stats for the Overview tab
   stats: {
     questions: 847,
-    individualRank: 234,
-    teamRank: 42
+    individualRank: 34,
+    previousRank: 142
   },
 
   // Coding platform profiles

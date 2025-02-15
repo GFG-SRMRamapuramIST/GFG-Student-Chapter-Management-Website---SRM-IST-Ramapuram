@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   FaCalendarAlt,
   FaListOl,
@@ -9,31 +9,82 @@ import {
   FaPlus,
 } from "react-icons/fa";
 import { platformIcons, resources } from "../../Constants";
+import AddProblemModal from "../../Components/Resources/AddProblemModal";
 
 const Resource = () => {
   const { id } = useParams();
-  const [resource, setResource] = useState(null);
-  const [selectedFilter, setSelectedFilter] = useState("all");
+
+  const [selectedDifficulty, setSelectedDifficulty] = useState("all");
   const [showDelete, setShowDelete] = useState(false);
   const [selectedPlatform, setSelectedPlatform] = useState("all");
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+  const [resource, setResource] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [problems, setProblems] = useState([]);
 
   useEffect(() => {
     const foundResource = resources.find((r) => r.id.toString() === id);
     setResource(foundResource);
+    setIsLoading(false);
+
+    // Mock Data - Initialize problems when resource is found
+    if (foundResource) {
+      const initialProblems = Array(foundResource.count)
+        .fill(null)
+        .map((_, idx) => ({
+          id: idx + 1,
+          title: `Problem ${idx + 1}`,
+          difficulty: ["easy", "medium", "hard"][Math.floor(Math.random() * 3)],
+          platform:
+            foundResource.platforms[
+              Math.floor(Math.random() * foundResource.platforms.length)
+            ],
+          link: "#",
+        }));
+      setProblems(initialProblems);
+    }
   }, [id]);
 
-  if (!resource) return null;
+  // ******** Filtering Logic ********
+  const filteredProblems = problems.filter(
+    (p) =>
+      (selectedDifficulty === "all" || p.difficulty === selectedDifficulty) &&
+      (selectedPlatform === "all" || p.platform === selectedPlatform)
+  );
 
-  // Mock data for demonstration - now includes platform from resource.platforms
-  const problems = Array(resource.count)
-    .fill(null)
-    .map((_, idx) => ({
-      id: idx + 1,
-      title: `Problem ${idx + 1}`,
-      difficulty: ["easy", "medium", "hard"][Math.floor(Math.random() * 3)],
-      platform: resource.platforms[Math.floor(Math.random() * resource.platforms.length)],
-      link: "#",
-    }));
+  // ******** Resource Handlers ********
+
+  const handleDelete = (problemId) => {
+    // Deletion Logic Here
+    console.log("Deleting problem with ID:", problemId);
+    setProblems(problems.filter((p) => p.id !== problemId));
+  };
+
+  const handleAdd = (newProblem) => {
+    console.log("Adding new problem:", newProblem);
+    setProblems([...problems, newProblem]);
+  };
+
+  // ******** Resource Handlers END ********
+
+  // Loading state check
+  if (isLoading) {
+    return (
+      <div className="min-h-screen p-6 flex items-center justify-center">
+        <div className="text-gray-500">Loading...</div>
+      </div>
+    );
+  }
+
+  // Resource Not found state check
+  if (!resource) {
+    return (
+      <div className="min-h-screen p-6 flex items-center justify-center">
+        <div className="text-gray-500">Resource not found</div>
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -59,8 +110,8 @@ const Resource = () => {
                   {resource.platforms.map((platform) => {
                     const PlatformIcon = platformIcons[platform];
                     return (
-                      <PlatformIcon 
-                        key={platform} 
+                      <PlatformIcon
+                        key={platform}
                         className="text-4xl text-gfgsc-green"
                       />
                     );
@@ -74,7 +125,8 @@ const Resource = () => {
               <div className="flex items-center space-x-6 text-sm text-gray-500">
                 <div className="flex items-center">
                   <FaCalendarAlt className="mr-2" />
-                  Last updated: {new Date(resource.lastUpdated).toLocaleDateString()}
+                  Last updated:{" "}
+                  {new Date(resource.lastUpdated).toLocaleDateString()}
                 </div>
                 <div className="flex items-center">
                   <FaListOl className="mr-2" />
@@ -96,9 +148,9 @@ const Resource = () => {
                 {["all", "easy", "medium", "hard"].map((filter) => (
                   <button
                     key={filter}
-                    onClick={() => setSelectedFilter(filter)}
+                    onClick={() => setSelectedDifficulty(filter)}
                     className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                      selectedFilter === filter
+                      selectedDifficulty === filter
                         ? "bg-gfgsc-green text-white"
                         : "text-gray-600 hover:bg-gray-100"
                     }`}
@@ -131,7 +183,9 @@ const Resource = () => {
                       }`}
                     >
                       <PlatformIcon className="h-5 w-5" />
-                      <span>{platform.charAt(0).toUpperCase() + platform.slice(1)}</span>
+                      <span>
+                        {platform.charAt(0).toUpperCase() + platform.slice(1)}
+                      </span>
                     </button>
                   );
                 })}
@@ -148,7 +202,10 @@ const Resource = () => {
               >
                 <FaTrash />
               </button>
-              <button className="p-2 rounded-lg hover:bg-gray-100 text-gray-600">
+              <button
+                onClick={() => setIsAddModalOpen(true)}
+                className="p-2 rounded-lg hover:bg-gray-100 text-gray-600"
+              >
                 <FaPlus />
               </button>
             </div>
@@ -180,66 +237,70 @@ const Resource = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {problems
-                .filter(
-                  (p) =>
-                    (selectedFilter === "all" || p.difficulty === selectedFilter) &&
-                    (selectedPlatform === "all" || p.platform === selectedPlatform)
-                )
-                .map((problem, idx) => {
-                  const PlatformIcon = platformIcons[problem.platform];
-                  return (
-                    <motion.tr
-                      key={problem.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: idx * 0.05 }}
-                      className="hover:bg-gray-50 transition-colors"
-                    >
-                      <td className="px-6 py-4 text-gray-500">{problem.id}</td>
-                      <td className="px-6 py-4">
-                        <span className="font-medium text-gray-900">
-                          {problem.title}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span
-                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            problem.difficulty === "easy"
-                              ? "bg-green-100 text-green-800"
-                              : problem.difficulty === "medium"
-                              ? "bg-yellow-100 text-yellow-800"
-                              : "bg-red-100 text-red-800"
-                          }`}
+              {filteredProblems.map((problem, idx) => {
+                const PlatformIcon = platformIcons[problem.platform];
+                return (
+                  <motion.tr
+                    key={problem.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.05 }}
+                    className="hover:bg-gray-50 transition-colors"
+                  >
+                    <td className="px-6 py-4 text-gray-500">{idx + 1}</td>
+                    <td className="px-6 py-4">
+                      <span className="font-medium text-gray-900">
+                        {problem.title}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          problem.difficulty === "easy"
+                            ? "bg-green-100 text-green-800"
+                            : problem.difficulty === "medium"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : "bg-red-100 text-red-800"
+                        }`}
+                      >
+                        {problem.difficulty.charAt(0).toUpperCase() +
+                          problem.difficulty.slice(1)}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <a
+                        href={problem.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center text-gray-600 hover:text-gfgsc-green"
+                      >
+                        <PlatformIcon className="h-5 w-5" />
+                      </a>
+                    </td>
+                    {showDelete && (
+                      <td className="px-6 py-4 text-right">
+                        <button
+                          onClick={() => handleDelete(problem.id)}
+                          className="text-red-500 hover:text-red-600"
                         >
-                          {problem.difficulty.charAt(0).toUpperCase() +
-                            problem.difficulty.slice(1)}
-                        </span>
+                          <FaTrash />
+                        </button>
                       </td>
-                      <td className="px-6 py-4">
-                        <a
-                          href={problem.link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center text-gray-600 hover:text-gfgsc-green"
-                        >
-                          <PlatformIcon className="h-5 w-5" />
-                        </a>
-                      </td>
-                      {showDelete && (
-                        <td className="px-6 py-4 text-right">
-                          <button className="text-red-500 hover:text-red-600">
-                            <FaTrash />
-                          </button>
-                        </td>
-                      )}
-                    </motion.tr>
-                  );
-                })}
+                    )}
+                  </motion.tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
       </div>
+
+      <AddProblemModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onAdd={handleAdd}
+        platforms={resource.platforms}
+      />
     </motion.div>
   );
 };

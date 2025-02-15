@@ -1,3 +1,4 @@
+import { CgCodeSlash } from "react-icons/cg";
 import { SiCodechef, SiCodeforces, SiGoogle, SiLeetcode } from "react-icons/si";
 
 export const platformIcons = {
@@ -5,6 +6,7 @@ export const platformIcons = {
   codechef: SiCodechef,
   codeforces: SiCodeforces,
   gmeet: SiGoogle,
+  others: CgCodeSlash,
 };
 
 // Sample resources data
@@ -13,7 +15,7 @@ export const resources = [
     id: "75-leetcode", // String/Number - unique ID - used in routes
     title: "75 LeetCode Questions to Ace Your Interview",
     platforms: ["leetcode", "codechef", "codeforces"],
-    count: 75,
+    count: 5,
     lastUpdated: "2025-02-10",
     description: "Curated list of interview-focused problems",
   },

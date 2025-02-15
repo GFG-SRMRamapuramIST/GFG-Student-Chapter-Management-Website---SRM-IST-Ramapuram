@@ -67,3 +67,10 @@ import AllowedEmailsForm from "./Admin/AllowedEmailsForm";
 import AllowedEmailsTable from "./Admin/AllowedEmailsTable";
 
 export { UserTable, AllowedEmailsForm, AllowedEmailsTable };
+
+// Resource Page Components
+import AddProblemModal from "./Resources/AddProblemModal";
+import CreateResourceModal from "./Resources/CreateResourceModa";
+import ResourceCard from "./Resources/ResourceCard";
+
+export { AddProblemModal, CreateResourceModal, ResourceCard };

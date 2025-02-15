@@ -1,14 +1,11 @@
 import React, { useState } from "react";
 import { FaLinkedin } from "react-icons/fa";
-import { platformIcons } from "../../Constants";
 import { CgCode, CgTrophy } from "react-icons/cg";
 import { IoMailOutline, IoPeopleOutline } from "react-icons/io5";
 import { codolioIcon } from "../../Assets";
 import { GiProgression } from "react-icons/gi";
 
 const ProfileHero = ({ userProfile }) => {
-  const [activeTab, setActiveTab] = useState("overview");
-
   return (
     <div className="p-6 font-sans antialiased">
       <div className=" bg-white rounded-xl shadow-sm">
@@ -75,90 +72,34 @@ const ProfileHero = ({ userProfile }) => {
           </div>
         </div>
 
-        {/* Tabs */}
-        <div className="border-b border-gray-100">
-          <nav className="flex px-8" aria-label="Tabs">
-            {["Overview", "Coding Profiles"].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab.toLowerCase())}
-                className={`px-4 py-4 text-sm font-medium border-b-2 ${
-                  activeTab === tab.toLowerCase()
-                    ? "border-emerald-500 text-emerald-600"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                }`}
-              >
-                {tab}
-              </button>
-            ))}
-          </nav>
-        </div>
-
         {/* Tab Content */}
         <div className="p-8">
-          {activeTab === "overview" ? (
-            <div className="grid grid-cols-3 gap-6">
-              <StatCard
-                icon={<CgCode />}
-                label="Questions Solved"
-                value={userProfile.stats.questions}
-                trend="+5 this week"
-              />
-              <StatCard
-                icon={<CgTrophy />}
-                label="Individual Rank"
-                value={`#${userProfile.stats.individualRank}`}
-                trend="Top 5%"
-              />
-              <StatCard
-                icon={<GiProgression />}
-                label="Previous Rank"
-                value={`#${userProfile.stats.previousRank}`}
-                trend="Top 15%"
-              />
-              {/* <StatCard
+          <div className="grid grid-cols-3 gap-6">
+            <StatCard
+              icon={<CgCode />}
+              label="Questions Solved"
+              value={userProfile.stats.questions}
+              trend="+5 this week"
+            />
+            <StatCard
+              icon={<CgTrophy />}
+              label="Individual Rank"
+              value={`#${userProfile.stats.individualRank}`}
+              trend="Top 5%"
+            />
+            <StatCard
+              icon={<GiProgression />}
+              label="Previous Rank"
+              value={`#${userProfile.stats.previousRank}`}
+              trend="Top 15%"
+            />
+            {/* <StatCard
                 icon={<IoPeopleOutline />}
                 label="Team Rank"
                 value={`#${userProfile.stats.teamRank}`}
                 trend="Top 10%"
               /> */}
-            </div>
-          ) : (
-            <div className="grid grid-cols-3 gap-6">
-              {["leetcode", "codechef", "codeforces"].map((platform) => (
-                <div
-                  key={platform}
-                  className="p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
-                >
-                  <div className="flex items-center space-x-3 mb-3">
-                    <div className="self-start mt-1 p-2 rounded-lg bg-white">
-                      {React.createElement(platformIcons[platform], {
-                        className: "w-5 h-5 text-emerald-600",
-                      })}
-                    </div>
-                    <div>
-                      <h3 className="font-medium capitalize">{platform}</h3>
-                      <p className="text-sm text-gray-500">
-                        @{userProfile.profiles[platform].handle}
-                      </p>
-                      <div className="flex justify-between items-center mt-1">
-                        <span className="text-sm text-gray-500">Rating</span>
-                        <span className="font-medium text-gray-900">
-                          {userProfile.profiles[platform].rating}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-500">Rank</span>
-                        <span className="font-medium text-gray-900">
-                          #{userProfile.profiles[platform].rank}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+          </div>
         </div>
       </div>
     </div>
