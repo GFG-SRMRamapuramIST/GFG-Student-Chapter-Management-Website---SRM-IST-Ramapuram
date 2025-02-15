@@ -2,7 +2,11 @@ import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 
 // Components
-import { PasswordChangeModal, PlatformLinkPlaceholder, ProfilePictureEditor } from "../../Components";
+import {
+  PasswordChangeModal,
+  PlatformLinkPlaceholder,
+  ProfilePictureEditor,
+} from "../../Components";
 
 // Assets and Icons
 import { codolioIcon } from "../../Assets";
@@ -26,6 +30,7 @@ const EditProfile = () => {
     getEditProfilePageDataFuncion,
     editProfileFunction,
     changePasswordFunction,
+    changeProfilePicFunction,
   } = UserServices();
 
   const [loading, setLoading] = useState(true);
@@ -33,12 +38,13 @@ const EditProfile = () => {
   // State management for different profile sections
   const [profileData, setProfileData] = useState({});
 
+  // Fetching edit profile page data *****
   const getEditProfilePageData = async () => {
     setLoading(true);
     try {
-      console.log("Fetching Edit Profile Data...");
+      //console.log("Fetching Edit Profile Data...");
       const response = await getEditProfilePageDataFuncion();
-      console.log(response.data);
+      //console.log(response.data);
       setProfileData(response.data);
     } catch (error) {
       ToastMsg("Internal Server Error!", "error");
@@ -51,6 +57,7 @@ const EditProfile = () => {
   useEffect(() => {
     getEditProfilePageData();
   }, []);
+  // *************************************
 
   // Constants
   const academic_years_list = ["1st Year", "2nd Year", "3rd Year", "4th Year"];
@@ -61,48 +68,48 @@ const EditProfile = () => {
   // ***** Edit Profile Handles *****
 
   const handleProfilePicSave = async (file) => {
+    const formData = new FormData();
     try {
       setLoading(true);
-      // TODO: Implement actual file upload logic
-      console.log("Profile Picture Upload:", file);
+      formData.append("profilePicture", file);
+      //console.log("Profile Picture Upload:", file);
 
-      // Simulating API call
-      // const response = await uploadProfilePicture(file);
-      ToastMsg("Profile picture updated successfully!", "success");
-
-      // Update local state
-      setProfileData((prev) => ({
-        ...prev,
-        profilePic: URL.createObjectURL(file),
-      }));
+      const response = await changeProfilePicFunction(formData);
+      //console.log(response);
+      if (response.status == 200) {
+        ToastMsg(response.data.message, "success");
+      } else {
+        ToastMsg(response.response.data.message, "error");
+      }
     } catch (error) {
       ToastMsg("Failed to update profile picture!", "error");
       console.error("Profile Picture Update Error:", error);
     } finally {
       setLoading(false);
+      getEditProfilePageData();
     }
   };
 
   const handleProfilePicDelete = async () => {
+    const formData = new FormData();
     try {
       setLoading(true);
-      // TODO: Implement actual delete logic
-      console.log("Profile Picture Deleted");
 
-      // Simulating API call
-      // const response = await deleteProfilePicture();
-      ToastMsg("Profile picture deleted successfully!", "success");
+      formData.append("profilePicture", null);
 
-      // Update local state
-      setProfileData((prev) => ({
-        ...prev,
-        profilePic: null,
-      }));
+      const response = await changeProfilePicFunction(formData);
+      //console.log(response);
+      if (response.status == 200) {
+        ToastMsg(response.data.message, "success");
+      } else {
+        ToastMsg(response.response.data.message, "error");
+      }
     } catch (error) {
-      ToastMsg("Failed to delete profile picture!", "error");
-      console.error("Profile Picture Delete Error:", error);
+      ToastMsg("Failed to update profile picture!", "error");
+      console.error("Profile Picture Update Error:", error);
     } finally {
       setLoading(false);
+      getEditProfilePageData();
     }
   };
 
@@ -145,19 +152,19 @@ const EditProfile = () => {
   }) => {
     const [localValue, setLocalValue] = useState(value);
     const [isEditing, setIsEditing] = useState(false);
-    
+
     const handleSave = async () => {
       if (!localValue?.trim()) {
         ToastMsg("Field cannot be empty!", "error");
         return;
       }
-  
+
       setIsEditing(false);
       setLoading(true);
-  
+
       try {
         let valueToSend = localValue;
-        
+
         // Map academic year to numbers
         const academicYearMap = {
           "1st Year": 1,
@@ -169,13 +176,16 @@ const EditProfile = () => {
         if (field === "academicYear") {
           valueToSend = academicYearMap[localValue];
         }
-  
+
         const response = await editProfileFunction({ [field]: valueToSend });
-  
+
         if (response.status === 200) {
           ToastMsg("Profile updated successfully!", "success");
         } else {
-          ToastMsg(response.response.data.message || "Failed to update profile!", "error");
+          ToastMsg(
+            response.response.data.message || "Failed to update profile!",
+            "error"
+          );
           setLocalValue(value); // Reset to original value on error
         }
       } catch (error) {
@@ -187,21 +197,14 @@ const EditProfile = () => {
         setLoading(false);
       }
     };
-  
+
     const renderValue = () => {
       if (value) {
-  
-        return (
-          <div
-            className="text-zinc-700"
-          >
-            {value}
-          </div>
-        );
+        return <div className="text-zinc-700">{value}</div>;
       }
       return value;
     };
-  
+
     return (
       <div className="flex items-center space-x-2">
         {!isEditing ? (
@@ -245,8 +248,8 @@ const EditProfile = () => {
               disabled={!localValue?.trim()}
               className={`flex p-2 rounded-full transition-colors ${
                 !localValue?.trim()
-                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                  : 'text-green-600 hover:bg-green-100'
+                  ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                  : "text-green-600 hover:bg-green-100"
               }`}
             >
               <RiCheckLine />

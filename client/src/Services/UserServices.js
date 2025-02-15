@@ -39,6 +39,16 @@ const changePasswordFunction = async (
   );
 };
 
+// Change Profile Pic API
+const changeProfilePicFunction = async (formData, userToken) => {
+  return await commonrequest(
+    "POST",
+    `${BACKEND_URL}/api/v1/user/edit-profile-picture`,
+    formData,
+    { Authorization: `Bearer ${userToken}` }
+  )
+}
+
 // Wrapper to use token inside React components
 const UserService = () => {
   const userToken = useAuthToken();
@@ -49,6 +59,7 @@ const UserService = () => {
     editProfileFunction: (params) => editProfileFunction(params, userToken),
     changePasswordFunction: (params) =>
       changePasswordFunction(params, userToken),
+    changeProfilePicFunction: (formData) => changeProfilePicFunction(formData,userToken)
   };
 };
 

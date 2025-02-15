@@ -344,10 +344,10 @@ exports.addAllowedEmails = async (req, res) => {
                       Join our evergrowing unstoppable community
                   </div>
                       <div class="social-icons">
-                        <a href="https://www.instagram.com/geeksforgeeks_srm_rmp/"><img width="50" height="50" src="https://img.icons8.com/ios/100/instagram-new--v1.png" alt="instagram-new--v1"/></i></a>
-                        <a href="https://www.linkedin.com/company/geeksforgeeks-srm-rmp"><img width="50" height="50" src="https://img.icons8.com/material-outlined/100/linkedin.png" alt="linkedin"/></i></a>
-                        <a href="https://x.com/GFG_SRM_RMP"><img width="50" height="50" src="https://img.icons8.com/ios/100/twitterx--v2.png" alt="twitterx--v2"/></i></a>
-                        <a href="https://gfgsrmrmp.vercel.app/"><img width="50" height="50" src="https://img.icons8.com/ios/100/domain.png" alt="domain"/></i></a>                        
+                        <a href="https://www.instagram.com/geeksforgeeks_srm_rmp/"><img width="50" height="50" src="https://img.icons8.com/ios/100/instagram-new--v1.png" alt="instagram-new--v1"/></a>
+                        <a href="https://www.linkedin.com/company/geeksforgeeks-srm-rmp"><img width="50" height="50" src="https://img.icons8.com/material-outlined/100/linkedin.png" alt="linkedin"/></a>
+                        <a href="https://x.com/GFG_SRM_RMP"><img width="50" height="50" src="https://img.icons8.com/ios/100/twitterx--v2.png" alt="twitterx--v2"/></a>
+                        <a href="https://gfgsrmrmp.vercel.app/"><img width="50" height="50" src="https://img.icons8.com/ios/100/domain.png" alt="domain"/></a>                        
                     </div>
                   <div class="footer-bottom" style="height: 200px; overflow: hidden;">
                       <div>Queries? We're just one email away: <span style="color: #00895e;">geeksforgeeks.srmistrmp@gmail.com</span> </div>

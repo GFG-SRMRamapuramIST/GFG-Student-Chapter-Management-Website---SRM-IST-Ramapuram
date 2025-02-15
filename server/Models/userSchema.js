@@ -22,6 +22,7 @@ const userSchema = new mongoose.Schema({
   bio: {
     type: String,
     default: null,
+    required: true,
     trim: true,
   },
   email: {
@@ -79,11 +80,6 @@ const userSchema = new mongoose.Schema({
   },
   codeforcesUsername: {
     type: String,
-    default: null,
-  },
-  teamId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "teams", // Reference to the `teams` schema
     default: null,
   },
   solvedQuestionsCount: {

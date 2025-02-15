@@ -41,10 +41,16 @@ const verifyAndAuthorize = async (token, allowedRoles) => {
 exports.createContest = async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1]; // Extract token from Authorization header
-    const { contestName, platform, startTime, endTime, date } = req.body;
+    const { contestName, contestLink, platform, startTime, endTime, date } =
+      req.body;
 
     // Use the helper function for authorization
-    const authResult = await verifyAndAuthorize(token, ["ADMIN", "COREMEMBER"]);
+    const authResult = await verifyAndAuthorize(token, [
+      "ADMIN",
+      "COREMEMBER",
+      "VICEPRESIDENT",
+      "PRESIDENT",
+    ]);
     if (authResult.status !== 200) {
       return res
         .status(authResult.status)
@@ -52,19 +58,19 @@ exports.createContest = async (req, res) => {
     }
 
     // Validate input
-    if (!contestName || !platform || !startTime || !endTime || !date) {
+    if (
+      !contestName ||
+      !contestLink ||
+      !platform ||
+      !startTime ||
+      !endTime ||
+      !date
+    ) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
     // Validate platform
-    const allowedPlatforms = [
-      "CodeChef",
-      "Codeforces",
-      "GeeksForGeeks",
-      "HackerEarth",
-      "HackerRank",
-      "LeetCode",
-    ];
+    const allowedPlatforms = ["CodeChef", "Codeforces", "LeetCode"];
     if (!allowedPlatforms.includes(platform)) {
       return res.status(400).json({
         message: `Invalid platform. Allowed values are: ${allowedPlatforms.join(
@@ -115,6 +121,7 @@ exports.createContest = async (req, res) => {
     // Add the contest to the contests array for the given date
     dailyContest.contests.push({
       contestName,
+      contestLink,
       platform,
       startTime: contestStartDateTime,
       endTime: contestEndDateTime,
