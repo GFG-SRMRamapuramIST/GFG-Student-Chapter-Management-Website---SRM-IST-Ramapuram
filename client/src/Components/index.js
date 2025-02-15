@@ -45,8 +45,10 @@ import ProfileHero from "./Profile/ProfileHero";
 import ProfileSecondary from "./Profile/ProfileSecondary";  
 import PlatformPOTDs from "./Profile/PlatformPOTDs";
 import PasswordChangeModal from "./Profile/PasswordChangeModal";
+import ProfilePictureEditor from "./Profile/ProfilePictureEditor";
+import PlatformLinkPlaceholder from "./Profile/PlatformLinkPlaceholder";
 
-export { ProfileHero, PlatformPOTDs, ProfileSecondary, PasswordChangeModal };
+export { ProfileHero, PlatformPOTDs, ProfileSecondary, PasswordChangeModal, ProfilePictureEditor, PlatformLinkPlaceholder };
 
 // Leaderboard Components
 import LeaderboardHero from "./Leaderboard/LeaderboardHero";

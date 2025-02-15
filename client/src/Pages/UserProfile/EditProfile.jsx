@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 
 // Components
-import { PasswordChangeModal } from "../../Components";
+import { PasswordChangeModal, PlatformLinkPlaceholder, ProfilePictureEditor } from "../../Components";
 
 // Assets and Icons
 import { codolioIcon } from "../../Assets";
@@ -11,7 +11,6 @@ import {
   RiPencilLine,
   RiCheckLine,
   RiCloseLine,
-  RiImageAddLine,
   RiLockPasswordLine,
   RiLinkedinBoxFill,
 } from "react-icons/ri";
@@ -37,8 +36,9 @@ const EditProfile = () => {
   const getEditProfilePageData = async () => {
     setLoading(true);
     try {
+      console.log("Fetching Edit Profile Data...");
       const response = await getEditProfilePageDataFuncion();
-      //console.log(response.data);
+      console.log(response.data);
       setProfileData(response.data);
     } catch (error) {
       ToastMsg("Internal Server Error!", "error");
@@ -47,6 +47,7 @@ const EditProfile = () => {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     getEditProfilePageData();
   }, []);
@@ -55,21 +56,53 @@ const EditProfile = () => {
   const academic_years_list = ["1st Year", "2nd Year", "3rd Year", "4th Year"];
 
   // State to manage which fields are currently being edited
-  const [editingFields, setEditingFields] = useState({});
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
 
   // ***** Edit Profile Handles *****
 
-  // Profile Picture Upload Handler
-  const handleProfilePicUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      // TODO: Implement file upload logic
+  const handleProfilePicSave = async (file) => {
+    try {
+      setLoading(true);
+      // TODO: Implement actual file upload logic
       console.log("Profile Picture Upload:", file);
+
+      // Simulating API call
+      // const response = await uploadProfilePicture(file);
+      ToastMsg("Profile picture updated successfully!", "success");
+
+      // Update local state
       setProfileData((prev) => ({
         ...prev,
         profilePic: URL.createObjectURL(file),
       }));
+    } catch (error) {
+      ToastMsg("Failed to update profile picture!", "error");
+      console.error("Profile Picture Update Error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleProfilePicDelete = async () => {
+    try {
+      setLoading(true);
+      // TODO: Implement actual delete logic
+      console.log("Profile Picture Deleted");
+
+      // Simulating API call
+      // const response = await deleteProfilePicture();
+      ToastMsg("Profile picture deleted successfully!", "success");
+
+      // Update local state
+      setProfileData((prev) => ({
+        ...prev,
+        profilePic: null,
+      }));
+    } catch (error) {
+      ToastMsg("Failed to delete profile picture!", "error");
+      console.error("Profile Picture Delete Error:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -102,61 +135,83 @@ const EditProfile = () => {
 
   // ***** Edit Profile Handle END *****
 
-  // Edit Mode Toggle
-  const toggleEditMode = (section, field) => {
-    setEditingFields((prev) => ({
-      ...prev,
-      [`${section}-${field}`]: !prev[`${section}-${field}`],
-    }));
-  };
-
   // Editable Input Component
   const EditableInput = ({
     value,
-    section,
     field,
     type = "text",
     icon: Icon,
     options,
   }) => {
     const [localValue, setLocalValue] = useState(value);
-    const isEditing = editingFields[`${section}-${field}`];
-
+    const [isEditing, setIsEditing] = useState(false);
+    
     const handleSave = async () => {
-      toggleEditMode(section, field);
-      //console.log(`Saving ${section} - ${field}:`, localValue);
+      if (!localValue?.trim()) {
+        ToastMsg("Field cannot be empty!", "error");
+        return;
+      }
+  
+      setIsEditing(false);
       setLoading(true);
-
+  
       try {
-        const response = await editProfileFunction({ [field]: localValue });
+        let valueToSend = localValue;
+        
+        // Map academic year to numbers
+        const academicYearMap = {
+          "1st Year": 1,
+          "2nd Year": 2,
+          "3rd Year": 3,
+          "4th Year": 4,
+        };
 
+        if (field === "academicYear") {
+          valueToSend = academicYearMap[localValue];
+        }
+  
+        const response = await editProfileFunction({ [field]: valueToSend });
+  
         if (response.status === 200) {
           ToastMsg("Profile updated successfully!", "success");
         } else {
-          ToastMsg(
-            response.response.data.message || "Failed to update profile!",
-            "error"
-          );
+          ToastMsg(response.response.data.message || "Failed to update profile!", "error");
+          setLocalValue(value); // Reset to original value on error
         }
       } catch (error) {
         ToastMsg("Internal Server Error!", "error");
         console.error("Profile Update Error:", error);
+        setLocalValue(value); // Reset to original value on error
       } finally {
         getEditProfilePageData();
         setLoading(false);
       }
     };
-
+  
+    const renderValue = () => {
+      if (value) {
+  
+        return (
+          <div
+            className="text-zinc-700"
+          >
+            {value}
+          </div>
+        );
+      }
+      return value;
+    };
+  
     return (
       <div className="flex items-center space-x-2">
         {!isEditing ? (
           <>
             <div className="flex-1 flex items-center bg-white rounded-lg p-2">
               {Icon && <Icon className="mr-2 text-gfgsc-green" />}
-              <span className="text-gray-700">{value}</span>
+              {renderValue()}
             </div>
             <button
-              onClick={() => toggleEditMode(section, field)}
+              onClick={() => setIsEditing(true)}
               className="flex p-2 text-gfgsc-green hover:bg-gfgsc-green-100 rounded-full transition-colors"
             >
               <RiPencilLine />
@@ -170,7 +225,8 @@ const EditProfile = () => {
                 onChange={(e) => setLocalValue(e.target.value)}
                 className="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gfgsc-green bg-white"
               >
-                {options?.map((option) => (
+                <option value="">Select Year</option>
+                {options.map((option) => (
                   <option key={option} value={option}>
                     {option}
                   </option>
@@ -186,12 +242,20 @@ const EditProfile = () => {
             )}
             <button
               onClick={handleSave}
-              className="flex p-2 text-green-600 hover:bg-green-100 rounded-full transition-colors"
+              disabled={!localValue?.trim()}
+              className={`flex p-2 rounded-full transition-colors ${
+                !localValue?.trim()
+                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  : 'text-green-600 hover:bg-green-100'
+              }`}
             >
               <RiCheckLine />
             </button>
             <button
-              onClick={() => toggleEditMode(section, field)}
+              onClick={() => {
+                setIsEditing(false);
+                setLocalValue(value);
+              }}
               className="flex p-2 text-red-600 hover:bg-red-100 rounded-full transition-colors"
             >
               <RiCloseLine />
@@ -215,30 +279,12 @@ const EditProfile = () => {
 
           {/* Profile Picture */}
           <div className="flex items-center space-x-6">
-            <div className="relative">
-              {loading ? (
-                <FaSpinner className="animate-spin inline-block" />
-              ) : (
-                <img
-                  src={profileData.profilePic || "https://placehold.co/100x100"}
-                  alt="Profile"
-                  className="w-32 h-32 rounded-full object-cover border-4 border-gfgsc-green-200"
-                />
-              )}
-              <label
-                htmlFor="profilePicUpload"
-                className="absolute bottom-0 right-0 bg-gfgsc-green text-white p-2 rounded-full cursor-pointer"
-              >
-                <RiImageAddLine />
-                <input
-                  type="file"
-                  id="profilePicUpload"
-                  className="hidden"
-                  accept="image/*"
-                  onChange={handleProfilePicUpload}
-                />
-              </label>
-            </div>
+            <ProfilePictureEditor
+              currentImage={profileData.profilePic}
+              onSave={handleProfilePicSave}
+              onDelete={handleProfilePicDelete}
+              loading={loading}
+            />
           </div>
 
           <div className="grid md:grid-cols-2 gap-4 bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-lg">
@@ -329,15 +375,18 @@ const EditProfile = () => {
                 {loading ? (
                   <FaSpinner className="animate-spin inline-block" />
                 ) : (
-                  <EditableInput
-                    value={profileData.coding.leetcode}
-                    section="coding"
-                    field="leetcodeUsername"
-                  />
+                  <>
+                    <EditableInput
+                      value={profileData.coding.leetcode}
+                      section="coding"
+                      field="leetcodeUsername"
+                    />
+                    <PlatformLinkPlaceholder
+                      platform="leetcode"
+                      username={profileData.coding.leetcode}
+                    />
+                  </>
                 )}
-                <div className="text-xs text-gray-500">
-                  leetcode.com/u/{loading ? null : profileData.coding.leetcode}
-                </div>
               </div>
             </div>
 
@@ -353,16 +402,18 @@ const EditProfile = () => {
                 {loading ? (
                   <FaSpinner className="animate-spin inline-block" />
                 ) : (
-                  <EditableInput
-                    value={profileData.coding.codechef}
-                    section="coding"
-                    field="codechefUsername"
-                  />
+                  <>
+                    <EditableInput
+                      value={profileData.coding.codechef}
+                      section="coding"
+                      field="codechefUsername"
+                    />
+                    <PlatformLinkPlaceholder
+                      platform="codechef"
+                      username={profileData.coding.codechef}
+                    />
+                  </>
                 )}
-                <div className="text-xs text-gray-500">
-                  codechef.com/users/
-                  {loading ? null : profileData.coding.codechef}
-                </div>
               </div>
             </div>
 
@@ -378,16 +429,18 @@ const EditProfile = () => {
                 {loading ? (
                   <FaSpinner className="animate-spin inline-block" />
                 ) : (
-                  <EditableInput
-                    value={profileData.coding.codeforces}
-                    section="coding"
-                    field="codeforcesUsername"
-                  />
+                  <>
+                    <EditableInput
+                      value={profileData.coding.codeforces}
+                      section="coding"
+                      field="codeforcesUsername"
+                    />
+                    <PlatformLinkPlaceholder
+                      platform="codeforces"
+                      username={profileData.coding.codeforces}
+                    />
+                  </>
                 )}
-                <div className="text-xs text-gray-500">
-                  codeforces.com/profile/
-                  {loading ? null : profileData.coding.codeforces}
-                </div>
               </div>
             </div>
           </div>
@@ -410,15 +463,18 @@ const EditProfile = () => {
                 {loading ? (
                   <FaSpinner className="animate-spin inline-block" />
                 ) : (
-                  <EditableInput
-                    value={profileData.social.linkedin}
-                    section="social"
-                    field="linkedinUsername"
-                  />
+                  <>
+                    <EditableInput
+                      value={profileData.social.linkedin}
+                      section="social"
+                      field="linkedinUsername"
+                    />
+                    <PlatformLinkPlaceholder
+                      platform="linkedin"
+                      username={profileData.social.linkedin}
+                    />
+                  </>
                 )}
-                <div className="text-xs text-gray-500">
-                  linkedin.com/in/{loading ? null : profileData.social.linkedin}
-                </div>
               </div>
             </div>
 
@@ -435,16 +491,18 @@ const EditProfile = () => {
                 {loading ? (
                   <FaSpinner className="animate-spin inline-block" />
                 ) : (
-                  <EditableInput
-                    value={profileData.social.codolio}
-                    section="social"
-                    field="codolioUsername"
-                  />
+                  <>
+                    <EditableInput
+                      value={profileData.social.codolio}
+                      section="social"
+                      field="codolioUsername"
+                    />
+                    <PlatformLinkPlaceholder
+                      platform="codolio"
+                      username={profileData.social.codolio}
+                    />
+                  </>
                 )}
-                <div className="text-xs text-gray-500">
-                  codolio.com/profile/
-                  {loading ? null : profileData.social.codolio}
-                </div>
               </div>
             </div>
           </div>
