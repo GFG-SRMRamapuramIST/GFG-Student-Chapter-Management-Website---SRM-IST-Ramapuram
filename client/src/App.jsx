@@ -39,13 +39,13 @@ const appRoutes = {
     { path: "admin", element: <AdminPanel /> },
     { path: "dashboard", element: <Dashboard /> },
     { path: "leaderboard", element: <Leaderboard /> },
-    { path: "teams", element: <Teams /> },
+    // { path: "teams", element: <Teams /> },
     {
       path: "resources",
       element: <ResourceLayout />,
       children: [
         { index: true, element: <AllResources /> },
-        { path: ":category/:id", element: <Resource /> },
+        { path: ":id", element: <Resource /> },
       ],
     },
     {

@@ -4,6 +4,7 @@ import { platformIcons } from "../../Constants";
 import { CgCode, CgTrophy } from "react-icons/cg";
 import { IoMailOutline, IoPeopleOutline } from "react-icons/io5";
 import { codolioIcon } from "../../Assets";
+import { GiProgression } from "react-icons/gi";
 
 const ProfileHero = ({ userProfile }) => {
   const [activeTab, setActiveTab] = useState("overview");
@@ -110,11 +111,17 @@ const ProfileHero = ({ userProfile }) => {
                 trend="Top 5%"
               />
               <StatCard
+                icon={<GiProgression />}
+                label="Previous Rank"
+                value={`#${userProfile.stats.previousRank}`}
+                trend="Top 15%"
+              />
+              {/* <StatCard
                 icon={<IoPeopleOutline />}
                 label="Team Rank"
                 value={`#${userProfile.stats.teamRank}`}
                 trend="Top 10%"
-              />
+              /> */}
             </div>
           ) : (
             <div className="grid grid-cols-3 gap-6">

@@ -65,11 +65,11 @@ const Navbar = () => {
           path: "/leaderboard",
           icon: <FaTrophy className="text-lg" />,
         },
-        {
-          name: "Teams",
-          path: "/teams",
-          icon: <FaUsers className="text-lg" />,
-        },
+        // {
+        //   name: "Teams",
+        //   path: "/teams",
+        //   icon: <FaUsers className="text-lg" />,
+        // },
         {
           name: "Resources",
           path: "/resources",

@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { IoChevronForwardOutline } from "react-icons/io5";
 
-const LeaderboardTable = ({ data, isTeam }) => {
+const LeaderboardTable = ({ data, isTeam=false }) => {
   const columns = isTeam ? [
     { key: 'rank', label: 'Rank' },
     { key: 'name', label: 'Team' },
@@ -12,7 +12,7 @@ const LeaderboardTable = ({ data, isTeam }) => {
     { key: 'name', label: 'Name' },
     { key: 'position', label: 'Position' },
     { key: 'academicYear', label: 'Academic Year' },
-    { key: 'team', label: 'Team' },
+    // { key: 'team', label: 'Team' },
     { key: 'points', label: 'Points', align: 'right' }
   ];
 
@@ -102,7 +102,7 @@ const LeaderboardTable = ({ data, isTeam }) => {
                     </span>
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap text-sm">{item.academicYear}</td>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm">{item.team}</td>
+                  {/* <td className="px-4 py-4 whitespace-nowrap text-sm">{item.team}</td> */}
                   <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
                     {item.points}
                   </td>

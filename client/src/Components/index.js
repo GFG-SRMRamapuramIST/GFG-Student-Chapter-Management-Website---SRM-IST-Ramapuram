@@ -53,9 +53,8 @@ export { ProfileHero, PlatformPOTDs, ProfileSecondary, PasswordChangeModal, Prof
 // Leaderboard Components
 import LeaderboardHero from "./Leaderboard/LeaderboardHero";
 import LeaderboardTable from "./Leaderboard/LeaderboardTable";
-import LeaderboardPagination from "./Leaderboard/LeaderboardPagination";
 
-export { LeaderboardHero, LeaderboardTable, LeaderboardPagination };
+export { LeaderboardHero, LeaderboardTable };
 
 // Calendar Components
 import CustomCalendar from "./Calendar/CustomCalendar";

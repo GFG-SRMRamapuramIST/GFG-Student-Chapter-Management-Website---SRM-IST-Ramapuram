@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   FaCalendarAlt,
   FaListOl,
@@ -15,26 +15,23 @@ const Resource = () => {
   const [resource, setResource] = useState(null);
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [showDelete, setShowDelete] = useState(false);
+  const [selectedPlatform, setSelectedPlatform] = useState("all");
 
   useEffect(() => {
-    const foundResource = resources.find((r) => r.id === id);
+    const foundResource = resources.find((r) => r.id.toString() === id);
     setResource(foundResource);
   }, [id]);
 
   if (!resource) return null;
 
-  const PlatformIcon = platformIcons[resource.platform];
-
-  // Mock data for demonstration
+  // Mock data for demonstration - now includes platform from resource.platforms
   const problems = Array(resource.count)
     .fill(null)
     .map((_, idx) => ({
       id: idx + 1,
       title: `Problem ${idx + 1}`,
       difficulty: ["easy", "medium", "hard"][Math.floor(Math.random() * 3)],
-      platform: ["leetcode", "codeforces", "codechef"][
-        Math.floor(Math.random() * 3)
-      ],
+      platform: resource.platforms[Math.floor(Math.random() * resource.platforms.length)],
       link: "#",
     }));
 
@@ -47,7 +44,6 @@ const Resource = () => {
       {/* Breadcrumb */}
       <div className="mx-auto mb-4">
         <div className="flex items-center text-sm text-gray-500">
-          <span>{resource.category}</span>
           <FaChevronRight className="mx-2" />
           <span className="text-gfgsc-green font-medium">{resource.title}</span>
         </div>
@@ -59,10 +55,17 @@ const Resource = () => {
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <div className="flex items-center space-x-3 mb-4">
-                <PlatformIcon className="text-4xl text-gfgsc-green" />
-                <span className="px-3 py-1 text-sm font-medium bg-gfgsc-green/10 text-gfgsc-green rounded-full capitalize">
-                  {resource.category}
-                </span>
+                <div className="flex space-x-2">
+                  {resource.platforms.map((platform) => {
+                    const PlatformIcon = platformIcons[platform];
+                    return (
+                      <PlatformIcon 
+                        key={platform} 
+                        className="text-4xl text-gfgsc-green"
+                      />
+                    );
+                  })}
+                </div>
               </div>
               <h1 className="text-3xl font-bold text-gfg-black mb-2">
                 {resource.title}
@@ -71,8 +74,7 @@ const Resource = () => {
               <div className="flex items-center space-x-6 text-sm text-gray-500">
                 <div className="flex items-center">
                   <FaCalendarAlt className="mr-2" />
-                  Last updated:{" "}
-                  {new Date(resource.lastUpdated).toLocaleDateString()}
+                  Last updated: {new Date(resource.lastUpdated).toLocaleDateString()}
                 </div>
                 <div className="flex items-center">
                   <FaListOl className="mr-2" />
@@ -90,19 +92,50 @@ const Resource = () => {
         <div className="bg-white rounded-2xl p-6 mb-6 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <div className="flex space-x-4">
-              {["all", "easy", "medium", "hard"].map((filter) => (
+              <div className="flex space-x-2">
+                {["all", "easy", "medium", "hard"].map((filter) => (
+                  <button
+                    key={filter}
+                    onClick={() => setSelectedFilter(filter)}
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                      selectedFilter === filter
+                        ? "bg-gfgsc-green text-white"
+                        : "text-gray-600 hover:bg-gray-100"
+                    }`}
+                  >
+                    {filter.charAt(0).toUpperCase() + filter.slice(1)}
+                  </button>
+                ))}
+              </div>
+              <div className="border-l border-gray-200 pl-4 flex space-x-2">
                 <button
-                  key={filter}
-                  onClick={() => setSelectedFilter(filter)}
+                  onClick={() => setSelectedPlatform("all")}
                   className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                    selectedFilter === filter
+                    selectedPlatform === "all"
                       ? "bg-gfgsc-green text-white"
                       : "text-gray-600 hover:bg-gray-100"
                   }`}
                 >
-                  {filter.charAt(0).toUpperCase() + filter.slice(1)}
+                  All Platforms
                 </button>
-              ))}
+                {resource.platforms.map((platform) => {
+                  const PlatformIcon = platformIcons[platform];
+                  return (
+                    <button
+                      key={platform}
+                      onClick={() => setSelectedPlatform(platform)}
+                      className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2 ${
+                        selectedPlatform === platform
+                          ? "bg-gfgsc-green text-white"
+                          : "text-gray-600 hover:bg-gray-100"
+                      }`}
+                    >
+                      <PlatformIcon className="h-5 w-5" />
+                      <span>{platform.charAt(0).toUpperCase() + platform.slice(1)}</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
             <div className="flex items-center space-x-4">
               <button
@@ -150,7 +183,8 @@ const Resource = () => {
               {problems
                 .filter(
                   (p) =>
-                    selectedFilter === "all" || p.difficulty === selectedFilter
+                    (selectedFilter === "all" || p.difficulty === selectedFilter) &&
+                    (selectedPlatform === "all" || p.platform === selectedPlatform)
                 )
                 .map((problem, idx) => {
                   const PlatformIcon = platformIcons[problem.platform];

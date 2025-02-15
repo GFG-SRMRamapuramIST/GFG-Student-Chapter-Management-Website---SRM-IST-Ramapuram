@@ -50,11 +50,11 @@ const Footer = () => {
                   Leaderboard
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link to="/teams" className="text-gray-400 hover:text-gfgsc-green-400 transition-colors duration-200">
                   Teams
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <Link to="/resources" className="text-gray-400 hover:text-gfgsc-green-400 transition-colors duration-200">
                   Resources

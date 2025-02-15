@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 
-const LeaderboardHero = ({ topThree, isTeam }) => {
+const LeaderboardHero = ({ topThree, isTeam=false }) => {
   const medalColors = [
     "bg-gradient-to-br from-[#C0C0C0] to-[#A9A9A9] border-[#C0C0C0]", // Silver (2nd Place)
     "bg-gradient-to-br from-[#FFD700] to-[#FFA500] border-[#FFD700]", // Gold (1st Place)

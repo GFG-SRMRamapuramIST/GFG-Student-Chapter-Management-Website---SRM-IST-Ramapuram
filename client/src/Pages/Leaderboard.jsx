@@ -3,9 +3,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { IoPersonOutline, IoTelescopeOutline } from "react-icons/io5";
 import {
   LeaderboardHero,
-  LeaderboardPagination,
   LeaderboardTable,
 } from "../Components";
+import { Pagination } from "../Utilities";
 
 const mockLeaderboardData = [
   {
@@ -39,29 +39,31 @@ const mockLeaderboardData = [
     points: 312,
   },
   // ... more mock data
-].concat(
-  Array.from({ length: 100 }, (_, i) => ({
-    id: i + 4,
-    rank: i + 4,
-    name: `Member ${i + 4}`,
-    pfp: "https://placehold.co/100x100",
-    position: "Member",
-    academicYear: `${Math.floor(Math.random() * 4) + 1}st Year`,
-    team: `Team ${String.fromCharCode(65 + Math.floor(i / 3))}`,
-    points: Math.floor(Math.random() * 200) + 100,
-  }))
-).concat(
-  Array.from({ length: 50 }, (_, i) => ({
-    id: i + 4,
-    rank: i + 4,
-    name: `User ${i + 4}`,
-    pfp: "https://placehold.co/100x100",
-    position: "User",
-    academicYear: `${Math.floor(Math.random() * 3) + 1}st Year`,
-    team: `Team ${String.fromCharCode(65 + Math.floor(i / 3))}`,
-    problemsSolved: Math.floor(Math.random() * 200) + 100,
-  }))
-);
+]
+  .concat(
+    Array.from({ length: 100 }, (_, i) => ({
+      id: i + 4,
+      rank: i + 4,
+      name: `Member ${i + 4}`,
+      pfp: "https://placehold.co/100x100",
+      position: "Member",
+      academicYear: `${Math.floor(Math.random() * 4) + 1}st Year`,
+      team: `Team ${String.fromCharCode(65 + Math.floor(i / 3))}`,
+      points: Math.floor(Math.random() * 200) + 100,
+    }))
+  )
+  .concat(
+    Array.from({ length: 50 }, (_, i) => ({
+      id: i + 4,
+      rank: i + 4,
+      name: `User ${i + 4}`,
+      pfp: "https://placehold.co/100x100",
+      position: "User",
+      academicYear: `${Math.floor(Math.random() * 3) + 1}st Year`,
+      team: `Team ${String.fromCharCode(65 + Math.floor(i / 3))}`,
+      problemsSolved: Math.floor(Math.random() * 200) + 100,
+    }))
+  );
 
 const mockTeamData = [
   {
@@ -108,15 +110,15 @@ const Leaderboard = () => {
       icon: <IoPersonOutline className="w-5 h-5" />,
       label: "Individual",
     },
-    {
-      id: "team",
-      icon: <IoTelescopeOutline className="w-5 h-5" />,
-      label: "Team",
-    },
+    // {
+    //   id: "team",
+    //   icon: <IoTelescopeOutline className="w-5 h-5" />,
+    //   label: "Team",
+    // },
   ];
 
   const handlePageChange = (page) => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
     // Wait for scroll to complete before changing page
     setTimeout(() => {
       setCurrentPage(page);
@@ -171,10 +173,10 @@ const Leaderboard = () => {
               data={paginatedData}
               isTeam={activeTab === "team"}
             />
-            <LeaderboardPagination
+            <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
-              onPageChange={handlePageChange}  
+              onPageChange={handlePageChange}
             />
           </motion.div>
         </AnimatePresence>

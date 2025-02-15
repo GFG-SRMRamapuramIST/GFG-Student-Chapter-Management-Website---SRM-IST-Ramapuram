@@ -8,6 +8,7 @@ import ScrollToTop from "./ScrollToTop";
 import RotatingCloseButton from "./RotatingCloseButton";
 import ConfirmationPopup from "./ConfirmationPopups/ConfirmationPopup";
 import verifyUserToken from "./verifyAuthToken";
+import Pagination from "./Pagination";
 
 export {
   ToastMsg,
@@ -15,4 +16,5 @@ export {
   RotatingCloseButton,
   ConfirmationPopup,
   verifyUserToken,
+  Pagination
 };
