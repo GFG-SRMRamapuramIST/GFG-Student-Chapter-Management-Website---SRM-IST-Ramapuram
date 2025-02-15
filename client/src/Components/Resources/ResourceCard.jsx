@@ -2,6 +2,8 @@ import { FaBookOpen, FaCalendarAlt, FaChevronRight } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
+import { platformIcons } from "../../Constants";
+
 const ResourceCard = ({ resource }) => {
   const usedPlatforms = resource.platforms || [];
 

@@ -63,7 +63,7 @@ const EventCreationModal = ({ isOpen, onClose, onSave }) => {
         endTime: "",
         description: "",
         attendees: "all",
-        platform: "leetcode",
+        platform: "LeetCode",
       });
       onClose();
     }
@@ -202,9 +202,9 @@ const EventCreationModal = ({ isOpen, onClose, onSave }) => {
                       className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gfgsc-green"
                       required
                     >
-                      <option value="leetcode">LeetCode</option>
-                      <option value="codeforces">CodeForces</option>
-                      <option value="codechef">CodeChef</option>
+                      <option value="LeetCode">LeetCode</option>
+                      <option value="Codeforces">CodeForces</option>
+                      <option value="CodeChef">CodeChef</option>
                     </select>
                   </div>
                   <div>

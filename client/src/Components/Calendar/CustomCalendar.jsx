@@ -86,7 +86,8 @@ const TodayView = ({ events }) => {
 };
 
 const CustomCalendar = ({ events }) => {
-  const { meetingCreationFunction } = CoreMemberServices();
+  const { meetingCreationFunction, contestCreationFunction } =
+    CoreMemberServices();
 
   const [selectedDate, setSelectedDate] = useState(null);
   const [currentView, setCurrentView] = useState("month");
@@ -98,7 +99,24 @@ const CustomCalendar = ({ events }) => {
     try {
       const response = await meetingCreationFunction(meetingData);
       //console.log(response)
-      
+
+      if (response.status == 200) {
+        ToastMsg(response.data.message, "success");
+      } else {
+        ToastMsg(response.response.data.message, "error");
+        console.log(response.response.data.message);
+      }
+    } catch (error) {
+      ToastMsg("Internal Server Error!", "error");
+      console.error("Meeting creation error:", error);
+    }
+  };
+
+  const handleContestCreationFunction = async (contestData) => {
+    try {
+      const response = await contestCreationFunction(contestData);
+      //console.log(response)
+
       if (response.status == 200) {
         ToastMsg(response.data.message, "success");
       } else {
@@ -123,6 +141,17 @@ const CustomCalendar = ({ events }) => {
         compulsory: eventData.attendees,
       };
       await handleMeetingCreationFunction(formatedMeetingData);
+    } else {
+      const formatedContestData = {
+        contestName: eventData.name,
+        contestLink: eventData.link,
+        platform: eventData.platform,
+        startTime: eventData.time,
+        endTime: eventData.endTime,
+        date: eventData.date,
+      };
+      //console.log(formatedContestData);
+      await handleContestCreationFunction(formatedContestData);
     }
   };
   // *************** Event Creation Handler Ends Here *********************

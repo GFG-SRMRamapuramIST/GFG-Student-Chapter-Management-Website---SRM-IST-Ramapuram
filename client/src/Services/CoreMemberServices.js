@@ -19,6 +19,16 @@ const meetingCreationFunction = async (
   );
 };
 
+// Create a contest API
+const contestCreationFunction = async ({ contestName, contestLink, platform, startTime, endTime, date }, userToken) => {
+  return await commonrequest(
+    "POST",
+    `${BACKEND_URL}/api/v1/core-member/create-contest`,
+    { contestName, contestLink, platform, startTime, endTime, date },
+    { Authorization: `Bearer ${userToken}` }
+  )
+}
+
 // Wrapper to use token inside React components
 const CoreMemberServices = () => {
   const userToken = useAuthToken();
@@ -26,6 +36,7 @@ const CoreMemberServices = () => {
   return {
     meetingCreationFunction: (params) =>
       meetingCreationFunction(params, userToken),
+    contestCreationFunction: (params) => contestCreationFunction(params, userToken)
   };
 };
 
