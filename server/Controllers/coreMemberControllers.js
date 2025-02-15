@@ -1,7 +1,7 @@
 const chalk = require("chalk");
 
 const { verifyAuthToken } = require("../Utilities");
-const { DailyContests, Notices, ConstantValue } = require("../Models");
+const { DailyContests, Notices, ConstantValue, Resources } = require("../Models");
 
 /*
 ************************** APIs **************************
@@ -15,6 +15,11 @@ const { DailyContests, Notices, ConstantValue } = require("../Models");
 7. Create MoM for a Meeting on Notice Board API
 
 9. Delete MoM for a Meeting on Notice Board API
+
+10. Create a resource API
+11. Add a question to a resource API
+
+. Delete a question of a resource API
 
 **********************************************************
 */
@@ -484,3 +489,205 @@ exports.deleteMoMLink = async (req, res) => {
   }
 };
 /**************************************************************************/
+
+/***************************Resource API ******************************** */
+
+//10. Create a resource API
+exports.createResource = async (req, res) => {
+  try {
+    const { title, description } = req.body;
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).json({ message: "No token provided." });
+    }
+
+    const allowedRoles = ["COREMEMBER", "VICEPRESIDENT", "PRESIDENT", "ADMIN"];
+    const authResult = await verifyAndAuthorize(token, allowedRoles);
+
+    if (authResult.status !== 200) {
+      return res.status(authResult.status).json({ message: authResult.message });
+    }
+
+    const newResource = new Resources({
+      title,
+      description,
+    });
+
+    await newResource.save();
+
+    return res.status(201).json({ message: "Resource created successfully.", resource: newResource });
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error.", error: error.message });
+  }
+};
+
+//11. Add a question to a resource API
+exports.addQuestionToResource = async (req, res) => {
+  try {
+    const { resourceId, title, link, difficulty, platform } = req.body;
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).json({ message: "No token provided." });
+    }
+
+    const allowedRoles = ["COREMEMBER", "VICEPRESIDENT", "PRESIDENT", "ADMIN"];
+    const authResult = await verifyAndAuthorize(token, allowedRoles);
+
+    if (authResult.status !== 200) {
+      return res.status(authResult.status).json({ message: authResult.message });
+    }
+
+    // Validate difficulty level
+    const validDifficulties = ["EASY", "MEDIUM", "HARD"];
+    if (!validDifficulties.includes(difficulty)) {
+      return res.status(400).json({ message: "Invalid difficulty level." });
+    }
+
+    // Validate platform
+    const validPlatforms = ["LeetCode", "CodeChef", "Codeforces"];
+    if (!validPlatforms.includes(platform)) {
+      return res.status(400).json({ message: "Invalid platform." });
+    }
+
+    // Find the resource
+    const resource = await Resources.findById(resourceId);
+    if (!resource) {
+      return res.status(404).json({ message: "Resource not found." });
+    }
+
+    // Add platform if not already in the resource's platform list
+    if (!resource.platform.includes(platform)) {
+      resource.platform.push(platform);
+    }
+
+    // Add the new question
+    resource.questions.push({ title, link, difficulty, platform });
+
+    // Save the updated resource
+    await resource.save();
+
+    return res.status(200).json({ message: "Question added successfully.", resource });
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error.", error: error.message });
+  }
+};
+
+// Delete Question from Resource API
+exports.deleteQuestionFromResource = async (req, res) => {
+  try {
+    const { resourceId, questionId } = req.body;
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).json({ message: "No token provided." });
+    }
+
+    const allowedRoles = ["COREMEMBER", "VICEPRESIDENT", "PRESIDENT", "ADMIN"];
+    const authResult = await verifyAndAuthorize(token, allowedRoles);
+
+    if (authResult.status !== 200) {
+      return res.status(authResult.status).json({ message: authResult.message });
+    }
+
+    // Find the resource
+    const resource = await Resources.findById(resourceId);
+    if (!resource) {
+      return res.status(404).json({ message: "Resource not found." });
+    }
+
+    // Find the question index
+    const questionIndex = resource.questions.findIndex(q => q._id.toString() === questionId);
+    if (questionIndex === -1) {
+      return res.status(404).json({ message: "Question not found in the resource." });
+    }
+
+    // Get the platform of the question being deleted
+    const questionPlatform = resource.questions[questionIndex].platform;
+
+    // Remove the question from the array
+    resource.questions.splice(questionIndex, 1);
+
+    // Check if there are any remaining questions with the same platform
+    const isPlatformStillUsed = resource.questions.some(q => q.platform === questionPlatform);
+
+    // If no other question belongs to this platform, remove the platform from the resource
+    if (!isPlatformStillUsed) {
+      resource.platform = resource.platform.filter(p => p !== questionPlatform);
+    }
+
+    // Save the updated resource
+    await resource.save();
+
+    return res.status(200).json({ message: "Question deleted successfully.", resource });
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error.", error: error.message });
+  }
+};
+
+// Delete Resource API
+exports.deleteResource = async (req, res) => {
+  try {
+    const { resourceId } = req.body;
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).json({ message: "No token provided." });
+    }
+
+    const allowedRoles = ["COREMEMBER", "VICEPRESIDENT", "PRESIDENT", "ADMIN"];
+    const authResult = await verifyAndAuthorize(token, allowedRoles);
+
+    if (authResult.status !== 200) {
+      return res.status(authResult.status).json({ message: authResult.message });
+    }
+
+    // Find and delete the resource
+    const resource = await Resources.findByIdAndDelete(resourceId);
+
+    if (!resource) {
+      return res.status(404).json({ message: "Resource not found." });
+    }
+
+    return res.status(200).json({ message: "Resource deleted successfully." });
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error.", error: error.message });
+  }
+};
+
+// Edit Resource API
+exports.editResource = async (req, res) => {
+  try {
+    const { resourceId, title, description } = req.body;
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).json({ message: "No token provided." });
+    }
+
+    const allowedRoles = ["COREMEMBER", "VICEPRESIDENT", "PRESIDENT", "ADMIN"];
+    const authResult = await verifyAndAuthorize(token, allowedRoles);
+
+    if (authResult.status !== 200) {
+      return res.status(authResult.status).json({ message: authResult.message });
+    }
+
+    // Find and update the resource
+    const updatedResource = await Resources.findByIdAndUpdate(
+      resourceId,
+      { title, description },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedResource) {
+      return res.status(404).json({ message: "Resource not found." });
+    }
+
+    return res.status(200).json({ message: "Resource updated successfully.", resource: updatedResource });
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error.", error: error.message });
+  }
+};
+
+/************************************************************************ */
