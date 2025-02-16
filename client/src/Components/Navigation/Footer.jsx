@@ -82,11 +82,11 @@ const Footer = () => {
                   User Manual
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link to="/support/privacy" className="text-gray-400 hover:text-gfgsc-green-400 transition-colors duration-200">
                   Privacy Policy
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </div>
         </div>

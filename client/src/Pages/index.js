@@ -22,6 +22,7 @@ import EditProfile from "./UserProfile/EditProfile";
 import TermsAndConditions from "./UserSupport/TermsAndConditions";
 import PrivacyPolicy from "./UserSupport/PrivacyPolicy";
 import UserManual from "./UserSupport/UserManual";
+import ReportAnIssue from "./UserSupport/ReportAnIssue";
 
 // Errors
 import NotFound from "./Errors/NotFound";
@@ -40,6 +41,7 @@ export {
   TermsAndConditions,
   PrivacyPolicy,
   UserManual,
+  ReportAnIssue,
   NotFound,
   AllResources,
   Resource

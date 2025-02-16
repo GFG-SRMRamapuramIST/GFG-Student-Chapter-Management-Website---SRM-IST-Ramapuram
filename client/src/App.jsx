@@ -18,6 +18,7 @@ import {
   NotFound,
   AllResources,
   Resource,
+  ReportAnIssue,
 } from "./Pages";
 import { AuthLayout, RootLayout, AppLayout, ResourceLayout } from "./Layouts";
 
@@ -59,7 +60,8 @@ const appRoutes = {
       path: "support",
       children: [
         { path: "terms", element: <TermsAndConditions /> },
-        { path: "privacy", element: <PrivacyPolicy /> },
+        // { path: "privacy", element: <PrivacyPolicy /> },
+        { path: "report-issue", element: <ReportAnIssue /> },
       ],
     },
     { path: "user-manual", element: <UserManual /> },
