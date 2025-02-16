@@ -18,6 +18,7 @@ const AllResources = () => {
 
   const [showCreateModal, setShowCreateModal] = useState(false);
 
+  // ****************** Fetch all Resources Handlers Starts here *****************
   // Search Logic
   const [searchResource, setSearchResource] = useState("");
   const [debouncedSearchResource, setDebouncedSearchResource] =
@@ -57,7 +58,7 @@ const AllResources = () => {
 
       if (response.status === 200) {
         const formattedResources = response.data.data.map((resource) => ({
-          id: resource.title.toLowerCase().replace(/\s+/g, "-"), // Unique ID
+          id: resource.id, // Unique ID
           title: resource.title,
           platforms: resource.platforms || [],
           count: resource.totalQuestions,
@@ -72,7 +73,7 @@ const AllResources = () => {
       }
     } catch (error) {
       ToastMsg("Internal Server Error!", "error");
-      console.error("Fetch Users Data Error: ", error.message);
+      console.error("Fetch All Resources Error: ", error.message);
     } finally {
       setLoading(false);
     }
@@ -85,6 +86,8 @@ const AllResources = () => {
 
     fetchResources();
   }, [pageInfo.currentPage, debouncedSearchResource]);
+
+  // ******************** Fetch all Resources Handler end's here ****************
 
   // Resources Creating Handlers
   const handleCreateResource = async (data) => {

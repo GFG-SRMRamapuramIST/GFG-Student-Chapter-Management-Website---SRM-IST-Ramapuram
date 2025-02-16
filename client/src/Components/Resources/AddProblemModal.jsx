@@ -1,18 +1,36 @@
 import { useState } from "react";
 
+// Importing Icons
+import { FaSpinner } from "react-icons/fa";
+
 const AddProblemModal = ({ isOpen, onClose, onAdd }) => {
-  const platforms = ["leetcode", "codechef", "codeforces", "others"];
+  const [loading, setLoading] = useState(false);
+
+  const platforms = ["LeetCode", "CodeChef", "Codeforces"];
   const [newProblem, setNewProblem] = useState({
     title: "",
-    difficulty: "easy",
+    difficulty: "EASY",
     platform: platforms[0],
     link: "",
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onAdd(newProblem);
-    onClose();
+    try {
+      setLoading(true);
+      await onAdd(newProblem);
+    } catch (error) {
+      console.log("Error in creating resource: ", error);
+    } finally {
+      setLoading(false);
+      setNewProblem({
+        title: "",
+        difficulty: "EASY",
+        platform: platforms[0],
+        link: "",
+      });
+      onClose();
+    }
   };
 
   if (!isOpen) return null;
@@ -48,9 +66,9 @@ const AddProblemModal = ({ isOpen, onClose, onAdd }) => {
                   setNewProblem({ ...newProblem, difficulty: e.target.value })
                 }
               >
-                <option value="easy">Easy</option>
-                <option value="medium">Medium</option>
-                <option value="hard">Hard</option>
+                <option value="EASY">Easy</option>
+                <option value="MEDIUM">Medium</option>
+                <option value="HARD">Hard</option>
               </select>
             </div>
             <div>
@@ -96,8 +114,12 @@ const AddProblemModal = ({ isOpen, onClose, onAdd }) => {
             </button>
             <button
               type="submit"
+              disabled={loading}
               className="px-4 py-2 bg-gfgsc-green text-white rounded-lg hover:bg-opacity-90"
             >
+              {loading ? (
+                <FaSpinner className="animate-spin inline-block" />
+              ) : null}{" "}
               Add Problem
             </button>
           </div>

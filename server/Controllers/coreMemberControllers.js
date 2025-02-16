@@ -566,13 +566,17 @@ exports.addQuestionToResource = async (req, res) => {
 
     // Validate difficulty level
     const validDifficulties = ["EASY", "MEDIUM", "HARD"];
-    if (!validDifficulties.includes(difficulty)) {
+    if (!validDifficulties.includes(difficulty.toUpperCase())) {
       return res.status(400).json({ message: "Invalid difficulty level." });
     }
 
-    // Validate platform
+    // Validate platform (case-insensitive) & normalize it
     const validPlatforms = ["LeetCode", "CodeChef", "Codeforces"];
-    if (!validPlatforms.includes(platform)) {
+    const normalizedPlatform = validPlatforms.find(
+      (p) => p.toUpperCase() === platform.toUpperCase()
+    );
+
+    if (!normalizedPlatform) {
       return res.status(400).json({ message: "Invalid platform." });
     }
 
@@ -739,12 +743,10 @@ exports.editResource = async (req, res) => {
       return res.status(404).json({ message: "Resource not found." });
     }
 
-    return res
-      .status(200)
-      .json({
-        message: "Resource updated successfully.",
-        resource: updatedResource,
-      });
+    return res.status(200).json({
+      message: "Resource updated successfully.",
+      resource: updatedResource,
+    });
   } catch (error) {
     return res
       .status(500)
@@ -791,6 +793,7 @@ exports.fetchAllResources = async (req, res) => {
 
     // Transform response data
     const formattedResources = resources.map((resource) => ({
+      id: resource._id,
       title: resource.title,
       description: resource.description,
       platforms: resource.platform || [],
@@ -850,13 +853,13 @@ exports.fetchAllQuestionsOfResource = async (req, res) => {
     // Apply filtering
     let filteredQuestions = resource.questions;
 
-    if (difficulty) {
+    if (difficulty && difficulty.toLowerCase() !== "all") {
       filteredQuestions = filteredQuestions.filter(
         (q) => q.difficulty.toUpperCase() === difficulty.toUpperCase()
       );
     }
 
-    if (platform) {
+    if (platform && platform.toLowerCase() !== "all") {
       filteredQuestions = filteredQuestions.filter(
         (q) => q.platform.toUpperCase() === platform.toUpperCase()
       );
@@ -864,14 +867,24 @@ exports.fetchAllQuestionsOfResource = async (req, res) => {
 
     // Format response
     const formattedQuestions = filteredQuestions.map((q) => ({
+      id: q._id, // Add question ID
       questionTitle: q.title,
       difficulty: q.difficulty,
       platform: q.platform,
       link: q.link,
     }));
 
+    // Return resource info along with questions
     return res.status(200).json({
       message: "Questions fetched successfully!",
+      resourceInfo: {
+        id: resource._id,
+        title: resource.title,
+        description: resource.description,
+        platforms: resource.platform || [],
+        lastModifiedAt: resource.updatedAt || resource.createdAt,
+        totalQuestions: resource.questions.length,
+      },
       questions: formattedQuestions,
       totalQuestions: formattedQuestions.length,
     });

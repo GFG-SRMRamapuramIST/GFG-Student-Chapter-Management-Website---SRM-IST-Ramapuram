@@ -2,9 +2,9 @@ import { CgCodeSlash } from "react-icons/cg";
 import { SiCodechef, SiCodeforces, SiGoogle, SiLeetcode } from "react-icons/si";
 
 export const platformIcons = {
-  leetcode: SiLeetcode,
-  codechef: SiCodechef,
-  codeforces: SiCodeforces,
+  LeetCode: SiLeetcode,
+  CodeChef: SiCodechef,
+  Codeforces: SiCodeforces,
   gmeet: SiGoogle,
   others: CgCodeSlash,
 };

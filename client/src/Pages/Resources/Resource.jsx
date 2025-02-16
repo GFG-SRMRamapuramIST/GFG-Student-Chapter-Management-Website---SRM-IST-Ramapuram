@@ -9,22 +9,66 @@ import {
   FaChevronRight,
   FaTrash,
   FaPlus,
+  FaSpinner,
 } from "react-icons/fa";
 
 import { platformIcons, resources } from "../../Constants";
 import AddProblemModal from "../../Components/Resources/AddProblemModal";
+import { ToastMsg } from "../../Utilities";
+
+// Importing APIs
+import { CoreMemberServices } from "../../Services";
 
 const Resource = () => {
   const { id } = useParams();
+  const {
+    fetchAllQuestionsOfResourceFunction,
+    addQuestionToResourceFunction,
+    deleteQuestionFromResourceFunction,
+  } = CoreMemberServices();
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [resource, setResource] = useState(null);
+  const [problems, setProblems] = useState([]);
 
   const [selectedDifficulty, setSelectedDifficulty] = useState("all");
   const [showDelete, setShowDelete] = useState(false);
   const [selectedPlatform, setSelectedPlatform] = useState("all");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-  const [resource, setResource] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [problems, setProblems] = useState([]);
+  const getAllQuestionsOfResourceHandler = async () => {
+    try {
+      setIsLoading(true);
+
+      const response = await fetchAllQuestionsOfResourceFunction({
+        resourceId: id,
+        difficulty: selectedDifficulty,
+        platform: selectedPlatform,
+      });
+
+      //console.log(response);
+      if (response.status == 200) {
+        setResource(response.data.resourceInfo);
+        setProblems(response.data.questions);
+      } else {
+        ToastMsg(response.response.data.message, "error");
+        console.log(response.response.data.message);
+      }
+    } catch (error) {
+      ToastMsg("Internal Server Error!", "error");
+      console.error("Fetch All Questions of a Resource Error: ", error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      await getAllQuestionsOfResourceHandler();
+    };
+
+    fetchQuestions();
+  }, [selectedDifficulty, selectedPlatform]);
 
   useEffect(() => {
     const foundResource = resources.find((r) => r.id.toString() === id);
@@ -49,35 +93,63 @@ const Resource = () => {
     }
   }, [id]);
 
-  // ******** Filtering Logic ********
-  const filteredProblems = problems.filter(
-    (p) =>
-      (selectedDifficulty === "all" || p.difficulty === selectedDifficulty) &&
-      (selectedPlatform === "all" || p.platform === selectedPlatform)
-  );
-
   // ******** Resource's Question Handlers ********
 
   // Deleting a question from a resource
-  const handleDelete = (problemId) => {
-    // Deletion Logic Here
-    console.log("Deleting problem with ID:", problemId);
-    setProblems(problems.filter((p) => p.id !== problemId));
+  const handleDelete = async (problemId) => {
+    //console.log("Deleting problem with ID:", problemId);
+    try {
+      const response = await deleteQuestionFromResourceFunction({
+        resourceId: id,
+        questionId: problemId,
+      });
+      //console.log(response);
+      if (response.status == 200) {
+        ToastMsg(response.data.message, "success");
+      } else {
+        ToastMsg(response.response.data.message, "error");
+        console.log(response.response.data.message);
+      }
+    } catch (error) {
+      ToastMsg("Internal Server Error!", "error");
+      console.error("Delete a Questions to a Resource Error: ", error.message);
+    } finally {
+      getAllQuestionsOfResourceHandler();
+    }
   };
 
   // Adding a question to a resource
-  const handleAdd = (newProblem) => {
-    console.log("Adding new problem:", newProblem);
-    setProblems([...problems, newProblem]);
+  const handleAdd = async (newProblem) => {
+    //console.log("Adding new problem:", newProblem);
+    try {
+      const response = await addQuestionToResourceFunction({
+        resourceId: id,
+        title: newProblem.title,
+        link: newProblem.link,
+        difficulty: newProblem.difficulty,
+        platform: newProblem.platform,
+      });
+      //console.log(response);
+      if (response.status == 200) {
+        ToastMsg(response.data.message, "success");
+      } else {
+        ToastMsg(response.response.data.message, "error");
+        console.log(response.response.data.message);
+      }
+    } catch (error) {
+      ToastMsg("Internal Server Error!", "error");
+      console.error("Add a Questions to a Resource Error: ", error.message);
+    } finally {
+      getAllQuestionsOfResourceHandler();
+    }
   };
-
   // ******** Resource's Question Handlers END ********
 
   // Loading state check
   if (isLoading) {
     return (
       <div className="min-h-screen p-6 flex items-center justify-center">
-        <div className="text-gray-500">Loading...</div>
+        <FaSpinner className="animate-spin inline-block" />
       </div>
     );
   }
@@ -131,11 +203,11 @@ const Resource = () => {
                 <div className="flex items-center">
                   <FaCalendarAlt className="mr-2" />
                   Last updated:{" "}
-                  {new Date(resource.lastUpdated).toLocaleDateString()}
+                  {new Date(resource.lastModifiedAt).toLocaleDateString()}
                 </div>
                 <div className="flex items-center">
                   <FaListOl className="mr-2" />
-                  {resource.count} Problems
+                  {resource.totalQuestions} Problems
                 </div>
               </div>
             </div>
@@ -242,7 +314,7 @@ const Resource = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {filteredProblems.map((problem, idx) => {
+              {problems.map((problem, idx) => {
                 const PlatformIcon = platformIcons[problem.platform];
                 return (
                   <motion.tr
@@ -255,15 +327,15 @@ const Resource = () => {
                     <td className="px-6 py-4 text-gray-500">{idx + 1}</td>
                     <td className="px-6 py-4">
                       <span className="font-medium text-gray-900">
-                        {problem.title}
+                        {problem.questionTitle}
                       </span>
                     </td>
                     <td className="px-6 py-4">
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          problem.difficulty === "easy"
+                          problem.difficulty === "EASY"
                             ? "bg-green-100 text-green-800"
-                            : problem.difficulty === "medium"
+                            : problem.difficulty === "MEDIUM"
                             ? "bg-yellow-100 text-yellow-800"
                             : "bg-red-100 text-red-800"
                         }`}
