@@ -1,7 +1,12 @@
 const chalk = require("chalk");
 
 const { verifyAuthToken } = require("../Utilities");
-const { DailyContests, Notices, ConstantValue, Resources } = require("../Models");
+const {
+  DailyContests,
+  Notices,
+  ConstantValue,
+  Resources,
+} = require("../Models");
 
 /*
 ************************** APIs **************************
@@ -18,8 +23,11 @@ const { DailyContests, Notices, ConstantValue, Resources } = require("../Models"
 
 10. Create a resource API
 11. Add a question to a resource API
-
-. Delete a question of a resource API
+12. Delete a question of a resource API
+13. Delete a resource API
+14. Edit a resource API
+15. Fetch all resources API
+16. Fetch all questions of a resource API
 
 **********************************************************
 */
@@ -354,7 +362,9 @@ exports.deleteNotice = async (req, res) => {
     // Use the helper function for authorization
     const authResult = await verifyAndAuthorize(token, ["ADMIN", "COREMEMBER"]);
     if (authResult.status !== 200) {
-      return res.status(authResult.status).json({ message: authResult.message });
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
     }
 
     // Validate meetingId
@@ -394,7 +404,9 @@ exports.createMoM = async (req, res) => {
     // Use the helper function for authorization
     const authResult = await verifyAndAuthorize(token, ["ADMIN", "COREMEMBER"]);
     if (authResult.status !== 200) {
-      return res.status(authResult.status).json({ message: authResult.message });
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
     }
 
     // Validate input
@@ -455,11 +467,13 @@ exports.deleteMoMLink = async (req, res) => {
     const token = req.headers.authorization?.split(" ")[1];
     const { meetingId } = req.body;
 
-     // Use the helper function for authorization
-     const authResult = await verifyAndAuthorize(token, ["ADMIN", "COREMEMBER"]);
-     if (authResult.status !== 200) {
-       return res.status(authResult.status).json({ message: authResult.message });
-     }
+    // Use the helper function for authorization
+    const authResult = await verifyAndAuthorize(token, ["ADMIN", "COREMEMBER"]);
+    if (authResult.status !== 200) {
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
+    }
 
     // Validate input
     if (!meetingId) {
@@ -506,7 +520,9 @@ exports.createResource = async (req, res) => {
     const authResult = await verifyAndAuthorize(token, allowedRoles);
 
     if (authResult.status !== 200) {
-      return res.status(authResult.status).json({ message: authResult.message });
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
     }
 
     const newResource = new Resources({
@@ -516,13 +532,20 @@ exports.createResource = async (req, res) => {
 
     await newResource.save();
 
-    return res.status(201).json({ message: "Resource created successfully.", resource: newResource });
+    return res
+      .status(200)
+      .json({
+        message: "Resource created successfully.",
+        resource: newResource,
+      });
   } catch (error) {
-    return res.status(500).json({ message: "Internal server error.", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Internal server error.", error: error.message });
   }
 };
 
-//11. Add a question to a resource API
+//11. Add Question to Resource API
 exports.addQuestionToResource = async (req, res) => {
   try {
     const { resourceId, title, link, difficulty, platform } = req.body;
@@ -536,7 +559,9 @@ exports.addQuestionToResource = async (req, res) => {
     const authResult = await verifyAndAuthorize(token, allowedRoles);
 
     if (authResult.status !== 200) {
-      return res.status(authResult.status).json({ message: authResult.message });
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
     }
 
     // Validate difficulty level
@@ -565,16 +590,23 @@ exports.addQuestionToResource = async (req, res) => {
     // Add the new question
     resource.questions.push({ title, link, difficulty, platform });
 
+    // Update last updated time
+    resource.createdAt = new Date();
+
     // Save the updated resource
     await resource.save();
 
-    return res.status(200).json({ message: "Question added successfully.", resource });
+    return res
+      .status(200)
+      .json({ message: "Question added successfully.", resource });
   } catch (error) {
-    return res.status(500).json({ message: "Internal server error.", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Internal server error.", error: error.message });
   }
 };
 
-// Delete Question from Resource API
+//12. Delete Question from Resource API
 exports.deleteQuestionFromResource = async (req, res) => {
   try {
     const { resourceId, questionId } = req.body;
@@ -588,7 +620,9 @@ exports.deleteQuestionFromResource = async (req, res) => {
     const authResult = await verifyAndAuthorize(token, allowedRoles);
 
     if (authResult.status !== 200) {
-      return res.status(authResult.status).json({ message: authResult.message });
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
     }
 
     // Find the resource
@@ -598,9 +632,13 @@ exports.deleteQuestionFromResource = async (req, res) => {
     }
 
     // Find the question index
-    const questionIndex = resource.questions.findIndex(q => q._id.toString() === questionId);
+    const questionIndex = resource.questions.findIndex(
+      (q) => q._id.toString() === questionId
+    );
     if (questionIndex === -1) {
-      return res.status(404).json({ message: "Question not found in the resource." });
+      return res
+        .status(404)
+        .json({ message: "Question not found in the resource." });
     }
 
     // Get the platform of the question being deleted
@@ -610,23 +648,34 @@ exports.deleteQuestionFromResource = async (req, res) => {
     resource.questions.splice(questionIndex, 1);
 
     // Check if there are any remaining questions with the same platform
-    const isPlatformStillUsed = resource.questions.some(q => q.platform === questionPlatform);
+    const isPlatformStillUsed = resource.questions.some(
+      (q) => q.platform === questionPlatform
+    );
 
     // If no other question belongs to this platform, remove the platform from the resource
     if (!isPlatformStillUsed) {
-      resource.platform = resource.platform.filter(p => p !== questionPlatform);
+      resource.platform = resource.platform.filter(
+        (p) => p !== questionPlatform
+      );
     }
+
+    // Update last updated time
+    resource.createdAt = new Date();
 
     // Save the updated resource
     await resource.save();
 
-    return res.status(200).json({ message: "Question deleted successfully.", resource });
+    return res
+      .status(200)
+      .json({ message: "Question deleted successfully.", resource });
   } catch (error) {
-    return res.status(500).json({ message: "Internal server error.", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Internal server error.", error: error.message });
   }
 };
 
-// Delete Resource API
+//13. Delete Resource API
 exports.deleteResource = async (req, res) => {
   try {
     const { resourceId } = req.body;
@@ -640,7 +689,9 @@ exports.deleteResource = async (req, res) => {
     const authResult = await verifyAndAuthorize(token, allowedRoles);
 
     if (authResult.status !== 200) {
-      return res.status(authResult.status).json({ message: authResult.message });
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
     }
 
     // Find and delete the resource
@@ -652,11 +703,13 @@ exports.deleteResource = async (req, res) => {
 
     return res.status(200).json({ message: "Resource deleted successfully." });
   } catch (error) {
-    return res.status(500).json({ message: "Internal server error.", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Internal server error.", error: error.message });
   }
 };
 
-// Edit Resource API
+//14. Edit Resource API
 exports.editResource = async (req, res) => {
   try {
     const { resourceId, title, description } = req.body;
@@ -670,13 +723,15 @@ exports.editResource = async (req, res) => {
     const authResult = await verifyAndAuthorize(token, allowedRoles);
 
     if (authResult.status !== 200) {
-      return res.status(authResult.status).json({ message: authResult.message });
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
     }
 
     // Find and update the resource
     const updatedResource = await Resources.findByIdAndUpdate(
       resourceId,
-      { title, description },
+      { title, description, createdAt: new Date() }, // Update createdAt timestamp
       { new: true, runValidators: true }
     );
 
@@ -684,13 +739,20 @@ exports.editResource = async (req, res) => {
       return res.status(404).json({ message: "Resource not found." });
     }
 
-    return res.status(200).json({ message: "Resource updated successfully.", resource: updatedResource });
+    return res
+      .status(200)
+      .json({
+        message: "Resource updated successfully.",
+        resource: updatedResource,
+      });
   } catch (error) {
-    return res.status(500).json({ message: "Internal server error.", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Internal server error.", error: error.message });
   }
 };
 
-// Fetch All Resources API
+//15. Fetch All Resources API
 exports.fetchAllResources = async (req, res) => {
   try {
     // Extract token and validate
@@ -717,18 +779,13 @@ exports.fetchAllResources = async (req, res) => {
     page = parseInt(page, 10);
     const limit = 6; // Fixed limit
 
-    const searchFilter = search
-      ? { title: new RegExp(search, "i") }
-      : {}; // Case-insensitive search
+    const searchFilter = search ? { title: new RegExp(search, "i") } : {}; // Case-insensitive search
 
     const skip = (page - 1) * limit;
 
     // Fetch resources and total count concurrently
     const [resources, totalResources] = await Promise.all([
-      Resources.find(searchFilter)
-        .skip(skip)
-        .limit(limit)
-        .lean(), // Optimized query performance
+      Resources.find(searchFilter).skip(skip).limit(limit).lean(), // Optimized query performance
       Resources.countDocuments(searchFilter),
     ]);
 
@@ -756,7 +813,7 @@ exports.fetchAllResources = async (req, res) => {
   }
 };
 
-// Fetch All Questions of a Resource API with Filtering
+//16. Fetch All Questions of a Resource API with Filtering
 exports.fetchAllQuestionsOfResource = async (req, res) => {
   try {
     // Extract token and validate

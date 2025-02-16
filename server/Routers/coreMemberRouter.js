@@ -19,8 +19,11 @@ const router = new express.Router();
 
 10. Create a resource API - "{BACKEND_URL}/api/v1/core-member/create-resource"
 11. Add a question to a resource API - "{BACKEND_URL}/api/v1/core-member/add-question"
-
- Delete a question of a resource API
+12. Delete a question of a resource API - "{BACKEND_URL}/api/v1/core-member/delete-question"
+13. Delete a resource API - "{BACKEND_URL}/api/v1/core-member/delete-resource"
+14. Edit a resource API - "{BACKEND_URL}/api/v1/core-member/edit-resource"
+15. Fetch all resources API - "{BACKEND_URL}/api/v1/core-member/fetch-all-resources"
+16. Fetch all questions of a resource API - "{BACKEND_URL}/api/v1/core-member/fetch-all-questions"
 
 **********************************************************
 */
@@ -60,8 +63,14 @@ router.delete(
   coreMemberControllers.deleteQuestionFromResource
 );
 
+// Delete a resource API
+router.delete("/delete-resource", coreMemberControllers.deleteResource)
+
+// Edit a resource API
+router.put("/edit-resource", coreMemberControllers.editResource)
+
 // Fetch all resources
-router.get("/fetch-all-resources", coreMemberControllers.fetchAllResources);
+router.post("/fetch-all-resources", coreMemberControllers.fetchAllResources);
 
 // Fetch all questions of a resource with filtering
 router.post(

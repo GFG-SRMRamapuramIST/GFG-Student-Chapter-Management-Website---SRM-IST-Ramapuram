@@ -1,37 +1,106 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import {
-  FaSearch,
-  FaPlus,
-} from "react-icons/fa";
-import { resources } from "../../Constants";
-import { Pagination } from "../../Utilities";
+
+// Importing Icons
+import { FaSearch, FaPlus, FaSpinner } from "react-icons/fa";
+
+import { Pagination, ToastMsg } from "../../Utilities";
 import { CreateResourceModal, ResourceCard } from "../../Components";
 
+// Importing APIs
+import { CoreMemberServices } from "../../Services";
+
 const AllResources = () => {
+  const { createResourceFunction, fetchAllResourcesFunction } =
+    CoreMemberServices();
+
+  const [loading, setLoading] = useState(false);
+
   const [showCreateModal, setShowCreateModal] = useState(false);
 
   // Search Logic
-  const [searchQuery, setSearchQuery] = useState("");
-  const filteredResources = resources.filter(
-    (resource) =>
-      resource.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      resource.description.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const [searchResource, setSearchResource] = useState("");
+  const [debouncedSearchResource, setDebouncedSearchResource] =
+    useState(searchResource);
+
+  // Debounce mechanism for serach input
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchResource(searchResource);
+    }, 1000); // 1s debounce time
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchResource]);
 
   // Pagination Logic
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
-  const totalPages = Math.ceil(filteredResources.length / itemsPerPage);
-  const currentResources = filteredResources.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const [pageInfo, setPageInfo] = useState({
+    currentPage: 1,
+    totalPages: null,
+  });
 
-  // Resources Handlers
-  const handleCreateResource = (data) => {
-    // Handle resource creation
-    console.log("Creating resource:", data);
+  const setCurrentPage = (page) => {
+    setPageInfo((prev) => ({ ...prev, currentPage: page }));
+  };
+
+  const [resources, setResources] = useState([]);
+
+  // Fetch all resources
+  const fetchAllResourcesHandler = async () => {
+    setLoading(true);
+    try {
+      const response = await fetchAllResourcesFunction({
+        page: pageInfo.currentPage,
+        search: debouncedSearchResource,
+      });
+
+      if (response.status === 200) {
+        const formattedResources = response.data.data.map((resource) => ({
+          id: resource.title.toLowerCase().replace(/\s+/g, "-"), // Unique ID
+          title: resource.title,
+          platforms: resource.platforms || [],
+          count: resource.totalQuestions,
+          lastUpdated: resource.lastUpdatedAt.split("T")[0], // Extract date part
+          description: resource.description,
+        }));
+
+        setResources(formattedResources);
+      } else {
+        ToastMsg(response.response.data.message, "error");
+        console.log(response.response.data.message);
+      }
+    } catch (error) {
+      ToastMsg("Internal Server Error!", "error");
+      console.error("Fetch Users Data Error: ", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const fetchResources = async () => {
+      await fetchAllResourcesHandler();
+    };
+
+    fetchResources();
+  }, [pageInfo.currentPage, debouncedSearchResource]);
+
+  // Resources Creating Handlers
+  const handleCreateResource = async (data) => {
+    //console.log("Creating resource:", data);
+    try {
+      const response = await createResourceFunction(data);
+      if (response.status == 200) {
+        ToastMsg(response.data.message, "success");
+      } else {
+        ToastMsg(response.response.data.message, "error");
+        console.log(response);
+      }
+    } catch (error) {
+      ToastMsg("Internal Server Error", "error");
+      console.log("Internal server error: ", error);
+    }
   };
 
   return (
@@ -44,11 +113,8 @@ const AllResources = () => {
             <input
               type="text"
               placeholder="Search resources..."
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setCurrentPage(1);
-              }}
+              value={searchResource}
+              onChange={(e) => setSearchResource(e.target.value)}
               className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gfgsc-green"
             />
           </div>
@@ -65,22 +131,28 @@ const AllResources = () => {
         </div>
 
         {/* Resources Grid */}
-        <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-          layout
-        >
-          {currentResources.map((resource) => (
-            <ResourceCard key={resource.id} resource={resource} />
-          ))}
-        </motion.div>
+        {loading ? (
+          <FaSpinner className="animate-spin inline-block" />
+        ) : (
+          <>
+            <motion.div
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+              layout
+            >
+              {resources.map((resource) => (
+                <ResourceCard key={resource.id} resource={resource} />
+              ))}
+            </motion.div>
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          />
+            {/* Pagination */}
+            {pageInfo.totalPages > 1 && (
+              <Pagination
+                currentPage={pageInfo.currentPage}
+                totalPages={pageInfo.totalPages}
+                onPageChange={setCurrentPage}
+              />
+            )}
+          </>
         )}
       </div>
 

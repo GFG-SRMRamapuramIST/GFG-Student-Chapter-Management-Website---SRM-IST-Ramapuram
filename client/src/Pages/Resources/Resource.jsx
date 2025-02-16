@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
+
+// Importing Icons
 import {
   FaCalendarAlt,
   FaListOl,
@@ -8,6 +10,7 @@ import {
   FaTrash,
   FaPlus,
 } from "react-icons/fa";
+
 import { platformIcons, resources } from "../../Constants";
 import AddProblemModal from "../../Components/Resources/AddProblemModal";
 
@@ -53,20 +56,22 @@ const Resource = () => {
       (selectedPlatform === "all" || p.platform === selectedPlatform)
   );
 
-  // ******** Resource Handlers ********
+  // ******** Resource's Question Handlers ********
 
+  // Deleting a question from a resource
   const handleDelete = (problemId) => {
     // Deletion Logic Here
     console.log("Deleting problem with ID:", problemId);
     setProblems(problems.filter((p) => p.id !== problemId));
   };
 
+  // Adding a question to a resource
   const handleAdd = (newProblem) => {
     console.log("Adding new problem:", newProblem);
     setProblems([...problems, newProblem]);
   };
 
-  // ******** Resource Handlers END ********
+  // ******** Resource's Question Handlers END ********
 
   // Loading state check
   if (isLoading) {

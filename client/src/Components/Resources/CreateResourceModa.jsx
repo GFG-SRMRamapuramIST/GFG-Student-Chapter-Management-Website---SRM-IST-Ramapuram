@@ -1,16 +1,25 @@
-import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+
+// Importing Icons
+import { FaSpinner } from "react-icons/fa";
 
 const CreateResourceModal = ({ isOpen, onClose, onSubmit }) => {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [resource, setResource] = useState({ title: "", description: "" });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit({ title, description });
-    setTitle("");
-    setDescription("");
-    onClose();
+    try {
+      setLoading(true);
+      await onSubmit(resource);
+    } catch (error) {
+      console.log("Error in creating resource: ", error);
+    } finally {
+      setLoading(false);
+      setResource({ title: "", description: "" });
+      onClose();
+    }
   };
 
   return (
@@ -36,16 +45,23 @@ const CreateResourceModal = ({ isOpen, onClose, onSubmit }) => {
             <form onSubmit={handleSubmit}>
               <input
                 type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                value={resource.title}
+                onChange={(e) =>
+                  setResource((prev) => ({ ...prev, title: e.target.value }))
+                }
                 placeholder="Resource Title"
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gfgsc-green mb-6"
                 required
               />
               <textarea
                 type="text"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                value={resource.description}
+                onChange={(e) =>
+                  setResource((prev) => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
+                }
                 placeholder="Resource Description"
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gfgsc-green mb-6"
                 required
@@ -53,8 +69,12 @@ const CreateResourceModal = ({ isOpen, onClose, onSubmit }) => {
               <div className="flex justify-end">
                 <button
                   type="submit"
+                  disabled={loading}
                   className="px-6 py-2 bg-gfgsc-green text-white rounded-xl hover:bg-gfgsc-green-600 transition-colors"
                 >
+                  {loading ? (
+                    <FaSpinner className="animate-spin inline-block" />
+                  ) : null}{" "}
                   Create Resource
                 </button>
               </div>
