@@ -690,4 +690,139 @@ exports.editResource = async (req, res) => {
   }
 };
 
+// Fetch All Resources API
+exports.fetchAllResources = async (req, res) => {
+  try {
+    // Extract token and validate
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(401).json({ message: "No token provided" });
+
+    const allowedRoles = [
+      "USER",
+      "MEMBER",
+      "COREMEMBER",
+      "VICEPRESIDENT",
+      "PRESIDENT",
+      "ADMIN",
+    ];
+    const authResult = await verifyAndAuthorize(token, allowedRoles);
+    if (authResult.status !== 200) {
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
+    }
+
+    // Extract query params (page and search)
+    let { page = 1, search = "" } = req.body;
+    page = parseInt(page, 10);
+    const limit = 6; // Fixed limit
+
+    const searchFilter = search
+      ? { title: new RegExp(search, "i") }
+      : {}; // Case-insensitive search
+
+    const skip = (page - 1) * limit;
+
+    // Fetch resources and total count concurrently
+    const [resources, totalResources] = await Promise.all([
+      Resources.find(searchFilter)
+        .skip(skip)
+        .limit(limit)
+        .lean(), // Optimized query performance
+      Resources.countDocuments(searchFilter),
+    ]);
+
+    // Transform response data
+    const formattedResources = resources.map((resource) => ({
+      title: resource.title,
+      description: resource.description,
+      platforms: resource.platform || [],
+      totalQuestions: resource.questions.length,
+      lastUpdatedAt: resource.createdAt, // Same as createdAt
+    }));
+
+    return res.status(200).json({
+      message: "Resources fetched successfully!",
+      data: formattedResources,
+      totalPages: Math.ceil(totalResources / limit),
+      currentPage: page,
+      limit,
+    });
+  } catch (error) {
+    console.error("Error fetching resources:", error.message);
+    return res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
+  }
+};
+
+// Fetch All Questions of a Resource API with Filtering
+exports.fetchAllQuestionsOfResource = async (req, res) => {
+  try {
+    // Extract token and validate
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(401).json({ message: "No token provided" });
+
+    const allowedRoles = [
+      "USER",
+      "MEMBER",
+      "COREMEMBER",
+      "VICEPRESIDENT",
+      "PRESIDENT",
+      "ADMIN",
+    ];
+    const authResult = await verifyAndAuthorize(token, allowedRoles);
+    if (authResult.status !== 200) {
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
+    }
+
+    // Extract parameters
+    const { resourceId, difficulty, platform } = req.body;
+    if (!resourceId) {
+      return res.status(400).json({ message: "Resource ID is required." });
+    }
+
+    // Find the resource
+    const resource = await Resources.findById(resourceId).lean();
+    if (!resource) {
+      return res.status(404).json({ message: "Resource not found." });
+    }
+
+    // Apply filtering
+    let filteredQuestions = resource.questions;
+
+    if (difficulty) {
+      filteredQuestions = filteredQuestions.filter(
+        (q) => q.difficulty.toUpperCase() === difficulty.toUpperCase()
+      );
+    }
+
+    if (platform) {
+      filteredQuestions = filteredQuestions.filter(
+        (q) => q.platform.toUpperCase() === platform.toUpperCase()
+      );
+    }
+
+    // Format response
+    const formattedQuestions = filteredQuestions.map((q) => ({
+      questionTitle: q.title,
+      difficulty: q.difficulty,
+      platform: q.platform,
+      link: q.link,
+    }));
+
+    return res.status(200).json({
+      message: "Questions fetched successfully!",
+      questions: formattedQuestions,
+      totalQuestions: formattedQuestions.length,
+    });
+  } catch (error) {
+    console.error("Error fetching questions:", error.message);
+    return res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
+  }
+};
 /************************************************************************ */

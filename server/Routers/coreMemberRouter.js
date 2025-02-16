@@ -49,13 +49,25 @@ router.delete("/delete-mom", coreMemberControllers.deleteMoMLink)
 
 /***************************** Resource APIs ******************************/
 // Create a resource API
-router.post("/create-resource". coreMemberControllers.createResource)
+router.post("/create-resource", coreMemberControllers.createResource);
 
 // Add a question to a resource API
-router.post("/add-question", coreMemberControllers.addQuestionToResource)
+router.post("/add-question", coreMemberControllers.addQuestionToResource);
 
 // Delete a question of a resource API
-router.delete("/delete-question", coreMemberControllers.deleteQuestionFromResource)
+router.delete(
+  "/delete-question",
+  coreMemberControllers.deleteQuestionFromResource
+);
+
+// Fetch all resources
+router.get("/fetch-all-resources", coreMemberControllers.fetchAllResources);
+
+// Fetch all questions of a resource with filtering
+router.post(
+  "/fetch-all-questions",
+  coreMemberControllers.fetchAllQuestionsOfResource
+);
 
 /**************************************************************************/
 
