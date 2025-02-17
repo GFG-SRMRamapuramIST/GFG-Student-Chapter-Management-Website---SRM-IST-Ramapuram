@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 
 // Importing Icons
 import { FaSpinner } from "react-icons/fa";
+import { RotatingCloseButton } from "../../Utilities";
 
 const CreateResourceModal = ({ isOpen, onClose, onSubmit }) => {
   const [loading, setLoading] = useState(false);
@@ -39,9 +40,13 @@ const CreateResourceModal = ({ isOpen, onClose, onSubmit }) => {
             className="bg-white rounded-3xl p-6 max-w-lg w-full shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-2xl font-bold text-gray-800 mb-6">
-              Create New Resource
-            </h3>
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-2xl font-bold text-gray-800">
+                Create New Resource
+              </h3>
+              <RotatingCloseButton onClick={onClose} />
+            </div>
+
             <form onSubmit={handleSubmit}>
               <input
                 type="text"

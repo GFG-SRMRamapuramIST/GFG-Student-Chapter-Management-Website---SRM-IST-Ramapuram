@@ -72,5 +72,6 @@ export { UserTable, AllowedEmailsForm, AllowedEmailsTable };
 import AddProblemModal from "./Resources/AddProblemModal";
 import CreateResourceModal from "./Resources/CreateResourceModa";
 import ResourceCard from "./Resources/ResourceCard";
+import EditResourceModal from "./Resources/EditResourcemodal";
 
-export { AddProblemModal, CreateResourceModal, ResourceCard };
+export { AddProblemModal, CreateResourceModal, ResourceCard, EditResourceModal };

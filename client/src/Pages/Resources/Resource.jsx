@@ -1,19 +1,22 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 
 // Importing Icons
 import {
   FaCalendarAlt,
   FaListOl,
-  FaChevronRight,
   FaTrash,
   FaPlus,
   FaSpinner,
+  FaExternalLinkAlt,
+  FaArrowLeft,
+  FaPencilAlt,
 } from "react-icons/fa";
+import { BiChevronLeft } from "react-icons/bi";
 
-import { platformIcons, resources } from "../../Constants";
-import AddProblemModal from "../../Components/Resources/AddProblemModal";
+import { platformColors, platformIcons } from "../../Constants";
+import { AddProblemModal, EditResourceModal } from "../../Components";
 import { ToastMsg } from "../../Utilities";
 
 // Importing APIs
@@ -35,6 +38,7 @@ const Resource = () => {
   const [showDelete, setShowDelete] = useState(false);
   const [selectedPlatform, setSelectedPlatform] = useState("all");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const getAllQuestionsOfResourceHandler = async () => {
     try {
@@ -70,30 +74,20 @@ const Resource = () => {
     fetchQuestions();
   }, [selectedDifficulty, selectedPlatform]);
 
-  useEffect(() => {
-    const foundResource = resources.find((r) => r.id.toString() === id);
-    setResource(foundResource);
-    setIsLoading(false);
-
-    // Mock Data - Initialize problems when resource is found
-    if (foundResource) {
-      const initialProblems = Array(foundResource.count)
-        .fill(null)
-        .map((_, idx) => ({
-          id: idx + 1,
-          title: `Problem ${idx + 1}`,
-          difficulty: ["easy", "medium", "hard"][Math.floor(Math.random() * 3)],
-          platform:
-            foundResource.platforms[
-              Math.floor(Math.random() * foundResource.platforms.length)
-            ],
-          link: "#",
-        }));
-      setProblems(initialProblems);
-    }
-  }, [id]);
-
   // ******** Resource's Question Handlers ********
+
+  const handleEditResource = (updatedData) => {
+    console.log("Updating resource:", {
+      resourceId: id,
+      ...updatedData,
+    });
+    // Add your API call here
+  };
+
+  const handleDeleteResource = () => {
+    console.log("Deleting resource:", id);
+    // Add your API call here
+  };
 
   // Deleting a question from a resource
   const handleDelete = async (problemId) => {
@@ -148,17 +142,34 @@ const Resource = () => {
   // Loading state check
   if (isLoading) {
     return (
-      <div className="min-h-screen p-6 flex items-center justify-center">
-        <FaSpinner className="animate-spin inline-block" />
+      <div className="p-6 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <FaSpinner className="animate-spin text-4xl text-gfgsc-green" />
+          <p className="text-gray-600">Loading resource...</p>
+        </div>
       </div>
     );
   }
 
-  // Resource Not found state check
+  // Resource Not Found State
   if (!resource) {
     return (
-      <div className="min-h-screen p-6 flex items-center justify-center">
-        <div className="text-gray-500">Resource not found</div>
+      <div className=" p-6 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            Resource not found
+          </h2>
+          <p className="text-gray-600 mb-4">
+            {`The resource you're looking for doesn't exist.`}
+          </p>
+          <button
+            onClick={() => window.history.back()}
+            className="inline-flex items-center px-4 py-2 bg-gfgsc-green text-white rounded-lg hover:bg-emerald-600 transition-colors"
+          >
+            <FaArrowLeft className="mr-2" />
+            Go Back
+          </button>
+        </div>
       </div>
     );
   }
@@ -167,68 +178,107 @@ const Resource = () => {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen p-6"
+      className="p-6"
     >
       {/* Breadcrumb */}
-      <div className="mx-auto mb-4">
-        <div className="flex items-center text-sm text-gray-500">
-          <FaChevronRight className="mx-2" />
-          <span className="text-gfgsc-green font-medium">{resource.title}</span>
+      <div className="mx-auto mb-6">
+        <div className="flex items-center text-sm">
+          <button
+            onClick={() => window.history.back()}
+            className="text-gray-600 hover:text-gfgsc-green transition-colors flex items-center justify-center"
+          >
+            <BiChevronLeft className="mr-2" />
+            Back to Resources
+          </button>
         </div>
       </div>
 
       {/* Hero Section */}
-      <div className="max-w-6xl mx-auto mb-8">
-        <div className="bg-white rounded-2xl p-8 shadow-sm">
+      <div className=" mx-auto mb-8">
+        <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
           <div className="flex items-start justify-between">
             <div className="flex-1">
-              <div className="flex items-center space-x-3 mb-4">
-                <div className="flex space-x-2">
-                  {resource.platforms.map((platform) => {
-                    const PlatformIcon = platformIcons[platform];
-                    return (
-                      <PlatformIcon
-                        key={platform}
-                        className="text-4xl text-gfgsc-green"
-                      />
-                    );
-                  })}
-                </div>
+              <div className="flex flex-wrap gap-2 mb-4">
+                {resource.platforms.map((platform) => {
+                  const PlatformIcon = platformIcons[platform];
+                  const color =
+                    platformColors[platform.toLowerCase()] || "#6B7280";
+
+                  return (
+                    <div
+                      key={platform}
+                      className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium duration-200 hover:scale-105"
+                      style={{
+                        borderColor: color,
+                        color: color,
+                        borderWidth: "1px",
+                      }}
+                    >
+                      <PlatformIcon className="mr-1 text-sm" />
+                      {platform}
+                    </div>
+                  );
+                })}
               </div>
-              <h1 className="text-3xl font-bold text-gfg-black mb-2">
+
+              <h1 className="text-4xl font-bold text-gray-900 mb-4">
                 {resource.title}
               </h1>
-              <p className="text-gray-600 mb-4">{resource.description}</p>
-              <div className="flex items-center space-x-6 text-sm text-gray-500">
-                <div className="flex items-center">
-                  <FaCalendarAlt className="mr-2" />
-                  Last updated:{" "}
+              <p className="text-gray-600 text-lg mb-6 max-w-3xl">
+                {resource.description}
+              </p>
+
+              <div className="flex flex-wrap items-center gap-6 text-sm text-gray-500">
+                <div className="flex items-center px-4 py-2 bg-gray-50 rounded-lg">
+                  <FaCalendarAlt className="mr-2 text-gfgsc-green" />
+                  Updated{" "}
                   {new Date(resource.lastModifiedAt).toLocaleDateString()}
                 </div>
-                <div className="flex items-center">
-                  <FaListOl className="mr-2" />
+                <div className="flex items-center px-4 py-2 bg-gray-50 rounded-lg">
+                  <FaListOl className="mr-2 text-gfgsc-green" />
                   {resource.totalQuestions} Problems
                 </div>
               </div>
+            </div>
+
+            {/* quick actions div */}
+            <div className="flex items-center gap-2">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setIsEditModalOpen(true)}
+                className="p-3 rounded-lg bg-gray-50 hover:bg-gray-100 text-gray-600 transition-colors"
+              >
+                <FaPencilAlt />
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleDeleteResource}
+                className="p-3 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 transition-colors"
+              >
+                <FaTrash />
+              </motion.button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Problems Table */}
-      <div className="max-w-6xl mx-auto">
+      {/* Problems Section */}
+      <div className=" mx-auto">
         {/* Filters and Actions */}
-        <div className="bg-white rounded-2xl p-6 mb-6 shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex space-x-4">
-              <div className="flex space-x-2">
+        <div className="bg-white rounded-2xl p-6 mb-6 shadow-lg border border-gray-100">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="flex flex-wrap gap-4">
+              {/* Difficulty Filter */}
+              <div className="flex gap-2 bg-gray-50 p-1 rounded-lg">
                 {["all", "easy", "medium", "hard"].map((filter) => (
                   <button
                     key={filter}
                     onClick={() => setSelectedDifficulty(filter)}
-                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                    className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
                       selectedDifficulty === filter
-                        ? "bg-gfgsc-green text-white"
+                        ? "bg-gfgsc-green text-white shadow-md"
                         : "text-gray-600 hover:bg-gray-100"
                     }`}
                   >
@@ -236,139 +286,175 @@ const Resource = () => {
                   </button>
                 ))}
               </div>
-              <div className="border-l border-gray-200 pl-4 flex space-x-2">
+
+              {/* Platform Filter */}
+              <div className="flex flex-wrap gap-2">
                 <button
                   onClick={() => setSelectedPlatform("all")}
-                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
                     selectedPlatform === "all"
-                      ? "bg-gfgsc-green text-white"
-                      : "text-gray-600 hover:bg-gray-100"
+                      ? "bg-gfgsc-green text-white shadow-md"
+                      : "bg-gray-50 text-gray-600 hover:bg-gray-100"
                   }`}
                 >
                   All Platforms
                 </button>
                 {resource.platforms.map((platform) => {
                   const PlatformIcon = platformIcons[platform];
+                  const colors = platformColors[platform.toLowerCase()] || {
+                    bg: "#6B7280",
+                    text: "white",
+                  };
+
                   return (
                     <button
                       key={platform}
                       onClick={() => setSelectedPlatform(platform)}
-                      className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2 ${
+                      style={
                         selectedPlatform === platform
-                          ? "bg-gfgsc-green text-white"
-                          : "text-gray-600 hover:bg-gray-100"
-                      }`}
+                          ? { backgroundColor: colors.bg, color: colors.text }
+                          : {}
+                      }
+                      className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center gap-2
+                        ${
+                          selectedPlatform === platform
+                            ? "shadow-md"
+                            : "bg-gray-50 text-gray-600 hover:bg-gray-100"
+                        }`}
                     >
-                      <PlatformIcon className="h-5 w-5" />
-                      <span>
-                        {platform.charAt(0).toUpperCase() + platform.slice(1)}
-                      </span>
+                      <PlatformIcon className="text-sm" />
+                      {platform}
                     </button>
                   );
                 })}
               </div>
             </div>
-            <div className="flex items-center space-x-4">
-              <button
+
+            <div className="flex items-center gap-2">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => setShowDelete(!showDelete)}
-                className={`p-2 rounded-lg transition-colors ${
+                className={`p-3 rounded-lg transition-colors ${
                   showDelete
                     ? "bg-red-100 text-red-600"
-                    : "hover:bg-gray-100 text-gray-600"
+                    : "bg-gray-50 hover:bg-gray-100 text-gray-600"
                 }`}
               >
                 <FaTrash />
-              </button>
-              <button
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => setIsAddModalOpen(true)}
-                className="p-2 rounded-lg hover:bg-gray-100 text-gray-600"
+                className="flex items-center gap-2 px-4 py-2 bg-gfgsc-green text-white rounded-lg hover:bg-emerald-600 transition-colors shadow-lg shadow-gfgsc-green/20"
               >
                 <FaPlus />
-              </button>
+                Add Problem
+              </motion.button>
             </div>
           </div>
         </div>
 
         {/* Problems Table */}
-        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-gray-50 border-b border-gray-100">
-                <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">
-                  #
-                </th>
-                <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">
-                  Problem
-                </th>
-                <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">
-                  Difficulty
-                </th>
-                <th className="px-6 py-4 text-left text-sm font-medium text-gray-500">
-                  Platform
-                </th>
-                {showDelete && (
-                  <th className="px-6 py-4 text-right text-sm font-medium text-gray-500">
-                    Action
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="bg-gray-50">
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
+                    #
                   </th>
-                )}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {problems.map((problem, idx) => {
-                const PlatformIcon = platformIcons[problem.platform];
-                return (
-                  <motion.tr
-                    key={problem.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.05 }}
-                    className="hover:bg-gray-50 transition-colors"
-                  >
-                    <td className="px-6 py-4 text-gray-500">{idx + 1}</td>
-                    <td className="px-6 py-4">
-                      <span className="font-medium text-gray-900">
-                        {problem.questionTitle}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          problem.difficulty === "EASY"
-                            ? "bg-green-100 text-green-800"
-                            : problem.difficulty === "MEDIUM"
-                            ? "bg-yellow-100 text-yellow-800"
-                            : "bg-red-100 text-red-800"
-                        }`}
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
+                    Problem
+                  </th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
+                    Difficulty
+                  </th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-600">
+                    Platform
+                  </th>
+                  {showDelete && (
+                    <th className="px-6 py-4 text-right text-sm font-semibold text-gray-600">
+                      Action
+                    </th>
+                  )}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                <AnimatePresence>
+                  {problems.map((problem, idx) => {
+                    const PlatformIcon = platformIcons[problem.platform];
+                    const color =
+                      platformColors[problem.platform.toLowerCase()] ||
+                      "#6B7280";
+
+                    return (
+                      <motion.tr
+                        key={problem.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.2, delay: idx * 0.05 }}
+                        className="hover:bg-gray-50 transition-colors group"
                       >
-                        {problem.difficulty.charAt(0).toUpperCase() +
-                          problem.difficulty.slice(1)}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <a
-                        href={problem.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center text-gray-600 hover:text-gfgsc-green"
-                      >
-                        <PlatformIcon className="h-5 w-5" />
-                      </a>
-                    </td>
-                    {showDelete && (
-                      <td className="px-6 py-4 text-right">
-                        <button
-                          onClick={() => handleDelete(problem.id)}
-                          className="text-red-500 hover:text-red-600"
-                        >
-                          <FaTrash />
-                        </button>
-                      </td>
-                    )}
-                  </motion.tr>
-                );
-              })}
-            </tbody>
-          </table>
+                        <td className="px-6 py-4 text-gray-500">{idx + 1}</td>
+                        <td className="px-6 py-4">
+                          <a
+                            href={problem.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-medium text-gray-900 hover:text-gfgsc-green transition-colors flex items-center gap-2 group"
+                          >
+                            {problem.questionTitle}
+                            <FaExternalLinkAlt className="opacity-0 group-hover:opacity-100 transition-opacity text-sm" />
+                          </a>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span
+                            className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
+                              problem.difficulty === "EASY"
+                                ? "bg-green-100 text-green-800"
+                                : problem.difficulty === "MEDIUM"
+                                ? "bg-yellow-100 text-yellow-800"
+                                : "bg-red-100 text-red-800"
+                            }`}
+                          >
+                            {problem.difficulty}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div
+                            className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium duration-200 hover:scale-105"
+                            style={{
+                              borderColor: color,
+                              color: color,
+                              borderWidth: "1px",
+                            }}
+                          >
+                            <PlatformIcon className="mr-1 text-sm" />
+                            {problem.platform}
+                          </div>
+                        </td>
+                        {showDelete && (
+                          <td className="px-6 py-4 text-right">
+                            <motion.button
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                              onClick={() => handleDelete(problem.id)}
+                              className="text-red-500 hover:text-red-600 p-2"
+                            >
+                              <FaTrash />
+                            </motion.button>
+                          </td>
+                        )}
+                      </motion.tr>
+                    );
+                  })}
+                </AnimatePresence>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
@@ -377,6 +463,13 @@ const Resource = () => {
         onClose={() => setIsAddModalOpen(false)}
         onAdd={handleAdd}
         platforms={resource.platforms}
+      />
+
+      <EditResourceModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        resource={resource}
+        onEdit={handleEditResource}
       />
     </motion.div>
   );

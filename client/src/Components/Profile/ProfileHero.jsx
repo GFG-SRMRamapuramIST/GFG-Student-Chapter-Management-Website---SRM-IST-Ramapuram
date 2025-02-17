@@ -21,10 +21,10 @@ const ProfileHero = ({ userProfile }) => {
               <h1 className="text-2xl font-semibold tracking-tight space-x-2">
                 <span>{userProfile.name}</span>
                 {/* User tag */}
-                <span className="text-sm text-emerald-100 bg-emerald-500 px-2 py-1 rounded-full">
+                <span className="text-sm text-emerald-100 bg-gfgsc-green px-2 py-1 rounded-full">
                   {userProfile.role}
                 </span>
-                <span className="text-sm text-emerald-100 bg-emerald-500 px-2 py-1 rounded-full">
+                <span className="text-sm text-emerald-100 bg-gfgsc-green px-2 py-1 rounded-full">
                   {userProfile.academic_year}
                 </span>
               </h1>

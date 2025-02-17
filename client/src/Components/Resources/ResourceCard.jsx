@@ -2,7 +2,8 @@ import { FaBookOpen, FaCalendarAlt, FaChevronRight } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
-import { platformIcons } from "../../Constants";
+// Constants
+import { platformColors, platformIcons } from "../../Constants";
 
 const ResourceCard = ({ resource }) => {
   const usedPlatforms = resource.platforms || [];
@@ -10,22 +11,28 @@ const ResourceCard = ({ resource }) => {
   return (
     <motion.div
       layout
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
       whileHover={{ y: -5 }}
-      className="group bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden"
+      className="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100"
     >
       <Link to={`/resources/${resource.id}`}>
         <div className="p-6">
-          <div className="flex items-center gap-2 mb-4">
+          {/* Platform Tags */}
+          <div className="flex flex-wrap gap-2 mb-4">
             {usedPlatforms.map((platform) => {
               const PlatformIcon = platformIcons[platform];
+              const color = platformColors[platform.toLowerCase()] || "#6B7280";
+              
               return PlatformIcon ? (
                 <div
                   key={platform}
-                  className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center group-hover:bg-gray-200 transition-colors"
+                  className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium duration-200 hover:scale-105"
+                  style={{ borderColor: color, color: color, borderWidth: '1px' }}
                 >
-                  <PlatformIcon className="text-lg text-gfgsc-green" />
+                  <PlatformIcon className="mr-1 text-sm" />
+                  {platform}
                 </div>
               ) : null;
             })}
@@ -35,27 +42,28 @@ const ResourceCard = ({ resource }) => {
             {resource.title}
           </h3>
 
-          <p className="text-gray-600 mb-4 line-clamp-2">
+          <p className="text-gray-600 mb-6 line-clamp-2 text-sm">
             {resource.description}
           </p>
 
-          <div className="flex items-center justify-between text-sm text-gray-500">
+          <div className="flex items-center justify-between text-sm text-gray-500 border-t pt-4">
             <div className="flex items-center">
-              <FaBookOpen className="mr-2" />
-              {resource.count} Problems
+              <FaBookOpen className="mr-2 text-gfgsc-green" />
+              <span className="font-medium">{resource.count}</span>
+              <span className="ml-1">Problems</span>
             </div>
             <div className="flex items-center">
-              <FaCalendarAlt className="mr-2" />
+              <FaCalendarAlt className="mr-2 text-gfgsc-green" />
               {new Date(resource.lastUpdated).toLocaleDateString()}
             </div>
           </div>
 
           <div className="mt-4 flex justify-end">
             <motion.div
-              className="h-8 w-8 rounded-full bg-gfgsc-green/10 flex items-center justify-center"
+              className="h-8 w-8 rounded-full bg-emerald-50 flex items-center justify-center"
               whileHover={{
                 scale: 1.1,
-                backgroundColor: "rgb(0 137 94 / 0.2)",
+                backgroundColor: "rgb(59 130 246 / 0.2)",
               }}
             >
               <FaChevronRight className="text-gfgsc-green" />

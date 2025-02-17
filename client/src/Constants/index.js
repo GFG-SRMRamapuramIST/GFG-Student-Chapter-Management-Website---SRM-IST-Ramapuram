@@ -5,8 +5,18 @@ export const platformIcons = {
   LeetCode: SiLeetcode,
   CodeChef: SiCodechef,
   Codeforces: SiCodeforces,
+  leetcode: SiLeetcode,
+  codechef: SiCodechef,
+  codeforces: SiCodeforces,
   gmeet: SiGoogle,
   others: CgCodeSlash,
+};
+
+export const platformColors = {
+  leetcode: "#FFA116",
+  hackerrank: "#00EA64",
+  codechef: "#5B4638",
+  codeforces: "#1F8ACB",
 };
 
 // Sample resources data
