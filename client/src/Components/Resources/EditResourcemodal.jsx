@@ -1,15 +1,30 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+
+// Importing Icons
+import { FaSpinner } from "react-icons/fa";
+
 import { RotatingCloseButton } from "../../Utilities";
 
 const EditResourceModal = ({ isOpen, onClose, resource, onEdit }) => {
+  const [loading, setLoading] = useState(false);
+
   const [title, setTitle] = useState(resource?.title || "");
   const [description, setDescription] = useState(resource?.description || "");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onEdit({ title, description });
-    onClose();
+    try {
+      setLoading(true);
+      await onEdit({ title, description });
+    } catch (error) {
+      console.log("Error in creating resource: ", error);
+    } finally {
+      setLoading(false);
+      setTitle(resource?.title);
+      setDescription(resource?.description);
+      onClose();
+    }
   };
 
   return (
@@ -93,6 +108,9 @@ const EditResourceModal = ({ isOpen, onClose, resource, onEdit }) => {
                   type="submit"
                   className="px-4 py-2 bg-gfgsc-green text-white rounded-lg hover:bg-emerald-600 transition-colors"
                 >
+                  {loading ? (
+                    <FaSpinner className="animate-spin inline-block" />
+                  ) : null}{" "}
                   Save Changes
                 </button>
               </div>

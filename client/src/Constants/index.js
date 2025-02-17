@@ -1,10 +1,17 @@
 import { CgCodeSlash } from "react-icons/cg";
-import { SiCodechef, SiCodeforces, SiGoogle, SiLeetcode } from "react-icons/si";
+import {
+  SiCodechef,
+  SiCodeforces,
+  SiGoogle,
+  SiLeetcode,
+  SiGeeksforgeeks,
+} from "react-icons/si";
 
 export const platformIcons = {
   LeetCode: SiLeetcode,
   CodeChef: SiCodechef,
   Codeforces: SiCodeforces,
+  GeeksforGeeks: SiGeeksforgeeks,
   leetcode: SiLeetcode,
   codechef: SiCodechef,
   codeforces: SiCodeforces,
@@ -17,6 +24,7 @@ export const platformColors = {
   hackerrank: "#00EA64",
   codechef: "#5B4638",
   codeforces: "#1F8ACB",
+  geeksforgeeks: "#308d46",
 };
 
 // Sample resources data

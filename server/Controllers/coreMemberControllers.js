@@ -571,7 +571,12 @@ exports.addQuestionToResource = async (req, res) => {
     }
 
     // Validate platform (case-insensitive) & normalize it
-    const validPlatforms = ["LeetCode", "CodeChef", "Codeforces"];
+    const validPlatforms = [
+      "LeetCode",
+      "CodeChef",
+      "Codeforces",
+      "GeeksforGeeks",
+    ];
     const normalizedPlatform = validPlatforms.find(
       (p) => p.toUpperCase() === platform.toUpperCase()
     );

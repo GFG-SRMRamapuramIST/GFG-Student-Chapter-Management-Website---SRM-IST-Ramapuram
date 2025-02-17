@@ -6,7 +6,7 @@ import { FaSpinner } from "react-icons/fa";
 const AddProblemModal = ({ isOpen, onClose, onAdd }) => {
   const [loading, setLoading] = useState(false);
 
-  const platforms = ["LeetCode", "CodeChef", "Codeforces"];
+  const platforms = ["LeetCode", "CodeChef", "Codeforces", "GeeksforGeeks"];
   const [newProblem, setNewProblem] = useState({
     title: "",
     difficulty: "EASY",

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 
 // Importing Icons
@@ -23,11 +23,14 @@ import { ToastMsg } from "../../Utilities";
 import { CoreMemberServices } from "../../Services";
 
 const Resource = () => {
+  const navigate = useNavigate();
   const { id } = useParams();
   const {
     fetchAllQuestionsOfResourceFunction,
     addQuestionToResourceFunction,
     deleteQuestionFromResourceFunction,
+    editResourceFunction,
+    deleteResourceFunction,
   } = CoreMemberServices();
 
   const [isLoading, setIsLoading] = useState(true);
@@ -76,17 +79,44 @@ const Resource = () => {
 
   // ******** Resource's Question Handlers ********
 
-  const handleEditResource = (updatedData) => {
-    console.log("Updating resource:", {
-      resourceId: id,
-      ...updatedData,
-    });
-    // Add your API call here
+  // Editing the title and description of a resource
+  const handleEditResource = async (updatedData) => {
+    try {
+      const response = await editResourceFunction({
+        resourceId: id,
+        title: updatedData.title,
+        description: updatedData.description,
+      });
+      //console.log(response)
+      if (response.status == 200) {
+        ToastMsg(response.data.message, "success");
+      } else {
+        console.log(response.response.data.message);
+        ToastMsg(response.response.data.message, "error");
+      }
+    } catch (error) {
+      ToastMsg("Internal Server Error!", "error");
+      console.error("Edit a Resource Error: ", error.message);
+    } finally {
+      getAllQuestionsOfResourceHandler();
+    }
   };
 
-  const handleDeleteResource = () => {
-    console.log("Deleting resource:", id);
-    // Add your API call here
+  // Deleting the complete resource
+  const handleDeleteResource = async () => {
+    try {
+      const response = await deleteResourceFunction({ resourceId: id });
+      //console.log(response)
+      if (response.status == 200) {
+        navigate("/resources");
+      } else {
+        ToastMsg(response.response.data.message, "error");
+        console.log(response.response.data.message);
+      }
+    } catch (error) {
+      ToastMsg("Internal Server Error!", "error");
+      console.error("Delete Resource Error: ", error.message);
+    }
   };
 
   // Deleting a question from a resource
@@ -112,7 +142,7 @@ const Resource = () => {
     }
   };
 
-  // Adding a question to a resource
+  // Adding a new question to a resource
   const handleAdd = async (newProblem) => {
     //console.log("Adding new problem:", newProblem);
     try {

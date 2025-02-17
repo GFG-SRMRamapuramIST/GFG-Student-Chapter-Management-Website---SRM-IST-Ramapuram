@@ -13,7 +13,7 @@ const questionSchema = new mongoose.Schema({
   },
   platform: {
     type: String,
-    enum: ["LeetCode", "CodeChef", "Codeforces"],
+    enum: ["LeetCode", "CodeChef", "Codeforces", "GeeksforGeeks"],
     required: true,
   },
   link: {
