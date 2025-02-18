@@ -19,6 +19,7 @@ import {
   RiInformationLine,
 } from "react-icons/ri";
 import { platformIcons } from "../../Constants";
+import { RotatingCloseButton } from "../../Utilities";
 
 // ============ Constants ============
 const ATTENDEE_OPTIONS = ["ALL", "CORE"];
@@ -394,12 +395,7 @@ const EventModal = ({ selectedDate, events, onClose }) => {
               })}
             </h3>
           </div>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
-          >
-            <RiCloseLine className="w-6 h-6 text-gray-600" />
-          </button>
+          <RotatingCloseButton onClick={onClose} />
         </div>
 
         <div className="space-y-6">
