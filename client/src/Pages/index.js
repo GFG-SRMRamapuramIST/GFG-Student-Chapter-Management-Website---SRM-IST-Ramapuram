@@ -1,4 +1,5 @@
 import LandingPage from "./LandingPage";
+import AboutUs from "./AboutUs";
 import AdminPanel from "./AdminPanel";
 
 // Auth Routes
@@ -29,6 +30,7 @@ import NotFound from "./Errors/NotFound";
 
 export { 
   LandingPage,
+  AboutUs,
   AdminPanel,
   Dashboard,
   Login,

@@ -19,6 +19,7 @@ import {
   AllResources,
   Resource,
   ReportAnIssue,
+  AboutUs,
 } from "./Pages";
 import { AuthLayout, RootLayout, AppLayout, ResourceLayout } from "./Layouts";
 
@@ -74,6 +75,7 @@ const router = createBrowserRouter([
     element: <RootLayout />,
     children: [
       { path: "/", element: <LandingPage /> },
+      { path: "/about", element: <AboutUs /> },
       authRoutes,
       appRoutes,
       { path: "*", element: <NotFound /> },

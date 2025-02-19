@@ -38,14 +38,16 @@ const RootLayout = () => {
   }, [userToken]);
   // ************ Verify User Token Ends Here ************
 
+  // Public Routes
   const isAuthRoute = pathname.startsWith("/auth");
   const isUserManual = pathname === "/support/user-manual";
   const isSupportRoute = pathname.startsWith("/support") && !isUserManual;
-  const isLandingPage = pathname === "/";
-  const isProtectedRoute = !isAuthRoute && !isLandingPage && !isSupportRoute;
+  const isLandingRoutes = pathname === "/" || pathname=== "/about";
+
+  const isProtectedRoute = !isAuthRoute && !isLandingRoutes && !isSupportRoute;
 
   //Redirect authenticated users away from public routes
-  if (userToken && tokenVerified && (isAuthRoute || isLandingPage)) {
+  if (userToken && tokenVerified && (isAuthRoute || isLandingRoutes)) {
     return <Navigate to="/dashboard" />;
   }
 
