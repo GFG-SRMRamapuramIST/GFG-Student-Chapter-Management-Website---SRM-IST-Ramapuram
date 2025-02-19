@@ -82,15 +82,23 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
-  solvedQuestionsCount: {
+  totalQuestionSolved: {
     type: Number,
     default: 0,
     min: 0, // Ensures non-negative values
   },
-  totalContestsParticipated: {
-    type: Number,
-    default: 0,
-    min: 0, // Ensures non-negative values
+  platforms: {
+    codechef: {
+      rating: { type: Number, default: 0 },
+      countryRank: { type: Number, default: 0 },
+      highestRating: { type: Number, default: 0 },
+    },
+    leetcode: {
+      // Add details later
+    },
+    codeforces: {
+      // Add details later
+    },
   },
   subscribed: {
     type: Boolean,
