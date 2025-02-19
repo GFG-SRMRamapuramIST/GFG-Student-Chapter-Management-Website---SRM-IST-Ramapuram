@@ -9,7 +9,6 @@ import {
   RiAddLine,
 } from "react-icons/ri";
 import { IoPeople } from "react-icons/io5";
-import { FaClosedCaptioning } from "react-icons/fa";
 
 import EventModal from "./EventModal";
 import EventCreationModal from "./EventCreationModal";

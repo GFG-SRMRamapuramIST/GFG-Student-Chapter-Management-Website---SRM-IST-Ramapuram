@@ -29,9 +29,12 @@ import AboutSection from "./Landing/AboutSection";
 export { HeroSection, AboutSection };
 
 // Dashboard Components
-import DashboardHero from "./Dashboard/DashboardHero";
+import DashboardHeader from "./Dashboard/DashboardHeader";
+import StatsSection from "./Dashboard/StatsSection";
+import NotificationsSection from "./Dashboard/NotificationsSection";
+import LeaderboardSection from "./Dashboard/LeaderboardSection";
 
-export { DashboardHero };
+export { DashboardHeader, StatsSection, NotificationsSection, LeaderboardSection };
 
 // Team Components
 import TeamHero from "./Teams/TeamsHero";
