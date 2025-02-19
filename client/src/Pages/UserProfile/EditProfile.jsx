@@ -159,6 +159,11 @@ const EditProfile = () => {
         return;
       }
 
+      if (field === "bio" && localValue.length > 100) {
+        ToastMsg("Bio cannot exceed 100 characters!", "error");
+        return;
+      }
+
       setIsEditing(false);
       setLoading(true);
 

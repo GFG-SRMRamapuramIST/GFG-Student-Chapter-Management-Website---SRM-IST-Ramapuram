@@ -26,9 +26,8 @@ import { IoLogOutOutline } from "react-icons/io5";
 import { logo } from "../../Assets";
 
 import { removeUserToken } from "../../Actions";
-import { MdAdminPanelSettings } from "react-icons/md";
 
-const Navbar = () => {
+const Navbar = ({ isLoggedIn }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -36,8 +35,8 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const location = useLocation();
-  const isLoggedIn =
-    location.pathname !== "/" && !location.pathname.startsWith("/auth");
+  // const isLoggedIn =
+  //   location.pathname !== "/" && !location.pathname.startsWith("/auth");
 
   useEffect(() => {
     const handleScroll = () => {

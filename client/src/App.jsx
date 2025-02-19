@@ -62,9 +62,9 @@ const appRoutes = {
         { path: "terms", element: <TermsAndConditions /> },
         // { path: "privacy", element: <PrivacyPolicy /> },
         { path: "report-issue", element: <ReportAnIssue /> },
+        { path: "user-manual", element: <UserManual /> },
       ],
     },
-    { path: "user-manual", element: <UserManual /> },
   ],
 };
 

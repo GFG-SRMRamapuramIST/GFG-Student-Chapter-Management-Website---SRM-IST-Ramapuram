@@ -22,11 +22,19 @@ import { ToastMsg } from "../../Utilities";
 
 // Importing APIs
 import { AuthServices } from "../../Services";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 const steps = [
   {
     title: "Basic Information",
-    fields: ["profilePicture", "name", "bio", "email", "password", "confirmPassword"],
+    fields: [
+      "profilePicture",
+      "name",
+      "bio",
+      "email",
+      "password",
+      "confirmPassword",
+    ],
   },
   {
     title: "Contact Details",
@@ -90,6 +98,10 @@ const SignUp = () => {
     },
   });
 
+  // Password Hidden States
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   // Declaring/defining all our input fields
   const fieldDetails = {
     name: {
@@ -104,8 +116,8 @@ const SignUp = () => {
         required: "Bio is required",
         maxLength: {
           value: 100,
-          message: "Bio must be less than 100 characters"
-        }
+          message: "Bio must be less than 100 characters",
+        },
       },
     },
     email: {
@@ -141,7 +153,13 @@ const SignUp = () => {
     phoneNumber: {
       icon: <MdPhone />,
       placeholder: "Phone Number",
-      validation: { required: "Phone number is required" },
+      validation: {
+        required: "Phone number is required",
+        pattern: {
+          value: /^[6-9]\d{9}$/,
+          message: "Enter valid 10-digit phone number"
+        }
+      },
     },
     registrationNumber: {
       icon: <MdCode />,
@@ -209,12 +227,51 @@ const SignUp = () => {
       },
     },
   };
+
   // Function to render our fields
   const renderField = (name) => {
     const { icon, placeholder, validation } = fieldDetails[name];
 
     if (name === "profilePicture") {
       return renderProfilePictureField();
+    }
+
+    if (name === "phoneNumber") {
+      return (
+        <div className="space-y-2">
+          <div className="relative flex items-center">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+              {icon}
+            </div>
+            <div className="absolute inset-y-0 left-8 pl-3 flex items-center pointer-events-none text-gray-700 font-medium">
+              +91
+            </div>
+            <input
+              type="text"
+              maxLength={10}
+              {...register(name, validation)}
+              className="w-full pl-20 pr-4 py-2.5 rounded-lg bg-gray-50 border border-gray-200 focus:border-gfgsc-green focus:ring-2 focus:ring-gfgsc-green-200 transition-all duration-200"
+              placeholder="Enter 10 digit number"
+              onKeyPress={(e) => {
+                // Allow only numbers
+                if (!/[0-9]/.test(e.key)) {
+                  e.preventDefault();
+                }
+              }}
+            />
+          </div>
+          {errors[name] && (
+            <div className="space-y-1">
+              <p className="text-red-500 text-xs">{errors[name].message}</p>
+              <p className="text-gray-500 text-xs">
+                • Number should be 10 digits without spaces or country code
+                <br />
+                • Should start with 6, 7, 8, or 9
+              </p>
+            </div>
+          )}
+        </div>
+      );
     }
 
     if (name === "otp") {
@@ -256,6 +313,51 @@ const SignUp = () => {
               </option>
             ))}
           </select>
+          {errors[name] && (
+            <p className="text-red-500 text-xs mt-1">{errors[name].message}</p>
+          )}
+        </div>
+      );
+    }
+
+    // Special handling for password fields
+    if (name.toLowerCase().includes('password')) {
+      return (
+        <div className="space-y-2">
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+              {icon}
+            </div>
+            <input
+              type={
+                (name === 'password' && showPassword) || 
+                (name === 'confirmPassword' && showConfirmPassword) 
+                  ? 'text' 
+                  : 'password'
+              }
+              {...register(name, validation)}
+              className="w-full pl-10 pr-12 py-2.5 rounded-lg bg-gray-50 border border-gray-200 focus:border-gfgsc-green focus:ring-2 focus:ring-gfgsc-green-200 transition-all duration-200"
+              placeholder={placeholder}
+            />
+            <button
+              type="button"
+              className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+              onClick={() => {
+                if (name === 'password') {
+                  setShowPassword(!showPassword);
+                } else if (name === 'confirmPassword') {
+                  setShowConfirmPassword(!showConfirmPassword);
+                }
+              }}
+            >
+              {(name === 'password' && showPassword) || 
+               (name === 'confirmPassword' && showConfirmPassword) ? (
+                <FiEyeOff className="w-5 h-5" />
+              ) : (
+                <FiEye className="w-5 h-5" />
+              )}
+            </button>
+          </div>
           {errors[name] && (
             <p className="text-red-500 text-xs mt-1">{errors[name].message}</p>
           )}

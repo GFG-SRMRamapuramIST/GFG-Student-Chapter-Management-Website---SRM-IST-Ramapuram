@@ -39,7 +39,8 @@ const RootLayout = () => {
   // ************ Verify User Token Ends Here ************
 
   const isAuthRoute = pathname.startsWith("/auth");
-  const isSupportRoute = pathname.startsWith("/support");
+  const isUserManual = pathname === "/support/user-manual";
+  const isSupportRoute = pathname.startsWith("/support") && !isUserManual;
   const isLandingPage = pathname === "/";
   const isProtectedRoute = !isAuthRoute && !isLandingPage && !isSupportRoute;
 
@@ -64,7 +65,7 @@ const RootLayout = () => {
 
       <div className="relative">
         <ScrollToTop />
-        <Navbar />
+        <Navbar isLoggedIn={tokenVerified}/>
         <div className="relative min-h-[50vh]">
           <Outlet />
         </div>
