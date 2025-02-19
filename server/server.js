@@ -7,14 +7,14 @@ const cors = require("cors");
 
 const connectDB = require("./DB/Connection");
 
-// Importing scheduled tasks
+//* Importing scheduled tasks
 const {
   contestScheduler,
   meetingScheduler,
   backUpScheduler,
   resetDataScheduler,
   fetchCodeChefUserProfileDataScheduler,
-  teamAllocationScheduler,
+  achievementScheduler,
 } = require("./Scheduler");
 
 const {
@@ -30,7 +30,7 @@ app.set("trust proxy", 1);
 app.use(express.json());
 app.use(cors());
 
-// Routers
+//* Routers
 app.get("/", (req, res) => {
   res.status(200).json({
     message:
@@ -42,7 +42,7 @@ app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/core-member", coreMemberRouter);
 app.use("/api/v1/user", userRouter);
 
-// Connecting to the database and starting the server
+//* Connecting to the database and starting the server
 connectDB().then((isConnected) => {
   if (isConnected) {
     app.listen(PORT, () => {

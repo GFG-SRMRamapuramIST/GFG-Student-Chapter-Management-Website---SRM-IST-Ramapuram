@@ -2,8 +2,8 @@ const contestScheduler = require("./contestScheduler");
 const meetingScheduler = require("./meetingScheduler");
 const backUpScheduler = require("./backUpScheduler");
 const resetDataScheduler = require("./resetDataScheduler");
-const teamAllocationScheduler = require("./teamAllocationScheduler");
 const fetchCodeChefUserProfileDataScheduler = require("./fetchCodeChefUserProfileDataScheduler");
+const achievementScheduler = require("./achievementScheduler");
 
 module.exports = {
   contestScheduler,
@@ -11,5 +11,5 @@ module.exports = {
   backUpScheduler,
   resetDataScheduler,
   fetchCodeChefUserProfileDataScheduler,
-  teamAllocationScheduler,
+  achievementScheduler,
 };

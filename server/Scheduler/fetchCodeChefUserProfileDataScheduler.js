@@ -4,8 +4,9 @@ const chalk = require("chalk");
 
 const Users = require("../Models/userSchema");
 
-const { sendEmail } = require("../Utilities"); // Utility function to send emails
+const { sendEmail } = require("../Utilities");
 
+//! Not to reveal the email address of the admin and the codechef api url
 const ADMIN_EMAIL = "geeksforgeeks.srmistrmp@gmail.com";
 const CODECHEF_API_URL = "https://codechef-api-9jml.onrender.com/api/info/";
 
@@ -45,7 +46,7 @@ const updateCodechefDetails = async () => {
         } else {
           console.log(chalk.yellow(`No valid data for ${username}`));
 
-          // Send email notification to admin
+          //todo Send proper email notification to admin
           const subject = `CodeChef Data Not Found for ${username}`;
           const message = `
             <p>Dear Admin,</p>
@@ -74,7 +75,7 @@ const updateCodechefDetails = async () => {
       error.message
     );
 
-    // Notify admin if scheduler fails
+    //todo Notify admin if scheduler fails through proper email
     const subject = `Scheduler Failure Alert`;
     const message = `
       <p>Dear Admin,</p>
@@ -92,7 +93,7 @@ const updateCodechefDetails = async () => {
   console.log(chalk.bgGreen.bold("CodeChef data update completed."));
 };
 
-// Scheduler that runs every Sunday at 11:59 PM
+//* Scheduler that runs every Sunday at 11:59 PM
 cron.schedule("59 23 * * 0", updateCodechefDetails);
 
 console.log(

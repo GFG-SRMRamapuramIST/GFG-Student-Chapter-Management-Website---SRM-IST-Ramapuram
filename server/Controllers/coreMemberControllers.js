@@ -49,7 +49,7 @@ const verifyAndAuthorize = async (token, allowedRoles) => {
   return { status: 200, userId: authResult.userId };
 };
 
-/***************************** CONTEST APIs *******************************/
+//***************************** CONTEST APIs *******************************/
 //1. Create a contest API
 exports.createContest = async (req, res) => {
   try {
@@ -82,13 +82,13 @@ exports.createContest = async (req, res) => {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    // Validate platform
-    const allowedPlatforms = ["CodeChef", "Codeforces", "LeetCode"];
-    if (!allowedPlatforms.includes(platform)) {
+    // Validate platform (case-insensitive)
+    const allowedPlatforms = ["codechef", "codeforces", "leetcode"];
+    if (!allowedPlatforms.includes(platform.toLowerCase())) {
       return res.status(400).json({
-        message: `Invalid platform. Allowed values are: ${allowedPlatforms.join(
-          ", "
-        )}`,
+        message: `Invalid platform. Allowed values are: ${allowedPlatforms
+          .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
+          .join(", ")}`,
       });
     }
 
@@ -131,36 +131,25 @@ exports.createContest = async (req, res) => {
       });
     }
 
-    // Add the contest to the contests array for the given date
+    // Add the contest to the contests array for the given date (without participants)
     dailyContest.contests.push({
       contestName,
       contestLink,
       platform,
       startTime: contestStartDateTime,
       endTime: contestEndDateTime,
-      participants: [],
       createdBy: authResult.userId,
     });
 
     // Save the updated document
     await dailyContest.save();
 
-    // Find the ConstantValue document and increment totalContests by 1
-    await ConstantValue.findOneAndUpdate(
-      {}, // Match the first document (assuming there's only one document)
-      { $inc: { totalContests: 1 } }, // Increment totalContests by 1
-      { new: true, upsert: true } // Return the updated document, create if not exists
-    );
-
     return res.status(200).json({
       message: "Contest created successfully!",
       data: dailyContest,
     });
   } catch (error) {
-    console.error(
-      chalk.bgRed.bold.red("Error creating contest:"),
-      error.message
-    );
+    console.error("Error creating contest:", error.message);
     return res.status(500).json({
       message: "Internal Server Error",
       error: error.message,
@@ -175,33 +164,27 @@ exports.deleteContest = async (req, res) => {
     const { dateId, contestId } = req.body;
 
     // Use the helper function for authorization
-    const authResult = await verifyAndAuthorize(token, ["ADMIN", "COREMEMBER"]);
+    const authResult = await verifyAndAuthorize(token, ["ADMIN", "COREMEMBER", "VICEPRESIDENT", "PRESIDENT"]);
     if (authResult.status !== 200) {
-      return res
-        .status(authResult.status)
-        .json({ message: authResult.message });
+      return res.status(authResult.status).json({ message: authResult.message });
     }
 
     // Validate required fields
     if (!dateId || !contestId) {
-      return res
-        .status(400)
-        .json({ message: "Both dateId and contestId are required" });
+      return res.status(400).json({ message: "Both dateId and contestId are required" });
     }
 
     // Find the document by date ID
     const dailyContest = await DailyContests.findById(dateId);
     if (!dailyContest) {
-      return res
-        .status(404)
-        .json({ message: "No entry found for the given date ID" });
+      return res.status(404).json({ message: "No entry found for the given date ID" });
     }
 
     // Find the specific contest by ID
     const contest = dailyContest.contests.id(contestId);
     if (!contest) {
       return res.status(404).json({
-        message: "Contest not found for the given contest ID on given date",
+        message: "Contest not found for the given contest ID on the given date",
       });
     }
 
@@ -211,47 +194,28 @@ exports.deleteContest = async (req, res) => {
     // If the number of contests becomes 0, delete the date entry
     if (dailyContest.contests.length === 0) {
       await DailyContests.findByIdAndDelete(dateId);
-
-      // Find the ConstantValue document and increment totalContests by 1
-      await ConstantValue.findOneAndUpdate(
-        {}, // Match the first document (assuming there's only one document)
-        { $inc: { totalContests: -1 } }, // Increment totalContests by 1
-        { new: true, upsert: true } // Return the updated document, create if not exists
-      );
-
       return res.status(200).json({
-        message:
-          "Contest deleted successfully, and the date entry was removed as no contests remain.",
+        message: "Contest deleted successfully, and the date entry was removed as no contests remain.",
       });
     }
 
     // Save the updated document
     await dailyContest.save();
 
-    // Find the ConstantValue document and increment totalContests by 1
-    await ConstantValue.findOneAndUpdate(
-      {}, // Match the first document (assuming there's only one document)
-      { $inc: { totalContests: -1 } }, // Increment totalContests by 1
-      { new: true, upsert: true } // Return the updated document, create if not exists
-    );
-
     return res.status(200).json({
       message: "Contest deleted successfully!",
     });
   } catch (error) {
-    console.error(
-      chalk.bgRed.bold.red("Error deleting contest:"),
-      error.message
-    );
+    console.error("Error deleting contest:", error.message);
     return res.status(500).json({
       message: "Internal Server Error",
       error: error.message,
     });
   }
 };
-/**************************************************************************/
+//**************************************************************************/
 
-/***************************** NOTICE BOARD APIs **************************/
+//***************************** NOTICE BOARD APIs **************************/
 //4. Create a Meeting on Notice Board API
 exports.createNotice = async (req, res) => {
   try {
@@ -502,10 +466,9 @@ exports.deleteMoMLink = async (req, res) => {
     res.status(500).json({ message: "Internal server error." });
   }
 };
-/**************************************************************************/
+//*************************************************************************/
 
-/***************************Resource API ******************************** */
-
+//***************************Resource API ******************************** */
 //10. Create a resource API
 exports.createResource = async (req, res) => {
   try {
@@ -900,4 +863,4 @@ exports.fetchAllQuestionsOfResource = async (req, res) => {
       .json({ message: "Internal Server Error", error: error.message });
   }
 };
-/************************************************************************ */
+//************************************************************************ */

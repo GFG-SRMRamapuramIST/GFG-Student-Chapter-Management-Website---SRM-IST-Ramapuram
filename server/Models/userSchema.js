@@ -85,7 +85,20 @@ const userSchema = new mongoose.Schema({
   totalQuestionSolved: {
     type: Number,
     default: 0,
-    min: 0, // Ensures non-negative values
+    min: 0,
+  },
+  currentRank: {
+    type: Number,
+    default: null,
+  },
+  prevMonthData: {
+    totalQuestionsSolved: { type: Number, default: 0 },
+    prevRank: { type: Number, default: null },
+  },
+  achievement: {
+    gold: [{ month: Number, year: Number }],
+    silver: [{ month: Number, year: Number }],
+    bronze: [{ month: Number, year: Number }],
   },
   platforms: {
     codechef: {
@@ -130,9 +143,9 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-// Trigger team update whenever solvedQuestionsCount changes/modified
+// Trigger team update whenever totalQuestionSolved changes/modified
 userSchema.post("save", async function () {
-  if (this.isModified("solvedQuestionsCount") && this.teamId) {
+  if (this.isModified("totalQuestionSolved") && this.teamId) {
     const team = await Team.findById(this.teamId);
     if (team) {
       await team.updateTeamSolvedQuestions();
@@ -150,10 +163,7 @@ userSchema.methods.generateAuthtoken = async function () {
     await this.updateOne({ authToken: newToken });
     return newToken;
   } catch (error) {
-    console.error(
-      chalk.bgRed.bold.red("Error generating auth token:"),
-      error.message
-    );
+    console.error("Error generating auth token:", error.message);
     return null;
   }
 };
