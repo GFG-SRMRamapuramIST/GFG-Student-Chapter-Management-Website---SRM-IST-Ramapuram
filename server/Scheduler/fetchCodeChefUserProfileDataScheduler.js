@@ -2,7 +2,7 @@ const cron = require("node-cron");
 const axios = require("axios");
 const chalk = require("chalk");
 
-const Users = require("../Models/userSchema");
+const { Users } = require("../Models");
 
 const { sendEmail } = require("../Utilities");
 

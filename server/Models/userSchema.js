@@ -1,6 +1,5 @@
 require("dotenv").config();
 
-const chalk = require("chalk");
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");

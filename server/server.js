@@ -15,6 +15,7 @@ const {
   resetDataScheduler,
   fetchCodeChefUserProfileDataScheduler,
   achievementScheduler,
+  fetchCodeChefContestDataScheduler,
 } = require("./Scheduler");
 
 const {

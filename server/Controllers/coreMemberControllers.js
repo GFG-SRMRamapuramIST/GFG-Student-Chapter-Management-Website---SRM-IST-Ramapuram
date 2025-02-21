@@ -1,12 +1,10 @@
 const chalk = require("chalk");
 
 const { verifyAuthToken } = require("../Utilities");
-const {
-  DailyContests,
-  Notices,
-  ConstantValue,
-  Resources,
-} = require("../Models");
+
+// Importing required models and schedulers
+const { DailyContests, Notices, Resources } = require("../Models");
+const { fetchCodeChefContestDataScheduler } = require("../Scheduler");
 
 /*
 ************************** APIs **************************
@@ -82,13 +80,20 @@ exports.createContest = async (req, res) => {
       return res.status(400).json({ message: "All fields are required" });
     }
 
+    // Define allowed platforms as a dictionary
+    const platformMap = {
+      codechef: "CodeChef",
+      codeforces: "Codeforces",
+      leetcode: "LeetCode",
+    };
+
     // Validate platform (case-insensitive)
-    const allowedPlatforms = ["codechef", "codeforces", "leetcode"];
-    if (!allowedPlatforms.includes(platform.toLowerCase())) {
+    const lowerCasePlatform = platform.toLowerCase();
+    if (!platformMap[lowerCasePlatform]) {
       return res.status(400).json({
-        message: `Invalid platform. Allowed values are: ${allowedPlatforms
-          .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
-          .join(", ")}`,
+        message: `Invalid platform. Allowed values are: ${Object.values(
+          platformMap
+        ).join(", ")}`,
       });
     }
 
@@ -131,18 +136,28 @@ exports.createContest = async (req, res) => {
       });
     }
 
-    // Add the contest to the contests array for the given date (without participants)
-    dailyContest.contests.push({
+    // Add the contest to the contests array for the given date
+    const newContest = {
       contestName,
       contestLink,
-      platform,
+      platform: platformMap[lowerCasePlatform], // Store formatted platform name
       startTime: contestStartDateTime,
       endTime: contestEndDateTime,
       createdBy: authResult.userId,
-    });
+    };
+
+    dailyContest.contests.push(newContest);
 
     // Save the updated document
     await dailyContest.save();
+
+    // If the contest is for CodeChef, update the scheduler with contest name
+    if (platform.toLowerCase() === "codechef") {
+      fetchCodeChefContestDataScheduler.updateCodeChefScheduler(
+        contestEndDateTime,
+        contestName
+      );
+    }
 
     return res.status(200).json({
       message: "Contest created successfully!",
@@ -164,20 +179,31 @@ exports.deleteContest = async (req, res) => {
     const { dateId, contestId } = req.body;
 
     // Use the helper function for authorization
-    const authResult = await verifyAndAuthorize(token, ["ADMIN", "COREMEMBER", "VICEPRESIDENT", "PRESIDENT"]);
+    const authResult = await verifyAndAuthorize(token, [
+      "ADMIN",
+      "COREMEMBER",
+      "VICEPRESIDENT",
+      "PRESIDENT",
+    ]);
     if (authResult.status !== 200) {
-      return res.status(authResult.status).json({ message: authResult.message });
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
     }
 
     // Validate required fields
     if (!dateId || !contestId) {
-      return res.status(400).json({ message: "Both dateId and contestId are required" });
+      return res
+        .status(400)
+        .json({ message: "Both dateId and contestId are required" });
     }
 
     // Find the document by date ID
     const dailyContest = await DailyContests.findById(dateId);
     if (!dailyContest) {
-      return res.status(404).json({ message: "No entry found for the given date ID" });
+      return res
+        .status(404)
+        .json({ message: "No entry found for the given date ID" });
     }
 
     // Find the specific contest by ID
@@ -195,7 +221,8 @@ exports.deleteContest = async (req, res) => {
     if (dailyContest.contests.length === 0) {
       await DailyContests.findByIdAndDelete(dateId);
       return res.status(200).json({
-        message: "Contest deleted successfully, and the date entry was removed as no contests remain.",
+        message:
+          "Contest deleted successfully, and the date entry was removed as no contests remain.",
       });
     }
 
@@ -495,12 +522,10 @@ exports.createResource = async (req, res) => {
 
     await newResource.save();
 
-    return res
-      .status(200)
-      .json({
-        message: "Resource created successfully.",
-        resource: newResource,
-      });
+    return res.status(200).json({
+      message: "Resource created successfully.",
+      resource: newResource,
+    });
   } catch (error) {
     return res
       .status(500)
