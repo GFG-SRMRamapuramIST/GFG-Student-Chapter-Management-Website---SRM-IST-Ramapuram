@@ -8,7 +8,7 @@ const AuthBackground = ({ isRight }) => (
     initial={{ x: isRight ? "100vh" : "-100vh" }}
     animate={{ x: 0 }}
     transition={{ type: "spring", stiffness: 100, damping: 20 }}
-    className={`w-1/2 hidden lg:flex flex-col items-center justify-center bg-gradient-to-br from-gfg-green to-gfgsc-green p-12 text-white space-y-8 z-10`}
+    className={`w-1/2 hidden md:flex flex-col items-center justify-center bg-gradient-to-br from-gfg-green to-gfgsc-green p-12 text-white space-y-4 lg:space-y-8 z-10`}
   >
     <motion.div
       initial={{ scale: 0 }}

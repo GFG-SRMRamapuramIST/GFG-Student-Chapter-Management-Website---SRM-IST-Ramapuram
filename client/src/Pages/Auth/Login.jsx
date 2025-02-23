@@ -58,70 +58,78 @@ const Login = () => {
   // *********** Login Form Handle Ends here ***********
 
   return (
-    <div className="min-h-screen flex">
+    <div className="w-full flex flex-col md:flex-row">
+      {/* AuthBackground component on larger screens */}
       <AuthBackground isRight={true} />
 
+      {/* Login Form Section */}
       <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
-        className="flex-1 flex items-center justify-center p-8"
+        className="w-full md:w-1/2 flex items-center justify-center py-24 px-4 sm:px-6 md:px-8 lg:px-12"
       >
-        <div className="w-full max-w-md space-y-8">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold">Welcome Back!</h2>
-            <p className="mt-2 text-gray-600">Please sign in to continue</p>
+        <div className="w-full max-w-md space-y-6 md:space-y-8">
+          {/* Header Section */}
+          <div className="text-center px-4">
+            <h2 className="text-2xl sm:text-3xl font-bold">Welcome Back!</h2>
+            <p className="mt-2 text-sm sm:text-base text-gray-600">
+              Please sign in to continue
+            </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <InputField
-              icon={<FaEnvelope />}
-              placeholder="Email address"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-            />
+          {/* Form Section */}
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6 px-4">
+            {/* Input Fields */}
+            <div className="space-y-4">
+              <InputField
+                icon={<FaEnvelope className="text-gray-400" />}
+                placeholder="Email address"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full"
+              />
 
-            <InputField
-              icon={<FaLock />}
-              type="password"
-              placeholder="Password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-            />
+              <InputField
+                icon={<FaLock className="text-gray-400" />}
+                type="password"
+                placeholder="Password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                className="w-full"
+              />
+            </div>
 
-            <div className="flex items-center justify-end text-sm">
-              {/* <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  className="rounded border-gray-300 text-gfgsc-green focus:ring-gfgsc-green"
-                />
-                <span className="ml-2">Remember me</span>
-              </label> */}
+            {/* Forgot Password Link */}
+            <div className="flex items-center justify-end text-xs sm:text-sm">
               <Link
                 to="/auth/forgot-password"
-                className="text-gfgsc-green hover:text-gfg-green"
+                className="text-gfgsc-green hover:text-gfg-green transition-colors duration-200"
               >
                 Forgot password?
               </Link>
             </div>
 
+            {/* Login Button */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 px-4 rounded-lg bg-gfgsc-green text-white"
+              className="w-full py-2.5 sm:py-3 px-4 rounded-lg bg-gfgsc-green text-white hover:bg-gfg-green transition-colors duration-200 flex items-center justify-center space-x-2"
             >
-              {loading ? (
-                <FaSpinner className="animate-spin inline-block" />
-              ) : null}{" "}
-              Login
+              {loading && (
+                <FaSpinner className="animate-spin text-sm sm:text-base" />
+              )}
+              <span className="text-sm sm:text-base">Login</span>
             </button>
           </form>
-          <p className="text-center text-gray-600">
+
+          {/* Sign Up Link */}
+          <p className="text-center text-xs sm:text-sm text-gray-600 px-4">
             Don&apos;t have an account?{" "}
             <Link
               to="/auth/register"
-              className="text-gfgsc-green hover:text-gfg-green font-medium"
+              className="text-gfgsc-green hover:text-gfg-green font-medium transition-colors duration-200"
             >
               Sign up
             </Link>

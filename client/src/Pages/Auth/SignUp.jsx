@@ -157,8 +157,8 @@ const SignUp = () => {
         required: "Phone number is required",
         pattern: {
           value: /^[6-9]\d{9}$/,
-          message: "Enter valid 10-digit phone number"
-        }
+          message: "Enter valid 10-digit phone number",
+        },
       },
     },
     registrationNumber: {
@@ -265,8 +265,7 @@ const SignUp = () => {
               <p className="text-red-500 text-xs">{errors[name].message}</p>
               <p className="text-gray-500 text-xs">
                 • Number should be 10 digits without spaces or country code
-                <br />
-                • Should start with 6, 7, 8, or 9
+                <br />• Should start with 6, 7, 8, or 9
               </p>
             </div>
           )}
@@ -321,7 +320,7 @@ const SignUp = () => {
     }
 
     // Special handling for password fields
-    if (name.toLowerCase().includes('password')) {
+    if (name.toLowerCase().includes("password")) {
       return (
         <div className="space-y-2">
           <div className="relative">
@@ -330,10 +329,10 @@ const SignUp = () => {
             </div>
             <input
               type={
-                (name === 'password' && showPassword) || 
-                (name === 'confirmPassword' && showConfirmPassword) 
-                  ? 'text' 
-                  : 'password'
+                (name === "password" && showPassword) ||
+                (name === "confirmPassword" && showConfirmPassword)
+                  ? "text"
+                  : "password"
               }
               {...register(name, validation)}
               className="w-full pl-10 pr-12 py-2.5 rounded-lg bg-gray-50 border border-gray-200 focus:border-gfgsc-green focus:ring-2 focus:ring-gfgsc-green-200 transition-all duration-200"
@@ -343,15 +342,15 @@ const SignUp = () => {
               type="button"
               className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
               onClick={() => {
-                if (name === 'password') {
+                if (name === "password") {
                   setShowPassword(!showPassword);
-                } else if (name === 'confirmPassword') {
+                } else if (name === "confirmPassword") {
                   setShowConfirmPassword(!showConfirmPassword);
                 }
               }}
             >
-              {(name === 'password' && showPassword) || 
-               (name === 'confirmPassword' && showConfirmPassword) ? (
+              {(name === "password" && showPassword) ||
+              (name === "confirmPassword" && showConfirmPassword) ? (
                 <FiEyeOff className="w-5 h-5" />
               ) : (
                 <FiEye className="w-5 h-5" />
@@ -518,20 +517,23 @@ const SignUp = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-row-reverse">
-      <AuthBackground />
+    <div className="flex flex-col md:flex-row-reverse">
+      {/* AuthBackground component - hidden on mobile */}
+      <AuthBackground isRight={false}/>
 
+      {/* Main Content Area */}
       <motion.div
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
-        className="flex-1 flex items-center justify-center p-8"
+        className="w-full md:w-1/2 flex items-center justify-center py-24 px-4 sm:px-6 md:px-8"
       >
         <div
-          className={`w-full max-w-xl space-y-8 pt-8 ${
-            currentStep === 0 && "mt-8"
+          className={`w-full max-w-xl space-y-6 md:space-y-8 px-4 ${
+            currentStep === 0 && "mt-4 md:mt-8"
           }`}
         >
-          <div className="flex justify-between mb-8">
+          {/* Progress Steps */}
+          <div className="flex justify-between mb-6 md:mb-8">
             {steps.map((step, index) => (
               <div
                 key={index}
@@ -545,7 +547,7 @@ const SignUp = () => {
               >
                 <div className="relative">
                   <div
-                    className={`w-8 h-8 mx-auto rounded-full flex items-center justify-center border-2 ${
+                    className={`w-6 h-6 sm:w-8 sm:h-8 mx-auto rounded-full flex items-center justify-center border-2 text-xs sm:text-sm ${
                       index === currentStep
                         ? "border-gfgsc-green bg-white"
                         : index < currentStep
@@ -556,13 +558,18 @@ const SignUp = () => {
                     {index + 1}
                   </div>
                 </div>
-                <div className="text-xs mt-2">{step.title}</div>
+                <div className="text-[10px] sm:text-xs mt-2">{step.title}</div>
               </div>
             ))}
           </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            <div className={`space-y-6 `}>
+          {/* Form */}
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="space-y-4 sm:space-y-6"
+          >
+            {/* Form Fields */}
+            <div className="space-y-4 sm:space-y-6">
               {steps[currentStep].fields.map((field) => (
                 <React.Fragment key={field}>
                   {renderField(field)}
@@ -570,14 +577,15 @@ const SignUp = () => {
               ))}
             </div>
 
-            <div className="flex justify-between gap-4">
+            {/* Navigation Buttons */}
+            <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-4 mt-6">
               {currentStep > 0 && (
                 <button
                   type="button"
                   onClick={() =>
                     setCurrentStep((prev) => Math.max(prev - 1, 0))
                   }
-                  className="flex-1 py-3 px-4 rounded-lg border border-gfgsc-green text-gfgsc-green hover:bg-gfgsc-green hover:text-white transition-colors"
+                  className="w-full sm:flex-1 py-2.5 sm:py-3 px-4 rounded-lg border border-gfgsc-green text-gfgsc-green hover:bg-gfgsc-green hover:text-white transition-colors text-sm sm:text-base"
                 >
                   Previous
                 </button>
@@ -586,7 +594,7 @@ const SignUp = () => {
                 <button
                   type="button"
                   onClick={nextStep}
-                  className="flex-1 py-3 px-4 rounded-lg bg-gfgsc-green text-white hover:bg-gfg-green transition-colors"
+                  className="w-full sm:flex-1 py-2.5 sm:py-3 px-4 rounded-lg bg-gfgsc-green text-white hover:bg-gfg-green transition-colors text-sm sm:text-base"
                 >
                   Next
                 </button>
@@ -594,18 +602,17 @@ const SignUp = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex-1 py-3 px-4 rounded-lg bg-gfgsc-green text-white hover:bg-gfg-green transition-colors"
+                  className="w-full sm:flex-1 py-2.5 sm:py-3 px-4 rounded-lg bg-gfgsc-green text-white hover:bg-gfg-green transition-colors text-sm sm:text-base flex items-center justify-center"
                 >
-                  {loading ? (
-                    <FaSpinner className="animate-spin inline-block" />
-                  ) : null}{" "}
+                  {loading && <FaSpinner className="animate-spin mr-2" />}
                   Create Account
                 </button>
               )}
             </div>
           </form>
 
-          <p className="text-center text-gray-600">
+          {/* Sign In Link */}
+          <p className="text-center text-xs sm:text-sm text-gray-600 pt-4">
             Already have an account?{" "}
             <Link
               to="/auth/login"

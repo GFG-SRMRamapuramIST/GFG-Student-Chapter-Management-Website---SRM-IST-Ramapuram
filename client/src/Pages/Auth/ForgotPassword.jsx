@@ -224,10 +224,7 @@ const ForgotPassword = () => {
             </div>
             {/* Timer Display */}
             <div className="flex justify-end items-center ">
-              <motion.div
-                initial={{ scale: 0.95 }}
-                animate={{ scale: 1 }}
-              >
+              <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }}>
                 <span className="text-red-600 font-medium">
                   {Math.floor(timer / 60)}:
                   {(timer % 60).toString().padStart(2, "0")}
@@ -290,16 +287,19 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-row-reverse">
+    <div className="flex flex-col md:flex-row-reverse">
+      {/* AuthBackground component - hidden on mobile */}
       <AuthBackground isRight={false} />
 
+      {/* Main Content Area */}
       <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
-        className="flex-1 flex items-center justify-center p-8"
+        className="w-full md:w-1/2 flex items-center justify-center py-24 px-4 sm:px-6 md:px-8"
       >
-        <div className="w-full max-w-md space-y-8">
-          <div className="flex justify-between mb-8">
+        <div className="w-full max-w-md space-y-6 md:space-y-8 px-4">
+          {/* Progress Steps */}
+          <div className="flex justify-between mb-6 md:mb-8">
             {steps.map((step, index) => (
               <div
                 key={index}
@@ -313,7 +313,7 @@ const ForgotPassword = () => {
               >
                 <div className="relative">
                   <div
-                    className={`w-8 h-8 mx-auto rounded-full flex items-center justify-center border-2 ${
+                    className={`w-6 h-6 sm:w-8 sm:h-8 mx-auto rounded-full flex items-center justify-center border-2 text-xs sm:text-sm ${
                       index === currentStep
                         ? "border-gfgsc-green bg-white"
                         : index < currentStep
@@ -324,11 +324,14 @@ const ForgotPassword = () => {
                     {index + 1}
                   </div>
                 </div>
-                <div className="text-xs mt-2">{step.title}</div>
+                <div className="text-[10px] sm:text-xs mt-2 px-1">
+                  {step.title}
+                </div>
               </div>
             ))}
           </div>
 
+          {/* Form Content with Animation */}
           <AnimatePresence mode="wait">
             <motion.div
               key={currentStep}
@@ -337,19 +340,25 @@ const ForgotPassword = () => {
               animate="center"
               exit="exit"
               transition={{ duration: 0.3 }}
+              className="w-full"
             >
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                {renderStep()}
+              <form
+                onSubmit={handleSubmit(onSubmit)}
+                className="space-y-4 sm:space-y-6"
+              >
+                {/* Form Steps */}
+                <div className="space-y-4">{renderStep()}</div>
 
-                <div className="flex flex-col space-y-4">
+                {/* Action Buttons */}
+                <div className="flex flex-col space-y-3 sm:space-y-4 mt-6">
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full py-3 px-4 rounded-lg bg-gfgsc-green text-white hover:bg-gfg-green transition-colors duration-200"
+                    className="w-full py-2.5 sm:py-3 px-4 rounded-lg bg-gfgsc-green text-white hover:bg-gfg-green transition-colors duration-200 text-sm sm:text-base flex items-center justify-center"
                   >
-                    {loading ? (
-                      <FaSpinner className="animate-spin inline-block" />
-                    ) : null}{" "}
+                    {loading && (
+                      <FaSpinner className="animate-spin mr-2 w-4 h-4" />
+                    )}
                     {currentStep === 2 ? "Reset Password" : "Continue"}
                   </button>
 
@@ -358,9 +367,9 @@ const ForgotPassword = () => {
                       type="button"
                       disabled={loading}
                       onClick={() => setCurrentStep((prev) => prev - 1)}
-                      className="flex items-center justify-center space-x-2 w-full py-3 px-4 rounded-lg border border-gfgsc-green text-gfgsc-green hover:bg-gfgsc-green-200 transition-colors duration-200"
+                      className="flex items-center justify-center space-x-2 w-full py-2.5 sm:py-3 px-4 rounded-lg border border-gfgsc-green text-gfgsc-green hover:bg-gfgsc-green-50 transition-colors duration-200 text-sm sm:text-base"
                     >
-                      <MdKeyboardBackspace />
+                      <MdKeyboardBackspace className="w-4 h-4" />
                       <span>Back</span>
                     </button>
                   )}
@@ -369,10 +378,11 @@ const ForgotPassword = () => {
             </motion.div>
           </AnimatePresence>
 
-          <div className="text-center">
+          {/* Sign In Link */}
+          <div className="text-center pt-4">
             <Link
               to="/auth/login"
-              className="text-sm text-gfgsc-green hover:text-gfg-green transition-colors duration-200"
+              className="text-xs sm:text-sm text-gfgsc-green hover:text-gfg-green transition-colors duration-200"
             >
               Remember your password? Sign in
             </Link>
