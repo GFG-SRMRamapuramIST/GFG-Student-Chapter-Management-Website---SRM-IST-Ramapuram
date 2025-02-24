@@ -122,7 +122,6 @@ const updatesAndAnnouncements = {
   ]
 }
 
-// Example usage:
 const platformPOTDs = [
   {
     platform: 'LeetCode',
@@ -162,13 +161,12 @@ const platformPOTDs = [
   }
 ];
 
-
 const Profile = () => {
   return (
-    <div className="min-h-screen ">
+    <div className="min-h-screen">
       <ProfileHero userProfile={userProfile} />
       <ProfileSecondary userProfile={userProfile} updatesAndAnnouncements={updatesAndAnnouncements} />
-      <PlatformPOTDs problems={platformPOTDs} />
+      {/* <PlatformPOTDs problems={platformPOTDs} /> */}
     </div>
   );
 };
