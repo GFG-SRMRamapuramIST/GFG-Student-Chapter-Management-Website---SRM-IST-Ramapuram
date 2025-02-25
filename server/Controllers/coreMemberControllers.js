@@ -2,10 +2,15 @@ const chalk = require("chalk");
 
 const { verifyAuthToken } = require("../Utilities");
 
-// Importing required models and schedulers
-const { DailyContests, Notices, Resources } = require("../Models");
-const { fetchCodeChefContestDataScheduler } = require("../Scheduler");
+// Importing required models and schedulers and event & contest min heap and notification scheduler
+const { addEvent } = require("../Scheduler/EventNotificationScheduler/eventMinHeap");
+const { addContest } = require("../Scheduler/CodingPlatformScheduler/contestMinHeap");
+const {
+  scheduleNextEvent,
+} = require("../Scheduler/EventNotificationScheduler/notificationScheduler");
+const { updateContestDataScheduler } = require("../Scheduler/CodingPlatformScheduler/ContestDataScheduler");
 
+const { DailyContests, Notice, Resources } = require("../Models");
 /*
 ************************** APIs **************************
 
@@ -69,6 +74,7 @@ exports.createContest = async (req, res) => {
     }
 
     // Validate input
+    //! startTime & endTime should be in the format HH:MM:SS, then only the notificationScheduler and platformDataScheduler will work
     if (
       !contestName ||
       !contestLink ||
@@ -151,13 +157,18 @@ exports.createContest = async (req, res) => {
     // Save the updated document
     await dailyContest.save();
 
-    // If the contest is for CodeChef, update the scheduler with contest name
-    if (platform.toLowerCase() === "codechef") {
-      fetchCodeChefContestDataScheduler.updateCodeChefScheduler(
-        contestEndDateTime,
-        contestName
-      );
-    }
+    // Get the contest ID after saving
+    const contestId =
+      dailyContest.contests[dailyContest.contests.length - 1]._id;
+
+    // Add event to the required min heaps
+    addEvent(contestId, contestDate, contestStartDateTime, "contest");
+    addContest(contestName,contestDate, contestEndDateTime, lowerCasePlatform);
+
+    // Scheduling the next event notification system
+    scheduleNextEvent();
+    // Schedule the next contest data update system
+    updateContestDataScheduler()
 
     return res.status(200).json({
       message: "Contest created successfully!",
@@ -247,6 +258,7 @@ exports.deleteContest = async (req, res) => {
 exports.createNotice = async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
+    //! meetingTime should be in the format HH:MM:SS, then only the notificationScheduler will work
     const {
       title,
       description,
@@ -256,7 +268,6 @@ exports.createNotice = async (req, res) => {
       compulsory,
     } = req.body;
 
-    // Use the helper function for authorization
     const authResult = await verifyAndAuthorize(token, [
       "ADMIN",
       "COREMEMBER",
@@ -269,12 +280,10 @@ exports.createNotice = async (req, res) => {
         .json({ message: authResult.message });
     }
 
-    // Validate required fields
     if (!title || !meetingLink || !meetingDate || !meetingTime || !compulsory) {
       return res.status(400).json({ message: "Missing required fields." });
     }
 
-    // Validate date and time
     const currentDateTime = new Date();
     const meetingDateTime = new Date(`${meetingDate}T${meetingTime}`);
     if (meetingDateTime < currentDateTime) {
@@ -283,7 +292,6 @@ exports.createNotice = async (req, res) => {
         .json({ message: "Meeting date and time must be in the future." });
     }
 
-    // Validate `compulsory` field
     const allowedValues = ["ALL", "MEMBER", "COREMEMBER"];
     if (!allowedValues.includes(compulsory)) {
       return res.status(400).json({
@@ -293,52 +301,39 @@ exports.createNotice = async (req, res) => {
       });
     }
 
-    // Check for meeting time conflicts on the same date
-    const sameDateMeetings = await Notices.find({
-      meetingDate: new Date(meetingDate),
-    });
-    for (const meeting of sameDateMeetings) {
-      const existingMeetingTime = new Date(
-        `${meeting.meetingDate.toISOString().split("T")[0]}T${
-          meeting.meetingTime
-        }`
-      );
-      const timeDifference =
-        Math.abs(meetingDateTime - existingMeetingTime) / (1000 * 60); // Difference in minutes
-
-      if (timeDifference < 15) {
-        return res.status(400).json({
-          message:
-            "There must be at least a 15-minute gap between two meetings on the same date.",
-          conflictingMeeting: meeting,
-        });
-      }
+    let dailyNotices = await Notice.findOne({ meetingDate: new Date(meetingDate) });
+    if (!dailyNotices) {
+      dailyNotices = new Notice({ meetingDate: new Date(meetingDate), notices: [] });
     }
 
-    // Create new notice
-    const newNotice = new Notices({
+    const newNotice = {
       title,
       description,
       meetingLink,
-      meetingDate,
       meetingTime,
       compulsory,
       createdBy: authResult.userId,
-    });
+    };
 
-    // Save notice to database
-    await newNotice.save();
+    dailyNotices.notices.push(newNotice);
+    await dailyNotices.save();
 
-    return res.status(200).json({
-      message: "Meeting created successfully.",
-      data: newNotice,
-    });
+    // Get the contest ID after saving
+    const meetingId =
+    dailyNotices.notices[dailyNotices.notices.length - 1]._id;
+
+    // Add event to the min heap
+    addEvent(meetingId, meetingDate, meetingDateTime, "meeting");
+
+    // Scheduling the next event notification system
+    scheduleNextEvent();
+
+    res
+      .status(200)
+      .json({ message: "Meeting created successfully.", data: dailyNotices });
   } catch (error) {
-    console.error(
-      chalk.bgRed.bold.red("Error creating meeting:"),
-      error.message
-    );
-    return res
+    console.error("Error creating meeting:", error.message);
+    res
       .status(500)
       .json({ message: "Internal Server Error", error: error.message });
   }
@@ -348,9 +343,8 @@ exports.createNotice = async (req, res) => {
 exports.deleteNotice = async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
-    const { meetingId } = req.body;
+    const { dateId, noticeId } = req.body;
 
-    // Use the helper function for authorization
     const authResult = await verifyAndAuthorize(token, ["ADMIN", "COREMEMBER"]);
     if (authResult.status !== 200) {
       return res
@@ -358,31 +352,30 @@ exports.deleteNotice = async (req, res) => {
         .json({ message: authResult.message });
     }
 
-    // Validate meetingId
-    if (!meetingId) {
-      return res.status(400).json({ message: "Meeting ID is required." });
+    const dailyNotices = await Notice.findById(dateId);
+    if (!dailyNotices) {
+      return res
+        .status(404)
+        .json({ message: "No entry found for the given date ID" });
     }
 
-    // Find the meeting
-    const meeting = await Notices.findById(meetingId);
-    if (!meeting) {
-      return res.status(404).json({ message: "Meeting not found." });
+    dailyNotices.notices = dailyNotices.notices.filter(
+      (notice) => notice._id.toString() !== noticeId
+    );
+    if (dailyNotices.notices.length === 0) {
+      await Notice.findByIdAndDelete(dateId);
+      return res
+        .status(200)
+        .json({ message: "Notice deleted and date entry removed." });
     }
 
-    // Delete the meeting
-    const deletedMeeting = await Notices.findByIdAndDelete(meetingId);
-
-    if (!deletedMeeting) {
-      return res.status(500).json({ message: "Failed to delete the meeting." });
-    }
-
-    res.status(200).json({
-      message: "Meeting deleted successfully.",
-      data: deletedMeeting,
-    });
+    await dailyNotices.save();
+    res.status(200).json({ message: "Notice deleted successfully!" });
   } catch (error) {
-    console.error(chalk.bgRed.bold.red("Error deleting meeting:"), error);
-    res.status(500).json({ message: "Internal server error." });
+    console.error("Error deleting notice:", error.message);
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
   }
 };
 
@@ -390,9 +383,8 @@ exports.deleteNotice = async (req, res) => {
 exports.createMoM = async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
-    const { meetingId, MoMLink } = req.body;
+    const { dateId, noticeId, MoMLink } = req.body;
 
-    // Use the helper function for authorization
     const authResult = await verifyAndAuthorize(token, ["ADMIN", "COREMEMBER"]);
     if (authResult.status !== 200) {
       return res
@@ -400,55 +392,37 @@ exports.createMoM = async (req, res) => {
         .json({ message: authResult.message });
     }
 
-    // Validate input
-    if (!meetingId || !MoMLink) {
+    const dailyNotices = await Notice.findById(dateId);
+    if (!dailyNotices) {
       return res
-        .status(400)
-        .json({ message: "Meeting ID and MoM link are required." });
+        .status(404)
+        .json({ message: "No entry found for the given date ID" });
     }
 
-    // Validate MoM link format
-    const urlRegex = /^https?:\/\/.+/;
-    if (!urlRegex.test(MoMLink)) {
+    const notice = dailyNotices.notices.id(noticeId);
+    if (!notice) {
+      return res.status(404).json({ message: "Notice not found." });
+    }
+
+    if (!/^https?:\/\/.+/.test(MoMLink)) {
       return res
         .status(400)
         .json({ message: "Invalid URL format for MoM link." });
     }
 
-    // Find the meeting
-    const meeting = await Notices.findById(meetingId);
-    if (!meeting) {
-      return res.status(404).json({ message: "Meeting not found." });
-    }
+    notice.MoMLink = MoMLink;
+    notice.MoMCreatedBy = authResult.userId;
+    notice.MoMCreatedAt = new Date();
 
-    // Check if the meeting is in the past
-    const currentDateTime = new Date();
-    const meetingDateTime = new Date(
-      `${meeting.meetingDate.toISOString().split("T")[0]}T${
-        meeting.meetingTime
-      }:00`
-    );
-
-    if (meetingDateTime > currentDateTime) {
-      return res
-        .status(400)
-        .json({ message: "MoM can only be created for past meetings." });
-    }
-
-    // Update the meeting with MoM details
-    meeting.MoMLink = MoMLink;
-    meeting.MoMCreatedBy = authResult.userId;
-    meeting.MoMCreatedAt = currentDateTime;
-
-    const updatedMeeting = await meeting.save();
-
-    res.status(200).json({
-      message: "MoM created successfully.",
-      data: updatedMeeting,
-    });
+    await dailyNotices.save();
+    res
+      .status(200)
+      .json({ message: "MoM created successfully.", data: notice });
   } catch (error) {
-    console.error(chalk.bgRed.bold.red("Error creating MoM:"), error);
-    res.status(500).json({ message: "Internal server error." });
+    console.error("Error creating MoM:", error.message);
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
   }
 };
 
@@ -456,9 +430,8 @@ exports.createMoM = async (req, res) => {
 exports.deleteMoMLink = async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
-    const { meetingId } = req.body;
+    const { dateId, noticeId } = req.body;
 
-    // Use the helper function for authorization
     const authResult = await verifyAndAuthorize(token, ["ADMIN", "COREMEMBER"]);
     if (authResult.status !== 200) {
       return res
@@ -466,33 +439,34 @@ exports.deleteMoMLink = async (req, res) => {
         .json({ message: authResult.message });
     }
 
-    // Validate input
-    if (!meetingId) {
-      return res.status(400).json({ message: "Meeting ID is required." });
+    const dailyNotices = await Notice.findById(dateId);
+    if (!dailyNotices) {
+      return res
+        .status(404)
+        .json({ message: "No entry found for the given date ID" });
     }
 
-    // Fetch the meeting
-    const meeting = await Notices.findById(meetingId);
-    if (!meeting) {
-      return res.status(404).json({ message: "Meeting not found." });
+    const notice = dailyNotices.notices.id(noticeId);
+    if (!notice) {
+      return res.status(404).json({ message: "Notice not found." });
     }
 
-    // Update MoMLink and related fields to null
-    meeting.MoMLink = null;
-    meeting.MoMCreatedBy = null;
-    meeting.MoMCreatedAt = null;
+    notice.MoMLink = null;
+    notice.MoMCreatedBy = null;
+    notice.MoMCreatedAt = null;
 
-    await meeting.save();
-
-    res.status(200).json({
-      message: "MoMLink deleted successfully.",
-      data: meeting,
-    });
+    await dailyNotices.save();
+    res
+      .status(200)
+      .json({ message: "MoMLink deleted successfully.", data: notice });
   } catch (error) {
-    console.error(chalk.bgRed.bold.red("Error deleting MoMLink:"), error);
-    res.status(500).json({ message: "Internal server error." });
+    console.error("Error deleting MoMLink:", error.message);
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
   }
 };
+
 //*************************************************************************/
 
 //***************************Resource API ******************************** */

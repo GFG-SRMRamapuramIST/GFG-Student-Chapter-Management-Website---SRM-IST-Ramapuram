@@ -1,17 +1,24 @@
-const contestScheduler = require("./contestScheduler");
-const meetingScheduler = require("./meetingScheduler");
-const backUpScheduler = require("./backUpScheduler");
-const resetDataScheduler = require("./resetDataScheduler");
-const fetchCodeChefUserProfileDataScheduler = require("./fetchCodeChefUserProfileDataScheduler");
-const achievementScheduler = require("./achievementScheduler");
-const fetchCodeChefContestDataScheduler = require("./fetchCodeChefContestData");
+// Month-end Scheduler performs (awardTopPerformers, backUpDataFunction, resetDataFunction) based on the configuration flags.
+const monthEndScheduler = require("./MonthEndScheduler/monthEndScheduler");
+
+// Notification scheduler for sending contest and meeting notifications
+const {
+  scheduleNextEvent,
+} = require("./EventNotificationScheduler/notificationScheduler");
+
+// Update all coding platfrom data for all users
+const {
+  updateUserCodingPlatformsDataScheduler,
+} = require("./CodingPlatformScheduler/ProfileDataScheduler");
+
+// Update all coding platform contest data for all users
+const {
+  updateContestDataScheduler,
+} = require("./CodingPlatformScheduler/ContestDataScheduler");
 
 module.exports = {
-  contestScheduler,
-  meetingScheduler,
-  backUpScheduler,
-  resetDataScheduler,
-  fetchCodeChefUserProfileDataScheduler,
-  achievementScheduler,
-  fetchCodeChefContestDataScheduler,
+  monthEndScheduler,
+  scheduleNextEvent,
+  updateUserCodingPlatformsDataScheduler,
+  updateContestDataScheduler,
 };

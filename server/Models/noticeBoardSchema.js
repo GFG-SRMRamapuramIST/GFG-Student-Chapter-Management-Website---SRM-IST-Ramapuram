@@ -11,7 +11,7 @@ const noticeSchema = new mongoose.Schema({
     required: true,
     validate: {
       validator: function (v) {
-        return /^https?:\/\/.+/.test(v); // Validates URLs
+        return /^https?:\/\/.+/.test(v);
       },
       message: "Invalid URL format.",
     },
@@ -21,54 +21,53 @@ const noticeSchema = new mongoose.Schema({
     ref: "users",
     required: true,
   },
-  meetingDate: {
-    type: Date,
-    required: true,
-  },
   meetingTime: {
     type: String,
     required: true,
-    validate: {
-      validator: function (v) {
-        return /^([01]\d|2[0-3]):([0-5]\d)$/.test(v); // Validates HH:MM (24-hour format)
-      },
-      message: "Invalid time format. Use HH:MM (24-hour).",
-    },
   },
   compulsory: {
     type: String,
-    enum: ["ALL", "MEMBER", "COREMEMBER"], // Allowed values
+    enum: ["ALL", "MEMBER", "COREMEMBER"],
     required: true,
   },
   description: {
     type: String,
-    trim: true, // Additional information about the meeting
+    trim: true,
   },
   createdAt: {
     type: Date,
-    default: Date.now, // Automatically stores when the notice was created
+    default: Date.now,
   },
   MoMLink: {
     type: String,
     validate: {
       validator: function (v) {
-        return !v || /^https?:\/\/.+/.test(v); // Optional, but must be a valid URL if provided
+        return !v || /^https?:\/\/.+/.test(v);
       },
       message: "Invalid URL format for MoM link.",
     },
-    default: null, // Default value is null if MoM is not yet created
+    default: null,
   },
   MoMCreatedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "users",
-    default: null, // Default value is null if MoM is not yet created
+    default: null,
   },
   MoMCreatedAt: {
     type: Date,
-    default: null, // Default value is null if MoM is not yet created
+    default: null,
   },
 });
 
-const Notices = mongoose.model("notices", noticeSchema);
+const noticeGroupSchema = new mongoose.Schema({
+  meetingDate: {
+    type: Date,
+    required: true,
+    unique: true,
+  },
+  notices: [noticeSchema],
+});
 
-module.exports = Notices;
+const Notice = mongoose.model("Notice", noticeGroupSchema);
+
+module.exports = Notice;

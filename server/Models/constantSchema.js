@@ -1,14 +1,17 @@
 const mongoose = require("mongoose");
 
 const constantSchema = new mongoose.Schema({
-  teamSize: {
-    type: Number,
-    default: 5, // Default value set to 5
+  achievementScheduler: {
+    type: Boolean,
+    default: true,
   },
-  totalContests: {
-    type: Number,
-    default: 0,
-    min: 0, // Ensures non-negative values
+  backupDataScheduler: {
+    type: Boolean,
+    default: true,
+  },
+  resetDataScheduler: {
+    type: Boolean,
+    default: true,
   },
 });
 

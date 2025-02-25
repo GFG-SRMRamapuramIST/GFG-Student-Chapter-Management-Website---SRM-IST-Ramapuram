@@ -106,10 +106,14 @@ const userSchema = new mongoose.Schema({
       highestRating: { type: Number, default: 0 },
     },
     leetcode: {
-      // Add details later
+      badgesCount: { type: Number, default: 0 },
+      ranking: { type: Number, default: 0 },
+      totalProblemSolved: { type: Number, default: 0 },
     },
     codeforces: {
-      // Add details later
+      rating: { type: Number, default: 0 },
+      rank: { type: String, default: "unrated" },
+      totalProblemSolved: { type: Number, default: 0 },
     },
   },
   subscribed: {

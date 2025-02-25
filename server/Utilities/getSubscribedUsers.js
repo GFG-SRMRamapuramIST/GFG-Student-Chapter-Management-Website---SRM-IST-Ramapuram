@@ -1,17 +1,34 @@
 const { Users } = require("../Models");
 
-const getSubscribedUsers = async () => {
+const getSubscribedUsers = async (role) => {
   try {
-    // Query to fetch only the email field of users with 'subscribed' set to true
-    const subscribedUsers = await Users.find({ subscribed: true }).select(
-      "email"
-    );
+    // Define role-based filtering
+    const roleFilters = {
+      ALL: { role: { $ne: "ADMIN" } },
+      MEMBER: {
+        role: { $in: ["MEMBER", "COREMEMBER", "VICEPRESIDENT", "PRESIDENT"] },
+      },
+      COREMEMBER: {
+        role: { $in: ["COREMEMBER", "VICEPRESIDENT", "PRESIDENT"] },
+      },
+    };
 
-    // Extract and return the email addresses as an array
+    // Get the appropriate filter or default to an empty object (no filtering)
+    const roleFilter = roleFilters[role] || {};
+
+    // Query users based on subscription status and role
+    const subscribedUsers = await Users.find({
+      subscribed: true,
+      ...roleFilter,
+    })
+      .select("email")
+      .lean();
+
+    // Extract and return emails
     return subscribedUsers.map((user) => user.email);
   } catch (error) {
     console.error("Error fetching subscribed users:", error.message);
-    throw new Error("Unable to fetch subscribed users.", error);
+    return []; // Return an empty array in case of error
   }
 };
 

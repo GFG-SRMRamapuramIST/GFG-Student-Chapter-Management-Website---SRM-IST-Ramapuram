@@ -9,13 +9,10 @@ const connectDB = require("./DB/Connection");
 
 //* Importing scheduled tasks
 const {
-  contestScheduler,
-  meetingScheduler,
-  backUpScheduler,
-  resetDataScheduler,
-  fetchCodeChefUserProfileDataScheduler,
-  achievementScheduler,
-  fetchCodeChefContestDataScheduler,
+  monthEndScheduler,
+  scheduleNextEvent,
+  updateUserCodingPlatformsDataScheduler,
+  updateContestDataScheduler,
 } = require("./Scheduler");
 
 const {
