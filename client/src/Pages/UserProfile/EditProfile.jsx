@@ -275,18 +275,18 @@ const EditProfile = () => {
   };
 
   return (
-    <div className="min-h-screen p-8">
-      <div className="mx-auto space-y-8">
-        <h1 className="text-4xl font-bold text-gfg-black mb-8">Edit Profile</h1>
-
+    <div className="min-h-screen p-4 md:p-8">
+      <div className="mx-auto space-y-6 md:space-y-8">
+        <h1 className="text-3xl md:text-4xl font-bold text-gfg-black mb-4 md:mb-8">Edit Profile</h1>
+  
         {/* Personal Information Section */}
-        <div className="bg-white shadow-lg rounded-xl p-6 space-y-6">
-          <h2 className="text-2xl font-semibold text-gfgsc-green border-b pb-3">
+        <div className="bg-white shadow-lg rounded-xl p-4 md:p-6 space-y-4 md:space-y-6">
+          <h2 className="text-xl md:text-2xl font-semibold text-gfgsc-green border-b pb-3">
             Personal Information
           </h2>
-
+  
           {/* Profile Picture */}
-          <div className="flex items-center space-x-6">
+          <div className="flex flex-col sm:flex-row items-center sm:space-x-6 space-y-4 sm:space-y-0">
             <ProfilePictureEditor
               currentImage={profileData.profilePic}
               onSave={handleProfilePicSave}
@@ -294,8 +294,8 @@ const EditProfile = () => {
               loading={loading}
             />
           </div>
-
-          <div className="grid md:grid-cols-2 gap-4 bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-lg">
+  
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-lg">
             {/* Name */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -311,7 +311,7 @@ const EditProfile = () => {
                 />
               )}
             </div>
-
+  
             {/* Bio */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -327,7 +327,7 @@ const EditProfile = () => {
                 />
               )}
             </div>
-
+  
             {/* Phone Number */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -344,7 +344,7 @@ const EditProfile = () => {
                 />
               )}
             </div>
-
+  
             {/* Academic Year */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -363,14 +363,14 @@ const EditProfile = () => {
             </div>
           </div>
         </div>
-
+  
         {/* Coding Profiles Section */}
-        <div className="bg-white shadow-lg rounded-xl p-6 space-y-6">
-          <h2 className="text-2xl font-semibold text-gfgsc-green border-b pb-3">
+        <div className="bg-white shadow-lg rounded-xl p-4 md:p-6 space-y-4 md:space-y-6">
+          <h2 className="text-xl md:text-2xl font-semibold text-gfgsc-green border-b pb-3">
             Coding Profiles
           </h2>
-
-          <div className="grid md:grid-cols-3 gap-6">
+  
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
             {/* LeetCode */}
             <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-xl">
               <div className="flex items-center space-x-3 mb-3">
@@ -397,7 +397,7 @@ const EditProfile = () => {
                 )}
               </div>
             </div>
-
+  
             {/* CodeChef */}
             <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-xl">
               <div className="flex items-center space-x-3 mb-3">
@@ -424,7 +424,7 @@ const EditProfile = () => {
                 )}
               </div>
             </div>
-
+  
             {/* Codeforces */}
             <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-xl">
               <div className="flex items-center space-x-3 mb-3">
@@ -453,16 +453,16 @@ const EditProfile = () => {
             </div>
           </div>
         </div>
-
+  
         {/* Social Links Section */}
-        <div className="bg-white shadow-lg rounded-xl p-6 space-y-6">
-          <h2 className="text-2xl font-semibold text-gfgsc-green border-b pb-3">
+        <div className="bg-white shadow-lg rounded-xl p-4 md:p-6 space-y-4 md:space-y-6">
+          <h2 className="text-xl md:text-2xl font-semibold text-gfgsc-green border-b pb-3">
             Social Links
           </h2>
-
-          <div className="grid md:grid-cols-3 gap-6">
+  
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
             {/* LinkedIn */}
-            <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-xl ">
+            <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-xl">
               <div className="flex items-center space-x-3 mb-3">
                 <RiLinkedinBoxFill className="text-[#0A66C2] text-2xl" />
                 <label className="font-medium text-gray-800">LinkedIn</label>
@@ -485,13 +485,14 @@ const EditProfile = () => {
                 )}
               </div>
             </div>
-
+  
             {/* Codolio */}
             <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-xl">
               <div className="flex items-center space-x-3 mb-3">
                 <img
                   src={codolioIcon}
                   className="h-4 text-[#171515] text-2xl"
+                  alt="Codolio icon"
                 />
                 <label className="font-medium text-gray-800">Codolio</label>
               </div>
@@ -515,23 +516,23 @@ const EditProfile = () => {
             </div>
           </div>
         </div>
-
+  
         {/* Password Change Section */}
-        <div className="bg-white shadow-lg rounded-xl p-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-semibold text-red-500 flex items-center">
+        <div className="bg-white shadow-lg rounded-xl p-4 md:p-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <h2 className="text-xl md:text-2xl font-semibold text-red-500 flex items-center">
               <RiLockPasswordLine className="mr-2" /> Password
             </h2>
             <button
               onClick={() => setIsPasswordModalOpen(true)}
-              className="px-4 py-2 text-red-500 border-2 border-red-500 rounded-lg hover:bg-red-500 hover:text-white transition-colors"
+              className="w-full sm:w-auto px-4 py-2 text-red-500 border-2 border-red-500 rounded-lg hover:bg-red-500 hover:text-white transition-colors"
             >
               Change Password
             </button>
           </div>
         </div>
       </div>
-
+  
       {/* Add the modal */}
       <PasswordChangeModal
         isOpen={isPasswordModalOpen}
