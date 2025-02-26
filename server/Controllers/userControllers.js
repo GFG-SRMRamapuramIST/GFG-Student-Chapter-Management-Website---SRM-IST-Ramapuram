@@ -205,30 +205,36 @@ exports.changePassword = async (req, res) => {
 
 //3. Edit Profile Picture
 exports.editProfilePicture = async (req, res) => {
-  const token = req.headers.authorization?.split(" ")[1]; // Extract token
+  const token = req.headers.authorization?.split(" ")[1];
 
   if (!token) {
     return res.status(401).json({ message: "No token provided" });
   }
 
   try {
-    // Verify the auth token
     const authResult = await verifyAuthToken(token);
     if (authResult.status !== "not expired") {
       return res.status(400).json({ message: authResult.message });
     }
 
     const userId = authResult.userId;
-
     let profilePicture = null;
 
     if (req.file) {
-      // Upload the new profile picture to Cloudinary
-      const uploadResult = await cloudinary.uploader.upload(req.file.path);
-      profilePicture = uploadResult.secure_url;
+      // Upload directly from buffer
+      const uploadResult = await cloudinary.uploader
+        .upload_stream({ resource_type: "image" }, (error, result) => {
+          if (error) {
+            console.error("Cloudinary Upload Error:", error);
+            return res
+              .status(500)
+              .json({ message: "Cloudinary upload failed" });
+          }
+          profilePicture = result.secure_url;
+        })
+        .end(req.file.buffer);
     }
 
-    // Update the user's profile picture (set to null if removed)
     const updatedUser = await Users.findByIdAndUpdate(
       userId,
       { profilePicture },

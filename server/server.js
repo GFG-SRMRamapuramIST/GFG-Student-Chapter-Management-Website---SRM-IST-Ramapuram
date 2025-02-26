@@ -29,7 +29,7 @@ app.use(express.json());
 
 const allowedOrigins = [
   "https://gfgsc-management-website-srm-ist-ramapuram-testing.vercel.app",
-  "http://localhost:3000",
+  "http://localhost:5173",
 ];
 
 app.use(
