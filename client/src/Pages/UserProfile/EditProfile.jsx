@@ -44,7 +44,7 @@ const EditProfile = () => {
     try {
       //console.log("Fetching Edit Profile Data...");
       const response = await getEditProfilePageDataFuncion();
-      //console.log(response);
+      console.log(response);
       setProfileData(response.data);
     } catch (error) {
       ToastMsg("Internal Server Error!", "error");
