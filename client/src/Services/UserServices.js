@@ -6,6 +6,16 @@ import { BACKEND_URL } from "./Helper";
 // Function to get user token inside a hook
 const useAuthToken = () => useSelector((state) => state.auth?.userToken);
 
+// Get profile page data API
+const getProfilePageDataFunction = async (token) => {
+  return await commonrequest(
+    "GET",
+    `${BACKEND_URL}/api/v1/user/get-profile-data`,
+    null,
+    { Authorization: `Bearer ${token}` }
+  );
+};
+
 // Get edit profile page data API
 const getEditProfilePageDataFuncion = async (token) => {
   return await commonrequest(
@@ -49,17 +59,29 @@ const changeProfilePicFunction = async (formData, userToken) => {
   )
 }
 
+// Toggle Subscribe API
+const toggleSubscribeFunction = async (userToken) => {
+  return await commonrequest(
+    "POST",
+    `${BACKEND_URL}/api/v1/user/toggle-subscribe-btn`,
+    null,
+    { Authorization: `Bearer ${userToken}` }
+  );
+};
+
 // Wrapper to use token inside React components
 const UserService = () => {
   const userToken = useAuthToken();
 
   return {
+    getProfilePageDataFunction: () => getProfilePageDataFunction(userToken),
     getEditProfilePageDataFuncion: () =>
       getEditProfilePageDataFuncion(userToken),
     editProfileFunction: (params) => editProfileFunction(params, userToken),
     changePasswordFunction: (params) =>
       changePasswordFunction(params, userToken),
-    changeProfilePicFunction: (formData) => changeProfilePicFunction(formData,userToken)
+    changeProfilePicFunction: (formData) => changeProfilePicFunction(formData,userToken),
+    toggleSubscribeFunction: () => toggleSubscribeFunction(userToken),
   };
 };
 

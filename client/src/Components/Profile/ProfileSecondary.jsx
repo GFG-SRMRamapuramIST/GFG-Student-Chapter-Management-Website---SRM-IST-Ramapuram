@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+
 import { FaTimes, FaChevronRight, FaExternalLinkAlt } from "react-icons/fa";
-import { platformIcons } from "../../Constants";
 import { CgBell, CgCode, CgLaptop, CgTrophy, CgWorkAlt } from "react-icons/cg";
-import NotificationItem from "../ui/NotificationItem";
 import { BiError } from "react-icons/bi";
+
+import { platformIcons } from "../../Constants";
+import NotificationItem from "../ui/NotificationItem";
 import { RotatingCloseButton } from "../../Utilities";
 
 const CustomDialog = ({ open, onClose, children }) => {
@@ -165,7 +167,9 @@ const ProfileSecondary = ({ userProfile, updatesAndAnnouncements }) => {
       </div>
 
       <CustomDialog open={showBadges} onClose={() => setShowBadges(false)}>
-        <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-8">All Achievements</h2>
+        <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-8">
+          All Achievements
+        </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
           {userProfile.badges.map((badge) => (
             <div
@@ -174,8 +178,12 @@ const ProfileSecondary = ({ userProfile, updatesAndAnnouncements }) => {
             >
               <Badge type={badge.type} name={badge.name} />
               <div className="mt-3 sm:mt-4 space-y-1">
-                <div className="font-medium text-sm sm:text-base">{badge.name}</div>
-                <div className="text-xs sm:text-sm text-gray-500">{badge.date}</div>
+                <div className="font-medium text-sm sm:text-base">
+                  {badge.name}
+                </div>
+                <div className="text-xs sm:text-sm text-gray-500">
+                  {badge.date}
+                </div>
                 <p className="text-xs sm:text-sm text-gray-600 mt-1 sm:mt-2">
                   {badge.description}
                 </p>
@@ -239,7 +247,7 @@ const PlatformProfiles = ({ userProfile }) => {
                   })}
                   <span>{platform}</span>
                   <span className="text-xxs sm:text-xs text-gray-500 lowercase">
-                    @{stats.handle}
+                    @{stats.handle || "N/A"}
                   </span>
                 </span>
                 <a
@@ -250,25 +258,98 @@ const PlatformProfiles = ({ userProfile }) => {
                 </a>
               </div>
               <div className="flex flex-wrap gap-1.5 sm:gap-2 text-xs sm:text-sm">
-                <div
-                  className={`flex items-center border rounded-md ${style.statsBg} p-1.5 sm:p-2 transition-colors duration-300`}
-                >
-                  <div className="font-semibold">{stats.contests}</div>
-                  <div className="text-gray-500 text-xxs sm:text-xs ml-1">Contests</div>
-                </div>
-                <div
-                  className={`flex items-center border rounded-md ${style.statsBg} p-1.5 sm:p-2 transition-colors duration-300`}
-                >
-                  <div className="font-semibold">{stats.questions}</div>
-                  <div className="text-gray-500 text-xxs sm:text-xs ml-1">Questions</div>
-                </div>
-                {stats.rating && (
-                  <div
-                    className={`flex items-center border rounded-md ${style.statsBg} p-1.5 sm:p-2 transition-colors duration-300`}
-                  >
-                    <div className="font-semibold">{stats.rating}</div>
-                    <div className="text-gray-500 text-xxs sm:text-xs ml-1">Rating</div>
-                  </div>
+                {/* LeetCode specific fields */}
+                {platform === "leetcode" && (
+                  <>
+                    <div
+                      className={`flex items-center border rounded-md ${style.statsBg} p-1.5 sm:p-2 transition-colors duration-300`}
+                    >
+                      <div className="font-semibold">{stats.badgesCount}</div>
+                      <div className="text-gray-500 text-xxs sm:text-xs ml-1">
+                        Badges
+                      </div>
+                    </div>
+                    <div
+                      className={`flex items-center border rounded-md ${style.statsBg} p-1.5 sm:p-2 transition-colors duration-300`}
+                    >
+                      <div className="font-semibold">{stats.ranking}</div>
+                      <div className="text-gray-500 text-xxs sm:text-xs ml-1">
+                        Ranking
+                      </div>
+                    </div>
+                    <div
+                      className={`flex items-center border rounded-md ${style.statsBg} p-1.5 sm:p-2 transition-colors duration-300`}
+                    >
+                      <div className="font-semibold">
+                        {stats.totalProblemSolved}
+                      </div>
+                      <div className="text-gray-500 text-xxs sm:text-xs ml-1">
+                        Problems Solved
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {/* CodeChef specific fields */}
+                {platform === "codechef" && (
+                  <>
+                    <div
+                      className={`flex items-center border rounded-md ${style.statsBg} p-1.5 sm:p-2 transition-colors duration-300`}
+                    >
+                      <div className="font-semibold">{stats.rating}</div>
+                      <div className="text-gray-500 text-xxs sm:text-xs ml-1">
+                        Rating
+                      </div>
+                    </div>
+                    <div
+                      className={`flex items-center border rounded-md ${style.statsBg} p-1.5 sm:p-2 transition-colors duration-300`}
+                    >
+                      <div className="font-semibold">{stats.highestRating}</div>
+                      <div className="text-gray-500 text-xxs sm:text-xs ml-1">
+                        Highest Rating
+                      </div>
+                    </div>
+                    <div
+                      className={`flex items-center border rounded-md ${style.statsBg} p-1.5 sm:p-2 transition-colors duration-300`}
+                    >
+                      <div className="font-semibold">{stats.countryRank}</div>
+                      <div className="text-gray-500 text-xxs sm:text-xs ml-1">
+                        Country Rank
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {/* Codeforces specific fields */}
+                {platform === "codeforces" && (
+                  <>
+                    <div
+                      className={`flex items-center border rounded-md ${style.statsBg} p-1.5 sm:p-2 transition-colors duration-300`}
+                    >
+                      <div className="font-semibold">{stats.rating}</div>
+                      <div className="text-gray-500 text-xxs sm:text-xs ml-1">
+                        Rating
+                      </div>
+                    </div>
+                    <div
+                      className={`flex items-center border rounded-md ${style.statsBg} p-1.5 sm:p-2 transition-colors duration-300`}
+                    >
+                      <div className="font-semibold">{stats.rank}</div>
+                      <div className="text-gray-500 text-xxs sm:text-xs ml-1">
+                        Rank
+                      </div>
+                    </div>
+                    <div
+                      className={`flex items-center border rounded-md ${style.statsBg} p-1.5 sm:p-2 transition-colors duration-300`}
+                    >
+                      <div className="font-semibold">
+                        {stats.totalProblemSolved}
+                      </div>
+                      <div className="text-gray-500 text-xxs sm:text-xs ml-1">
+                        Problems Solved
+                      </div>
+                    </div>
+                  </>
                 )}
               </div>
             </div>

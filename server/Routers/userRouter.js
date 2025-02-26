@@ -1,6 +1,5 @@
 const express = require("express");
 const multer = require("multer");
-const path = require("path");
 
 const router = new express.Router();
 
@@ -14,6 +13,8 @@ const { userControllers } = require("../Controllers");
 2. Change Password API - "{BACKEND_URL}/api/v1/user/change-password"
 3. Edit Profile Picture API - "{BACKEND_URL}/api/v1/user/edit-profile-picture"
 4. Toggle Subscibe API - "{BACKEND_URL}/api/v1/user/toggle-subscribe-btn"
+
+5. Get Profile Page Data API - "{BACKEND_URL}/api/v1/user/get-profile-data"
 
  Join a Team API - "{BACKEND_URL}/api/v1/user/join-team"
  Leave a Team API - "{BACKEND_URL}/api/v1/user/leave-team"
@@ -47,7 +48,10 @@ const upload = multer({
 const uploadProfilePicture = upload.single("profilePicture");
 
 //0. Get edit profile page data API
-router.get("/get-edit-profile-page-data", userControllers.getEditProfilePageData)
+router.get(
+  "/get-edit-profile-page-data",
+  userControllers.getEditProfilePageData
+);
 
 //1. Edit Profile API
 router.post("/edit-profile", userControllers.editProfile);
@@ -56,10 +60,17 @@ router.post("/edit-profile", userControllers.editProfile);
 router.post("/change-password", userControllers.changePassword);
 
 //3. Edit Profile Picture API
-router.post("/edit-profile-picture", uploadProfilePicture, userControllers.editProfilePicture);
+router.post(
+  "/edit-profile-picture",
+  uploadProfilePicture,
+  userControllers.editProfilePicture
+);
 
 //4. Toggle Subscribe API
-router.post("/toggle-subscribe-btn", userControllers.toggleSubscribeOption)
+router.post("/toggle-subscribe-btn", userControllers.toggleSubscribeOption);
+
+//5. Get Profile Page Data API
+router.get("/get-profile-data", userControllers.getProfilePageData);
 
 /*
 //4. Join a Team API

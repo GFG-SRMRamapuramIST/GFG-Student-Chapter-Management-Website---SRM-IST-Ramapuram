@@ -13,6 +13,8 @@ const { verifyAuthToken, cloudinary } = require("../Utilities");
 3. Edit Profile Picture API
 4. Toggle Subscribe API
 
+5. Get Profile page data API
+
 
  Join a Team API
  Leave a Team API
@@ -263,7 +265,7 @@ exports.toggleSubscribeOption = async (req, res) => {
     const userId = authResult.userId;
     
     // Fetch user from database
-    const user = await User.findById(userId);
+    const user = await Users.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -282,6 +284,49 @@ exports.toggleSubscribeOption = async (req, res) => {
   }
 };
 
+//5. Get Profile page data API
+exports.getProfilePageData = async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1]; // Extract token
+  if (!token) {
+    return res.status(401).json({ message: "No token provided" });
+  }
+
+  try {
+    // Verify the auth token
+    const authResult = await verifyAuthToken(token);
+    if (authResult.status !== "not expired") {
+      return res.status(400).json({ message: authResult.message });
+    }
+
+    const userId = authResult.userId;
+    const user = await Users.findById(userId).lean(); // Convert Mongoose document to plain object
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Formatting academic year
+    const academicYearMapping = {
+      1: "1st Year",
+      2: "2nd Year",
+      3: "3rd Year",
+      4: "4th Year",
+    };
+
+    // Remove unwanted fields
+    const { subscribed, authToken, resetPasswordOTP, otpExpiry, isBlocked, ...filteredUser } = user;
+
+    // Send formatted response
+    res.status(200).json({
+      ...filteredUser,
+      academicYear: academicYearMapping[user.academicYear] || "Unknown",
+    });
+
+  } catch (error) {
+    console.error("Error getting profile page data:", error.message);
+    return res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+};
 
 /*
 // Join a Team API

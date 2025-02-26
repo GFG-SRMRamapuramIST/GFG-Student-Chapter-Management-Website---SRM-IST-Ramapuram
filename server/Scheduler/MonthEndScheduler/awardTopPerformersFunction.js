@@ -1,7 +1,5 @@
 const chalk = require("chalk");
-
 const { sendEmail } = require("../../Utilities");
-
 const { Users } = require("../../Models");
 
 const awardTopPerformers = async () => {
@@ -29,11 +27,25 @@ const awardTopPerformers = async () => {
     // Assign medals
     const medalTypes = ["gold", "silver", "bronze"];
     for (let i = 0; i < topPerformers.length; i++) {
-      topPerformers[i].achievement[medalTypes[i]].push({
+      const user = topPerformers[i];
+
+      // Ensure achievement object exists
+      if (!user.achievement) {
+        user.achievement = { gold: [], silver: [], bronze: [] };
+      }
+
+      // Ensure specific medal array exists
+      if (!Array.isArray(user.achievement[medalTypes[i]])) {
+        user.achievement[medalTypes[i]] = [];
+      }
+
+      // Add the new achievement entry
+      user.achievement[medalTypes[i]].push({
         month: currentMonth,
         year: currentYear,
       });
-      await topPerformers[i].save();
+
+      await user.save();
     }
 
     console.log(

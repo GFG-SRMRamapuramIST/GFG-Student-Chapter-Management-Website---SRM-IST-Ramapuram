@@ -1,8 +1,11 @@
 import React from "react";
+
+// Importing Icons
 import { FaLinkedin } from "react-icons/fa";
 import { CgCode, CgTrophy } from "react-icons/cg";
 import { IoMailOutline } from "react-icons/io5";
 import { GiProgression } from "react-icons/gi";
+
 import { codolioIcon } from "../../Assets";
 
 const ProfileHero = ({ userProfile }) => {
