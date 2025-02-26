@@ -5,3 +5,9 @@ Taking birth date as also one of the attribute during registration and wishing t
 ### POD (Problem of the day) scraping
 
 Scraping out POD from different coding platforms and displaying it at dashboard and profile page routes
+
+### GFG Platfrom support
+
+### Threshold for automated kicking
+
+### Fair leaderboard
