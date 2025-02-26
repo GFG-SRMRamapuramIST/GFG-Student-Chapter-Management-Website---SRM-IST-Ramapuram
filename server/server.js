@@ -47,6 +47,8 @@ app.use(
   })
 );
 
+app.options("*", cors());
+
 //* Routers
 app.get("/", (req, res) => {
   res.status(200).json({
