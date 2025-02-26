@@ -18,22 +18,24 @@ const LeaderboardTable = ({ data, isTeam=false }) => {
 
   const getPositionStyle = (position) => {
     // Core leadership positions
-    if (position.includes('President')) {
-      return 'bg-gradient-to-r from-purple-600 to-purple-400 text-white';
+    if (position.includes("ADMIN")) {
+      return "bg-gradient-to-r from-red-600 to-red-400 text-white";
     }
-    if (position.includes('Head')) {
-      return 'bg-gradient-to-r from-blue-600 to-blue-400 text-white';
+    if (position.includes("PRESIDENT") || position.includes("VICEPRESIDENT")) {
+      return "bg-gradient-to-r from-purple-600 to-purple-400 text-white";
     }
-    
-    
+    if (position.includes("COREMEMBER")) {
+      return "bg-gradient-to-r from-blue-600 to-blue-400 text-white";
+    }
+
     // Regular member
-    if (position === 'Member') {
-      return 'bg-gfgsc-green/20 text-gfgsc-green';
+    if (position === "MEMBER") {
+      return "bg-gfgsc-green/20 text-gfgsc-green";
     }
-    
-    // Default/User
-    return 'bg-transparent border border-gfgsc-green text-gfgsc-green';
-};
+
+    // Default/USER
+    return "bg-transparent border border-gfgsc-green text-gfgsc-green";
+  };
 
   return (
     <div className="!z-10 bg-white rounded-xl shadow-md overflow-x-scroll overflow-y-hidden">

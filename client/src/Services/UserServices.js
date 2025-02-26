@@ -56,8 +56,8 @@ const changeProfilePicFunction = async (formData, userToken) => {
     `${BACKEND_URL}/api/v1/user/edit-profile-picture`,
     formData,
     { Authorization: `Bearer ${userToken}` }
-  )
-}
+  );
+};
 
 // Toggle Subscribe API
 const toggleSubscribeFunction = async (userToken) => {
@@ -66,6 +66,19 @@ const toggleSubscribeFunction = async (userToken) => {
     `${BACKEND_URL}/api/v1/user/toggle-subscribe-btn`,
     null,
     { Authorization: `Bearer ${userToken}` }
+  );
+};
+
+// Fetch Leaderboard Data API
+const fetchLeaderboardDataFunction = async (
+  { page = 1, limit = 10 },
+  token
+) => {
+  return await commonrequest(
+    "POST",
+    `${BACKEND_URL}/api/v1/user/get-leaderboard-data`,
+    { page, limit },
+    { Authorization: `Bearer ${token}` }
   );
 };
 
@@ -80,8 +93,11 @@ const UserService = () => {
     editProfileFunction: (params) => editProfileFunction(params, userToken),
     changePasswordFunction: (params) =>
       changePasswordFunction(params, userToken),
-    changeProfilePicFunction: (formData) => changeProfilePicFunction(formData,userToken),
+    changeProfilePicFunction: (formData) =>
+      changeProfilePicFunction(formData, userToken),
     toggleSubscribeFunction: () => toggleSubscribeFunction(userToken),
+    fetchLeaderboardDataFunction: (params) =>
+      fetchLeaderboardDataFunction(params, userToken),
   };
 };
 
