@@ -402,7 +402,7 @@ const SignUp = () => {
 
     try {
       const response = await AuthServices.registerFunction(formData);
-
+      console.log(response);
       if (response.status === 200) {
         ToastMsg(response.data.message, "success");
       } else {
