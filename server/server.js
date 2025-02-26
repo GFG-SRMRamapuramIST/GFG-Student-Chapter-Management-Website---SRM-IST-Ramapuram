@@ -26,28 +26,7 @@ const PORT = process.env.PORT || 4002;
 
 app.set("trust proxy", 1);
 app.use(express.json());
-
-const allowedOrigins = [
-  "https://gfgsc-management-website-srm-ist-ramapuram-testing.vercel.app",
-  "http://localhost:5173",
-];
-
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    methods: "GET, POST, PUT, DELETE, OPTIONS",
-    allowedHeaders: "Content-Type, Authorization",
-    credentials: true,
-  })
-);
-
-app.options("*", cors());
+app.use(cors());
 
 //* Routers
 app.get("/", (req, res) => {
