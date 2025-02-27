@@ -25,16 +25,19 @@ const PlatformLinkPlaceholder = ({ platform, username }) => {
   if (!username) return null;
 
   const { base, display } = platformUrls[platform];
+  const fullUrl = `${display}${username}`;
 
   return (
     <a
       href={`${base}${username}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="text-xs text-gray-500 hover:text-gfgsc-green hover:underline truncate"
+      className="block text-xs text-gray-500 hover:text-gfgsc-green hover:underline"
+      title={fullUrl} // Show full URL on hover
     >
-      {display}
-      {username}
+      <div className="truncate max-w-full">
+        {fullUrl}
+      </div>
     </a>
   );
 };
