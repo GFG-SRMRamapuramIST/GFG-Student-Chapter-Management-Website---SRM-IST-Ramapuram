@@ -48,7 +48,7 @@ function getCronExpression(date, endTime) {
  */
 async function loadContestsIntoHeap() {
   try {
-    console.log(chalk.blue("Fetching upcoming contests from the database..."));
+    //console.log(chalk.blue("Fetching upcoming contests from the database..."));
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const contests = await DailyContests.find({ date: { $gte: today } });
