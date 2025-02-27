@@ -16,6 +16,7 @@ const {
 const {
   fetchCodeforcesContestData,
 } = require("./CodeForces/CodeForcesContestDataFunction");
+
 const { Users, DailyContests } = require("../../Models");
 
 let currentTask = null;
@@ -62,7 +63,7 @@ async function loadContestsIntoHeap() {
         addContest(contestName, date, endTime, platform.toLowerCase());
         console.log(
           chalk.green(
-            `Added contest '${contestName}' (${platform}) to the min heap, scheduled at ${endTime}`
+            `Added contest '${contestName}' (${platform}) to the contest min heap, scheduled at ${endTime}`
           )
         );
       });
