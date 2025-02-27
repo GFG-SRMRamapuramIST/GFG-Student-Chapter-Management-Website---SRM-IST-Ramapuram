@@ -16,7 +16,10 @@ const {
   updateContestDataScheduler,
 } = require("./CodingPlatformScheduler/ContestDataScheduler");
 
+const keepAliveJob = require("./KeepAliveJob");
+
 module.exports = {
+  keepAliveJob,
   monthEndScheduler,
   scheduleNextEvent,
   updateUserCodingPlatformsDataScheduler,

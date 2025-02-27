@@ -9,6 +9,7 @@ const connectDB = require("./DB/Connection");
 
 //* Importing scheduled tasks
 const {
+  keepAliveJob,
   monthEndScheduler,
   scheduleNextEvent,
   updateUserCodingPlatformsDataScheduler,
