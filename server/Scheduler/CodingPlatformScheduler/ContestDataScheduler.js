@@ -32,6 +32,8 @@ function getCronExpression(date, endTime) {
   }
 
   const contestTime = new Date(endTime);
+  contestTime.setMinutes(contestTime.getMinutes() + 2); // Add 2 minutes
+
   const localMinute = contestTime.getMinutes();
   const localHour = contestTime.getHours();
   const localDay = contestTime.getDate();
