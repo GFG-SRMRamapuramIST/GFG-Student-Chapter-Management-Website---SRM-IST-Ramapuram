@@ -24,14 +24,7 @@ const { userControllers } = require("../Controllers");
 */
 
 // Multer configuration for handling profile picture upload
-const storage = multer.diskStorage({
-  destination: (req, file, callback) => {
-    callback(null, "./Uploads");
-  },
-  filename: (req, file, callback) => {
-    callback(null, `image-${Date.now()}.${file.originalname}`);
-  },
-});
+const storage = multer.memoryStorage();
 
 const upload = multer({
   storage: storage,

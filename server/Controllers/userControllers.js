@@ -4,6 +4,17 @@ const bcrypt = require("bcryptjs");
 const { Users } = require("../Models");
 const { verifyAuthToken, cloudinary } = require("../Utilities");
 
+// Function to upload image buffer to Cloudinary
+const uploadToCloudinary = (buffer) => {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream((error, result) => {
+      if (error) return reject(error);
+      resolve(result.secure_url);
+    });
+    streamifier.createReadStream(buffer).pipe(stream);
+  });
+};
+
 /*
 ************************** APIs **************************
 0. Get Edit Profile Page Data
@@ -205,30 +216,27 @@ exports.changePassword = async (req, res) => {
 
 //3. Edit Profile Picture
 exports.editProfilePicture = async (req, res) => {
-  const token = req.headers.authorization?.split(" ")[1]; // Extract token
+  const token = req.headers.authorization?.split(" ")[1];
 
   if (!token) {
     return res.status(401).json({ message: "No token provided" });
   }
 
   try {
-    // Verify the auth token
     const authResult = await verifyAuthToken(token);
     if (authResult.status !== "not expired") {
       return res.status(400).json({ message: authResult.message });
     }
 
     const userId = authResult.userId;
-
     let profilePicture = null;
 
     if (req.file) {
-      // Upload the new profile picture to Cloudinary
-      const uploadResult = await cloudinary.uploader.upload(req.file.path);
-      profilePicture = uploadResult.secure_url;
+      // Upload directly from buffer
+      profilePicture = await uploadToCloudinary(req.file.buffer);
     }
 
-    // Update the user's profile picture (set to null if removed)
+    // Update the user's profile picture
     const updatedUser = await Users.findByIdAndUpdate(
       userId,
       { profilePicture },
@@ -247,9 +255,7 @@ exports.editProfilePicture = async (req, res) => {
     });
   } catch (error) {
     console.error("Error updating profile picture:", error.message);
-    return res
-      .status(500)
-      .json({ message: "Internal server error", error: error.message });
+    return res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
 
