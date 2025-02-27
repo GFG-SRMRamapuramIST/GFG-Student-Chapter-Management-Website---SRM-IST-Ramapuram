@@ -10,6 +10,10 @@ const {
 } = require("../Models");
 const { verifyAuthToken, sendEmail } = require("../Utilities");
 
+const {
+  updateLeaderboardRankings,
+} = require("../Scheduler/CodingPlatformScheduler/LeaderBoardSorting");
+
 /*
 ************************** APIs **************************
 
@@ -858,6 +862,8 @@ exports.deleteUser = async (req, res) => {
           </body>
       </html>`;
     await sendEmail(user.email, subject, message);
+
+    await updateLeaderboardRankings();
 
     return res.status(200).json({ message: "User deleted successfully." });
   } catch (error) {
