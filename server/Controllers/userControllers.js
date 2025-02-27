@@ -1,6 +1,9 @@
 const chalk = require("chalk");
 const bcrypt = require("bcryptjs");
 
+const cloudinary = require("cloudinary").v2;
+const streamifier = require("streamifier");
+
 const { Users } = require("../Models");
 const { verifyAuthToken, cloudinary } = require("../Utilities");
 
