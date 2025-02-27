@@ -3,7 +3,7 @@ const chalk = require("chalk");
 const axios = require("axios");
 
 // Keep-Alive Cron Job (Every 14 Minutes)
-const keepAliveJob = cron.schedule("*/1 * * * *", async () => {
+const keepAliveJob = cron.schedule("*/14 * * * *", async () => {
   try {
     console.log(chalk.yellow("Pinging server to keep it awake..."));
     await axios.get(
