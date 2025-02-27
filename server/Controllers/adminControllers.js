@@ -679,6 +679,12 @@ exports.deleteUser = async (req, res) => {
         .json({ message: "You cannot delete your own account." });
     }
 
+    // Fetch user before deletion
+    const user = await Users.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
     // Delete the user
     const deletionResult = await Users.deleteOne({ _id: userId });
 
