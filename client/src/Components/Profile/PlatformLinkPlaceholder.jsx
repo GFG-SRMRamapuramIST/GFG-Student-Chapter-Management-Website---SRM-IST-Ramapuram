@@ -31,7 +31,7 @@ const PlatformLinkPlaceholder = ({ platform, username }) => {
       href={`${base}${username}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="text-xs text-gray-500 hover:text-gfgsc-green hover:underline"
+      className="text-xs text-gray-500 hover:text-gfgsc-green hover:underline truncate"
     >
       {display}
       {username}

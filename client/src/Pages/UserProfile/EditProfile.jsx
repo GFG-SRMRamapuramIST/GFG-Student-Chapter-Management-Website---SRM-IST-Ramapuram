@@ -205,7 +205,11 @@ const EditProfile = () => {
 
     const renderValue = () => {
       if (value) {
-        return <div className="text-zinc-700">{value}</div>;
+        return (
+          <div className="text-zinc-700 truncate max-w-full" title={value}>
+            {value}
+          </div>
+        );
       }
       return value;
     };
@@ -214,7 +218,7 @@ const EditProfile = () => {
       <div className="flex items-center space-x-2">
         {!isEditing ? (
           <>
-            <div className="flex-1 flex items-center bg-white rounded-lg p-2">
+            <div className="flex-1 flex items-center bg-white rounded-lg p-2 overflow-hidden">
               {Icon && <Icon className="mr-2 text-gfgsc-green" />}
               {renderValue()}
             </div>
