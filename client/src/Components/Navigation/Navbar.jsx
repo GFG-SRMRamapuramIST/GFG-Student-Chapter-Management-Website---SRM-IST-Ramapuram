@@ -50,6 +50,7 @@ const Navbar = ({ isLoggedIn }) => {
     // Removing user token from Redux store
     dispatch(removeUserToken());
     navigate("/");
+    window.location.reload();
   };
 
   const navLinks = isLoggedIn

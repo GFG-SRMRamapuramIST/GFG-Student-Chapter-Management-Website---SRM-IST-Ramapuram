@@ -16,12 +16,15 @@ const RootLayout = () => {
 
   // ************ Verify User Token Starts Here ************
   const [tokenVerified, setTokenVerified] = useState(false);
+  const [userRole, setUserRole] = useState("USER");
+
   const userToken = useSelector((state) => state.auth?.userToken);
   const verifyUserToken = async (userToken) => {
     try {
       const response = await AuthServices.verifyAuthToken(userToken);
       if (response.status == 200) {
         setTokenVerified(true);
+        setUserRole(response.data.role);
       } else {
         ToastMsg("Session expired! Please login again.", "error");
         dispatch(removeUserToken());

@@ -12,12 +12,11 @@ const fetchLeetcodeDetails = async (username, email) => {
   try {
     const response = await axios.get(`${LEETCODE_API_URL}${username}`);
     const { data, status } = response.data;
-
     if (status === "success" && data) {
       return {
         badgesCount: data.badges_count || 0,
         ranking: data.ranking || 0,
-        totalProblemSolved: data.total_solved || 0,
+        totalProblemSolved: data.problems_by_difficulty.All || 0,
       };
     } else {
       console.log(chalk.yellow(`No valid data found for ${username}`));

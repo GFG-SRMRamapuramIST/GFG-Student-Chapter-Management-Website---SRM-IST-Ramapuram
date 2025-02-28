@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 // Icons
 import { MdEmojiEvents, MdTrendingUp } from "react-icons/md";
@@ -14,8 +14,25 @@ import {
 } from "../Components";
 import { ConfirmationPopup, ToastMsg } from "../Utilities";
 
+import { UserServices } from "../Services";
+
 const Dashboard = () => {
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const {
+    toggleSubscribeFunction,
+    getProfilePageDataFunction,
+    fetchTop5UsersFunction,
+  } = UserServices();
+
+  const [stats, setStats] = useState([
+    { icon: MdTrendingUp, label: "Points", value: "0", change: 0 },
+    { icon: MdEmojiEvents, label: "Current Rank", value: "#0", change: 0 },
+    { icon: IoStatsChart, label: "Previous Rank", value: "#0", change: 0 },
+  ]);
+  const [firstName, setFirstName] = useState(null);
+
+  const [top5Users, setTop5Users] = useState([]);
+
+  const [notificationsEnabled, setNotificationsEnabled] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   // ================ DUMMY DATA ================
@@ -36,56 +53,99 @@ const Dashboard = () => {
     },
   ];
 
-  const stats = [
-    { icon: MdTrendingUp, label: "Points", value: "324", change: 12 },
-    { icon: MdEmojiEvents, label: "Current Rank", value: "#42", change: 5 },
-    { icon: IoStatsChart, label: "Previous Rank", value: "#88", change: 2 },
-  ];
-
-  const top5Users = [
-    {
-      id: 1,
-      name: "Aakash Kumar",
-      points: 892,
-      avatar: "https://placehold.co/32x32",
-    },
-    {
-      id: 2,
-      name: "Sanjana Jaldu",
-      points: 845,
-      avatar: "https://placehold.co/32x32",
-    },
-    {
-      id: 3,
-      name: "Rachit Dhaka",
-      points: 812,
-      avatar: "https://placehold.co/32x32",
-    },
-    {
-      id: 4,
-      name: "Shamirul",
-      points: 798,
-      avatar: "https://placehold.co/32x32",
-    },
-    {
-      id: 5,
-      name: "Jeyasurya",
-      points: 756,
-      avatar: "https://placehold.co/32x32",
-    },
-  ];
-
   // ================ Dashboard Handlers ================
+
+  // Get basic user data on page load
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await getProfilePageDataFunction();
+        if (response.status === 200) {
+          const userData = response.data;
+
+          // Extract first name correctly
+          const extractFirstName = (fullName) => {
+            const nameParts = fullName.replace(/\./g, "").split(" "); // Remove dots and split
+            for (let part of nameParts) {
+              if (part.length > 1) return part; // Return first element with more than 1 character
+            }
+            return "User"; // Default fallback
+          };
+
+          setFirstName(extractFirstName(userData.name));
+
+          // Update notifications status
+          setNotificationsEnabled(!userData.subscribed);
+
+          // Update stats
+          setStats([
+            {
+              icon: MdTrendingUp,
+              label: "Points",
+              value: userData.totalQuestionSolved || "0",
+              change: 0,
+            },
+            {
+              icon: MdEmojiEvents,
+              label: "Current Rank",
+              value: `#${userData.currentRank || "0"}`,
+              change: 0,
+            },
+            {
+              icon: IoStatsChart,
+              label: "Previous Rank",
+              value: `#${userData.previousRank || "0"}`,
+              change: 0,
+            },
+          ]);
+        } else {
+          setFirstName("User");
+          ToastMsg(response.response.data.message, "error");
+        }
+      } catch (error) {
+        console.log("Error fetching user data:", error);
+        ToastMsg("Failed to load user data", "error");
+      }
+    };
+
+    const fetchTop5Users = async () => {
+      try {
+        const response = await fetchTop5UsersFunction();
+        if (response.status === 200) {
+          setTop5Users(response.data.data);
+        } else {
+          ToastMsg(response.response.data.message, "error");
+        }
+      } catch (error) {
+        console.log("Error fetching top 5 users:", error);
+        ToastMsg("Failed to load top 5 users", "error");
+      }
+    };
+
+    fetchUserData();
+    fetchTop5Users();
+  }, []);
+
+  // Notifications toggle handler
   const handleToggleNotifications = () => {
     setShowConfirmation(true);
   };
-
-  const confirmToggle = () => {
-    setNotificationsEnabled(!notificationsEnabled);
-    ToastMsg(
-      `Notifications ${!notificationsEnabled ? "enabled" : "disabled"}!`,
-      !notificationsEnabled ? "success" : "info"
-    );
+  // Notifications toggle confirmation handler with API call
+  const confirmToggle = async () => {
+    try {
+      const response = await toggleSubscribeFunction();
+      //console.log(response);
+      if (response.status == 200) {
+        setNotificationsEnabled(!notificationsEnabled);
+        ToastMsg(response.data.message, "success");
+      } else {
+        console.log("Error: ", response.response.data.message);
+        ToastMsg(response.response.data.message, "error");
+      }
+    } catch (error) {
+      console.log("Internal server error: ", error);
+      ToastMsg("Internal server error! Please try later", "error");
+    }
   };
   //================ Dashboard Handlers END ================
 
@@ -110,7 +170,7 @@ const Dashboard = () => {
       />
 
       <DashboardHeader
-        name="Surya"
+        name={firstName}
         notificationsEnabled={notificationsEnabled}
         onToggleNotifications={handleToggleNotifications}
       />

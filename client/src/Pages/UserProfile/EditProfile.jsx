@@ -44,7 +44,7 @@ const EditProfile = () => {
     try {
       //console.log("Fetching Edit Profile Data...");
       const response = await getEditProfilePageDataFuncion();
-      //console.log(response.data);
+      console.log(response);
       setProfileData(response.data);
     } catch (error) {
       ToastMsg("Internal Server Error!", "error");
@@ -72,10 +72,10 @@ const EditProfile = () => {
     try {
       setLoading(true);
       formData.append("profilePicture", file);
-      //console.log("Profile Picture Upload:", file);
+      console.log("Profile Picture Upload:", file);
 
       const response = await changeProfilePicFunction(formData);
-      //console.log(response);
+      console.log(response);
       if (response.status == 200) {
         ToastMsg(response.data.message, "success");
       } else {
@@ -205,7 +205,11 @@ const EditProfile = () => {
 
     const renderValue = () => {
       if (value) {
-        return <div className="text-zinc-700">{value}</div>;
+        return (
+          <div className="text-zinc-700 truncate max-w-full" title={value}>
+            {value}
+          </div>
+        );
       }
       return value;
     };
@@ -214,7 +218,7 @@ const EditProfile = () => {
       <div className="flex items-center space-x-2">
         {!isEditing ? (
           <>
-            <div className="flex-1 flex items-center bg-white rounded-lg p-2">
+            <div className="flex-1 flex items-center bg-white rounded-lg p-2 overflow-hidden">
               {Icon && <Icon className="mr-2 text-gfgsc-green" />}
               {renderValue()}
             </div>

@@ -6,6 +6,16 @@ import { BACKEND_URL } from "./Helper";
 // Function to get user token inside a hook
 const useAuthToken = () => useSelector((state) => state.auth?.userToken);
 
+// Get profile page data API
+const getProfilePageDataFunction = async (params, token) => {
+  return await commonrequest(
+    "POST",
+    `${BACKEND_URL}/api/v1/user/get-profile-data`,
+    params,
+    { Authorization: `Bearer ${token}` }
+  );
+};
+
 // Get edit profile page data API
 const getEditProfilePageDataFuncion = async (token) => {
   return await commonrequest(
@@ -46,20 +56,60 @@ const changeProfilePicFunction = async (formData, userToken) => {
     `${BACKEND_URL}/api/v1/user/edit-profile-picture`,
     formData,
     { Authorization: `Bearer ${userToken}` }
-  )
-}
+  );
+};
+
+// Toggle Subscribe API
+const toggleSubscribeFunction = async (userToken) => {
+  return await commonrequest(
+    "POST",
+    `${BACKEND_URL}/api/v1/user/toggle-subscribe-btn`,
+    null,
+    { Authorization: `Bearer ${userToken}` }
+  );
+};
+
+// Fetch Leaderboard Data API
+const fetchLeaderboardDataFunction = async (
+  { page = 1, limit = 10 },
+  token
+) => {
+  return await commonrequest(
+    "POST",
+    `${BACKEND_URL}/api/v1/user/get-leaderboard-data`,
+    { page, limit },
+    { Authorization: `Bearer ${token}` }
+  );
+};
+
+// Fetch top 5 users API
+const fetchTop5UsersFunction = async (token) => {
+  return await commonrequest(
+    "GET",
+    `${BACKEND_URL}/api/v1/user/get-top-5-users`,
+    null,
+    { Authorization: `Bearer ${token}` }
+  );
+};
 
 // Wrapper to use token inside React components
 const UserService = () => {
   const userToken = useAuthToken();
 
   return {
+    getProfilePageDataFunction: (params) =>
+      getProfilePageDataFunction(params, userToken),
     getEditProfilePageDataFuncion: () =>
       getEditProfilePageDataFuncion(userToken),
     editProfileFunction: (params) => editProfileFunction(params, userToken),
     changePasswordFunction: (params) =>
       changePasswordFunction(params, userToken),
-    changeProfilePicFunction: (formData) => changeProfilePicFunction(formData,userToken)
+    changeProfilePicFunction: (formData) =>
+      changeProfilePicFunction(formData, userToken),
+    toggleSubscribeFunction: () => toggleSubscribeFunction(userToken),
+    fetchLeaderboardDataFunction: (params) =>
+      fetchLeaderboardDataFunction(params, userToken),
+    fetchTop5UsersFunction: () => fetchTop5UsersFunction(userToken),
   };
 };
 

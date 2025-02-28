@@ -1,6 +1,5 @@
 const express = require("express");
 const multer = require("multer");
-const path = require("path");
 
 const router = new express.Router();
 
@@ -15,6 +14,10 @@ const { userControllers } = require("../Controllers");
 3. Edit Profile Picture API - "{BACKEND_URL}/api/v1/user/edit-profile-picture"
 4. Toggle Subscibe API - "{BACKEND_URL}/api/v1/user/toggle-subscribe-btn"
 
+5. Get Profile Page Data API - "{BACKEND_URL}/api/v1/user/get-profile-data"
+6. Get Leaderboard Data API - "{BACKEND_URL}/api/v1/user/get-leaderboard-data"
+7. Get top 5 users API - "{BACKEND_URL}/api/v1/user/get-top-5-users"
+
  Join a Team API - "{BACKEND_URL}/api/v1/user/join-team"
  Leave a Team API - "{BACKEND_URL}/api/v1/user/leave-team"
 
@@ -22,15 +25,7 @@ const { userControllers } = require("../Controllers");
 */
 
 // Multer configuration for handling profile picture upload
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "./Public/ProfilePicUploads");
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, `${uniqueSuffix}-${file.originalname}`);
-  },
-});
+const storage = multer.memoryStorage();
 
 const upload = multer({
   storage: storage,
@@ -47,7 +42,10 @@ const upload = multer({
 const uploadProfilePicture = upload.single("profilePicture");
 
 //0. Get edit profile page data API
-router.get("/get-edit-profile-page-data", userControllers.getEditProfilePageData)
+router.get(
+  "/get-edit-profile-page-data",
+  userControllers.getEditProfilePageData
+);
 
 //1. Edit Profile API
 router.post("/edit-profile", userControllers.editProfile);
@@ -56,11 +54,23 @@ router.post("/edit-profile", userControllers.editProfile);
 router.post("/change-password", userControllers.changePassword);
 
 //3. Edit Profile Picture API
-router.post("/edit-profile-picture", uploadProfilePicture, userControllers.editProfilePicture);
+router.post(
+  "/edit-profile-picture",
+  uploadProfilePicture,
+  userControllers.editProfilePicture
+);
 
 //4. Toggle Subscribe API
-router.post("/toggle-subscribe-btn", userControllers.toggleSubscribeOption)
+router.post("/toggle-subscribe-btn", userControllers.toggleSubscribeOption);
 
+//5. Get Profile Page Data API
+router.post("/get-profile-data", userControllers.getProfilePageData);
+
+//6. Get Leaderboard Data API
+router.post("/get-leaderboard-data", userControllers.fetchLeaderBoardData);
+
+//7. Get top 5 users API
+router.get("/get-top-5-users", userControllers.fetchTopPerformers);
 /*
 //4. Join a Team API
 router.post("/join-team", userControllers.joinTeam);

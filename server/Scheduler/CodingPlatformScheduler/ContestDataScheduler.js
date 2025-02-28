@@ -2,8 +2,11 @@ const cron = require("node-cron");
 const chalk = require("chalk");
 
 const { updateLeaderboardRankings } = require("./LeaderBoardSorting");
-
-const { peekTopContest, removeTopContest } = require("./contestMinHeap");
+const {
+  peekTopContest,
+  removeTopContest,
+  addContest,
+} = require("./contestMinHeap");
 const {
   fetchCodeChefContestData,
 } = require("./CodeChef/CodeChefContestDataFunction");
@@ -13,14 +16,15 @@ const {
 const {
   fetchCodeforcesContestData,
 } = require("./CodeForces/CodeForcesContestDataFunction");
-const { Users } = require("../../Models");
+
+const { Users, DailyContests } = require("../../Models");
 
 let currentTask = null;
 
 /**
  * Generates a cron expression for the contest start time.
  * @param {string} date - Contest date in YYYY-MM-DD format.
- * @param {string} endTime - Contest start time in HH:MM format.
+ * @param {string} endTime - Contest end time in ISO format.
  * @returns {string} Cron expression.
  */
 function getCronExpression(date, endTime) {
@@ -29,14 +33,47 @@ function getCronExpression(date, endTime) {
   }
 
   const contestTime = new Date(endTime);
+  contestTime.setMinutes(contestTime.getMinutes() + 2); // Add 2 minutes
 
-  // Convert UTC time to local system time
   const localMinute = contestTime.getMinutes();
   const localHour = contestTime.getHours();
   const localDay = contestTime.getDate();
   const localMonth = contestTime.getMonth() + 1; // Months are 0-based
 
   return `${localMinute} ${localHour} ${localDay} ${localMonth} *`;
+}
+
+/**
+ * Loads contests from the database into the contest min heap on server start.
+ */
+async function loadContestsIntoHeap() {
+  try {
+    //console.log(chalk.blue("Fetching upcoming contests from the database..."));
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const contests = await DailyContests.find({ date: { $gte: today } });
+
+    if (!contests.length) {
+      console.log(chalk.yellow("No upcoming contests found in the database."));
+      return;
+    }
+
+    contests.forEach(({ date, contests }) => {
+      contests.forEach(({ contestName, endTime, platform }) => {
+        addContest(contestName, date, endTime, platform.toLowerCase());
+        console.log(
+          chalk.green(
+            `Added contest '${contestName}' (${platform}) to the contest min heap, scheduled at ${endTime}`
+          )
+        );
+      });
+    });
+  } catch (error) {
+    console.error(
+      chalk.red("Error loading contests into heap:"),
+      error.message
+    );
+  }
 }
 
 /**
@@ -49,7 +86,7 @@ function updateContestDataScheduler() {
 
   const nextContest = peekTopContest();
   if (!nextContest) {
-    console.log("No upcoming contests to schedule.");
+    console.log(chalk.yellow("No upcoming contests to schedule."));
     return;
   }
 
@@ -57,14 +94,17 @@ function updateContestDataScheduler() {
   const cronExpression = getCronExpression(date, endTime);
 
   console.log(
-    `Scheduling contest data update for ${contestName} (${type}) at cron: ${cronExpression}`
+    chalk.cyan(
+      `Scheduling contest data update for '${contestName}' (${type}) at cron: ${cronExpression}`
+    )
   );
 
   currentTask = cron.schedule(cronExpression, async () => {
     try {
-      console.log(`Fetching contest data for ${contestName} (${type})`);
+      console.log(
+        chalk.magenta(`Fetching contest data for '${contestName}' (${type})...`)
+      );
 
-      //! have to filter our the ADMIN user from the list
       const users = await Users.find({});
       for (const user of users) {
         let contestData = null;
@@ -97,15 +137,17 @@ function updateContestDataScheduler() {
         if (contestData) {
           user.totalQuestionSolved += contestData.totalQuestionsSolved;
           await user.save();
-          console.log(`Updated contest data for ${user.email} (${type})`);
-
-          console.log("Updating leaderboard rankings...");
-          await updateLeaderboardRankings();
+          console.log(
+            chalk.green(`Updated contest data for ${user.email} (${type})`)
+          );
         }
       }
+
+      console.log(chalk.blue("Updating leaderboard rankings..."));
+      await updateLeaderboardRankings();
     } catch (error) {
       console.error(
-        chalk.bgRed.bold("Error executing contest data update:"),
+        chalk.red("Error executing contest data update:"),
         error.message
       );
     }
@@ -114,6 +156,11 @@ function updateContestDataScheduler() {
     updateContestDataScheduler(); // Schedule the next contest
   });
 }
+
+(async () => {
+  await loadContestsIntoHeap(); // Load contests from DB on startup
+  updateContestDataScheduler(); // Start the scheduler
+})();
 
 console.log(chalk.bgMagenta.bold("Contest Data Scheduler Initialized."));
 

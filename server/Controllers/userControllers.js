@@ -1,8 +1,21 @@
 const chalk = require("chalk");
 const bcrypt = require("bcryptjs");
 
+const streamifier = require("streamifier");
+
 const { Users } = require("../Models");
 const { verifyAuthToken, cloudinary } = require("../Utilities");
+
+// Function to upload image buffer to Cloudinary
+const uploadToCloudinary = (buffer) => {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream((error, result) => {
+      if (error) return reject(error);
+      resolve(result.secure_url);
+    });
+    streamifier.createReadStream(buffer).pipe(stream);
+  });
+};
 
 /*
 ************************** APIs **************************
@@ -12,6 +25,10 @@ const { verifyAuthToken, cloudinary } = require("../Utilities");
 2. Change Password API
 3. Edit Profile Picture API
 4. Toggle Subscribe API
+
+5. Get Profile page data API
+6. Get Leaderboard data API
+7. Get top 5 performers API
 
 
  Join a Team API
@@ -30,9 +47,7 @@ exports.getEditProfilePageData = async (req, res) => {
     // Verify the auth token
     const authResult = await verifyAuthToken(token);
     if (authResult.status !== "not expired") {
-      return res
-        .status(400)
-        .json({ message: authResult.message });
+      return res.status(400).json({ message: authResult.message });
     }
 
     const userId = authResult.userId;
@@ -117,13 +132,15 @@ exports.editProfile = async (req, res) => {
 
     // Ensure exactly one field is being updated
     const updateKeys = Object.keys(updates);
-    console.log(updateKeys)
+    console.log(updateKeys);
     if (updateKeys.length !== 1) {
-      return res.status(400).json({ message: "You can update only one field at a time" });
+      return res
+        .status(400)
+        .json({ message: "You can update only one field at a time" });
     }
 
     const fieldToUpdate = updateKeys[0];
-    console.log(allowedFields[fieldToUpdate])
+    console.log(allowedFields[fieldToUpdate]);
     if (!allowedFields[fieldToUpdate]) {
       return res.status(400).json({ message: "Invalid field for update" });
     }
@@ -148,19 +165,21 @@ exports.editProfile = async (req, res) => {
     });
   } catch (error) {
     console.error("Error updating profile:", error.message);
-    return res.status(500).json({ message: "Internal server error", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
 
 //2. Change Pasword API
 exports.changePassword = async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1]; // Extract token
-  const {currentPassword, newPassword } = req.body;
+  const { currentPassword, newPassword } = req.body;
 
   if (!token) {
     return res.status(401).json({ message: "No token provided" });
   }
-  if ( !currentPassword || !newPassword) {
+  if (!currentPassword || !newPassword) {
     return res.status(400).json({ message: "Missing required fields" });
   }
 
@@ -168,9 +187,7 @@ exports.changePassword = async (req, res) => {
     // Verify the auth token
     const authResult = await verifyAuthToken(token);
     if (authResult.status !== "not expired") {
-      return res
-        .status(400)
-        .json({ message: authResult.message });
+      return res.status(400).json({ message: authResult.message });
     }
 
     const userId = authResult.userId;
@@ -202,30 +219,27 @@ exports.changePassword = async (req, res) => {
 
 //3. Edit Profile Picture
 exports.editProfilePicture = async (req, res) => {
-  const token = req.headers.authorization?.split(" ")[1]; // Extract token
+  const token = req.headers.authorization?.split(" ")[1];
 
   if (!token) {
     return res.status(401).json({ message: "No token provided" });
   }
 
   try {
-    // Verify the auth token
     const authResult = await verifyAuthToken(token);
     if (authResult.status !== "not expired") {
       return res.status(400).json({ message: authResult.message });
     }
 
     const userId = authResult.userId;
-
     let profilePicture = null;
 
     if (req.file) {
-      // Upload the new profile picture to Cloudinary
-      const uploadResult = await cloudinary.uploader.upload(req.file.path);
-      profilePicture = uploadResult.secure_url;
+      // Upload directly from buffer
+      profilePicture = await uploadToCloudinary(req.file.buffer);
     }
 
-    // Update the user's profile picture (set to null if removed)
+    // Update the user's profile picture
     const updatedUser = await Users.findByIdAndUpdate(
       userId,
       { profilePicture },
@@ -237,7 +251,9 @@ exports.editProfilePicture = async (req, res) => {
     }
 
     return res.status(200).json({
-      message: req.file ? "Profile picture updated successfully" : "Profile picture removed successfully",
+      message: req.file
+        ? "Profile picture updated successfully"
+        : "Profile picture removed successfully",
       user: updatedUser,
     });
   } catch (error) {
@@ -261,9 +277,9 @@ exports.toggleSubscribeOption = async (req, res) => {
     }
 
     const userId = authResult.userId;
-    
+
     // Fetch user from database
-    const user = await User.findById(userId);
+    const user = await Users.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -272,16 +288,166 @@ exports.toggleSubscribeOption = async (req, res) => {
     user.subscribed = !user.subscribed;
     await user.save();
 
-    return res.status(200).json({ 
+    return res.status(200).json({
       message: `Subscription ${user.subscribed ? "enabled" : "disabled"}`,
       subscribed: user.subscribed,
     });
   } catch (error) {
     console.error("Error in toggling subscribe button:", error.message);
-    return res.status(500).json({ message: "Internal server error", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
 
+//5. Get Profile page data API
+exports.getProfilePageData = async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1]; // Extract token
+  if (!token) {
+    return res.status(401).json({ message: "No token provided" });
+  }
+
+  try {
+    // Verify the auth token
+    const authResult = await verifyAuthToken(token);
+    if (authResult.status !== "not expired") {
+      return res.status(400).json({ message: authResult.message });
+    }
+
+    let user;
+    if (req.body.userId) {
+      user = await Users.findById(req.body.userId).lean();
+    } else {
+      const userId = authResult.userId;
+      user = await Users.findById(userId).lean();
+    }
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Formatting academic year
+    const academicYearMapping = {
+      1: "1st Year",
+      2: "2nd Year",
+      3: "3rd Year",
+      4: "4th Year",
+    };
+
+    // Remove unwanted fields
+    const {
+      subscribed,
+      authToken,
+      resetPasswordOTP,
+      otpExpiry,
+      isBlocked,
+      ...filteredUser
+    } = user;
+
+    // Send formatted response
+    res.status(200).json({
+      ...filteredUser,
+      academicYear: academicYearMapping[user.academicYear] || "Unknown",
+    });
+  } catch (error) {
+    console.error("Error getting profile page data:", error.message);
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
+
+//6. Get Leaderboard data API
+exports.fetchLeaderBoardData = async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1]; // Extract token
+  if (!token) {
+    return res.status(401).json({ message: "No token provided" });
+  }
+  try {
+    // Verify the auth token
+    const authResult = await verifyAuthToken(token);
+    if (authResult.status !== "not expired") {
+      return res.status(400).json({ message: authResult.message });
+    }
+
+    let { page = 1, limit = 10 } = req.body;
+    page = parseInt(page, 10);
+    limit = parseInt(limit, 10);
+
+    const skip = (page - 1) * limit;
+
+    // Fetch users sorted by currentRank (null values treated as -1)
+    const users = await Users.find()
+      .lean()
+      .sort({
+        currentRank: 1, // Ascending order
+      })
+      .skip(skip)
+      .limit(limit);
+
+    // Handle null ranks (move them to the end)
+    users.sort((a, b) => {
+      const rankA = a.currentRank ?? Infinity;
+      const rankB = b.currentRank ?? Infinity;
+      return rankA - rankB;
+    });
+
+    const totalUsers = await Users.countDocuments();
+
+    return res.status(200).json({
+      message: "Leaderboard data fetched successfully!",
+      data: users,
+      totalPages: Math.ceil(totalUsers / limit),
+      currentPage: page,
+      limit,
+    });
+  } catch (error) {
+    console.error("Error fetching leaderboard data:", error.message);
+    return res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
+  }
+};
+
+//7. Get top 5 performers API
+exports.fetchTopPerformers = async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1]; // Extract token
+  if (!token) {
+    return res.status(401).json({ message: "No token provided" });
+  }
+
+  try {
+    // Verify the auth token
+    const authResult = await verifyAuthToken(token);
+    if (authResult.status !== "not expired") {
+      return res.status(400).json({ message: authResult.message });
+    }
+
+    // Fetch top 5 performers
+    const topPerformers = await Users.find()
+      .sort({ currentRank: 1 })
+      .limit(5)
+      .select("_id name totalQuestionSolved profilePicture");
+
+    // Format the response
+    const formattedResponse = topPerformers.map((user) => ({
+      id: user._id,
+      name: user.name,
+      points: user.totalQuestionSolved,
+      avatar: user.profilePicture || "https://placehold.co/32x32",
+    }));
+
+    return res.status(200).json({
+      message: "Top 5 performers fetched successfully",
+      data: formattedResponse,
+    });
+  } catch (error) {
+    console.error("Error fetching top performers:", error.message);
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
 
 /*
 // Join a Team API
