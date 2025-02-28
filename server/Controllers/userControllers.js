@@ -28,6 +28,7 @@ const uploadToCloudinary = (buffer) => {
 
 5. Get Profile page data API
 6. Get Leaderboard data API
+7. Get top 5 performers API
 
 
  Join a Team API
@@ -402,6 +403,47 @@ exports.fetchLeaderBoardData = async (req, res) => {
       .json({ message: "Internal Server Error", error: error.message });
   }
 };
+
+//7. Get top 5 performers API
+exports.fetchTopPerformers = async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1]; // Extract token
+  if (!token) {
+    return res.status(401).json({ message: "No token provided" });
+  }
+
+  try {
+    // Verify the auth token
+    const authResult = await verifyAuthToken(token);
+    if (authResult.status !== "not expired") {
+      return res.status(400).json({ message: authResult.message });
+    }
+
+    // Fetch top 5 performers
+    const topPerformers = await Users.find()
+      .sort({ currentRank: 1 })
+      .limit(5)
+      .select("_id name totalQuestionSolved profilePicture");
+
+    // Format the response
+    const formattedResponse = topPerformers.map((user) => ({
+      id: user._id,
+      name: user.name,
+      points: user.totalQuestionSolved,
+      avatar: user.profilePicture || "https://placehold.co/32x32",
+    }));
+
+    return res.status(200).json({
+      message: "Top 5 performers fetched successfully",
+      data: formattedResponse,
+    });
+  } catch (error) {
+    console.error("Error fetching top performers:", error.message);
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
+
 /*
 // Join a Team API
 exports.joinTeam = async (req, res) => {

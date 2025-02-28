@@ -17,8 +17,11 @@ import { ConfirmationPopup, ToastMsg } from "../Utilities";
 import { UserServices } from "../Services";
 
 const Dashboard = () => {
-  const { toggleSubscribeFunction, getProfilePageDataFunction } =
-    UserServices();
+  const {
+    toggleSubscribeFunction,
+    getProfilePageDataFunction,
+    fetchTop5UsersFunction,
+  } = UserServices();
 
   const [stats, setStats] = useState([
     { icon: MdTrendingUp, label: "Points", value: "0", change: 0 },
@@ -26,6 +29,8 @@ const Dashboard = () => {
     { icon: IoStatsChart, label: "Previous Rank", value: "#0", change: 0 },
   ]);
   const [firstName, setFirstName] = useState("User");
+
+  const [top5Users, setTop5Users] = useState([]);
 
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -45,39 +50,6 @@ const Dashboard = () => {
       name: "Weekly Contest 123",
       time: "2025-02-06T14:30:00",
       link: "https://leetcode.com/contest/123",
-    },
-  ];
-
-  const top5Users = [
-    {
-      id: 1,
-      name: "Aakash Kumar",
-      points: 892,
-      avatar: "https://placehold.co/32x32",
-    },
-    {
-      id: 2,
-      name: "Sanjana Jaldu",
-      points: 845,
-      avatar: "https://placehold.co/32x32",
-    },
-    {
-      id: 3,
-      name: "Rachit Dhaka",
-      points: 812,
-      avatar: "https://placehold.co/32x32",
-    },
-    {
-      id: 4,
-      name: "Shamirul",
-      points: 798,
-      avatar: "https://placehold.co/32x32",
-    },
-    {
-      id: 5,
-      name: "Jeyasurya",
-      points: 756,
-      avatar: "https://placehold.co/32x32",
     },
   ];
 
@@ -110,7 +82,7 @@ const Dashboard = () => {
             {
               icon: MdTrendingUp,
               label: "Points",
-              value: userData.points || "0",
+              value: userData.totalQuestionSolved || "0",
               change: 0,
             },
             {
@@ -135,13 +107,29 @@ const Dashboard = () => {
       }
     };
 
+    const fetchTop5Users = async () => {
+      try {
+        const response = await fetchTop5UsersFunction();
+        if (response.status === 200) {
+          setTop5Users(response.data.data);
+        } else {
+          ToastMsg(response.response.data.message, "error");
+        }
+      } catch (error) {
+        console.log("Error fetching top 5 users:", error);
+        ToastMsg("Failed to load top 5 users", "error");
+      }
+    };
+
     fetchUserData();
+    fetchTop5Users();
   }, []);
 
+  // Notifications toggle handler
   const handleToggleNotifications = () => {
     setShowConfirmation(true);
   };
-
+  // Notifications toggle confirmation handler with API call
   const confirmToggle = async () => {
     try {
       const response = await toggleSubscribeFunction();

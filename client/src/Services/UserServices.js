@@ -82,6 +82,16 @@ const fetchLeaderboardDataFunction = async (
   );
 };
 
+// Fetch top 5 users API
+const fetchTop5UsersFunction = async (token) => {
+  return await commonrequest(
+    "GET",
+    `${BACKEND_URL}/api/v1/user/get-top-5-users`,
+    null,
+    { Authorization: `Bearer ${token}` }
+  );
+};
+
 // Wrapper to use token inside React components
 const UserService = () => {
   const userToken = useAuthToken();
@@ -98,6 +108,7 @@ const UserService = () => {
     toggleSubscribeFunction: () => toggleSubscribeFunction(userToken),
     fetchLeaderboardDataFunction: (params) =>
       fetchLeaderboardDataFunction(params, userToken),
+    fetchTop5UsersFunction: () => fetchTop5UsersFunction(userToken),
   };
 };
 
