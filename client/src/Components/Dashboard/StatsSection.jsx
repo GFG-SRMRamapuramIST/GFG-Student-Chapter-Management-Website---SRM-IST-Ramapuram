@@ -1,6 +1,10 @@
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 
-const StatCard = ({ icon: Icon, label, value, change }) => (
+// Importing Icons
+import { FaSpinner } from "react-icons/fa";
+
+const StatCard = ({ icon: Icon, label, value, change, loading }) => (
   <motion.div
     whileHover={{ y: -4 }}
     className="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300"
@@ -9,7 +13,7 @@ const StatCard = ({ icon: Icon, label, value, change }) => (
       <div className="p-2.5 rounded-xl bg-gfgsc-green-200/50">
         <Icon className="text-xl text-gfgsc-green" />
       </div>
-      {change && (
+      {change && !loading && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -21,16 +25,30 @@ const StatCard = ({ icon: Icon, label, value, change }) => (
         </motion.div>
       )}
     </div>
-    <h4 className="text-3xl font-bold text-gfg-black mb-1">{value}</h4>
+
+    {/* Show spinner if loading, otherwise show value */}
+    <h4 className="text-3xl font-bold text-gfg-black mb-1">
+      {loading ? (
+        <FaSpinner className="inline animate-spin text-gfgsc-green" />
+      ) : (
+        value
+      )}
+    </h4>
     <p className="text-sm text-gray-600">{label}</p>
   </motion.div>
 );
 
 export const StatsSection = ({ stats }) => {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(!stats || stats.length === 0);
+  }, [stats]);
+
   return (
     <div className="grid grid-cols-3 gap-4">
       {stats.map((stat, index) => (
-        <StatCard key={index} {...stat} />
+        <StatCard key={index} {...stat} loading={loading} />
       ))}
     </div>
   );

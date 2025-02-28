@@ -28,11 +28,11 @@ const Dashboard = () => {
     { icon: MdEmojiEvents, label: "Current Rank", value: "#0", change: 0 },
     { icon: IoStatsChart, label: "Previous Rank", value: "#0", change: 0 },
   ]);
-  const [firstName, setFirstName] = useState("User");
+  const [firstName, setFirstName] = useState(null);
 
   const [top5Users, setTop5Users] = useState([]);
 
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   // ================ DUMMY DATA ================
@@ -99,6 +99,7 @@ const Dashboard = () => {
             },
           ]);
         } else {
+          setFirstName("User");
           ToastMsg(response.response.data.message, "error");
         }
       } catch (error) {
