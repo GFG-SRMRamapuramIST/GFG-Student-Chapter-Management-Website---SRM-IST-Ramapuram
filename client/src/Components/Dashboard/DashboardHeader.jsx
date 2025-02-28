@@ -23,7 +23,7 @@ const DashboardHeader = ({
   return (
     <div className="flex justify-between items-start mb-8">
       <div>
-        <h1 className="text-4xl font-bold text-gfg-black mb-2">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gfg-black mb-2">
           Hey{" "}
           {loading ? (
             <>
@@ -34,7 +34,7 @@ const DashboardHeader = ({
           )}
           ! 👋
         </h1>
-        <p className="text-gray-600">
+        <p className="text-sm sm:text-base text-gray-600">
           Ready to conquer some coding challenges today?
         </p>
       </div>

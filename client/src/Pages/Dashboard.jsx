@@ -51,6 +51,13 @@ const Dashboard = () => {
       time: "2025-02-06T14:30:00",
       link: "https://leetcode.com/contest/123",
     },
+    {
+      type: "meeting",
+      platform: "leetcode",
+      name: "Weekly Contest 123",
+      time: "2025-02-06T14:30:00",
+      link: "https://leetcode.com/contest/123",
+    },
   ];
 
   // ================ Dashboard Handlers ================
@@ -179,9 +186,7 @@ const Dashboard = () => {
         {/* Main Content */}
         <div className="lg:col-span-8 space-y-6">
           <StatsSection stats={stats} />
-          <div className="bg-white p-6 rounded-2xl shadow-sm">
-            <CustomCalendar events={events} />
-          </div>
+          <CustomCalendar events={events} />
         </div>
 
         {/* Sidebar */}

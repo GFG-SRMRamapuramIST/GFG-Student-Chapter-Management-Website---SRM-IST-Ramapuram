@@ -311,16 +311,16 @@ const CustomCalendar = ({ events }) => {
                       {date.getDate()}
                     </span>
                     {hasEvents && (
-                      <div className="absolute inset-x-2 bottom-2 flex flex-col gap-1">
+                      <div className="absolute sm:inset-x-2 bottom-0 sm:bottom-1 md:bottom-2 flex sm:flex-col gap-1">
                         {contests > 0 && (
-                          <div className="flex items-center gap-1 text-xs bg-[#002b46] text-white rounded-full px-2 py-0.5">
-                            <RiTrophyLine className="w-3 h-3" />
+                          <div className="flex items-center gap-1 text-xs bg-[#002b46] text-white rounded-full px-1 sm:px-2 py-1 sm:py-0.5">
+                            <RiTrophyLine className="hidden sm:inline w-3 h-3" />
                             <span className="hidden md:inline">{contests}</span>
                           </div>
                         )}
                         {meetings > 0 && (
-                          <div className="flex items-center gap-1 text-xs bg-[#00895e] text-white rounded-full px-2 py-0.5">
-                            <RiVideoLine className="w-3 h-3" />
+                          <div className="flex items-center gap-1 text-xs bg-[#00895e] text-white rounded-full px-1 sm:px-2 py-0.5">
+                            <RiVideoLine className="hidden sm:inline w-3 h-3" />
                             <span className="hidden md:inline">{meetings}</span>
                           </div>
                         )}

@@ -10,8 +10,8 @@ const StatCard = ({ icon: Icon, label, value, change, loading }) => (
     className="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300"
   >
     <div className="flex items-center justify-between mb-3">
-      <div className="p-2.5 rounded-xl bg-gfgsc-green-200/50">
-        <Icon className="text-xl text-gfgsc-green" />
+      <div className="p-2 md:p-2.5 rounded-xl bg-gfgsc-green-200/50">
+        <Icon className="text-lg sm:text-xl text-gfgsc-green" />
       </div>
       {change && !loading && (
         <motion.div
@@ -27,14 +27,14 @@ const StatCard = ({ icon: Icon, label, value, change, loading }) => (
     </div>
 
     {/* Show spinner if loading, otherwise show value */}
-    <h4 className="text-3xl font-bold text-gfg-black mb-1">
+    <h4 className="text-2xl md:text-3xl font-bold text-gfg-black mb-1">
       {loading ? (
         <FaSpinner className="inline animate-spin text-gfgsc-green" />
       ) : (
         value
       )}
     </h4>
-    <p className="text-sm text-gray-600">{label}</p>
+    <p className="text-xs sm:text-sm text-gray-600">{label}</p>
   </motion.div>
 );
 
