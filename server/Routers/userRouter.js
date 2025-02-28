@@ -64,14 +64,13 @@ router.post(
 router.post("/toggle-subscribe-btn", userControllers.toggleSubscribeOption);
 
 //5. Get Profile Page Data API
-router.get("/get-profile-data", userControllers.getProfilePageData);
+router.post("/get-profile-data", userControllers.getProfilePageData);
 
 //6. Get Leaderboard Data API
 router.post("/get-leaderboard-data", userControllers.fetchLeaderBoardData);
 
 //7. Get top 5 users API
 router.get("/get-top-5-users", userControllers.fetchTopPerformers);
-
 /*
 //4. Join a Team API
 router.post("/join-team", userControllers.joinTeam);

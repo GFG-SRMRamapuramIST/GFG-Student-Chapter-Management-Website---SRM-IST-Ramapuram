@@ -7,11 +7,11 @@ import { BACKEND_URL } from "./Helper";
 const useAuthToken = () => useSelector((state) => state.auth?.userToken);
 
 // Get profile page data API
-const getProfilePageDataFunction = async (token) => {
+const getProfilePageDataFunction = async (params, token) => {
   return await commonrequest(
-    "GET",
+    "POST",
     `${BACKEND_URL}/api/v1/user/get-profile-data`,
-    null,
+    params,
     { Authorization: `Bearer ${token}` }
   );
 };
@@ -97,7 +97,8 @@ const UserService = () => {
   const userToken = useAuthToken();
 
   return {
-    getProfilePageDataFunction: () => getProfilePageDataFunction(userToken),
+    getProfilePageDataFunction: (params) =>
+      getProfilePageDataFunction(params, userToken),
     getEditProfilePageDataFuncion: () =>
       getEditProfilePageDataFuncion(userToken),
     editProfileFunction: (params) => editProfileFunction(params, userToken),

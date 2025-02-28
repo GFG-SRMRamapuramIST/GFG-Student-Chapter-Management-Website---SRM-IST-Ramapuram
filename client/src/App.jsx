@@ -55,6 +55,7 @@ const appRoutes = {
       children: [
         { index: true, element: <Profile /> },
         { path: "edit", element: <EditProfile /> },
+        { path: ":id", element: <Profile /> },
       ],
     },
     {

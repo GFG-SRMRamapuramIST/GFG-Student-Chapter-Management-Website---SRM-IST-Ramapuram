@@ -314,8 +314,13 @@ exports.getProfilePageData = async (req, res) => {
       return res.status(400).json({ message: authResult.message });
     }
 
-    const userId = authResult.userId;
-    const user = await Users.findById(userId).lean(); // Convert Mongoose document to plain object
+    let user;
+    if (req.body.userId) {
+      user = await Users.findById(req.body.userId).lean();
+    } else {
+      const userId = authResult.userId;
+      user = await Users.findById(userId).lean();
+    }
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });

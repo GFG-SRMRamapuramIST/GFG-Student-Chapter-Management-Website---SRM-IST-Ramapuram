@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-
-import { AakashPfp } from "../../Assets";
+import { useParams } from "react-router-dom";
 
 // Importing Icons
 import { FaSpinner } from "react-icons/fa";
@@ -10,93 +9,6 @@ import { ToastMsg } from "../../Utilities";
 
 // Importing APIs
 import { UserServices } from "../../Services";
-
-const userProfile = {
-  name: "Aakash Kumar",
-  email: "aakashkumar@gfg.com",
-  role: "President",
-  academic_year: "3rd Year",
-  profilePic: AakashPfp,
-  bio: "Full-stack developer passionate about algorithms and competitive programming. Core team member @TechCommunity.",
-
-  // Social media links
-  social: [
-    {
-      platform: "codolio",
-      url: "https://codolio.com/profile/sarahchen",
-    },
-    {
-      platform: "linkedin",
-      url: "https://linkedin.com/in/sarahchen",
-    },
-  ],
-
-  // Quick stats for the Overview tab
-  stats: {
-    questions: 847,
-    individualRank: 34,
-    previousRank: 142,
-  },
-
-  // Coding platform profiles
-  profiles: {
-    leetcode: {
-      handle: "aakashyadav",
-      rating: 2134,
-      rank: 1542,
-      lastActive: "2024-02-01",
-      contests: 24,
-      questions: 214,
-    },
-    codechef: {
-      handle: "aakashkumar",
-      rating: 1876,
-      rank: 2341,
-      lastActive: "2024-01-28",
-      contests: 12,
-      questions: 156,
-    },
-    codeforces: {
-      handle: "aakashkyadav",
-      rating: 1654,
-      rank: 3421,
-      lastActive: "2024-01-30",
-      contests: 18,
-      questions: 312,
-    },
-  },
-
-  badges: [
-    {
-      id: 1,
-      name: "Gold Medal",
-      type: "gold",
-      date: "2023-12-01",
-      description: "Awarded for outstanding performance in coding contests.",
-    },
-    {
-      id: 2,
-      name: "Silver Medal",
-      type: "silver",
-      date: "2023-11-15",
-      description: "Awarded for excellent performance in coding contests.",
-    },
-    {
-      id: 3,
-      name: "Bronze Medal",
-      type: "bronze",
-      date: "2023-10-20",
-      description: "Awarded for good performance in coding contests.",
-    },
-    {
-      id: 4,
-      name: "Top Coder",
-      type: "gold",
-      date: "2023-09-10",
-      description: "Recognized as a top coder in the community.",
-    },
-  ],
-};
 
 const updatesAndAnnouncements = {
   updates: [
@@ -132,6 +44,7 @@ const updatesAndAnnouncements = {
   ],
 };
 
+/*
 const platformPOTDs = [
   {
     platform: "LeetCode",
@@ -172,9 +85,11 @@ const platformPOTDs = [
     solved: false,
     url: "#",
   },
-];
+];*/
 
 const Profile = () => {
+  const { id } = useParams(); // 67bf1dae9abafaae75f73b7d
+
   const { getProfilePageDataFunction } = UserServices();
 
   const [loading, setLoading] = useState(true);
@@ -217,10 +132,11 @@ const Profile = () => {
   });
 
   //* **************** Fetch Profile Data *****************//
-  const fetchProfileData = async () => {
+  const fetchProfileData = async (profileId) => {
     try {
       setLoading(true);
-      const response = await getProfilePageDataFunction();
+      //console.log("Fetching profile data for:", profileId);
+      const response = await getProfilePageDataFunction({ userId: profileId });
       //console.log(response);
 
       if (response.status !== 200) {
@@ -321,13 +237,15 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    fetchProfileData();
-  }, []);
-  //* *****************************************************//
+    if (id) {
+      fetchProfileData(id);
+      //console.log("Profile ID:", id);
+    } else {
+      fetchProfileData();
+    }
+  }, [id]);
 
-  useEffect(() => {
-    console.log("Updated userProfileData:", userProfileData);
-  }, [userProfileData]);
+  //* *****************************************************//
 
   return (
     <div className="min-h-screen">
