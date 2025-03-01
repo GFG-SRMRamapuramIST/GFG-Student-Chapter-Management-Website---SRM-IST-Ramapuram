@@ -101,7 +101,7 @@ const Dashboard = () => {
             {
               icon: IoStatsChart,
               label: "Previous Rank",
-              value: `#${userData.previousRank || "0"}`,
+              value: `#${userData.prevMonthData.prevRank || "0"}`,
               change: 0,
             },
           ]);
