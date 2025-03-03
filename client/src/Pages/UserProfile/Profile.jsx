@@ -44,48 +44,7 @@ const updatesAndAnnouncements = {
   ],
 };
 
-/*
-const platformPOTDs = [
-  {
-    platform: "LeetCode",
-    title: "Maximum Subarray Sum",
-    description:
-      "Find the contiguous subarray within an array that has the largest sum.",
-    difficulty: "Medium",
-    timeLimit: "1 sec",
-    timeLeft: "16h 30m",
-    tags: ["Array", "Dynamic Programming", "Divide and Conquer"],
-    date: "Feb 2, 2025",
-    solved: true,
-    url: "#",
-  },
-  {
-    platform: "CodeChef",
-    title: "Chef and Strings",
-    description:
-      "Chef has a string S consisting of lowercase English characters. Help Chef calculate the value of his string.",
-    difficulty: "Easy",
-    timeLimit: "2 sec",
-    timeLeft: "20h 45m",
-    tags: ["Strings", "Implementation"],
-    date: "Feb 2, 2025",
-    solved: false,
-    url: "#",
-  },
-  {
-    platform: "GeeksForGeeks",
-    title: "Binary Tree Level Order Traversal",
-    description:
-      "Given a binary tree, return the level order traversal of its nodes values.",
-    difficulty: "Hard",
-    timeLimit: "1.5 sec",
-    timeLeft: "12h 15m",
-    tags: ["Tree", "BFS", "Queue"],
-    date: "Feb 2, 2025",
-    solved: false,
-    url: "#",
-  },
-];*/
+
 
 const Profile = () => {
   const { id } = useParams(); // 67bf1dae9abafaae75f73b7d
@@ -265,7 +224,7 @@ const Profile = () => {
           />
         </>
       )}
-      {/* <PlatformPOTDs problems={platformPOTDs} /> */}
+      
     </div>
   );
 };

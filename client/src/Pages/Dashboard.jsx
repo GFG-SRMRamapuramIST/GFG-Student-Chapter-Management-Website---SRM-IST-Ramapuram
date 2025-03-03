@@ -10,6 +10,7 @@ import {
   DashboardHeader,
   LeaderboardSection,
   NotificationsSection,
+  PlatformPOTDs,
   StatsSection,
 } from "../Components";
 import { ConfirmationPopup, ToastMsg } from "../Utilities";
@@ -48,15 +49,46 @@ const Dashboard = () => {
       type: "contest",
       platform: "leetcode",
       name: "Weekly Contest 123",
-      time: "2025-02-06T14:30:00",
+      start_time: "2025-03-06T14:30:00",
+      end_time: "2025-03-06T16:30:00",
       link: "https://leetcode.com/contest/123",
     },
     {
       type: "meeting",
       platform: "leetcode",
       name: "Weekly Contest 123",
-      time: "2025-02-06T14:30:00",
+      start_time: "2025-03-06T14:30:00",
+      end_time: "2025-03-06T15:30:00",
       link: "https://leetcode.com/contest/123",
+    },
+  ];
+
+  const platformPOTDs = [
+    {
+      platform: "LeetCode",
+      title: "Maximum Subarray Sum",
+      description:
+        "Find the contiguous subarray within an array that has the largest sum.",
+      difficulty: "Medium",
+      timeLimit: "1 sec",
+      timeLeft: "16h 30m",
+      tags: ["Array", "Dynamic Programming", "Divide and Conquer"],
+      date: "Feb 2, 2025",
+      solved: true,
+      url: "#",
+    },
+    {
+      platform: "GeeksForGeeks",
+      title: "Binary Tree Level Order Traversal",
+      description:
+        "Given a binary tree, return the level order traversal of its nodes values.",
+      difficulty: "Hard",
+      timeLimit: "1.5 sec",
+      timeLeft: "12h 15m",
+      tags: ["Tree", "BFS", "Queue"],
+      date: "Feb 2, 2025",
+      solved: false,
+      url: "#",
     },
   ];
 
@@ -201,7 +233,14 @@ const Dashboard = () => {
             notifications={notifications}
           />
         </div>
+
+        
       </div>
+
+      <div className="mt-8">
+      <PlatformPOTDs problems={platformPOTDs} />
+      </div>
+
     </div>
   );
 };

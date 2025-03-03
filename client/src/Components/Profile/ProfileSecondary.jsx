@@ -237,7 +237,7 @@ const PlatformProfiles = ({ userProfile }) => {
           return (
             <div
               key={platform}
-              className={`group bg-white border-2 p-3 sm:p-4 rounded-lg transition-all duration-300 
+              className={`group relative bg-white border-2 p-3 sm:p-4 rounded-lg transition-all duration-300 
                 ${style.borderHover} ${style.shadow} hover:shadow-lg`}
             >
               <div className="flex items-center justify-between mb-2 sm:mb-3">
@@ -351,6 +351,9 @@ const PlatformProfiles = ({ userProfile }) => {
                     </div>
                   </>
                 )}
+              </div>
+              <div className="absolute bottom-2 right-2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                This gets updated on a weekly basis
               </div>
             </div>
           );

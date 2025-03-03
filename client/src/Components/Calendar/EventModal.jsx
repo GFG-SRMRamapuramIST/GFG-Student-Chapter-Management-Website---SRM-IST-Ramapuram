@@ -15,7 +15,6 @@ import {
   RiSaveLine,
   RiEditLine,
   RiDeleteBin6Line,
-  RiCloseLine,
   RiInformationLine,
 } from "react-icons/ri";
 import { platformIcons } from "../../Constants";
@@ -28,10 +27,8 @@ const PLATFORM_OPTIONS = ["leetcode", "codechef", "codeforces"];
 const EventModal = ({ selectedDate, events, onClose }) => {
   // ============ State Management ============
   const [expandedEvent, setExpandedEvent] = useState(null);
-  const [editingEvent, setEditingEvent] = useState(null);
   const [momContent, setMomContent] = useState("");
   const [isEditingMom, setIsEditingMom] = useState(false);
-  const [editedEventData, setEditedEventData] = useState(null);
 
   // Filter events by type
   const meetings = events.filter((e) => e.type === "meeting");
@@ -42,28 +39,6 @@ const EventModal = ({ selectedDate, events, onClose }) => {
     const key = `${type}-${idx}`;
     setExpandedEvent(expandedEvent === key ? null : key);
     setIsEditingMom(false);
-    setEditingEvent(null);
-  };
-
-  const handleEditStart = (event, type, idx) => { 
-    const key = `${type}-${idx}`;
-    setExpandedEvent(key);
-    setEditedEventData(event);
-    setEditingEvent(event.id);
-  };
-
-  const handleEditCancel = () => {
-    setEditedEventData(null);
-    setEditingEvent(null);
-  };
-
-  const handleEditSave = (event) => {
-    console.log("Editing event:", {
-      original: event,
-      updated: editedEventData,
-    });
-    setEditingEvent(null);
-    setEditedEventData(null);
   };
 
   const handleDelete = (event) => {
@@ -87,7 +62,6 @@ const EventModal = ({ selectedDate, events, onClose }) => {
   // ============ Render Helper Functions ============
   const renderEventCard = (event, idx, type) => {
     const isExpanded = expandedEvent === `${type}-${idx}`;
-    const isEditing = editingEvent === event.id;
     const Icon =
       type === "contest" ? platformIcons[event.platform] : RiVideoLine;
 
@@ -119,7 +93,7 @@ const EventModal = ({ selectedDate, events, onClose }) => {
               </div>
 
               <div className="flex items-center gap-2">
-                <button
+                {/* <button
                   onClick={(e) => {
                     e.stopPropagation();
                     handleEditStart(event, type, idx);
@@ -127,7 +101,7 @@ const EventModal = ({ selectedDate, events, onClose }) => {
                   className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
                 >
                   <RiEditLine className="w-4 h-4" />
-                </button>
+                </button> */}
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -141,7 +115,7 @@ const EventModal = ({ selectedDate, events, onClose }) => {
             </div>
 
             <p className="text-sm text-white/80">
-              {new Date(event.time).toLocaleTimeString("en-US", {
+              {new Date(event.start_time).toLocaleTimeString("en-US", {
                 hour: "2-digit",
                 minute: "2-digit",
               })}
@@ -157,208 +131,104 @@ const EventModal = ({ selectedDate, events, onClose }) => {
               exit={{ opacity: 0, height: 0 }}
               className="bg-white border border-gray-200 rounded-xl p-4 space-y-4"
             >
-              {isEditing ? (
-                // Edit Form
-                <div className="space-y-4">
-                  <div className="space-y-3">
-                    <input
-                      type="text"
-                      value={editedEventData.name}
-                      onChange={(e) =>
-                        setEditedEventData({
-                          ...editedEventData,
-                          name: e.target.value,
-                        })
-                      }
-                      className="w-full px-3 py-2 border border-gray-200 rounded-lg"
-                      placeholder="Event name"
-                    />
+              <div className="space-y-4">
+                {type === "meeting" && (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <RiInformationLine className="w-4 h-4" />
+                      <span className="font-medium">Description</span>
+                    </div>
+                    <p className="text-sm text-gray-700 pl-6">
+                      {event.description || "No description provided"}
+                    </p>
+                  </div>
+                )}
 
-                    <input
-                      type="datetime-local"
-                      value={editedEventData.time}
-                      onChange={(e) =>
-                        setEditedEventData({
-                          ...editedEventData,
-                          time: e.target.value,
-                        })
-                      }
-                      className="w-full px-3 py-2 border border-gray-200 rounded-lg"
-                    />
-
-                    <input
-                      type="url"
-                      value={editedEventData.link}
-                      onChange={(e) =>
-                        setEditedEventData({
-                          ...editedEventData,
-                          link: e.target.value,
-                        })
-                      }
-                      className="w-full px-3 py-2 border border-gray-200 rounded-lg"
-                      placeholder="Event link"
-                    />
-
-                    {type === "meeting" && (
-                      <>
-                        <textarea
-                          value={editedEventData.description}
-                          onChange={(e) =>
-                            setEditedEventData({
-                              ...editedEventData,
-                              description: e.target.value,
-                            })
-                          }
-                          className="w-full px-3 py-2 border border-gray-200 rounded-lg"
-                          placeholder="Description"
-                          rows={3}
-                        />
-
-                        <select
-                          value={editedEventData.attendees}
-                          onChange={(e) =>
-                            setEditedEventData({
-                              ...editedEventData,
-                              attendees: e.target.value,
-                            })
-                          }
-                          className="w-full px-3 py-2 border border-gray-200 rounded-lg"
-                        >
-                          {ATTENDEE_OPTIONS.map((option) => (
-                            <option key={option} value={option}>
-                              {option}
-                            </option>
-                          ))}
-                        </select>
-                      </>
-                    )}
-
-                    {type === "contest" && (
-                      <select
-                        value={editedEventData.platform}
-                        onChange={(e) =>
-                          setEditedEventData({
-                            ...editedEventData,
-                            platform: e.target.value,
-                          })
-                        }
-                        className="w-full px-3 py-2 border border-gray-200 rounded-lg"
-                      >
-                        {PLATFORM_OPTIONS.map((option) => (
-                          <option key={option} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                    )}
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <RiLinkM className="w-4 h-4" />
+                    <a
+                      href={event.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline"
+                    >
+                      {type === "meeting" ? "Join Meeting" : "View Contest"}
+                    </a>
                   </div>
 
-                  <div className="flex justify-end gap-2">
-                    <button
-                      onClick={handleEditCancel}
-                      className="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={() => handleEditSave(event)}
-                      className="px-4 py-2 bg-gfgsc-green text-white rounded-lg hover:bg-emerald-600 transition-colors"
-                    >
-                      Save Changes
-                    </button>
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <RiTimeLine className="w-4 h-4" />
+                    <span>
+                      Start: {new Date(event.start_time).toLocaleString("en-US", {
+                        dateStyle: "full",
+                        timeStyle: "short",
+                      })}
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <RiTimeLine className="w-4 h-4" />
+                    <span>
+                      End: {new Date(event.end_time).toLocaleString("en-US", {
+                        dateStyle: "full",
+                        timeStyle: "short",
+                      })}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <RiUserLine className="w-4 h-4" />
+                    <span>Created by {event.createdBy || "Anonymous"}</span>
                   </div>
                 </div>
-              ) : (
-                // Event Details View
-                <div className="space-y-4">
-                  {type === "meeting" && (
-                    <div className="space-y-2">
+
+                {type === "meeting" && (
+                  <div className="space-y-3 border-t pt-4">
+                    <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <RiInformationLine className="w-4 h-4" />
-                        <span className="font-medium">Description</span>
+                        <RiFileTextLine className="w-4 h-4" />
+                        <span>Minutes of Meeting</span>
                       </div>
-                      <p className="text-sm text-gray-700 pl-6">
-                        {event.description || "No description provided"}
-                      </p>
-                    </div>
-                  )}
-
-                  <div className="flex flex-col gap-2">
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <RiLinkM className="w-4 h-4" />
-                      <a
-                        href={event.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline"
+                      <button
+                        onClick={handleMomEdit}
+                        className="flex items-center gap-1 px-3 py-1 bg-gfgsc-green text-white rounded-lg text-sm hover:bg-emerald-600 transition-colors"
                       >
-                        {type === "meeting" ? "Join Meeting" : "View Contest"}
-                      </a>
+                        <RiEditLine className="w-4 h-4" />
+                        {momContent ? "Edit MoM" : "Create MoM"}
+                      </button>
                     </div>
 
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <RiTimeLine className="w-4 h-4" />
-                      <span>
-                        {new Date(event.time).toLocaleString("en-US", {
-                          dateStyle: "full",
-                          timeStyle: "short",
-                        })}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <RiUserLine className="w-4 h-4" />
-                      <span>Created by {event.createdBy || "Anonymous"}</span>
-                    </div>
-                  </div>
-
-                  {type === "meeting" && (
-                    <div className="space-y-3 border-t pt-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <RiFileTextLine className="w-4 h-4" />
-                          <span>Minutes of Meeting</span>
+                    {isEditingMom ? (
+                      <div className="space-y-3">
+                        <textarea
+                          className="w-full h-48 p-3 border border-gray-200 rounded-lg text-sm resize-none focus:ring-2 focus:ring-gfgsc-green"
+                          placeholder="Write the minutes of meeting..."
+                          value={momContent}
+                          onChange={(e) => setMomContent(e.target.value)}
+                        />
+                        <div className="flex justify-end">
+                          <button
+                            onClick={handleMomSave}
+                            className="flex items-center gap-1 px-4 py-2 bg-gfgsc-green text-white rounded-lg text-sm hover:bg-emerald-600 transition-colors"
+                          >
+                            <RiSaveLine className="w-4 h-4" />
+                            Save MoM
+                          </button>
                         </div>
-                        <button
-                          onClick={handleMomEdit}
-                          className="flex items-center gap-1 px-3 py-1 bg-gfgsc-green text-white rounded-lg text-sm hover:bg-emerald-600 transition-colors"
-                        >
-                          <RiEditLine className="w-4 h-4" />
-                          {momContent ? "Edit MoM" : "Create MoM"}
-                        </button>
                       </div>
-
-                      {isEditingMom ? (
-                        <div className="space-y-3">
-                          <textarea
-                            className="w-full h-48 p-3 border border-gray-200 rounded-lg text-sm resize-none focus:ring-2 focus:ring-gfgsc-green"
-                            placeholder="Write the minutes of meeting..."
-                            value={momContent}
-                            onChange={(e) => setMomContent(e.target.value)}
-                          />
-                          <div className="flex justify-end">
-                            <button
-                              onClick={handleMomSave}
-                              className="flex items-center gap-1 px-4 py-2 bg-gfgsc-green text-white rounded-lg text-sm hover:bg-emerald-600 transition-colors"
-                            >
-                              <RiSaveLine className="w-4 h-4" />
-                              Save MoM
-                            </button>
-                          </div>
-                        </div>
-                      ) : momContent ? (
-                        <div className="prose prose-sm max-w-none p-4 bg-gray-50 rounded-lg">
-                          {momContent}
-                        </div>
-                      ) : (
-                        <p className="text-sm text-gray-500 italic">
-                          No minutes of meeting recorded yet.
-                        </p>
-                      )}
-                    </div>
-                  )}
-                </div>
-              )}
+                    ) : momContent ? (
+                      <div className="prose prose-sm max-w-none p-4 bg-gray-50 rounded-lg">
+                        {momContent}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-gray-500 italic">
+                        No minutes of meeting recorded yet.
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
@@ -450,7 +320,8 @@ EventModal.propTypes = {
       id: PropTypes.string.isRequired,
       type: PropTypes.oneOf(["meeting", "contest"]).isRequired,
       name: PropTypes.string.isRequired,
-      time: PropTypes.string.isRequired,
+      start_time: PropTypes.string.isRequired,
+      end_time: PropTypes.string.isRequired,
       link: PropTypes.string.isRequired,
       createdBy: PropTypes.string,
       // Meeting specific props
@@ -458,7 +329,6 @@ EventModal.propTypes = {
       attendees: PropTypes.oneOf(ATTENDEE_OPTIONS),
       // Contest specific props
       platform: PropTypes.oneOf(PLATFORM_OPTIONS),
-      endTime: PropTypes.string,
     })
   ).isRequired,
   onClose: PropTypes.func.isRequired,

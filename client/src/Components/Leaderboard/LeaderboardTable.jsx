@@ -67,14 +67,16 @@ const LeaderboardTable = ({ data, isTeam = false }) => {
           {data.map((item) => (
             <motion.tr
               key={item.id}
+              
+              onClick={() => navigate(`/profile/${item.id}`)}
               whileHover={{
                 backgroundColor: "#b3e6d4",
                 transition: { duration: 0.1 },
               }}
-              className="border-b border-gfgsc-green-200"
+              className="border-b border-gfgsc-green-200 hover:cursor-pointer group"
             >
               {isTeam ? (
-                <>
+                <>  
                   <td className="px-4 py-4 whitespace-nowrap text-sm">
                     {item.rank}
                   </td>
@@ -137,10 +139,9 @@ const LeaderboardTable = ({ data, isTeam = false }) => {
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      onClick={() => navigate(`/profile/${item.id}`)}
-                      className="text-gfgsc-green hover:text-gfg-green"
+                      className="text-gfgsc-green hover:text-gfg-green "
                     >
-                      <IoChevronForwardOutline className="w-5 h-5" />
+                      <IoChevronForwardOutline className="w-5 h-5 hidden group-hover:flex" />
                     </motion.button>
                   </td>
                 </>

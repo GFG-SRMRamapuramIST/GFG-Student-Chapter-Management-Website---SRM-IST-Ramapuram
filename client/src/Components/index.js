@@ -68,6 +68,7 @@ export { CustomCalendar };
 import UserTable from "./Admin/UserTable";
 import AllowedEmailsForm from "./Admin/AllowedEmailsForm";
 import AllowedEmailsTable from "./Admin/AllowedEmailsTable";
+import SchedulerControls from "./Admin/SchedulerControls";
 
 export { UserTable, AllowedEmailsForm, AllowedEmailsTable };
 

@@ -14,6 +14,7 @@ import { ConfirmationPopup, ToastMsg, verifyUserToken } from "../Utilities";
 
 // Importing APIs
 import { AdminServices } from "../Services";
+import SchedulerControls from "../Components/Admin/SchedulerControls";
 
 const AdminPanel = () => {
   const dispatch = useDispatch();
@@ -398,7 +399,7 @@ const AdminPanel = () => {
   );
 
   return (
-    <div className=" mx-auto p-6 space-y-6">
+    <div className="mx-auto p-6 space-y-6">
       <ConfirmationPopup
         isOpen={confirmationState.isOpen}
         onClose={() =>
@@ -421,6 +422,11 @@ const AdminPanel = () => {
             label="Allowed Emails"
             isActive={activeTab === "emails"}
             onClick={() => setActiveTab("emails")}
+          />
+          <Tab
+            label="Scheduler Controls"
+            isActive={activeTab === "scheduler"}
+            onClick={() => setActiveTab("scheduler")}
           />
         </div>
       </div>
@@ -466,6 +472,8 @@ const AdminPanel = () => {
             />
           </div>
         ))}
+
+      {activeTab === "scheduler" && <SchedulerControls />}
     </div>
   );
 };

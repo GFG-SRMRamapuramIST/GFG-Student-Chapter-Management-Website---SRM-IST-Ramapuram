@@ -22,10 +22,10 @@ import { AuthServices, CoreMemberServices } from "../../Services";
 const TodayView = ({ events }) => {
   const todayEvents = events
     .filter((event) => {
-      const eventDate = new Date(event.time);
+      const eventDate = new Date(event.start_time);
       return eventDate.toDateString() === new Date().toDateString();
     })
-    .sort((a, b) => new Date(a.time) - new Date(b.time));
+    .sort((a, b) => new Date(a.start_time) - new Date(b.start_time));
 
   return todayEvents.length > 0 ? (
     todayEvents.map((event, idx) => (
@@ -59,7 +59,7 @@ const TodayView = ({ events }) => {
             )}
           </div>
           <p className="text-sm text-white/80">
-            {new Date(event.time).toLocaleTimeString("en-US", {
+            {new Date(event.start_time).toLocaleTimeString("en-US", {
               hour: "2-digit",
               minute: "2-digit",
             })}
@@ -165,7 +165,7 @@ const CustomCalendar = ({ events }) => {
         meetingLink: eventData.link,
         meetingDate: eventData.date,
         meetingTime:
-          eventData.time.length === 5 ? `${eventData.time}:00` : eventData.time,
+          eventData.start_time.length === 5 ? `${eventData.start_time}:00` : eventData.start_time,
         compulsory: eventData.attendees,
       };
       await handleMeetingCreationFunction(formatedMeetingData);
@@ -175,7 +175,7 @@ const CustomCalendar = ({ events }) => {
         contestLink: eventData.link,
         platform: eventData.platform,
         startTime:
-          eventData.time.length === 5 ? `${eventData.time}:00` : eventData.time,
+          eventData.start_time.length === 5 ? `${eventData.start_time}:00` : eventData.start_time,
         endTime:
           eventData.endTime.length === 5
             ? `${eventData.endTime}:00`
@@ -209,7 +209,7 @@ const CustomCalendar = ({ events }) => {
     if (!date) return { meetings: 0, contests: 0, events: [] };
 
     const dayEvents = events.filter((event) => {
-      const eventDate = new Date(event.time);
+      const eventDate = new Date(event.start_time);
       return eventDate.toDateString() === date.toDateString();
     });
 
