@@ -12,6 +12,7 @@ import {
   IoTrophy,
 } from "react-icons/io5";
 import { RotatingCloseButton } from "../../Utilities";
+import { GfgCoin } from "../../Assets";
 
 const TeamDetailsModal = ({ team, onClose }) => {
 
@@ -110,9 +111,9 @@ const TeamDetailsModal = ({ team, onClose }) => {
                   <IoCodeWorking className="text-white text-xl" />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-600">Points</p>
                   <p className="text-xl font-bold text-gfg-black">
                     {team.totalPoints}
+                  <img src={GfgCoin} alt="GfgCoin" className="w-4 h-4 ml-1" />
                   </p>
                 </div>
               </div>
@@ -132,7 +133,9 @@ const TeamDetailsModal = ({ team, onClose }) => {
                 <IoPersonCircle className="text-6xl mx-auto text-gfgsc-green mb-2" />
                 <h4 className="font-bold text-gfg-black">{member.name}</h4>
                 <p className="text-sm text-gray-500">Rank: {member.rank}</p>
-                <p className="text-sm">Points: {member.points}</p>
+                <p className="text-sm">{member.points}
+                <img src={GfgCoin} alt="GfgCoin" className="w-4 h-4 ml-1" />
+                </p>
               </div>
             ))}
           </div>

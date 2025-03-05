@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { IoCodeWorking, IoPeople, IoTrophy } from "react-icons/io5";
+import { GfgCoin } from "../../Assets";
 
 const TeamCard = ({ team, onDetails }) => {
   return (
@@ -24,7 +25,9 @@ const TeamCard = ({ team, onDetails }) => {
         </div>
         <div className="flex items-center space-x-2">
           <IoCodeWorking className="text-gfg-green text-xl" />
-          <span>{team.totalPoints} Points</span>
+          <span>{team.totalPoints} 
+            <img src={GfgCoin} alt="GfgCoin" className="w-4 h-4 ml-1" />
+          </span>
         </div>
       </div>
       <div className="mt-4 flex space-x-2">

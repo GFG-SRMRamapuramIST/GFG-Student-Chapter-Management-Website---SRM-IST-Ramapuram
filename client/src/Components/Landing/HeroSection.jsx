@@ -17,6 +17,7 @@ import {
   FaTrophy,
   FaMedal,
 } from "react-icons/fa";
+import { GfgCoin } from "../../Assets";
 
 const TopPerformerCard = ({ rank, performer, delay }) => {
   const getRankData = () => {
@@ -120,7 +121,8 @@ const TopPerformerCard = ({ rank, performer, delay }) => {
                   <span className="text-white font-semibold">
                     {performer.points}
                   </span>
-                  <span className="text-white/80 text-sm ml-1">points</span>
+                  {/* <span className="text-white/80 text-sm ml-1">points</span> */}
+                  <img src={GfgCoin} alt="GfgCoin" className="w-4 h-4 ml-1" />
                 </motion.div>
               </div>
             </div>

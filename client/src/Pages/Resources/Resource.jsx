@@ -293,10 +293,10 @@ const Resource = () => {
           <div>
             {/* Filters and Actions */}
             <div className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 mb-6 shadow-lg border border-gray-100">
-              <div className="flex flex-col gap-4">
+              <div className="flex justify-between gap-4">
                 <div className="flex flex-col sm:flex-row flex-wrap gap-4">
                   {/* Difficulty Filter */}
-                  <div className="flex flex-wrap gap-1 sm:gap-2 bg-gray-50 p-1 rounded-lg w-full sm:w-auto">
+                  <div className="flex flex-wrap gap-1 sm:gap-2 bg-gray-100 p-1 rounded-lg w-full sm:w-auto">
                     {["all", "easy", "medium", "hard"].map((filter) => (
                       <button
                         key={filter}
@@ -304,7 +304,7 @@ const Resource = () => {
                         className={`flex-1 sm:flex-initial px-2 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 ${
                           selectedDifficulty === filter
                             ? "bg-gfgsc-green text-white shadow-md"
-                            : "text-gray-600 hover:bg-gray-100"
+                            : "text-gray-600 hover:bg-gray-200"
                         }`}
                       >
                         {filter.charAt(0).toUpperCase() + filter.slice(1)}
@@ -313,7 +313,7 @@ const Resource = () => {
                   </div>
   
                   {/* Platform Filter */}
-                  <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+                  <div className="flex flex-wrap gap-1 sm:gap-2 bg-gray-100 p-1 rounded-lg w-full sm:w-auto">
                     <button
                       onClick={() => setSelectedPlatform("all")}
                       className={`px-3 sm:px-4 py-1 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 ${
@@ -344,17 +344,16 @@ const Resource = () => {
                             ${
                               selectedPlatform === platform
                                 ? "shadow-md"
-                                : "bg-gray-50 text-gray-600 hover:bg-gray-100"
+                                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                             }`}
                         >
                           <PlatformIcon className="text-xs sm:text-sm" />
-                          {platform}
+                          <span className="hidden sm:flex">{platform}</span>
                         </button>
                       );
                     })}
                   </div>
                 </div>
-  
                 <div className="flex items-center gap-2 justify-end">
                   <motion.button
                     whileHover={{ scale: 1.05 }}
@@ -375,9 +374,10 @@ const Resource = () => {
                     className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-1 sm:py-2 bg-gfgsc-green text-white rounded-lg hover:bg-emerald-600 transition-colors shadow-lg shadow-gfgsc-green/20 text-xs sm:text-sm"
                   >
                     <FaPlus />
-                    Add Problem
+                    <span className="hidden sm:flex">Add Problem</span>
                   </motion.button>
                 </div>
+  
               </div>
             </div>
   

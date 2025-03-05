@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 // Importing Icons
 import { IoChevronForwardOutline } from "react-icons/io5";
+import { GfgCoin } from "../../Assets";
 
 const LeaderboardTable = ({ data, isTeam = false }) => {
   const navigate = useNavigate();
@@ -67,7 +68,6 @@ const LeaderboardTable = ({ data, isTeam = false }) => {
           {data.map((item) => (
             <motion.tr
               key={item.id}
-              
               onClick={() => navigate(`/profile/${item.id}`)}
               whileHover={{
                 backgroundColor: "#b3e6d4",
@@ -76,7 +76,7 @@ const LeaderboardTable = ({ data, isTeam = false }) => {
               className="border-b border-gfgsc-green-200 hover:cursor-pointer group"
             >
               {isTeam ? (
-                <>  
+                <>
                   <td className="px-4 py-4 whitespace-nowrap text-sm">
                     {item.rank}
                   </td>
@@ -100,8 +100,9 @@ const LeaderboardTable = ({ data, isTeam = false }) => {
                       )}
                     </div>
                   </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <td className="flex items-center justify-center px-2 py-4 whitespace-nowrap text-right text-sm font-medium ">
                     {item.points}
+                    <img src={GfgCoin} alt="GfgCoin" className="w-6 h-6 ml-1" />
                   </td>
                 </>
               ) : (
@@ -133,7 +134,14 @@ const LeaderboardTable = ({ data, isTeam = false }) => {
                   </td>
                   {/* <td className="px-4 py-4 whitespace-nowrap text-sm">{item.team}</td> */}
                   <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    {item.points}
+                    <div className="inline-flex items-center justify-center">
+                      {item.points}
+                      <img
+                        src={GfgCoin}
+                        alt="GfgCoin"
+                        className="w-6 h-6 ml-1"
+                      />
+                    </div>
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap text-right">
                     <motion.button

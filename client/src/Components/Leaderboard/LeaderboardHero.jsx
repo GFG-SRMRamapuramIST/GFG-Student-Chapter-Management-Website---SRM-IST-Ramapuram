@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { GfgCoin } from "../../Assets";
 
 const LeaderboardHero = ({ topThree, isTeam=false }) => {
   const medalColors = [
@@ -44,8 +45,9 @@ const LeaderboardHero = ({ topThree, isTeam=false }) => {
           )}
           <div className="text-center pb-4">
             <h3 className="text-white font-bold">{member.name}</h3>
-            <p className="text-white/90 text-sm">
-            {member.points} Points
+            <p className="text-white/90 text-sm inline-flex justify-center items-center px-2 py-0.5 bg-white/20 rounded-full">
+            {member.points} 
+            <img src={GfgCoin} alt="GfgCoin" className="w-6 h-6 ml-1" />
             </p>
           </div>
         </motion.div>

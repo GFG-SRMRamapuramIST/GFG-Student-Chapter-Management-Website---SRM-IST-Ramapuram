@@ -12,5 +12,6 @@ export { AakashPfp };
 import codolioIcon from "./icons/codolio.svg";
 import codolioBWIcon from "./icons/codolioBW.svg";
 import logo from "./icons/logo.png";
+import GfgCoin from "./icons/GreenCoin.svg";
 
-export { codolioIcon, logo, codolioBWIcon };
+export { codolioIcon, logo, codolioBWIcon, GfgCoin };

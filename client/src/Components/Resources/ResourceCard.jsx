@@ -28,11 +28,11 @@ const ResourceCard = ({ resource }) => {
               return PlatformIcon ? (
                 <div
                   key={platform}
-                  className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium duration-200 hover:scale-105"
+                  className="inline-flex items-center px-2 py-2 rounded-full text-sm font-medium duration-200 hover:scale-105"
                   style={{ borderColor: color, color: color, borderWidth: '1px' }}
                 >
-                  <PlatformIcon className="mr-1 text-sm" />
-                  {platform}
+                  <PlatformIcon className="text-sm" />
+                  {/* {platform} */}
                 </div>
               ) : null;
             })}

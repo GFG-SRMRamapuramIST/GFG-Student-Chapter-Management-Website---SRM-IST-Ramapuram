@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 
 // Importing Icons
 import { FaSpinner } from "react-icons/fa";
+import { GfgCoin } from "../../Assets";
 
 const LeaderboardSection = ({ top5Users }) => {
   const [loading, setLoading] = useState(true);
@@ -46,8 +47,9 @@ const LeaderboardSection = ({ top5Users }) => {
                     {user.name}
                   </span>
                 </div>
-                <span className="px-2 py-1 ml-2 inline-flex text-xs leading-4 font-semibold rounded-full bg-gfgsc-green-200/60 text-gfgsc-green flex-shrink-0">
+                <span className="ml-2 inline-flex items-center justify-center text-xs leading-4 font-semibold text-gfgsc-green flex-shrink-0">
                   {user.points}
+                  <img src={GfgCoin} alt="GfgCoin" className="w-6 h-6 ml-1" />
                 </span>
               </motion.div>
             </Link>

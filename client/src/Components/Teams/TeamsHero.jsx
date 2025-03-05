@@ -6,6 +6,7 @@ import {
   IoTrophy,
   IoEllipsisVertical,
 } from "react-icons/io5";
+import { GfgCoin } from "../../Assets";
 
 const TeamHero = ({ myTeam }) => {
   return (
@@ -49,7 +50,8 @@ const TeamHero = ({ myTeam }) => {
             <div className="flex items-center space-x-2">
               <IoCodeWorking className="text-gfg-white text-2xl" />
               <span className="font-semibold text-gfg-white">
-                Points: {myTeam.totalPoints}
+                {myTeam.totalPoints}
+                <img src={GfgCoin} alt="GfgCoin" className="w-4 h-4 ml-1" />
               </span>
             </div>
           </div>
@@ -72,7 +74,8 @@ const TeamHero = ({ myTeam }) => {
                 <h3 className="font-bold text-gfg-black">{member.name}</h3>
                 <p className="text-sm text-gray-500">Rank: {member.rank}</p>
                 <p className="text-sm text-gfg-black">
-                  {member.points} Points
+                  {member.points} 
+                  <img src={GfgCoin} alt="GfgCoin" className="w-4 h-4 ml-1" />
                 </p>
               </div>
             </div>
