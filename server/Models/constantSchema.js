@@ -13,6 +13,11 @@ const constantSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+  passingPercentage: {
+    type: Number,
+    required: true,
+    default: 30,
+  },
 });
 
 const ConstantValue = mongoose.model("ConstantValue", constantSchema);

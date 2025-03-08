@@ -29,6 +29,9 @@ router.use(express.static(path.resolve(__dirname, "Public")));
 13. Delete a team API - "{BACKEND_URL}/api/v1/admin/delete-team"
 14. Edit team name API - "{BACKEND_URL}/api/v1/admin/edit-team-name"
 
+15. Edit Constant Values API - "{BACKEND_URL}/api/v1/admin/edit-constant-values"
+16. Fetch Constant Values API - "{BACKEND_URL}/api/v1/admin/fetch-constant-values"
+
 **********************************************************
 */
 
@@ -77,7 +80,13 @@ router.post("/promote-user", adminControllers.promoteUser);
 //10. Demote user one rank below API
 router.post("/demote-user", adminControllers.demoteUser);
 
-//************************** APIs For Teams **************************
+//15. Edit Constant Values API
+router.put("/edit-constant-values", adminControllers.editConstantValues);
+
+//16. Fetch Constant Values API
+router.get("/fetch-constant-values", adminControllers.getConstantValues);
+
+/************************** APIs For Teams **************************
 //11. Update team size API
 router.post("/update-team-size", adminControllers.updateTeamSize);
 
@@ -89,6 +98,6 @@ router.delete("/delete-team", adminControllers.deleteTeam);
 
 //14. Edit team name API
 router.post("/edit-team-name", adminControllers.editTeamName);
-//********************************************************************
+******************************************************************* */
 
 module.exports = router;

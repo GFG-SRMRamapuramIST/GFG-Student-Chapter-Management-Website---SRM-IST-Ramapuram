@@ -9,12 +9,12 @@ import {
   AllowedEmailsForm,
   AllowedEmailsTable,
   UserTable,
+  SchedulerControls,
 } from "../Components";
 import { ConfirmationPopup, ToastMsg, verifyUserToken } from "../Utilities";
 
 // Importing APIs
 import { AdminServices } from "../Services";
-import SchedulerControls from "../Components/Admin/SchedulerControls";
 
 const AdminPanel = () => {
   const dispatch = useDispatch();

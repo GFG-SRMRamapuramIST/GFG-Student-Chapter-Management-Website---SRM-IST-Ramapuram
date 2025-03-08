@@ -82,6 +82,26 @@ const deleteUserAccount = async ({ userId }, userToken) => {
   );
 };
 
+// Fetch Constant Values function
+const fetchConstantValues = async (userToken) => {
+  return await commonrequest(
+    "GET",
+    `${BACKEND_URL}/api/v1/admin/fetch-constant-values`,
+    {},
+    { Authorization: `Bearer ${userToken}` }
+  )
+}
+
+// Edit Constant Values function
+const editConstantValues = async ({achievementScheduler, backupDataScheduler, resetDataScheduler, passingPercentage}, userToken) => {
+  return await commonrequest(
+    "PUT",
+    `${BACKEND_URL}/api/v1/admin/edit-constant-values`,
+    {achievementScheduler, backupDataScheduler, resetDataScheduler, passingPercentage},
+    { Authorization: `Bearer ${userToken}` }
+  )
+}
+
 // Wrapper to use token inside React components
 const AdminServices = () => {
   const userToken = useAuthToken();
@@ -94,6 +114,8 @@ const AdminServices = () => {
     promoteUser: (params) => promoteUser(params, userToken),
     demoteUser: (params) => demoteUser(params, userToken),
     deleteUserAccount: (params) => deleteUserAccount(params, userToken),
+    fetchConstantValues: () => fetchConstantValues(userToken),
+    editConstantValues: (params) => editConstantValues(params, userToken),
   };
 };
 

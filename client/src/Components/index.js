@@ -70,7 +70,7 @@ import AllowedEmailsForm from "./Admin/AllowedEmailsForm";
 import AllowedEmailsTable from "./Admin/AllowedEmailsTable";
 import SchedulerControls from "./Admin/SchedulerControls";
 
-export { UserTable, AllowedEmailsForm, AllowedEmailsTable };
+export { UserTable, AllowedEmailsForm, AllowedEmailsTable, SchedulerControls };
 
 // Resource Page Components
 import AddProblemModal from "./Resources/AddProblemModal";

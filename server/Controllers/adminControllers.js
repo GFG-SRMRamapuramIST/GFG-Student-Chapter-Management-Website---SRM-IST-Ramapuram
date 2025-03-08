@@ -32,6 +32,9 @@ const {
 13. Delete team API
 14. Edit team name API
 
+15. Edit Constant Values API
+16. Fetch Constant Values API
+
 **********************************************************
 */
 
@@ -1348,7 +1351,103 @@ exports.demoteUser = async (req, res) => {
   }
 };
 
-//************************** APIs For Teams **************************
+//15. Edit constant values API
+exports.editConstantValues = async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1]; // Extract token from header
+  const {
+    achievementScheduler,
+    backupDataScheduler,
+    resetDataScheduler,
+    passingPercentage,
+  } = req.body; // New constant values
+
+  // Check for token
+  if (!token) {
+    return res.status(401).json({ message: "Authorization token is required" });
+  }
+
+  // Validate input
+  if (
+    achievementScheduler === null &&
+    backupDataScheduler === null &&
+    resetDataScheduler === null &&
+    passingPercentage === null
+  ) {
+    return res
+      .status(400)
+      .json({ message: "Invalid constant values provided" });
+  }
+
+  try {
+    // Verify and authorize token
+    const authResult = await verifyAndAuthorize(token, ["ADMIN"]);
+    if (authResult.status !== 200) {
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
+    }
+
+    // Find the ConstantValue document
+    const constant = await ConstantValue.findOne();
+
+    if (!constant) {
+      return res.status(500).json({
+        message: "ConstantValue document not found. Please initialize it.",
+      });
+    }
+
+    // Update the constant values
+    constant.achievementScheduler = achievementScheduler;
+    constant.backupDataScheduler = backupDataScheduler;
+    constant.resetDataScheduler = resetDataScheduler;
+    constant.passingPercentage = passingPercentage;
+    await constant.save();
+
+    // Send success response
+    return res.status(200).json({ message: "Constants updated successfully!" });
+  } catch (error) {
+    console.error("Error updating constants:", error.message);
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
+
+//16. Get constant values API
+exports.getConstantValues = async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) {
+    return res.status(401).json({ message: "Authorization token is required" });
+  }
+
+  try {
+    // Verify and authorize token
+    const authResult = await verifyAndAuthorize(token, ["ADMIN"]);
+    if (authResult.status !== 200) {
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
+    }
+    
+    // Find the ConstantValue document
+    const constant = await ConstantValue.findOne();
+
+    if (!constant) {
+      return res.status(500).json({
+        message: "ConstantValue document not found. Please initialize it.",
+      });
+    }
+
+    return res.status(200).json({ constant });
+  } catch (error) {
+    console.error("Error fetching constants:", error.message);
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+}
+
+/************************** APIs For Teams **************************
 
 //11. Update team size API
 exports.updateTeamSize = async (req, res) => {
@@ -1544,4 +1643,4 @@ exports.editTeamName = async (req, res) => {
   }
 };
 
-//********************************************************************
+********************************************************************/
