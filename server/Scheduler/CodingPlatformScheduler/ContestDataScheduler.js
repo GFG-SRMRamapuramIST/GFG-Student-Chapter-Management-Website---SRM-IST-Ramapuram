@@ -11,9 +11,6 @@ const {
   fetchCodeChefContestData,
 } = require("./CodeChef/CodeChefContestDataFunction");
 const {
-  fetchLeetCodeContestData,
-} = require("./LeetCode/LeetCodeContestDataFunction");
-const {
   fetchCodeforcesContestData,
 } = require("./CodeForces/CodeForcesContestDataFunction");
 
@@ -108,23 +105,12 @@ function updateContestDataScheduler() {
       const users = await Users.find({});
       for (const user of users) {
         let contestData = null;
-        const {
-          leetcodeUsername,
-          codechefUsername,
-          codeforcesUsername,
-          email,
-        } = user;
+        const { codechefUsername, codeforcesUsername, email } = user;
 
         if (type === "codechef" && codechefUsername) {
           contestData = await fetchCodeChefContestData(
             codechefUsername,
             contestName
-          );
-        } else if (type === "leetcode" && leetcodeUsername) {
-          contestData = await fetchLeetCodeContestData(
-            leetcodeUsername,
-            contestName,
-            email
           );
         } else if (type === "codeforces" && codeforcesUsername) {
           contestData = await fetchCodeforcesContestData(

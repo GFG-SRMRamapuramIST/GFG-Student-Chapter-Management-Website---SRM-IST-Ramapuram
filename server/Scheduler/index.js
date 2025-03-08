@@ -16,7 +16,13 @@ const {
   updateContestDataScheduler,
 } = require("./CodingPlatformScheduler/ContestDataScheduler");
 
+// Update practice questions count for all users
+const {
+  updatePracticeQuestionsCount,
+} = require("./CodingPlatformScheduler/PracticeQuestionsCountScheduler");
+
 const keepAliveJob = require("./KeepAliveJob");
+
 
 module.exports = {
   keepAliveJob,
@@ -24,4 +30,5 @@ module.exports = {
   scheduleNextEvent,
   updateUserCodingPlatformsDataScheduler,
   updateContestDataScheduler,
+  updatePracticeQuestionsCount,
 };

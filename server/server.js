@@ -14,6 +14,7 @@ const {
   scheduleNextEvent,
   updateUserCodingPlatformsDataScheduler,
   updateContestDataScheduler,
+  updatePracticeQuestionsCount,
 } = require("./Scheduler");
 
 const {
