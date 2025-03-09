@@ -14,7 +14,8 @@ const calculateIncrement = (diff) => {
   if (diff >= 1 && diff <= 3) return 1;
   if (diff >= 4 && diff <= 6) return 2;
   if (diff >= 7 && diff <= 9) return 3;
-  return 3; // If more than 9, just add 3 and leave it
+  if (diff > 9) return 3;
+  return 0; // If more than 9, just add 3 and leave it
 };
 
 // Function to update practice question counts

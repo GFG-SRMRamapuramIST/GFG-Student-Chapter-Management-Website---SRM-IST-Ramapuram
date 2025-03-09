@@ -124,46 +124,6 @@ const ProfileSecondary = ({ userProfile, updatesAndAnnouncements }) => {
             )}
           </div>
         </div>
-
-        {/* Updates & Announcements */}
-        <div className="space-y-4 sm:space-y-6 md:col-span-2 lg:col-span-1">
-          {/* Recent Updates */}
-          <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-            <div className="pt-3 sm:pt-4 px-3 sm:px-4">
-              <h2 className="flex justify-between text-base sm:text-lg font-semibold text-gfgsc-green items-center">
-                <span>Recent Updates</span>
-                <CgBell className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
-              </h2>
-            </div>
-            <div className="p-3 sm:p-4">
-              <div className="space-y-1.5 sm:space-y-2">
-                {updatesAndAnnouncements.updates.map((update) => (
-                  <NotificationItem key={update.id} message={update.message} />
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Announcements */}
-          <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-            <div className="pt-3 sm:pt-4 px-3 sm:px-4">
-              <h2 className="flex justify-between text-base sm:text-lg font-semibold text-gfgsc-green items-center">
-                <span>Announcements</span>
-                <CgBell className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
-              </h2>
-            </div>
-            <div className="p-3 sm:p-4">
-              <div className="space-y-1.5 sm:space-y-2">
-                {updatesAndAnnouncements.announcements.map((announcement) => (
-                  <NotificationItem
-                    key={announcement.id}
-                    message={announcement.title}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
 
       <CustomDialog open={showBadges} onClose={() => setShowBadges(false)}>
@@ -251,7 +211,16 @@ const PlatformProfiles = ({ userProfile }) => {
                   </span>
                 </span>
                 <a
-                  href="#"
+                  href={
+                    platform === "leetcode"
+                      ? `https://leetcode.com/u/${stats.handle}/`
+                      : platform === "codechef"
+                      ? `https://www.codechef.com/users/${stats.handle}`
+                      : platform === "codeforces"
+                      ? `https://codeforces.com/profile/${stats.handle}`
+                      : "#"
+                  }
+                  target="_blank"
                   className={`${style.link} opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110`}
                 >
                   <FaExternalLinkAlt className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
