@@ -9,29 +9,38 @@ import { ScrollToTop, ToastMsg } from "../Utilities";
 import { AuthServices } from "../Services";
 
 import { removeUserToken } from "../Actions";
+import { useUser } from "../Context/UserContext";
 
 const RootLayout = () => {
   const dispatch = useDispatch();
   const { pathname } = useLocation();
 
   // ************ Verify User Token Starts Here ************
-  const [tokenVerified, setTokenVerified] = useState(false);
-  const [userRole, setUserRole] = useState("USER");
+  const { tokenVerified, userRole, updateUserState } = useUser();
 
   const userToken = useSelector((state) => state.auth?.userToken);
   const verifyUserToken = async (userToken) => {
     try {
       const response = await AuthServices.verifyAuthToken(userToken);
       if (response.status == 200) {
-        setTokenVerified(true);
-        setUserRole(response.data.role);
+        updateUserState({
+          tokenVerified: true,
+          userRole: response.data.role,
+          isLoading: false
+        });
       } else {
         ToastMsg("Session expired! Please login again.", "error");
         dispatch(removeUserToken());
+        updateUserState({
+          tokenVerified: false,
+          userRole: 'USER',
+          isLoading: false
+        });
       }
     } catch (error) {
       ToastMsg("Internal Server Error! Please login again.", "error");
       console.error("Login Error:", error.message);
+      updateUserState({ isLoading: false });
     }
   };
 

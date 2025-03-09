@@ -38,12 +38,6 @@ const Dashboard = () => {
 
   // ================ DUMMY DATA ================
 
-  const notifications = [
-    "Team 'CodeCrusaders' achieved 2nd place in last contest",
-    "New resource shared: Advanced DP Techniques",
-    "Upcoming Contest: LeetCode Weekly on Sunday",
-  ];
-
   const events = [
     {
       type: "contest",
@@ -225,22 +219,13 @@ const Dashboard = () => {
         <div className="lg:col-span-4 space-y-6">
           <LeaderboardSection top5Users={top5Users} />
           <NotificationsSection
-            title="Recent Updates"
-            notifications={notifications}
-          />
-          <NotificationsSection
-            title="Announcements"
-            notifications={notifications}
           />
         </div>
-
-        
       </div>
 
       <div className="mt-8">
-      <PlatformPOTDs problems={platformPOTDs} />
+        <PlatformPOTDs problems={platformPOTDs} />
       </div>
-
     </div>
   );
 };

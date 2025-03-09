@@ -18,6 +18,8 @@ import { ToastMsg } from "../../Utilities";
 
 // Importing APIs
 import { AuthServices, CoreMemberServices } from "../../Services";
+import { useUser } from "../../Context/UserContext";
+import { hasMinimumRole, ROLES } from "../../Utilities/roleUtils";
 
 const TodayView = ({ events }) => {
   const todayEvents = events
@@ -87,7 +89,7 @@ const TodayView = ({ events }) => {
 };
 
 const CustomCalendar = ({ events }) => {
-  const userAuthToken = useSelector((state) => state.auth?.userToken);
+  const { userRole } = useUser();
 
   const { meetingCreationFunction, contestCreationFunction } =
     CoreMemberServices();
@@ -98,27 +100,11 @@ const CustomCalendar = ({ events }) => {
 
   // *************** Event Creation Handler Starts Here *******************
 
-  const verifyUserRole = async () => {
-    try {
-      const response = await AuthServices.verifyAuthToken(userAuthToken);
-      if (response.status == 200) {
-        return response.data.role;
-      } else {
-        console.log(response.response.data.message);
-        ToastMsg("Error in verifying your 'Role'! Please try later", "error");
-      }
-    } catch (error) {
-      console.error("Error verifying your Role: ", error);
-      ToastMsg("Internal Server Error! Please try later", "error");
-    }
-  };
-
   const handleShowEventCreation = async () => {
-    const role = await verifyUserRole();
-    if (role && role !== "USER" && role !== "MEMBER") {
+    if (hasMinimumRole(userRole, ROLES.COREMEMBER)) {
       setShowEventCreation(true);
     } else {
-      ToastMsg("You are not authorized to create an event!", "error");
+      ToastMsg("You need CORE member access to create events", "error");
     }
   };
 
@@ -165,7 +151,9 @@ const CustomCalendar = ({ events }) => {
         meetingLink: eventData.link,
         meetingDate: eventData.date,
         meetingTime:
-          eventData.start_time.length === 5 ? `${eventData.start_time}:00` : eventData.start_time,
+          eventData.start_time.length === 5
+            ? `${eventData.start_time}:00`
+            : eventData.start_time,
         compulsory: eventData.attendees,
       };
       await handleMeetingCreationFunction(formatedMeetingData);
@@ -175,7 +163,9 @@ const CustomCalendar = ({ events }) => {
         contestLink: eventData.link,
         platform: eventData.platform,
         startTime:
-          eventData.start_time.length === 5 ? `${eventData.start_time}:00` : eventData.start_time,
+          eventData.start_time.length === 5
+            ? `${eventData.start_time}:00`
+            : eventData.start_time,
         endTime:
           eventData.endTime.length === 5
             ? `${eventData.endTime}:00`
@@ -237,7 +227,12 @@ const CustomCalendar = ({ events }) => {
         <div className="flex items-center gap-4">
           <button
             onClick={handleShowEventCreation}
-            className="flex items-center gap-2  text-gfgsc-green rounded-xl hover:underline underline-offset-8"
+            disabled={!hasMinimumRole(userRole, ROLES.COREMEMBER)}
+            className={`flex items-center gap-2 rounded-xl ${
+              hasMinimumRole(userRole, ROLES.COREMEMBER)
+                ? "text-gfgsc-green hover:underline cursor-pointer"
+                : "text-gray-400 cursor-not-allowed opacity-50"
+            }`}
           >
             <RiAddLine className="w-4 h-4" />
             <span>Add Event</span>
