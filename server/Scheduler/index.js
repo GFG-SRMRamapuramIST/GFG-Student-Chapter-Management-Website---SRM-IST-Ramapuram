@@ -21,6 +21,9 @@ const {
   updatePracticeQuestionsCount,
 } = require("./CodingPlatformScheduler/PracticeQuestionsCountScheduler");
 
+// POTD Scheduler to update POTD data
+const { POTDScheduler } = require("./CodingPlatformScheduler/POTDScheduler");
+
 const keepAliveJob = require("./KeepAliveJob");
 
 
@@ -31,4 +34,5 @@ module.exports = {
   updateUserCodingPlatformsDataScheduler,
   updateContestDataScheduler,
   updatePracticeQuestionsCount,
+  POTDScheduler
 };

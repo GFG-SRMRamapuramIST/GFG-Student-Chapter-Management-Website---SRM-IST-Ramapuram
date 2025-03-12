@@ -1,0 +1,59 @@
+const axios = require("axios");
+const chalk = require("chalk");
+
+const { sendEmail } = require("../../../Utilities");
+
+require("dotenv").config();
+
+const ADMIN_EMAIL = process.env.EMAIL;
+const LEETCODE_API_URL = process.env.LEETCODE_API_URL;
+
+const leetcodePOTDfunction = async () => {
+  try {
+    const response = await axios.get(`${LEETCODE_API_URL}/api/potd`);
+    const { data, status } = response.data;
+
+    if (status === "success" && data) {
+      return {
+        accuracy: data.acceptance_rate || 0,
+        difficulty: data.difficulty || "Unknown",
+        problemName: data.title || "Unknown",
+        problemLink: data.link || "No Link Available",
+        topics: data.topics || [],
+      };
+    } else {
+      console.log(chalk.yellow("No valid POTD data found from LeetCode API."));
+
+      const subject = "LeetCode POTD Data Not Found";
+      const message = `
+        <p>Dear Admin,</p>
+        <p>We couldn't fetch valid LeetCode POTD data today.</p>
+        <p>Please check the API or report this issue.</p>
+        <p>Regards,<br/>GeeksForGeeks Student Chapter SRM IST Ramapuram Automated System</p>
+      `;
+
+      await sendEmail(ADMIN_EMAIL, subject, message);
+      console.log(chalk.bgRed("Admin notified about missing POTD data."));
+
+      return null;
+    }
+  } catch (error) {
+    console.error(chalk.red("Error fetching LeetCode POTD:"), error.message);
+
+    const subject = "LeetCode POTD Data Fetching Failed";
+    const message = `
+      <p>Dear Admin,</p>
+      <p>Failed to fetch LeetCode POTD data.</p>
+      <p>Error Message: <b>${error.message}</b></p>
+      <p>Please investigate the issue.</p>
+      <p>Regards,<br/>GeeksForGeeks Student Chapter SRM IST Ramapuram Automated System</p>
+    `;
+
+    await sendEmail(ADMIN_EMAIL, subject, message);
+    console.log(chalk.bgRed("Admin notified about POTD fetch failure."));
+
+    return null;
+  }
+};
+
+module.exports = { leetcodePOTDfunction };
