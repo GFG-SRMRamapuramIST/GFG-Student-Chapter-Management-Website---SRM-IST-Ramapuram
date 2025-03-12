@@ -22,6 +22,7 @@ const Dashboard = () => {
     toggleSubscribeFunction,
     getProfilePageDataFunction,
     fetchTop5UsersFunction,
+    fetchPOTDFunction,
   } = UserServices();
 
   const [stats, setStats] = useState([
@@ -32,6 +33,8 @@ const Dashboard = () => {
   const [firstName, setFirstName] = useState(null);
 
   const [top5Users, setTop5Users] = useState([]);
+
+  const [platformPOTDs, setPlatformPOTDs] = useState([]);
 
   const [notificationsEnabled, setNotificationsEnabled] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -54,35 +57,6 @@ const Dashboard = () => {
       start_time: "2025-03-06T14:30:00",
       end_time: "2025-03-06T15:30:00",
       link: "https://leetcode.com/contest/123",
-    },
-  ];
-
-  const platformPOTDs = [
-    {
-      platform: "LeetCode",
-      title: "Maximum Subarray Sum",
-      description:
-        "Find the contiguous subarray within an array that has the largest sum.",
-      difficulty: "Medium",
-      timeLimit: "1 sec",
-      timeLeft: "16h 30m",
-      tags: ["Array", "Dynamic Programming", "Divide and Conquer"],
-      date: "Feb 2, 2025",
-      solved: true,
-      url: "#",
-    },
-    {
-      platform: "GeeksForGeeks",
-      title: "Binary Tree Level Order Traversal",
-      description:
-        "Given a binary tree, return the level order traversal of its nodes values.",
-      difficulty: "Hard",
-      timeLimit: "1.5 sec",
-      timeLeft: "12h 15m",
-      tags: ["Tree", "BFS", "Queue"],
-      date: "Feb 2, 2025",
-      solved: false,
-      url: "#",
     },
   ];
 
@@ -155,8 +129,49 @@ const Dashboard = () => {
       }
     };
 
+    const fetchPOTD = async () => {
+      try {
+        const response = await fetchPOTDFunction();
+        if (response.status === 200) {
+          const data = response.data.data;
+          const formattedPOTDs = [];
+
+          if (data.leetcode) {
+            formattedPOTDs.push({
+              platform: "LeetCode",
+              title: data.leetcode.problemName,
+              difficulty: data.leetcode.difficulty,
+              accuracy: data.leetcode.accuracy,
+              tags: data.leetcode.topics,
+              url: data.leetcode.problemLink,
+            });
+          }
+
+          if (data.geeksforgeeks) {
+            formattedPOTDs.push({
+              platform: "GeeksForGeeks",
+              title: data.geeksforgeeks.problemName,
+              difficulty: data.geeksforgeeks.difficulty,
+              accuracy: data.geeksforgeeks.accuracy,
+              tags: data.geeksforgeeks.topics,
+              url: data.geeksforgeeks.problemLink,
+            });
+          }
+
+          setPlatformPOTDs(formattedPOTDs);
+        } else {
+          setPlatformPOTDs([]);
+          ToastMsg(response.response.data.message, "error");
+        }
+      } catch (error) {
+        console.log("Error fetching POTD:", error);
+        ToastMsg("Failed to fetch POTD", "error");
+      }
+    };
+
     fetchUserData();
     fetchTop5Users();
+    fetchPOTD();
   }, []);
 
   // Notifications toggle handler

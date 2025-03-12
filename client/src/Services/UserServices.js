@@ -92,6 +92,16 @@ const fetchTop5UsersFunction = async (token) => {
   );
 };
 
+// Fetch POTD API
+const fetchPOTDFunction = async (token) => {
+  return await commonrequest(
+    "GET",
+    `${BACKEND_URL}/api/v1/user/get-potd`,
+    null,
+    { Authorization: `Bearer ${token}` }
+  );
+}
+
 // Wrapper to use token inside React components
 const UserService = () => {
   const userToken = useAuthToken();
@@ -110,6 +120,7 @@ const UserService = () => {
     fetchLeaderboardDataFunction: (params) =>
       fetchLeaderboardDataFunction(params, userToken),
     fetchTop5UsersFunction: () => fetchTop5UsersFunction(userToken),
+    fetchPOTDFunction: () => fetchPOTDFunction(userToken)
   };
 };
 

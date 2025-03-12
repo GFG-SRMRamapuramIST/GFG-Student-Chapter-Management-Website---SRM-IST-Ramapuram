@@ -11,3 +11,5 @@ Scraping out POD from different coding platforms and displaying it at dashboard 
 ### Fair leaderboard
 
 ### useContext Hook to prevent API calls while navigating to previous route
+
+### Insted of showing top 5 performers of the month in the dashboard we must show the top performers based on the number of medals they have got so far

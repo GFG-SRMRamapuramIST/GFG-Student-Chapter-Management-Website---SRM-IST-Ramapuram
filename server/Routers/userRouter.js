@@ -17,6 +17,7 @@ const { userControllers } = require("../Controllers");
 5. Get Profile Page Data API - "{BACKEND_URL}/api/v1/user/get-profile-data"
 6. Get Leaderboard Data API - "{BACKEND_URL}/api/v1/user/get-leaderboard-data"
 7. Get top 5 users API - "{BACKEND_URL}/api/v1/user/get-top-5-users"
+8. Get POTD API - "{BACKEND_URL}/api/v1/user/get-potd"
 
  Join a Team API - "{BACKEND_URL}/api/v1/user/join-team"
  Leave a Team API - "{BACKEND_URL}/api/v1/user/leave-team"
@@ -71,6 +72,10 @@ router.post("/get-leaderboard-data", userControllers.fetchLeaderBoardData);
 
 //7. Get top 5 users API
 router.get("/get-top-5-users", userControllers.fetchTopPerformers);
+
+//8. Get POTD API
+router.get("/get-potd", userControllers.fetchPOTD)
+
 /*
 //4. Join a Team API
 router.post("/join-team", userControllers.joinTeam);

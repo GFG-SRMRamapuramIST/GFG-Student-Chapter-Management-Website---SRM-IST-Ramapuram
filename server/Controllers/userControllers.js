@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 
 const streamifier = require("streamifier");
 
-const { Users } = require("../Models");
+const { Users, potdSchema } = require("../Models");
 const { verifyAuthToken, cloudinary } = require("../Utilities");
 
 // Function to upload image buffer to Cloudinary
@@ -29,7 +29,7 @@ const uploadToCloudinary = (buffer) => {
 5. Get Profile page data API
 6. Get Leaderboard data API
 7. Get top 5 performers API
-
+8. Get POTD API
 
  Join a Team API
  Leave a Team API
@@ -258,7 +258,9 @@ exports.editProfilePicture = async (req, res) => {
     });
   } catch (error) {
     console.error("Error updating profile picture:", error.message);
-    return res.status(500).json({ message: "Internal server error", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
 
@@ -448,6 +450,40 @@ exports.fetchTopPerformers = async (req, res) => {
       .json({ message: "Internal server error", error: error.message });
   }
 };
+
+//8. Get POTD API
+exports.fetchPOTD = async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1]; // Extract token
+  if (!token) {
+    return res.status(401).json({ message: "No token provided" });
+  }
+
+  try {
+    // Verify the auth token
+    const authResult = await verifyAuthToken(token);
+    if (authResult.status !== "not expired") {
+      return res.status(400).json({ message: authResult.message });
+    }
+
+    // Fetch POTD from the correct schema
+    const potd = await potdSchema.findOne().select("leetcode geeksforgeeks");
+
+    if (!potd) {
+      return res.status(404).json({ message: "POTD not found" });
+    }
+
+    return res.status(200).json({
+      message: "POTD fetched successfully",
+      data: potd,
+    });
+  } catch (error) {
+    console.error("Error fetching POTD:", error.message);
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
+
 
 /*
 // Join a Team API
