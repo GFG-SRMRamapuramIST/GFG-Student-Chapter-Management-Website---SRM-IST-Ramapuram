@@ -117,6 +117,39 @@ const fetchAllQuestionsOfResourceFunction = async (
   );
 };
 
+// Create announcement API
+const createAnnouncementFunction = async (
+  { title, description, date, time, links = [] },
+  userToken
+) => {
+  return await commonrequest(
+    "POST",
+    `${BACKEND_URL}/api/v1/core-member/create-announcement`,
+    { title, description, date, time, links },
+    { Authorization: `Bearer ${userToken}` }
+  );
+};
+
+// Delete announcement API
+const deleteAnnouncementFunction = async ({ announcementId }, userToken) => {
+  return await commonrequest(
+    "DELETE",
+    `${BACKEND_URL}/api/v1/core-member/delete-announcement`,
+    { announcementId },
+    { Authorization: `Bearer ${userToken}` }
+  );
+};
+
+// Fetch all announcements API
+const fetchAllAnnouncementFunction = async ( userToken) => {
+  return await commonrequest(
+    "GET",
+    `${BACKEND_URL}/api/v1/core-member/get-all-announcement`,
+    {},
+    { Authorization: `Bearer ${userToken}` }
+  );
+};
+
 // Wrapper to use token inside React components
 const CoreMemberServices = () => {
   const userToken = useAuthToken();
@@ -139,6 +172,11 @@ const CoreMemberServices = () => {
       fetchAllResourcesFunction(params, userToken),
     fetchAllQuestionsOfResourceFunction: (params) =>
       fetchAllQuestionsOfResourceFunction(params, userToken),
+    createAnnouncementFunction: (params) =>
+      createAnnouncementFunction(params, userToken),
+    deleteAnnouncementFunction: (params) =>
+      deleteAnnouncementFunction(params, userToken),
+    fetchAllAnnouncementFunction: () => fetchAllAnnouncementFunction(userToken)
   };
 };
 

@@ -25,6 +25,10 @@ const router = new express.Router();
 15. Fetch all resources API - "{BACKEND_URL}/api/v1/core-member/fetch-all-resources"
 16. Fetch all questions of a resource API - "{BACKEND_URL}/api/v1/core-member/fetch-all-questions"
 
+17. Create announcement API - "{BACKEND_URL}/api/v1/core-member/create-announcement"
+18. Delete announcement API - "{BACKEND_URL}/api/v1/core-member/delete-announcement"
+19. Get all announcement API = "{BACKEND_URL}/api/v1/core-member/get-all-announcement"
+
 **********************************************************
 */
 
@@ -79,5 +83,17 @@ router.post(
 );
 
 /**************************************************************************/
+
+/***************************** Announcement APIs ******************************/
+// Create announcement API
+router.post("/create-announcement", coreMemberControllers.createAnnouncement);
+
+// Delete announcement API
+router.delete("/delete-announcement", coreMemberControllers.deleteAnnouncement);
+
+// Get all announcement API
+router.get("/get-all-announcement", coreMemberControllers.fetchAllAnnouncement)
+
+/*****************************************************************************/
 
 module.exports = router;

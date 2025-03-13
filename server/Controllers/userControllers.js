@@ -1,4 +1,3 @@
-const chalk = require("chalk");
 const bcrypt = require("bcryptjs");
 
 const streamifier = require("streamifier");
@@ -483,7 +482,6 @@ exports.fetchPOTD = async (req, res) => {
       .json({ message: "Internal server error", error: error.message });
   }
 };
-
 
 /*
 // Join a Team API

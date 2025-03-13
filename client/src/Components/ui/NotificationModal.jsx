@@ -1,47 +1,60 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { RiAddLine, RiCloseLine, RiLinkM } from 'react-icons/ri';
-import { MdDateRange, MdTitle, MdDescription } from 'react-icons/md';
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+
+// Importing Icons
+import { RiAddLine, RiCloseLine, RiLinkM } from "react-icons/ri";
+import {
+  MdDateRange,
+  MdTitle,
+  MdDescription,
+  MdAccessTime,
+} from "react-icons/md";
+import { FaSpinner } from "react-icons/fa";
 
 const NotificationModal = ({ isOpen, onClose, onSubmit }) => {
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    datetime: '',
-    links: [{ url: '', placeholder: '' }]
+    title: "",
+    description: "",
+    date: new Date().toISOString().split("T")[0], // Default to today
+    time: "",
+    links: [{ link: "", linkText: "" }],
   });
 
   const handleAddLink = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      links: [...prev.links, { url: '', placeholder: '' }]
+      links: [...prev.links, { link: "", linkText: "" }],
     }));
   };
 
   const handleRemoveLink = (index) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      links: prev.links.filter((_, i) => i !== index)
+      links: prev.links.filter((_, i) => i !== index),
     }));
   };
 
   const handleLinkChange = (index, field, value) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      links: prev.links.map((link, i) => 
+      links: prev.links.map((link, i) =>
         i === index ? { ...link, [field]: value } : link
-      )
+      ),
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Filter out empty links
+
     const cleanedData = {
       ...formData,
-      links: formData.links.filter(link => link.url && link.placeholder)
+      links: formData.links.filter((link) => link.link && link.linkText),
     };
-    onSubmit(cleanedData);
+
+    setLoading(true);
+    await onSubmit(cleanedData);
+    setLoading(false);
     onClose();
   };
 
@@ -57,7 +70,9 @@ const NotificationModal = ({ isOpen, onClose, onSubmit }) => {
           >
             <div className="p-6">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-semibold text-gray-800">Add Notification</h2>
+                <h2 className="text-2xl font-semibold text-gray-800">
+                  Add Announcement
+                </h2>
                 <button
                   onClick={onClose}
                   className="p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -68,60 +83,105 @@ const NotificationModal = ({ isOpen, onClose, onSubmit }) => {
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-4">
+                  {/* Title */}
                   <div className="relative">
                     <MdTitle className="absolute left-3 top-3 text-gray-400" />
                     <input
                       required
                       type="text"
-                      placeholder="Notification Title"
+                      placeholder="Announcement Title"
                       className="w-full pl-10 pr-4 py-2 border rounded-xl focus:ring-2 focus:ring-gfgsc-green focus:border-transparent"
                       value={formData.title}
-                      onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          title: e.target.value,
+                        }))
+                      }
                     />
                   </div>
 
+                  {/* Description */}
                   <div className="relative">
                     <MdDescription className="absolute left-3 top-3 text-gray-400" />
                     <textarea
                       required
-                      placeholder="Notification Description"
+                      placeholder="Announcement Description"
                       className="w-full pl-10 pr-4 py-2 border rounded-xl focus:ring-2 focus:ring-gfgsc-green focus:border-transparent min-h-[100px]"
                       value={formData.description}
-                      onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          description: e.target.value,
+                        }))
+                      }
                     />
                   </div>
 
+                  {/* Date */}
                   <div className="relative">
                     <MdDateRange className="absolute left-3 top-3 text-gray-400" />
                     <input
-                      type="datetime-local"
+                      type="date"
                       className="w-full pl-10 pr-4 py-2 border rounded-xl focus:ring-2 focus:ring-gfgsc-green focus:border-transparent"
-                      value={formData.datetime}
-                      onChange={(e) => setFormData(prev => ({ ...prev, datetime: e.target.value }))}
+                      value={formData.date}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          date: e.target.value,
+                        }))
+                      }
+                    />
+                  </div>
+
+                  {/* Time */}
+                  <div className="relative">
+                    <MdAccessTime className="absolute left-3 top-3 text-gray-400" />
+                    <input
+                      type="time"
+                      className="w-full pl-10 pr-4 py-2 border rounded-xl focus:ring-2 focus:ring-gfgsc-green focus:border-transparent"
+                      value={formData.time}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          time: e.target.value,
+                        }))
+                      }
                     />
                   </div>
 
                   {/* Links Section */}
                   <div className="space-y-4">
                     {formData.links.map((link, index) => (
-                      <div key={index} className="flex gap-2 bg-gray-50 p-2 rounded-xl">
+                      <div
+                        key={index}
+                        className="flex gap-2 bg-gray-50 p-2 rounded-xl"
+                      >
                         <div className="flex-1 space-y-2">
                           <div className="relative">
                             <RiLinkM className="absolute left-3 top-3 text-gray-400" />
                             <input
                               type="url"
-                              placeholder="URL"
+                              placeholder="Link URL"
                               className="w-full pl-10 pr-4 py-2 border rounded-xl focus:ring-2 focus:ring-gfgsc-green focus:border-transparent"
-                              value={link.url}
-                              onChange={(e) => handleLinkChange(index, 'url', e.target.value)}
+                              value={link.link}
+                              onChange={(e) =>
+                                handleLinkChange(index, "link", e.target.value)
+                              }
                             />
                           </div>
                           <input
                             type="text"
                             placeholder="Link Text"
                             className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-gfgsc-green focus:border-transparent"
-                            value={link.placeholder}
-                            onChange={(e) => handleLinkChange(index, 'placeholder', e.target.value)}
+                            value={link.linkText}
+                            onChange={(e) =>
+                              handleLinkChange(
+                                index,
+                                "linkText",
+                                e.target.value
+                              )
+                            }
                           />
                         </div>
                         <button
@@ -153,9 +213,13 @@ const NotificationModal = ({ isOpen, onClose, onSubmit }) => {
                   </button>
                   <button
                     type="submit"
+                    disabled={loading}
                     className="px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors"
                   >
-                    Add Notification
+                    {loading ? (
+                      <FaSpinner className="animate-spin inline-block" />
+                    ) : null}{" "}
+                    Add Announcement
                   </button>
                 </div>
               </form>

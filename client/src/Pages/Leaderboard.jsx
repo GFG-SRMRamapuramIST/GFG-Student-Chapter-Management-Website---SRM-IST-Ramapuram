@@ -98,7 +98,7 @@ const Leaderboard = () => {
           <div className="p-6 flex items-center justify-center">
             <div className="flex flex-col items-center gap-4">
               <FaSpinner className="animate-spin text-4xl text-gfgsc-green" />
-              <p className="text-gray-600">Loading resource...</p>
+              <p className="text-gray-600">Loading leaderboard...</p>
             </div>
           </div>
         ) : (

@@ -6,6 +6,7 @@ const AllowedEmail = require("./allowedEmailsSchema");
 const BlockedEmails = require("./blockedEmailsSchema");
 const ConstantValue = require("./constantSchema");
 const potdSchema = require("./potdSchema");
+const Announcement = require("./announcementSchema");
 
 module.exports = {
   Users,
@@ -16,4 +17,5 @@ module.exports = {
   BlockedEmails,
   ConstantValue,
   potdSchema,
+  Announcement,
 };

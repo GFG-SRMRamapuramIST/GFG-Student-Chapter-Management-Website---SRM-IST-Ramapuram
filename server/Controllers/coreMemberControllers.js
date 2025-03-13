@@ -1,16 +1,24 @@
-const chalk = require("chalk");
-
-const { verifyAuthToken } = require("../Utilities");
+const {
+  verifyAuthToken,
+  sendEmail,
+  getSubscribedUsers,
+} = require("../Utilities");
 
 // Importing required models and schedulers and event & contest min heap and notification scheduler
-const { addEvent } = require("../Scheduler/EventNotificationScheduler/eventMinHeap");
-const { addContest } = require("../Scheduler/CodingPlatformScheduler/contestMinHeap");
+const {
+  addEvent,
+} = require("../Scheduler/EventNotificationScheduler/eventMinHeap");
+const {
+  addContest,
+} = require("../Scheduler/CodingPlatformScheduler/contestMinHeap");
 const {
   scheduleNextEvent,
 } = require("../Scheduler/EventNotificationScheduler/notificationScheduler");
-const { updateContestDataScheduler } = require("../Scheduler/CodingPlatformScheduler/ContestDataScheduler");
+const {
+  updateContestDataScheduler,
+} = require("../Scheduler/CodingPlatformScheduler/ContestDataScheduler");
 
-const { DailyContests, Notice, Resources } = require("../Models");
+const { DailyContests, Notice, Resources, Announcement } = require("../Models");
 /*
 ************************** APIs **************************
 
@@ -31,6 +39,10 @@ const { DailyContests, Notice, Resources } = require("../Models");
 14. Edit a resource API
 15. Fetch all resources API
 16. Fetch all questions of a resource API
+
+17. Create announcement API
+18. Delete announcement API
+19. Get Announcement API
 
 **********************************************************
 */
@@ -163,12 +175,12 @@ exports.createContest = async (req, res) => {
 
     // Add event to the required min heaps
     addEvent(contestId, contestDate, contestStartDateTime, "contest");
-    addContest(contestName,contestDate, contestEndDateTime, lowerCasePlatform);
+    addContest(contestName, contestDate, contestEndDateTime, lowerCasePlatform);
 
     // Scheduling the next event notification system
     scheduleNextEvent();
     // Schedule the next contest data update system
-    updateContestDataScheduler()
+    updateContestDataScheduler();
 
     return res.status(200).json({
       message: "Contest created successfully!",
@@ -301,9 +313,14 @@ exports.createNotice = async (req, res) => {
       });
     }
 
-    let dailyNotices = await Notice.findOne({ meetingDate: new Date(meetingDate) });
+    let dailyNotices = await Notice.findOne({
+      meetingDate: new Date(meetingDate),
+    });
     if (!dailyNotices) {
-      dailyNotices = new Notice({ meetingDate: new Date(meetingDate), notices: [] });
+      dailyNotices = new Notice({
+        meetingDate: new Date(meetingDate),
+        notices: [],
+      });
     }
 
     const newNotice = {
@@ -319,8 +336,7 @@ exports.createNotice = async (req, res) => {
     await dailyNotices.save();
 
     // Get the contest ID after saving
-    const meetingId =
-    dailyNotices.notices[dailyNotices.notices.length - 1]._id;
+    const meetingId = dailyNotices.notices[dailyNotices.notices.length - 1]._id;
 
     // Add event to the min heap
     addEvent(meetingId, meetingDate, meetingDateTime, "meeting");
@@ -863,3 +879,281 @@ exports.fetchAllQuestionsOfResource = async (req, res) => {
   }
 };
 //************************************************************************ */
+
+//*************************** Announcement API ******************************** */
+
+//17. Create Announcement API
+exports.createAnnouncement = async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    const { title, description, date, time, links } = req.body;
+
+    // Verify and authorize user roles
+    const authResult = await verifyAndAuthorize(token, [
+      "ADMIN",
+      "COREMEMBER",
+      "VICEPRESIDENT",
+      "PRESIDENT",
+    ]);
+
+    if (authResult.status !== 200) {
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
+    }
+
+    // Validate required fields
+    if (!title || !description) {
+      return res
+        .status(400)
+        .json({ message: "Title and description are required." });
+    }
+
+    // Validate links array
+    let formattedLinks = [];
+    if (Array.isArray(links)) {
+      formattedLinks = links.filter(
+        (linkObj) => linkObj.link && linkObj.linkText
+      );
+    }
+
+    // Create announcement
+    const newAnnouncement = new Announcement({
+      title,
+      description,
+      date: date ? new Date(date) : new Date(), // Default to current date if not provided
+      time,
+      links: formattedLinks,
+    });
+
+    await newAnnouncement.save();
+
+    // Get the subscribed users' emails based on the compulsory role
+    const recipients = await getSubscribedUsers("ALL");
+
+    // Send email notification
+    const subject = "Official Announcement";
+    const message = `
+        <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Official Announcement</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+      }
+      .header {
+        text-align: center;
+        padding: 20px;
+      }
+      .header img {
+        height: 80px;
+      }
+      .content {
+        padding: 20px;
+        text-align: left;
+      }
+      .content h2 {
+        color: #00895e;
+        text-align: center;
+      }
+      .content p {
+        color: #555;
+        line-height: 1.5;
+      }
+      .footer {
+        text-align: center;
+        padding: 20px;
+        background-color: #f8f8f8;
+        font-size: 14px;
+        color: #666;
+      }
+      .footer a {
+        color: #00895e;
+        text-decoration: none;
+        font-weight: bold;
+      }
+      .social-icons {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 10px;
+      }
+      .social-icons img {
+        width: 24px;
+        height: 24px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <img
+          src="https://res.cloudinary.com/du1b2thra/image/upload/v1739372825/dyq9xw2oatp9rjthimf4.png"
+          alt="GFG SRM RMP"
+        />
+      </div>
+
+      <div class="content">
+        <h2>Official Announcement</h2>
+        <p>Dear user,</p>
+        <p>We are writing to inform you about an important announcement:</p>
+
+        <h3 style="color: #00895e">${title}</h3>
+        <p>${description}</p>
+
+        <p>
+          For more details and updates regarding this announcement, please visit
+          our official website:
+        </p>
+        <p style="text-align: center">
+          <a
+            href="https://gfgsc-management-website-srm-ist-ramapuram-testing.vercel.app/"
+            style="
+              background-color: #00895e;
+              color: #ffffff;
+              padding: 10px 20px;
+              border-radius: 5px;
+              text-decoration: none;
+              display: inline-block;
+            "
+            >Visit Our Website</a
+          >
+        </p>
+      </div>
+
+      <div class="footer">
+        <p>Join our ever-growing community!</p>
+        <div class="social-icons">
+          <a href="https://www.instagram.com/geeksforgeeks_srm_rmp/"
+            ><img
+              src="https://res.cloudinary.com/du1b2thra/image/upload/v1739607885/wudcidksorrlsc43i0hn.png"
+              alt="Instagram"
+          /></a>
+          <a href="https://www.linkedin.com/company/geeksforgeeks-srm-rmp"
+            ><img
+              src="https://res.cloudinary.com/du1b2thra/image/upload/v1739608002/lpdxsqycyrszaufpfrap.png"
+              alt="LinkedIn"
+          /></a>
+          <a href="https://x.com/GFG_SRM_RMP"
+            ><img
+              src="https://res.cloudinary.com/du1b2thra/image/upload/v1739608105/dnbjvcdmxstrj9yhoy7e.png"
+              alt="Twitter/X"
+          /></a>
+          <a href="https://gfgsrmrmp.vercel.app/"
+            ><img
+              src="https://res.cloudinary.com/du1b2thra/image/upload/v1739608156/iorqcssxpnwvgftktnkt.png"
+              alt="Website"
+          /></a>
+        </div>
+       <div class="footer-bottom" style="height: 200px; overflow: hidden;">
+                      <div>Queries? We're just one email away: <span style="color: #00895e;">geeksforgeeks.srmistrmp@gmail.com</span> </div>
+                      <div>© 2025 GFG Student Chapter. All rights reserved.</div>
+                  </div>
+      </div>
+    </div>
+  </body>
+</html>
+`;
+    await sendEmail(recipients, subject, message);
+
+    return res.status(200).json({
+      message: "Announcement created successfully.",
+      data: newAnnouncement,
+    });
+  } catch (error) {
+    console.error("Error creating announcement:", error.message);
+    return res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+};
+
+//18. Delete Announcement API
+exports.deleteAnnouncement = async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    const { announcementId } = req.body;
+
+    // Verify and authorize user roles
+    const authResult = await verifyAndAuthorize(token, [
+      "ADMIN",
+      "COREMEMBER",
+      "VICEPRESIDENT",
+      "PRESIDENT",
+    ]);
+
+    if (authResult.status !== 200) {
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
+    }
+
+    // Find and delete the announcement
+    const deletedAnnouncement = await Announcement.findByIdAndDelete(
+      announcementId
+    );
+
+    if (!deletedAnnouncement) {
+      return res.status(404).json({ message: "Announcement not found." });
+    }
+
+    return res.status(200).json({
+      message: "Announcement deleted successfully.",
+    });
+  } catch (error) {
+    console.error("Error deleting announcement:", error.message);
+    return res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+};
+
+// 19. Get Announcement API
+exports.fetchAllAnnouncement = async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1]; // Extract token
+  if (!token) {
+    return res.status(401).json({ message: "No token provided" });
+  }
+
+  try {
+    // Verify the auth token
+    const authResult = await verifyAuthToken(token);
+    if (authResult.status !== "not expired") {
+      return res.status(400).json({ message: authResult.message });
+    }
+
+    // Fetch all announcements
+    const announcements = await Announcement.find().sort({
+      date: -1,
+      time: -1,
+    });
+
+    return res.status(200).json({
+      message: "Announcements fetched successfully",
+      data: announcements,
+    });
+  } catch (error) {
+    console.error("Error fetching Announcement: ", error.message);
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
+//**************************************************************************** */
