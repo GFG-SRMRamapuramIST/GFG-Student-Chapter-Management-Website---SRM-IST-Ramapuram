@@ -160,17 +160,8 @@ const EventModal = ({ selectedDate, events, onClose }) => {
                   <div className="flex items-center gap-2 text-sm text-gray-600">
                     <RiTimeLine className="w-4 h-4" />
                     <span>
-                      Start: {new Date(event.start_time).toLocaleString("en-US", {
-                        dateStyle: "full",
-                        timeStyle: "short",
-                      })}
-                    </span>
-                  </div>
-                  
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <RiTimeLine className="w-4 h-4" />
-                    <span>
-                      End: {new Date(event.end_time).toLocaleString("en-US", {
+                      Start:{" "}
+                      {new Date(event.start_time).toLocaleString("en-US", {
                         dateStyle: "full",
                         timeStyle: "short",
                       })}
@@ -178,8 +169,14 @@ const EventModal = ({ selectedDate, events, onClose }) => {
                   </div>
 
                   <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <RiUserLine className="w-4 h-4" />
-                    <span>Created by {event.createdBy || "Anonymous"}</span>
+                    <RiTimeLine className="w-4 h-4" />
+                    <span>
+                      End:{" "}
+                      {new Date(event.end_time).toLocaleString("en-US", {
+                        dateStyle: "full",
+                        timeStyle: "short",
+                      })}
+                    </span>
                   </div>
                 </div>
 

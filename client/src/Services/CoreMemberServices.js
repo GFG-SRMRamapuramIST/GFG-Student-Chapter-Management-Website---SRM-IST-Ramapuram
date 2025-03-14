@@ -32,6 +32,16 @@ const contestCreationFunction = async (
   );
 };
 
+// Get dashboard calender data API
+const getDashboardCalenderDataFunction = async (userToken) => {
+  return await commonrequest(
+    "GET",
+    `${BACKEND_URL}/api/v1/core-member/get-dashboard-calender-data`,
+    {  },
+    { Authorization: `Bearer ${userToken}` }
+  );
+}
+
 // Create a resource API
 const createResourceFunction = async ({ title, description }, userToken) => {
   return await commonrequest(
@@ -159,6 +169,7 @@ const CoreMemberServices = () => {
       meetingCreationFunction(params, userToken),
     contestCreationFunction: (params) =>
       contestCreationFunction(params, userToken),
+    getDashboardCalenderDataFunction: () => getDashboardCalenderDataFunction(userToken),
     createResourceFunction: (params) =>
       createResourceFunction(params, userToken),
     addQuestionToResourceFunction: (params) =>

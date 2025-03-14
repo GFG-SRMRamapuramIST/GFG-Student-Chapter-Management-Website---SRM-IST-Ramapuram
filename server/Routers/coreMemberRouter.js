@@ -27,7 +27,9 @@ const router = new express.Router();
 
 17. Create announcement API - "{BACKEND_URL}/api/v1/core-member/create-announcement"
 18. Delete announcement API - "{BACKEND_URL}/api/v1/core-member/delete-announcement"
-19. Get all announcement API = "{BACKEND_URL}/api/v1/core-member/get-all-announcement"
+19. Get all announcement API - "{BACKEND_URL}/api/v1/core-member/get-all-announcement"
+
+20. Get all dashboard calender data API - "{BACKEND_URL}/api/v1/core-member/get-dashboard-calender-data"
 
 **********************************************************
 */
@@ -95,5 +97,8 @@ router.delete("/delete-announcement", coreMemberControllers.deleteAnnouncement);
 router.get("/get-all-announcement", coreMemberControllers.fetchAllAnnouncement)
 
 /*****************************************************************************/
+
+// Get all dashboard calender data API
+router.get("/get-dashboard-calender-data", coreMemberControllers.fetchDashboardCalenderData)
 
 module.exports = router;

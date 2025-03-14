@@ -17,7 +17,7 @@ import EventCreationModal from "./EventCreationModal";
 import { ToastMsg } from "../../Utilities";
 
 // Importing APIs
-import { AuthServices, CoreMemberServices } from "../../Services";
+import { CoreMemberServices } from "../../Services";
 import { useUser } from "../../Context/UserContext";
 import { hasMinimumRole, ROLES } from "../../Utilities/roleUtils";
 
@@ -88,7 +88,7 @@ const TodayView = ({ events }) => {
   );
 };
 
-const CustomCalendar = ({ events }) => {
+const CustomCalendar = ({ events, fetchDashBoardCalenderData }) => {
   const { userRole } = useUser();
 
   const { meetingCreationFunction, contestCreationFunction } =
@@ -109,6 +109,7 @@ const CustomCalendar = ({ events }) => {
   };
 
   const handleMeetingCreationFunction = async (meetingData) => {
+    //console.log(meetingData)
     try {
       const response = await meetingCreationFunction(meetingData);
       //console.log(response)
@@ -122,13 +123,15 @@ const CustomCalendar = ({ events }) => {
     } catch (error) {
       ToastMsg("Internal Server Error!", "error");
       console.error("Meeting creation error:", error);
+    } finally {
+      fetchDashBoardCalenderData();
     }
   };
 
   const handleContestCreationFunction = async (contestData) => {
     try {
       const response = await contestCreationFunction(contestData);
-      //console.log(response)
+      //console.log(response);
 
       if (response.status == 200) {
         ToastMsg(response.data.message, "success");
@@ -139,6 +142,8 @@ const CustomCalendar = ({ events }) => {
     } catch (error) {
       ToastMsg("Internal Server Error!", "error");
       console.error("Meeting creation error:", error);
+    } finally {
+      fetchDashBoardCalenderData();
     }
   };
 
@@ -151,9 +156,7 @@ const CustomCalendar = ({ events }) => {
         meetingLink: eventData.link,
         meetingDate: eventData.date,
         meetingTime:
-          eventData.start_time.length === 5
-            ? `${eventData.start_time}:00`
-            : eventData.start_time,
+          eventData.time.length === 5 ? `${eventData.time}:00` : eventData.time,
         compulsory: eventData.attendees,
       };
       await handleMeetingCreationFunction(formatedMeetingData);
@@ -163,9 +166,7 @@ const CustomCalendar = ({ events }) => {
         contestLink: eventData.link,
         platform: eventData.platform,
         startTime:
-          eventData.start_time.length === 5
-            ? `${eventData.start_time}:00`
-            : eventData.start_time,
+          eventData.time.length === 5 ? `${eventData.time}:00` : eventData.time,
         endTime:
           eventData.endTime.length === 5
             ? `${eventData.endTime}:00`

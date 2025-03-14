@@ -44,6 +44,8 @@ const { DailyContests, Notice, Resources, Announcement } = require("../Models");
 18. Delete announcement API
 19. Get Announcement API
 
+20. Get contest & meeting data API
+
 **********************************************************
 */
 
@@ -305,7 +307,8 @@ exports.createNotice = async (req, res) => {
     }
 
     const allowedValues = ["ALL", "MEMBER", "COREMEMBER"];
-    if (!allowedValues.includes(compulsory)) {
+    const compulsoryTo = compulsory.toUpperCase()
+    if (!allowedValues.includes(compulsoryTo)) {
       return res.status(400).json({
         message: `Invalid value for compulsory. Allowed values are ${allowedValues.join(
           ", "
@@ -328,7 +331,7 @@ exports.createNotice = async (req, res) => {
       description,
       meetingLink,
       meetingTime,
-      compulsory,
+      compulsory: compulsoryTo,
       createdBy: authResult.userId,
     };
 
@@ -482,6 +485,38 @@ exports.deleteMoMLink = async (req, res) => {
       .json({ message: "Internal Server Error", error: error.message });
   }
 };
+
+//20. Get contest & meetind data API
+exports.fetchDashboardCalenderData = async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1]; // Extract token
+  if (!token) {
+    return res.status(401).json({ message: "No token provided" });
+  }
+  try {
+    const currentDate = new Date();
+    const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+
+    const contests = await DailyContests.find({
+      date: { $gte: startOfMonth, $lte: endOfMonth },
+    });
+
+    const meetings = await Notice.find({
+      meetingDate: { $gte: startOfMonth, $lte: endOfMonth },
+    });
+
+    res.status(200).json({
+      message: "Dashboard Calender data fetched successfully!",
+      contests,
+      meetings,
+    });
+  } catch (error) {
+    console.error("Error fetching Dashboard Calender data:", error.message);
+    return res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
+  }
+}
 
 //*************************************************************************/
 

@@ -15,7 +15,7 @@ import {
 } from "../Components";
 import { ConfirmationPopup, ToastMsg } from "../Utilities";
 
-import { UserServices } from "../Services";
+import { UserServices, CoreMemberServices } from "../Services";
 
 const Dashboard = () => {
   const {
@@ -24,6 +24,8 @@ const Dashboard = () => {
     fetchTop5UsersFunction,
     fetchPOTDFunction,
   } = UserServices();
+
+  const { getDashboardCalenderDataFunction } = CoreMemberServices();
 
   const [stats, setStats] = useState([
     { icon: MdTrendingUp, label: "Points", value: "0", change: 0 },
@@ -36,31 +38,64 @@ const Dashboard = () => {
 
   const [platformPOTDs, setPlatformPOTDs] = useState([]);
 
+  const [events, setEvents] = useState([]);
+
   const [notificationsEnabled, setNotificationsEnabled] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
 
-  // ================ DUMMY DATA ================
-
-  const events = [
-    {
-      type: "contest",
-      platform: "leetcode",
-      name: "Weekly Contest 123",
-      start_time: "2025-03-06T14:30:00",
-      end_time: "2025-03-06T16:30:00",
-      link: "https://leetcode.com/contest/123",
-    },
-    {
-      type: "meeting",
-      platform: "leetcode",
-      name: "Weekly Contest 123",
-      start_time: "2025-03-06T14:30:00",
-      end_time: "2025-03-06T15:30:00",
-      link: "https://leetcode.com/contest/123",
-    },
-  ];
-
   // ================ Dashboard Handlers ================
+
+  // Get dashboard calender data
+  const fetchDashBoardCalenderData = async () => {
+    try {
+      const response = await getDashboardCalenderDataFunction();
+      //console.log(response.data);
+      if (response.status === 200) {
+        const transformedEvents = [];
+
+        // Transform contests data
+        response.data.contests.forEach((contestDay) => {
+          contestDay.contests.forEach((contest) => {
+            transformedEvents.push({
+              type: "contest",
+              platform: contest.platform.toLowerCase(),
+              name: contest.contestName,
+              start_time: contest.startTime,
+              end_time: contest.endTime,
+              link: contest.contestLink,
+            });
+          });
+        });
+
+        // Transform meetings data
+        response.data.meetings.forEach((meetingDay) => {
+          meetingDay.notices.forEach((meeting) => {
+            const formattedStartTime = `${
+              meetingDay.meetingDate.split("T")[0]
+            }T${meeting.meetingTime}.000Z`;
+
+            transformedEvents.push({
+              type: "meeting",
+              platform: "meeting",
+              name: meeting.title,
+              description: meeting.description,
+              start_time: formattedStartTime,
+              end_time: formattedStartTime, // Assuming end_time same as start_time for now
+              link: meeting.meetingLink,
+            });
+          });
+        });
+
+        //console.log(transformedEvents);
+        setEvents(transformedEvents);
+      } else {
+        ToastMsg("Failed to load dashboard calendar data", "error");
+      }
+    } catch (error) {
+      console.log("Error fetching dashboard calendar data:", error);
+      ToastMsg("Failed to load dashboard calendar data", "error");
+    }
+  };
 
   // Get basic user data on page load
   useEffect(() => {
@@ -172,6 +207,7 @@ const Dashboard = () => {
     fetchUserData();
     fetchTop5Users();
     fetchPOTD();
+    fetchDashBoardCalenderData();
   }, []);
 
   // Notifications toggle handler
@@ -227,14 +263,16 @@ const Dashboard = () => {
         {/* Main Content */}
         <div className="lg:col-span-8 space-y-6">
           <StatsSection stats={stats} />
-          <CustomCalendar events={events} />
+          <CustomCalendar
+            events={events}
+            fetchDashBoardCalenderData={fetchDashBoardCalenderData}
+          />
         </div>
 
         {/* Sidebar */}
         <div className="lg:col-span-4 space-y-6">
           <LeaderboardSection top5Users={top5Users} />
-          <NotificationsSection
-          />
+          <NotificationsSection />
         </div>
       </div>
 
