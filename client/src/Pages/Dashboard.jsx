@@ -49,7 +49,7 @@ const Dashboard = () => {
   const fetchDashBoardCalenderData = async () => {
     try {
       const response = await getDashboardCalenderDataFunction();
-      //console.log(response.data);
+      // console.log(response.data);
       if (response.status === 200) {
         const transformedEvents = [];
 
@@ -60,8 +60,8 @@ const Dashboard = () => {
               type: "contest",
               platform: contest.platform.toLowerCase(),
               name: contest.contestName,
-              start_time: contest.startTime,
-              end_time: contest.endTime,
+              start_time: contest.startTime.endsWith('Z') || contest.startTime.endsWith('z') ? contest.startTime.slice(0, -1) : contest.startTime,
+              end_time: contest.endTime.endsWith('Z') || contest.endTime.endsWith('z') ? contest.endTime.slice(0, -1) : contest.endTime,
               link: contest.contestLink,
             });
           });
@@ -72,7 +72,7 @@ const Dashboard = () => {
           meetingDay.notices.forEach((meeting) => {
             const formattedStartTime = `${
               meetingDay.meetingDate.split("T")[0]
-            }T${meeting.meetingTime}.000Z`;
+            }T${meeting.meetingTime}.000`;
 
             transformedEvents.push({
               type: "meeting",

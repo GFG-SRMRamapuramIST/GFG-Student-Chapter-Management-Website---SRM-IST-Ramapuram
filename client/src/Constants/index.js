@@ -15,6 +15,7 @@ export const platformIcons = {
   leetcode: SiLeetcode,
   codechef: SiCodechef,
   codeforces: SiCodeforces,
+  geeksforgeeks: SiGeeksforgeeks,
   gmeet: SiGoogle,
   others: CgCodeSlash,
 };

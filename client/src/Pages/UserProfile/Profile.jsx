@@ -4,47 +4,11 @@ import { useParams } from "react-router-dom";
 // Importing Icons
 import { FaSpinner } from "react-icons/fa";
 
-import { PlatformPOTDs, ProfileHero, ProfileSecondary } from "../../Components";
+import { ProfileHero, ProfileSecondary } from "../../Components";
 import { ToastMsg } from "../../Utilities";
 
 // Importing APIs
 import { UserServices } from "../../Services";
-
-const updatesAndAnnouncements = {
-  updates: [
-    {
-      id: 1,
-      message: "Participated in LeetCode Weekly Contest 342.",
-      date: "2024-02-10",
-    },
-    {
-      id: 2,
-      message: "Solved 50 problems on Codeforces.",
-      date: "2024-01-30",
-    },
-    {
-      id: 3,
-      message: "Achieved a new rating on CodeChef.",
-      date: "2024-01-28",
-    },
-  ],
-
-  // Announcements
-  announcements: [
-    {
-      id: 1,
-      title: "Upcoming Coding Contest",
-      date: "2024-02-15",
-    },
-    {
-      id: 2,
-      title: "New Features Released",
-      date: "2024-01-25",
-    },
-  ],
-};
-
-
 
 const Profile = () => {
   const { id } = useParams(); // 67bf1dae9abafaae75f73b7d
@@ -85,6 +49,11 @@ const Profile = () => {
         rank: "Unrated",
         totalProblemSolved: 0,
       },
+      geeksforgeeks: {
+        solvedProblems: 0,
+        codingScore: 0,
+        rank: 0,
+      }
     },
 
     badges: [],
@@ -152,6 +121,13 @@ const Profile = () => {
               totalProblemSolved:
                 data.platforms.codeforces.totalProblemSolved || 0,
             },
+            geeksforgeeks: {
+              // TODO: UPDATE WITH GEEKSFORGEEKS DATA
+              handle: "jeyasuryaur",
+              solvedProblems: 0,
+              codingScore: 0,
+              rank: 0,
+            }
           },
 
           badges: [
@@ -186,6 +162,8 @@ const Profile = () => {
             })),
           ],
         });
+
+        console.log("Profile Data:", userProfileData);
       }
     } catch (error) {
       ToastMsg("Error fetching profile data! Please try later", "error");
@@ -220,7 +198,6 @@ const Profile = () => {
           <ProfileHero userProfile={userProfileData} />
           <ProfileSecondary
             userProfile={userProfileData}
-            updatesAndAnnouncements={updatesAndAnnouncements}
           />
         </>
       )}

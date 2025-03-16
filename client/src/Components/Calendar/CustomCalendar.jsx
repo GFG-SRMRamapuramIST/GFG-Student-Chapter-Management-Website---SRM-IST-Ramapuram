@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useSelector } from "react-redux";
 import { motion, AnimatePresence } from "framer-motion";
 
 // Importing icons
@@ -173,6 +172,8 @@ const CustomCalendar = ({ events, fetchDashBoardCalenderData }) => {
             : eventData.endTime,
         date: eventData.date,
       };
+
+      console.log("Formatted Contest Data:",formatedContestData);
       await handleContestCreationFunction(formatedContestData);
     }
   };
@@ -200,7 +201,7 @@ const CustomCalendar = ({ events, fetchDashBoardCalenderData }) => {
     if (!date) return { meetings: 0, contests: 0, events: [] };
 
     const dayEvents = events.filter((event) => {
-      const eventDate = new Date(event.start_time);
+      const eventDate = (new Date(event.start_time));
       return eventDate.toDateString() === date.toDateString();
     });
 
@@ -266,7 +267,7 @@ const CustomCalendar = ({ events, fetchDashBoardCalenderData }) => {
 
       {currentView === "month" ? (
         <div className="grid grid-cols-7 gap-4">
-          {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => (
+          {[ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
             <div
               key={day}
               className="text-center text-sm font-medium text-gray-400"
@@ -291,7 +292,7 @@ const CustomCalendar = ({ events, fetchDashBoardCalenderData }) => {
                 } ${
                   isToday
                     ? "bg-gfgsc-green-200/20 ring-2 ring-gfgsc-green"
-                    : idx % 7 === 6 && date // Check if Sunday and has date
+                    : idx % 7 === 0 && date // Check if Sunday and has date
                     ? "bg-gfgsc-green-200/50"
                     : ""
                 }`}

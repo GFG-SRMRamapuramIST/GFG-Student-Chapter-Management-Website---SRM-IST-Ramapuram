@@ -32,6 +32,7 @@ const EventCreationModal = ({ isOpen, onClose, onSave }) => {
     e.preventDefault();
     setLoading(true); // Start loading
 
+    
     const eventData = {
       name: formData.title,
       link: formData.link,
@@ -40,14 +41,17 @@ const EventCreationModal = ({ isOpen, onClose, onSave }) => {
       type: eventType,
       ...(eventType === "meeting"
         ? {
-            description: formData.description,
-            attendees: formData.attendees,
-          }
+          description: formData.description,
+          attendees: formData.attendees,
+        }
         : {
-            platform: formData.platform,
-            endTime: formData.endTime,
-          }),
-    };
+          platform: formData.platform,
+          endTime: formData.endTime,
+        }),
+      };
+      
+      // console.log("Form Data:", formData);
+      // console.log("Event Data:", eventData);
 
     try {
       await onSave(eventData); // Call API

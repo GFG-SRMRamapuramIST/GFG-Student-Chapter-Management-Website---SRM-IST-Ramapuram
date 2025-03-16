@@ -455,6 +455,33 @@ const EditProfile = () => {
                 )}
               </div>
             </div>
+
+            {/* GeeksforGeeks */}
+            <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-xl">
+              <div className="flex items-center space-x-3 mb-3">
+                {platformIcons.geeksforgeeks && (
+                  <platformIcons.geeksforgeeks className="text-[#2F8D46] text-2xl" />
+                )}
+                <label className="font-medium text-gray-800">GeeksforGeeks</label>
+              </div>
+              <div className="space-y-2">
+                {loading ? (
+                  <FaSpinner className="animate-spin inline-block" />
+                ) : (
+                  <>
+                    <EditableInput
+                      value={profileData.coding.geeksforgeeks}
+                      section="coding"
+                      field="gfgUsername"
+                    />
+                    <PlatformLinkPlaceholder
+                      platform="geeksforgeeks"
+                      username={profileData.coding.geeksforgeeks}
+                    />
+                  </>
+                )}
+              </div>
+            </div>
           </div>
         </div>
   

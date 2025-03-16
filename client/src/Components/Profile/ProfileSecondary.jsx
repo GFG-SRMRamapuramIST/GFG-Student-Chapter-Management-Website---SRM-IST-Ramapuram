@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 
-import { FaTimes, FaChevronRight, FaExternalLinkAlt } from "react-icons/fa";
-import { CgBell, CgCode, CgLaptop, CgTrophy, CgWorkAlt } from "react-icons/cg";
+import {FaChevronRight, FaExternalLinkAlt } from "react-icons/fa";
+import { CgCode, CgTrophy } from "react-icons/cg";
 import { BiError } from "react-icons/bi";
 
 import { platformIcons } from "../../Constants";
-import NotificationItem from "../ui/NotificationItem";
 import { RotatingCloseButton } from "../../Utilities";
+import NotificationsSection from "../Dashboard/NotificationsSection";
 
 const CustomDialog = ({ open, onClose, children }) => {
   if (!open) return null;
@@ -75,7 +75,7 @@ const Badge = ({ type, name }) => (
   </div>
 );
 
-const ProfileSecondary = ({ userProfile, updatesAndAnnouncements }) => {
+const ProfileSecondary = ({ userProfile }) => {
   const [showBadges, setShowBadges] = useState(false);
 
   return (
@@ -124,6 +124,9 @@ const ProfileSecondary = ({ userProfile, updatesAndAnnouncements }) => {
             )}
           </div>
         </div>
+
+        {/* Announcements */}
+        <NotificationsSection />
       </div>
 
       <CustomDialog open={showBadges} onClose={() => setShowBadges(false)}>
@@ -157,6 +160,8 @@ const ProfileSecondary = ({ userProfile, updatesAndAnnouncements }) => {
 };
 
 const PlatformProfiles = ({ userProfile }) => {
+  console.log("User Profile:", userProfile);
+  
   // Platform-specific color schemes
   const platformStyles = {
     leetcode: {
@@ -165,6 +170,7 @@ const PlatformProfiles = ({ userProfile }) => {
       shadow: "hover:shadow-[#FFA116]/10",
       statsBg: "bg-[#FFA116]/5",
       link: "text-[#FFA116]",
+      url: (handle) => `https://leetcode.com/${handle}`,
     },
     codechef: {
       iconColor: "text-[#5B4638]",
@@ -172,6 +178,7 @@ const PlatformProfiles = ({ userProfile }) => {
       shadow: "hover:shadow-[#5B4638]/10",
       statsBg: "bg-[#5B4638]/5",
       link: "text-[#5B4638]",
+      url: (handle) => `https://www.codechef.com/users/${handle}`,
     },
     codeforces: {
       iconColor: "text-[#318CE7]",
@@ -179,6 +186,15 @@ const PlatformProfiles = ({ userProfile }) => {
       shadow: "hover:shadow-[#318CE7]/10",
       statsBg: "bg-[#318CE7]/5",
       link: "text-[#318CE7]",
+      url: (handle) => `https://codeforces.com/profile/${handle}`,
+    },
+    geeksforgeeks: {
+      iconColor: "text-[#2F8D46]",
+      borderHover: "hover:border-[#2F8D46]",
+      shadow: "hover:shadow-[#2F8D46]/10",
+      statsBg: "bg-[#2F8D46]/5",
+      link: "text-[#2F8D46]",
+      url: (handle) => `https://geeksforgeeks.org/user/${handle}`,
     },
   };
 
@@ -192,7 +208,7 @@ const PlatformProfiles = ({ userProfile }) => {
       </div>
       <div className="p-3 sm:p-4 md:p-6 space-y-3 sm:space-y-4 md:space-y-6">
         {Object.entries(userProfile.profiles).map(([platform, stats]) => {
-          const style = platformStyles[platform] || {};
+          const style = platformStyles[platform];
 
           return (
             <div
@@ -211,15 +227,7 @@ const PlatformProfiles = ({ userProfile }) => {
                   </span>
                 </span>
                 <a
-                  href={
-                    platform === "leetcode"
-                      ? `https://leetcode.com/u/${stats.handle}/`
-                      : platform === "codechef"
-                      ? `https://www.codechef.com/users/${stats.handle}`
-                      : platform === "codeforces"
-                      ? `https://codeforces.com/profile/${stats.handle}`
-                      : "#"
-                  }
+                  href={style.url(stats.handle)}
                   target="_blank"
                   className={`${style.link} opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110`}
                 >
@@ -316,6 +324,38 @@ const PlatformProfiles = ({ userProfile }) => {
                       </div>
                       <div className="text-gray-500 text-xxs sm:text-xs ml-1">
                         Problems Solved
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {/* GeeksforGeeks specific fields */}
+                {platform === "geeksforgeeks" && (
+                  <>
+                    <div
+                      className={`flex items-center border rounded-md ${style.statsBg} p-1.5 sm:p-2 transition-colors duration-300`}
+                    >
+                      <div className="font-semibold">{stats.solvedProblems}</div>
+                      <div className="text-gray-500 text-xxs sm:text-xs ml-1">
+                        Solved Problems
+                      </div>
+                    </div>
+                    <div
+                      className={`flex items-center border rounded-md ${style.statsBg} p-1.5 sm:p-2 transition-colors duration-300`}
+                    >
+                      <div className="font-semibold">{stats.rank}</div>
+                      <div className="text-gray-500 text-xxs sm:text-xs ml-1">
+                        Rank
+                      </div>
+                    </div>
+                    <div
+                      className={`flex items-center border rounded-md ${style.statsBg} p-1.5 sm:p-2 transition-colors duration-300`}
+                    >
+                      <div className="font-semibold">
+                        {stats.codingScore}
+                      </div>
+                      <div className="text-gray-500 text-xxs sm:text-xs ml-1">
+                        Coding Score
                       </div>
                     </div>
                   </>
