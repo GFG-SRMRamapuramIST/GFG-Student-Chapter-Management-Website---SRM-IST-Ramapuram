@@ -16,6 +16,10 @@ const uploadToCloudinary = (buffer) => {
   });
 };
 
+//! Google Script URL (has to be shifted to env file)
+const scriptURL =
+  "https://script.google.com/macros/s/AKfycbw-no7PmM4jwtvkhENHG-pea-AI4hh8Nh1QjSzTrdX6jG4wEBH7FXhKGukF1gtil4bqjg/exec";
+
 /*
 ************************** APIs **************************
 0. Get Edit Profile Page Data
@@ -29,6 +33,8 @@ const uploadToCloudinary = (buffer) => {
 6. Get Leaderboard data API
 7. Get top 5 performers API
 8. Get POTD API
+
+9. Report an Issue API
 
  Join a Team API
  Leave a Team API
@@ -477,6 +483,46 @@ exports.fetchPOTD = async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching POTD:", error.message);
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
+
+//9. Report an Issue API
+exports.reportAnIssue = async (req, res) => {
+  try {
+    const { name, email, subject, description } = req.body;
+
+    let issuePicture = null;
+
+    if (req.file) {
+      // Upload directly from buffer
+      issuePicture = await uploadToCloudinary(req.file.buffer);
+    }
+
+    const submissionData = {
+      name,
+      email,
+      subject,
+      description,
+      issueScreenShot: issuePicture,
+    };
+
+    const response = await fetch(scriptURL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" }, // Add headers
+      body: JSON.stringify(submissionData),
+    });
+    const responseData = await response.json(); // Try parsing response
+    //console.log(responseData)
+    if (responseData.result == "success") {
+      return res.status(200).json({ message: "Issue reported successfully!" });
+    } else {
+      return res.status(400).json({ message: "Error reporting an issue!" });
+    }
+  } catch (error) {
+    console.error("Error reporting an issue:", error.message);
     return res
       .status(500)
       .json({ message: "Internal server error", error: error.message });

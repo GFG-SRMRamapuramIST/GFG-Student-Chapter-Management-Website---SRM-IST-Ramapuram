@@ -19,6 +19,8 @@ const { userControllers } = require("../Controllers");
 7. Get top 5 users API - "{BACKEND_URL}/api/v1/user/get-top-5-users"
 8. Get POTD API - "{BACKEND_URL}/api/v1/user/get-potd"
 
+9. Report an Issue API - "{BACKEND_URL}/api/v1/user/report-an-issue"
+
  Join a Team API - "{BACKEND_URL}/api/v1/user/join-team"
  Leave a Team API - "{BACKEND_URL}/api/v1/user/leave-team"
 
@@ -41,6 +43,7 @@ const upload = multer({
 
 // Middleware to handle profile picture upload
 const uploadProfilePicture = upload.single("profilePicture");
+const uploadIssueScreenShot = upload.single("issueScreenShot");
 
 //0. Get edit profile page data API
 router.get(
@@ -74,7 +77,14 @@ router.post("/get-leaderboard-data", userControllers.fetchLeaderBoardData);
 router.get("/get-top-5-users", userControllers.fetchTopPerformers);
 
 //8. Get POTD API
-router.get("/get-potd", userControllers.fetchPOTD)
+router.get("/get-potd", userControllers.fetchPOTD);
+
+//9. Report an Issue API
+router.post(
+  "/report-an-issue",
+  uploadIssueScreenShot,
+  userControllers.reportAnIssue
+);
 
 /*
 //4. Join a Team API

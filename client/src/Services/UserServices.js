@@ -102,6 +102,18 @@ const fetchPOTDFunction = async (token) => {
   );
 }
 
+// Report an Issue API
+const reportAnIssueFunction = async (formData) => {
+  return await commonrequest(
+    "POST",
+    `${BACKEND_URL}/api/v1/user/report-an-issue`,
+    formData,
+    {
+      "Content-Type": "multipart/form-data",
+    }
+  )
+}
+
 // Wrapper to use token inside React components
 const UserService = () => {
   const userToken = useAuthToken();
@@ -120,7 +132,8 @@ const UserService = () => {
     fetchLeaderboardDataFunction: (params) =>
       fetchLeaderboardDataFunction(params, userToken),
     fetchTop5UsersFunction: () => fetchTop5UsersFunction(userToken),
-    fetchPOTDFunction: () => fetchPOTDFunction(userToken)
+    fetchPOTDFunction: () => fetchPOTDFunction(userToken),
+    reportAnIssueFunction: (formData) => reportAnIssueFunction(formData)
   };
 };
 
