@@ -49,7 +49,7 @@ const Dashboard = () => {
   const fetchDashBoardCalenderData = async () => {
     try {
       const response = await getDashboardCalenderDataFunction();
-      // console.log(response.data);
+      //console.log(response.data);
       if (response.status === 200) {
         const transformedEvents = [];
 
@@ -60,9 +60,18 @@ const Dashboard = () => {
               type: "contest",
               platform: contest.platform.toLowerCase(),
               name: contest.contestName,
-              start_time: contest.startTime.endsWith('Z') || contest.startTime.endsWith('z') ? contest.startTime.slice(0, -1) : contest.startTime,
-              end_time: contest.endTime.endsWith('Z') || contest.endTime.endsWith('z') ? contest.endTime.slice(0, -1) : contest.endTime,
+              start_time:
+                contest.startTime.endsWith("Z") ||
+                contest.startTime.endsWith("z")
+                  ? contest.startTime.slice(0, -1)
+                  : contest.startTime,
+              end_time:
+                contest.endTime.endsWith("Z") || contest.endTime.endsWith("z")
+                  ? contest.endTime.slice(0, -1)
+                  : contest.endTime,
               link: contest.contestLink,
+              eventId: contest._id, // Store contest ID
+              dateId: contestDay._id, // Store date ID
             });
           });
         });
@@ -80,14 +89,16 @@ const Dashboard = () => {
               name: meeting.title,
               description: meeting.description,
               start_time: formattedStartTime,
-              end_time: formattedStartTime, // Assuming end_time same as start_time for now
               link: meeting.meetingLink,
+              compulsory: meeting.compulsory,
+              eventId: meeting._id, // Store meeting ID
+              dateId: meetingDay._id, // Store date ID
             });
           });
         });
 
-        //console.log(transformedEvents);
         setEvents(transformedEvents);
+        //console.log(transformedEvents);
       } else {
         ToastMsg("Failed to load dashboard calendar data", "error");
       }

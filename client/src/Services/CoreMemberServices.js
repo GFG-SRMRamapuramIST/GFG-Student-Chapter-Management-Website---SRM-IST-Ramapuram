@@ -19,6 +19,16 @@ const meetingCreationFunction = async (
   );
 };
 
+// Delete a meeting API
+const deleteMeetingFunction = async ({ dateId, noticeId }, userToken) => {
+  return await commonrequest(
+    "DELETE",
+    `${BACKEND_URL}/api/v1/core-member/delete-meeting`,
+    { dateId, noticeId },
+    { Authorization: `Bearer ${userToken}` }
+  );
+};
+
 // Create a contest API
 const contestCreationFunction = async (
   { contestName, contestLink, platform, startTime, endTime, date },
@@ -32,15 +42,25 @@ const contestCreationFunction = async (
   );
 };
 
+// Delete a contest API
+const deleteContestFunction = async ({dateId, contestId}, userToken) => {
+  return await commonrequest(
+    "DELETE",
+    `${BACKEND_URL}/api/v1/core-member/delete-contest`,
+    { dateId, contestId },
+    { Authorization: `Bearer ${userToken}` }
+  );
+};
+
 // Get dashboard calender data API
 const getDashboardCalenderDataFunction = async (userToken) => {
   return await commonrequest(
     "GET",
     `${BACKEND_URL}/api/v1/core-member/get-dashboard-calender-data`,
-    {  },
+    {},
     { Authorization: `Bearer ${userToken}` }
   );
-}
+};
 
 // Create a resource API
 const createResourceFunction = async ({ title, description }, userToken) => {
@@ -151,7 +171,7 @@ const deleteAnnouncementFunction = async ({ announcementId }, userToken) => {
 };
 
 // Fetch all announcements API
-const fetchAllAnnouncementFunction = async ( userToken) => {
+const fetchAllAnnouncementFunction = async (userToken) => {
   return await commonrequest(
     "GET",
     `${BACKEND_URL}/api/v1/core-member/get-all-announcement`,
@@ -167,9 +187,12 @@ const CoreMemberServices = () => {
   return {
     meetingCreationFunction: (params) =>
       meetingCreationFunction(params, userToken),
+    deleteMeetingFunction: (params) => deleteMeetingFunction(params, userToken),
     contestCreationFunction: (params) =>
       contestCreationFunction(params, userToken),
-    getDashboardCalenderDataFunction: () => getDashboardCalenderDataFunction(userToken),
+    deleteContestFunction: (params) => deleteContestFunction(params, userToken),
+    getDashboardCalenderDataFunction: () =>
+      getDashboardCalenderDataFunction(userToken),
     createResourceFunction: (params) =>
       createResourceFunction(params, userToken),
     addQuestionToResourceFunction: (params) =>
@@ -187,7 +210,7 @@ const CoreMemberServices = () => {
       createAnnouncementFunction(params, userToken),
     deleteAnnouncementFunction: (params) =>
       deleteAnnouncementFunction(params, userToken),
-    fetchAllAnnouncementFunction: () => fetchAllAnnouncementFunction(userToken)
+    fetchAllAnnouncementFunction: () => fetchAllAnnouncementFunction(userToken),
   };
 };
 

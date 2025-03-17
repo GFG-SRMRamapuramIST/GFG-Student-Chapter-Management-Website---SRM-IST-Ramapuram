@@ -2,7 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import PropTypes from "prop-types";
 
-// Icons
+// Importing Icons
 import {
   RiCalendarLine,
   RiVideoLine,
@@ -10,21 +10,31 @@ import {
   RiTrophyLine,
   RiLinkM,
   RiTimeLine,
-  RiUserLine,
   RiFileTextLine,
   RiSaveLine,
   RiEditLine,
   RiDeleteBin6Line,
   RiInformationLine,
 } from "react-icons/ri";
+
 import { platformIcons } from "../../Constants";
-import { RotatingCloseButton } from "../../Utilities";
+import { RotatingCloseButton, ToastMsg } from "../../Utilities";
+
+// Importing APIs
+import { CoreMemberServices } from "../../Services";
 
 // ============ Constants ============
 const ATTENDEE_OPTIONS = ["ALL", "CORE"];
 const PLATFORM_OPTIONS = ["leetcode", "codechef", "codeforces"];
 
-const EventModal = ({ selectedDate, events, onClose }) => {
+const EventModal = ({
+  selectedDate,
+  events,
+  onClose,
+  fetchDashBoardCalenderData,
+}) => {
+  const { deleteMeetingFunction, deleteContestFunction } = CoreMemberServices();
+  //console.log(events);
   // ============ State Management ============
   const [expandedEvent, setExpandedEvent] = useState(null);
   const [momContent, setMomContent] = useState("");
@@ -41,9 +51,53 @@ const EventModal = ({ selectedDate, events, onClose }) => {
     setIsEditingMom(false);
   };
 
+  // Deleting a meeting api call
+  const handleMeetingDeleteFunction = async (dateId, noticeId) => {
+    try {
+      const response = await deleteMeetingFunction({ dateId, noticeId });
+      //console.log(response)
+      if (response.status == 200) {
+        ToastMsg(response.data.message, "success");
+      } else {
+        ToastMsg(response.response.data.message, "error");
+      }
+    } catch (error) {
+      ToastMsg("Internal Server Error!", "error");
+      console.error("Meeting deletion error:", error);
+    } finally {
+      onClose;
+      fetchDashBoardCalenderData()
+    }
+  };
+
+  // Deleting a contest api call
+  const handleContestDeleteFunction = async (dateId, contestId) => {
+    try {
+      const response = await deleteContestFunction({ dateId, contestId });
+      //console.log(response)
+      if (response.status == 200) {
+        ToastMsg(response.data.message, "success");
+      } else {
+        ToastMsg(response.response.data.message, "error");
+      }
+    } catch (error) {
+      ToastMsg("Internal Server Error!", "error");
+      console.error("Contest deletion error:", error);
+    } finally {
+      onClose;
+      fetchDashBoardCalenderData()
+    }
+  };
+
   const handleDelete = (event) => {
     setExpandedEvent(null);
-    console.log("Deleting event:", event);
+    //console.log("Deleting event with dateId:", event.dateId);
+    //console.log("Deleting event with eventId:", event.eventId);
+    if (event.type == "meeting") {
+      handleMeetingDeleteFunction(event.dateId, event.eventId);
+    }else{
+      handleContestDeleteFunction(event.dateId, event.eventId)
+    }
   };
 
   // ============ MoM Handlers ============
@@ -87,7 +141,7 @@ const EventModal = ({ selectedDate, events, onClose }) => {
                 {type === "meeting" && (
                   <span className="px-2 py-1 bg-white/10 rounded-full text-xs flex items-center gap-1">
                     <RiTeamLine className="w-3 h-3" />
-                    {event.attendees}
+                    {event.compulsory}
                   </span>
                 )}
               </div>
@@ -162,17 +216,6 @@ const EventModal = ({ selectedDate, events, onClose }) => {
                     <span>
                       Start:{" "}
                       {new Date(event.start_time).toLocaleString("en-US", {
-                        dateStyle: "full",
-                        timeStyle: "short",
-                      })}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <RiTimeLine className="w-4 h-4" />
-                    <span>
-                      End:{" "}
-                      {new Date(event.end_time).toLocaleString("en-US", {
                         dateStyle: "full",
                         timeStyle: "short",
                       })}

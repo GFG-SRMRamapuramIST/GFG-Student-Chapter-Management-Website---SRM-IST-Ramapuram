@@ -267,7 +267,7 @@ const CustomCalendar = ({ events, fetchDashBoardCalenderData }) => {
 
       {currentView === "month" ? (
         <div className="grid grid-cols-7 gap-4">
-          {[ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
             <div
               key={day}
               className="text-center text-sm font-medium text-gray-400"
@@ -339,6 +339,7 @@ const CustomCalendar = ({ events, fetchDashBoardCalenderData }) => {
             selectedDate={selectedDate}
             events={getEventsForDate(selectedDate).events}
             onClose={() => setSelectedDate(null)}
+            fetchDashBoardCalenderData={fetchDashBoardCalenderData}
           />
         )}
       </AnimatePresence>

@@ -246,8 +246,7 @@ exports.deleteContest = async (req, res) => {
     if (dailyContest.contests.length === 0) {
       await DailyContests.findByIdAndDelete(dateId);
       return res.status(200).json({
-        message:
-          "Contest deleted successfully, and the date entry was removed as no contests remain.",
+        message: "Contest deleted successfully and date entry removed",
       });
     }
 
@@ -307,7 +306,7 @@ exports.createNotice = async (req, res) => {
     }
 
     const allowedValues = ["ALL", "MEMBER", "COREMEMBER"];
-    const compulsoryTo = compulsory.toUpperCase()
+    const compulsoryTo = compulsory.toUpperCase();
     if (!allowedValues.includes(compulsoryTo)) {
       return res.status(400).json({
         message: `Invalid value for compulsory. Allowed values are ${allowedValues.join(
@@ -378,9 +377,18 @@ exports.deleteNotice = async (req, res) => {
         .json({ message: "No entry found for the given date ID" });
     }
 
-    dailyNotices.notices = dailyNotices.notices.filter(
-      (notice) => notice._id.toString() !== noticeId
-    );
+    // Check if the notice exists
+    const notice = dailyNotices.notices.id(noticeId);
+    if (!notice) {
+      return res.status(404).json({
+        message: "Notice not found for the given ID on the given date",
+      });
+    }
+
+    // Remove the notice from the array
+    dailyNotices.notices.pull(noticeId);
+
+    // If no notices remain, delete the entire date entry
     if (dailyNotices.notices.length === 0) {
       await Notice.findByIdAndDelete(dateId);
       return res
