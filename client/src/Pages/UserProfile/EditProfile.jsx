@@ -44,7 +44,7 @@ const EditProfile = () => {
     try {
       //console.log("Fetching Edit Profile Data...");
       const response = await getEditProfilePageDataFuncion();
-      console.log(response);
+      //console.log(response.data);
       setProfileData(response.data);
     } catch (error) {
       ToastMsg("Internal Server Error!", "error");
@@ -281,14 +281,16 @@ const EditProfile = () => {
   return (
     <div className="min-h-screen p-4 md:p-8">
       <div className="mx-auto space-y-6 md:space-y-8">
-        <h1 className="text-3xl md:text-4xl font-bold text-gfg-black mb-4 md:mb-8">Edit Profile</h1>
-  
+        <h1 className="text-3xl md:text-4xl font-bold text-gfg-black mb-4 md:mb-8">
+          Edit Profile
+        </h1>
+
         {/* Personal Information Section */}
         <div className="bg-white shadow-lg rounded-xl p-4 md:p-6 space-y-4 md:space-y-6">
           <h2 className="text-xl md:text-2xl font-semibold text-gfgsc-green border-b pb-3">
             Personal Information
           </h2>
-  
+
           {/* Profile Picture */}
           <div className="flex flex-col sm:flex-row items-center sm:space-x-6 space-y-4 sm:space-y-0">
             <ProfilePictureEditor
@@ -298,7 +300,7 @@ const EditProfile = () => {
               loading={loading}
             />
           </div>
-  
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-lg">
             {/* Name */}
             <div>
@@ -315,7 +317,7 @@ const EditProfile = () => {
                 />
               )}
             </div>
-  
+
             {/* Bio */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -331,7 +333,7 @@ const EditProfile = () => {
                 />
               )}
             </div>
-  
+
             {/* Phone Number */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -348,7 +350,7 @@ const EditProfile = () => {
                 />
               )}
             </div>
-  
+
             {/* Academic Year */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -367,13 +369,13 @@ const EditProfile = () => {
             </div>
           </div>
         </div>
-  
+
         {/* Coding Profiles Section */}
         <div className="bg-white shadow-lg rounded-xl p-4 md:p-6 space-y-4 md:space-y-6">
           <h2 className="text-xl md:text-2xl font-semibold text-gfgsc-green border-b pb-3">
             Coding Profiles
           </h2>
-  
+
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
             {/* LeetCode */}
             <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-xl">
@@ -401,7 +403,7 @@ const EditProfile = () => {
                 )}
               </div>
             </div>
-  
+
             {/* CodeChef */}
             <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-xl">
               <div className="flex items-center space-x-3 mb-3">
@@ -428,7 +430,7 @@ const EditProfile = () => {
                 )}
               </div>
             </div>
-  
+
             {/* Codeforces */}
             <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-xl">
               <div className="flex items-center space-x-3 mb-3">
@@ -462,7 +464,9 @@ const EditProfile = () => {
                 {platformIcons.geeksforgeeks && (
                   <platformIcons.geeksforgeeks className="text-[#2F8D46] text-2xl" />
                 )}
-                <label className="font-medium text-gray-800">GeeksforGeeks</label>
+                <label className="font-medium text-gray-800">
+                  GeeksforGeeks
+                </label>
               </div>
               <div className="space-y-2">
                 {loading ? (
@@ -472,7 +476,7 @@ const EditProfile = () => {
                     <EditableInput
                       value={profileData.coding.geeksforgeeks}
                       section="coding"
-                      field="gfgUsername"
+                      field="geeksforgeeksUsername"
                     />
                     <PlatformLinkPlaceholder
                       platform="geeksforgeeks"
@@ -484,13 +488,13 @@ const EditProfile = () => {
             </div>
           </div>
         </div>
-  
+
         {/* Social Links Section */}
         <div className="bg-white shadow-lg rounded-xl p-4 md:p-6 space-y-4 md:space-y-6">
           <h2 className="text-xl md:text-2xl font-semibold text-gfgsc-green border-b pb-3">
             Social Links
           </h2>
-  
+
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
             {/* LinkedIn */}
             <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-xl">
@@ -516,7 +520,7 @@ const EditProfile = () => {
                 )}
               </div>
             </div>
-  
+
             {/* Codolio */}
             <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-xl">
               <div className="flex items-center space-x-3 mb-3">
@@ -547,7 +551,7 @@ const EditProfile = () => {
             </div>
           </div>
         </div>
-  
+
         {/* Password Change Section */}
         <div className="bg-white shadow-lg rounded-xl p-4 md:p-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -563,7 +567,7 @@ const EditProfile = () => {
           </div>
         </div>
       </div>
-  
+
       {/* Add the modal */}
       <PasswordChangeModal
         isOpen={isPasswordModalOpen}

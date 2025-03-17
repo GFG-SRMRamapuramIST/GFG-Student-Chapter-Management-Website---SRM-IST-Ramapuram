@@ -335,27 +335,29 @@ const PlatformProfiles = ({ userProfile }) => {
                     <div
                       className={`flex items-center border rounded-md ${style.statsBg} p-1.5 sm:p-2 transition-colors duration-300`}
                     >
-                      <div className="font-semibold">{stats.solvedProblems}</div>
+                      <div className="font-semibold">
+                        {stats.universityRank}
+                      </div>
                       <div className="text-gray-500 text-xxs sm:text-xs ml-1">
-                        Solved Problems
+                        University Rank
                       </div>
                     </div>
                     <div
                       className={`flex items-center border rounded-md ${style.statsBg} p-1.5 sm:p-2 transition-colors duration-300`}
                     >
-                      <div className="font-semibold">{stats.rank}</div>
+                      <div className="font-semibold">{stats.codingScore}</div>
                       <div className="text-gray-500 text-xxs sm:text-xs ml-1">
-                        Rank
+                        Coding Score
                       </div>
                     </div>
                     <div
                       className={`flex items-center border rounded-md ${style.statsBg} p-1.5 sm:p-2 transition-colors duration-300`}
                     >
                       <div className="font-semibold">
-                        {stats.codingScore}
+                        {stats.problemsSolved}
                       </div>
                       <div className="text-gray-500 text-xxs sm:text-xs ml-1">
-                        Coding Score
+                        Problem Solved
                       </div>
                     </div>
                   </>

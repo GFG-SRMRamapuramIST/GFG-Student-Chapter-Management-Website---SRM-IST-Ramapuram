@@ -81,6 +81,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
+  geeksforgeeksUsername: {
+    type: String,
+    default: null,
+  },
   totalQuestionSolved: {
     type: Number,
     default: 0,
@@ -114,6 +118,11 @@ const userSchema = new mongoose.Schema({
       rating: { type: Number, default: 0 },
       rank: { type: String, default: "unrated" },
       totalProblemSolved: { type: Number, default: 0 },
+    },
+    geeksforgeeks: {
+      universityRank: { type: Number, default: 0 },
+      codingScore: { type: Number, default: 0 },
+      problemSolved: { type: Number, default: 0 },
     },
   },
   subscribed: {

@@ -104,6 +104,7 @@ exports.register = async (req, res) => {
       leetcodeUsername,
       codechefUsername,
       codeforcesUsername,
+      geeksforgeeksUsername,
       otp, // OTP from the request body
     } = req.body;
 
@@ -121,6 +122,7 @@ exports.register = async (req, res) => {
       !leetcodeUsername ||
       !codechefUsername ||
       !codeforcesUsername ||
+      !geeksforgeeksUsername ||
       !otp // Ensure OTP is provided
     ) {
       return res.status(400).json({
@@ -166,6 +168,7 @@ exports.register = async (req, res) => {
       leetcodeUsername: leetcodeUsername || null,
       codechefUsername: codechefUsername || null,
       codeforcesUsername: codeforcesUsername || null,
+      geeksforgeeksUsername: geeksforgeeksUsername || null,
     });
 
     // Save the user to the database

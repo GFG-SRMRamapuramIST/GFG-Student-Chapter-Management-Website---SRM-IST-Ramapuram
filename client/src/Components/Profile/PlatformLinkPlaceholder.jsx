@@ -13,8 +13,8 @@ const PlatformLinkPlaceholder = ({ platform, username }) => {
       display: "codeforces.com/profile/",
     },
     geeksforgeeks: {
-      base: "https://geeksforgeeks.com/user/",
-      display: "geeksforgeeks.com/user/",
+      base: "https://www.geeksforgeeks.org/user/",
+      display: "geeksforgeeks.org/user/",
     },
     linkedin: {
       base: "https://linkedin.com/in/",
