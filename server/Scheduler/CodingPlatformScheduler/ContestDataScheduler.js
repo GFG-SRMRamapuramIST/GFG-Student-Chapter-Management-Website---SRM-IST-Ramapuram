@@ -121,7 +121,24 @@ function updateContestDataScheduler() {
         }
 
         if (contestData) {
-          user.totalQuestionSolved += contestData.totalQuestionsSolved;
+          if (type === "codeforces") {
+            // 3 points for every question solved on codeforces contest
+            user.totalQuestionSolved += contestData.totalQuestionsSolved * 3;
+          } else if (type === "codechef") {
+            const pointsPerStar = { 1: 2, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7 };
+            console.log(
+              `${user.name} is a ${
+                user.platforms.codechef.rating
+              } star coder on codechef, so per question user gets ${
+                pointsPerStar[user.platforms.codechef.rating]
+              } points
+              }`
+            );
+            user.totalQuestionSolved +=
+              contestData.totalQuestionsSolved *
+              pointsPerStar[user.platforms.codechef.rating];
+          }
+          
           await user.save();
           console.log(
             chalk.green(`Updated contest data for ${user.email} (${type})`)

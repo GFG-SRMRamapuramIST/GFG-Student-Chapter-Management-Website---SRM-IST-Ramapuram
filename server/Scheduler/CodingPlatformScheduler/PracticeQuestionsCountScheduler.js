@@ -98,7 +98,7 @@ const updatePracticeQuestionsCount = async () => {
 };
 
 // Schedule the job to run at midnight
-cron.schedule("41 0 * * *", updatePracticeQuestionsCount);
+cron.schedule("0 0 * * *", updatePracticeQuestionsCount);
 
 console.log(
   chalk.bgMagenta.bold("Practice Questions Count Scheduler Initialized.")
