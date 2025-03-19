@@ -17,6 +17,8 @@ const SchedulerControls = () => {
     backupDataScheduler: false,
     resetDataScheduler: false,
     passingPercentage: 10,
+    perContestPoint: 2,
+    perDayPracticePoint: 1,
   });
 
   const getConstantValues = async () => {
@@ -30,12 +32,16 @@ const SchedulerControls = () => {
           backupDataScheduler,
           resetDataScheduler,
           passingPercentage,
+          perContestPoint,
+          perDayPracticePoint,
         } = response.data.constant;
         setSchedulerOptions({
           achievementScheduler,
           backupDataScheduler,
           resetDataScheduler,
           passingPercentage,
+          perContestPoint,
+          perDayPracticePoint,
         });
       } else {
         ToastMsg("Error fetching constant values", "error");

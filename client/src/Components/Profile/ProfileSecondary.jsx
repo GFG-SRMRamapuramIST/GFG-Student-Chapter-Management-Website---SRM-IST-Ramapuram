@@ -357,27 +357,29 @@ const PlatformProfiles = ({ userProfile }) => {
                     <div
                       className={`flex items-center border rounded-md ${style.statsBg} p-1 sm:p-1.5 transition-colors duration-300`}
                     >
-                      <div className="font-semibold">{stats.solvedProblems}</div>
-                      <div className="text-gray-500 text-xxxs sm:text-xxs ml-1">
-                        Problems
+                      <div className="font-semibold">
+                        {stats.universityRank}
+                      </div>
+                      <div className="text-gray-500 text-xxs sm:text-xs ml-1">
+                        University Rank
                       </div>
                     </div>
                     <div
                       className={`flex items-center border rounded-md ${style.statsBg} p-1 sm:p-1.5 transition-colors duration-300`}
                     >
-                      <div className="font-semibold">{stats.rank}</div>
-                      <div className="text-gray-500 text-xxxs sm:text-xxs ml-1">
-                        Rank
+                      <div className="font-semibold">{stats.codingScore}</div>
+                      <div className="text-gray-500 text-xxs sm:text-xs ml-1">
+                        Coding Score
                       </div>
                     </div>
                     <div
                       className={`flex items-center border rounded-md ${style.statsBg} p-1 sm:p-1.5 transition-colors duration-300`}
                     >
                       <div className="font-semibold">
-                        {stats.codingScore}
+                        {stats.problemsSolved}
                       </div>
-                      <div className="text-gray-500 text-xxxs sm:text-xxs ml-1">
-                        Score
+                      <div className="text-gray-500 text-xxs sm:text-xs ml-1">
+                        Problem Solved
                       </div>
                     </div>
                   </>

@@ -35,6 +35,8 @@ const {
 15. Edit Constant Values API
 16. Fetch Constant Values API
 
+17. Reset achievement API
+
 **********************************************************
 */
 
@@ -1359,6 +1361,8 @@ exports.editConstantValues = async (req, res) => {
     backupDataScheduler,
     resetDataScheduler,
     passingPercentage,
+    perDayPracticePoint,
+    perContestPoint,
   } = req.body; // New constant values
 
   // Check for token
@@ -1371,7 +1375,9 @@ exports.editConstantValues = async (req, res) => {
     achievementScheduler === null &&
     backupDataScheduler === null &&
     resetDataScheduler === null &&
-    passingPercentage === null
+    passingPercentage === null &&
+    perDayPracticePoint === null &&
+    perContestPoint === null
   ) {
     return res
       .status(400)
@@ -1401,6 +1407,8 @@ exports.editConstantValues = async (req, res) => {
     constant.backupDataScheduler = backupDataScheduler;
     constant.resetDataScheduler = resetDataScheduler;
     constant.passingPercentage = passingPercentage;
+    constant.perDayPracticePoint = perDayPracticePoint;
+    constant.perContestPoint = perContestPoint;
     await constant.save();
 
     // Send success response
@@ -1441,6 +1449,38 @@ exports.getConstantValues = async (req, res) => {
     return res.status(200).json({ constant });
   } catch (error) {
     console.error("Error fetching constants:", error.message);
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+}
+
+//17. Reset achievements API
+exports.resetAchievements = async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  // Check for token
+  if (!token) {
+    return res.status(401).json({ message: "Authorization token is required" });
+  }
+
+  try {
+    // Verify and authorize token
+    const authResult = await verifyAndAuthorize(token, ["ADMIN"]);
+    if (authResult.status !== 200) {
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
+    }
+
+    await Users.updateMany({}, { 
+      $set: { 
+        achievement: { gold: [], silver: [], bronze: [] } 
+      } 
+    });
+
+    res.status(200).json({ message: "Achievements reset successfully" });
+  } catch (error) {
+    console.error("Error reseting achievement:", error.message);
     return res
       .status(500)
       .json({ message: "Internal server error", error: error.message });

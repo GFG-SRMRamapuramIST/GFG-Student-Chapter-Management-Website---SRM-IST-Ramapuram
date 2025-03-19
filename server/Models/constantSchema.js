@@ -18,6 +18,18 @@ const constantSchema = new mongoose.Schema({
     required: true,
     default: 30,
   },
+  perDayPracticePoint: {
+    type: Number,
+    required: true,
+    default: 1,
+    min: 1,
+    max: 6,
+  },
+  perContestPoint: {
+    type: Number,
+    required: true,
+    default: 2,
+  },
 });
 
 const ConstantValue = mongoose.model("ConstantValue", constantSchema);

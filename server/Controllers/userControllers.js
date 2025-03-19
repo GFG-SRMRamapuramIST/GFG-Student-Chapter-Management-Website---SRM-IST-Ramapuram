@@ -57,7 +57,7 @@ exports.getEditProfilePageData = async (req, res) => {
 
     const userId = authResult.userId;
     const user = await Users.findById(userId).select(
-      "name bio phoneNumber academicYear profilePicture linkedinUsername codolioUsername leetcodeUsername codechefUsername codeforcesUsername"
+      "name bio phoneNumber academicYear profilePicture linkedinUsername codolioUsername leetcodeUsername codechefUsername codeforcesUsername geeksforgeeksUsername"
     );
 
     if (!user) {
@@ -84,6 +84,7 @@ exports.getEditProfilePageData = async (req, res) => {
         leetcode: user.leetcodeUsername,
         codechef: user.codechefUsername,
         codeforces: user.codeforcesUsername,
+        geeksforgeeks: user.geeksforgeeksUsername,
       },
 
       // Social Links
@@ -132,6 +133,7 @@ exports.editProfile = async (req, res) => {
       leetcodeUsername: "LeetCode Username",
       codechefUsername: "CodeChef Username",
       codeforcesUsername: "Codeforces Username",
+      geeksforgeeksUsername: "GeeksForGeeks Username",
       bio: "Bio",
     };
 

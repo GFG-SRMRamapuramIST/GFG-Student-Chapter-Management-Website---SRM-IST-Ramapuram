@@ -95,6 +95,7 @@ const SignUp = () => {
       codeforcesUsername: "",
       geeksforgeeksUsername: "",
       codolioUsername: "",
+      geeksforgeeksUsername: "vishal100403", // Default user name
       profilePicture: [],
       otp: "",
     },

@@ -4,18 +4,21 @@ const chalk = require("chalk");
 const {
   fetchLeetcodeDetails,
 } = require("./LeetCode/LeetCodeProfileDataFunction");
+const {
+  fetchGeeksForGeeksDetails,
+} = require("./GeeksForGeeks/GeeksForGeeksProfileDataFunction");
 
 const { updateLeaderboardRankings } = require("./LeaderBoardSorting");
 
 const { Users } = require("../../Models");
 
-// Function to calculate the increment based on the difference
+// Function to calculate increment based on the difference
 const calculateIncrement = (diff) => {
   if (diff >= 1 && diff <= 3) return 1;
   if (diff >= 4 && diff <= 6) return 2;
   if (diff >= 7 && diff <= 9) return 3;
   if (diff > 9) return 3;
-  return 0; // If more than 9, just add 3 and leave it
+  return 0;
 };
 
 // Function to update practice question counts
@@ -23,29 +26,63 @@ const updatePracticeQuestionsCount = async () => {
   try {
     console.log(chalk.blue("Starting Practice Questions Count Scheduler..."));
 
-    const users = await Users.find({ leetcodeUsername: { $ne: null } });
+    const users = await Users.find({
+      $or: [
+        { leetcodeUsername: { $ne: null } },
+        { geeksforgeeksUsername: { $ne: null } },
+      ],
+    });
+
     for (const user of users) {
-      const { leetcodeUsername } = user;
-      const leetcodeData = await fetchLeetcodeDetails(
-        leetcodeUsername,
-        user.email
-      );
+      let increment = 0;
 
-      if (!leetcodeData) continue; // Skip if no valid data
+      // Fetch LeetCode Data
+      if (user.leetcodeUsername) {
+        const leetcodeData = await fetchLeetcodeDetails(
+          user.leetcodeUsername,
+          user.email
+        );
+        if (leetcodeData) {
+          const { badgesCount, ranking, totalProblemSolved } = leetcodeData;
+          const leetcodeDiff =
+            totalProblemSolved -
+            (user.platforms.leetcode.totalProblemSolved || 0);
+          increment += calculateIncrement(leetcodeDiff);
 
-      const { badgesCount, ranking, totalProblemSolved } = leetcodeData;
-      const diff =
-        totalProblemSolved - (user.platforms.leetcode.totalProblemSolved || 0);
-      const increment = calculateIncrement(diff);
+          user.platforms.leetcode = {
+            badgesCount,
+            ranking,
+            totalProblemSolved,
+          };
+        }
+      }
+
+      // Fetch GeeksForGeeks Data
+      if (user.geeksforgeeksUsername) {
+        const geeksforgeeksData = await fetchGeeksForGeeksDetails(
+          user.geeksforgeeksUsername,
+          user.email
+        );
+        if (geeksforgeeksData) {
+          const { universityRank, codingScore, problemsSolved } =
+            geeksforgeeksData;
+          const gfgDiff =
+            problemsSolved - (user.platforms.geeksforgeeks.problemSolved || 0);
+          increment += calculateIncrement(gfgDiff);
+
+          user.platforms.geeksforgeeks = {
+            universityRank,
+            codingScore,
+            problemSolved: problemsSolved,
+          };
+        }
+      }
 
       user.totalQuestionSolved += increment;
-      user.platforms.leetcode = { badgesCount, ranking, totalProblemSolved };
       await user.save();
 
       console.log(
-        chalk.green(
-          `Updated ${user.email} - LeetCode Solved: ${totalProblemSolved}, Increment: ${increment}`
-        )
+        chalk.green(`Updated ${user.email} - Increment: ${increment}`)
       );
     }
 

@@ -65,7 +65,7 @@ const Profile = () => {
       setLoading(true);
       //console.log("Fetching profile data for:", profileId);
       const response = await getProfilePageDataFunction({ userId: profileId });
-      //console.log(response);
+      console.log(response);
 
       if (response.status !== 200) {
         ToastMsg("Error fetching profile data! Please try later", "error");
@@ -122,12 +122,11 @@ const Profile = () => {
                 data.platforms.codeforces.totalProblemSolved || 0,
             },
             geeksforgeeks: {
-              // TODO: UPDATE WITH GEEKSFORGEEKS DATA
-              handle: "jeyasuryaur",
-              solvedProblems: 0,
-              codingScore: 0,
-              rank: 0,
-            }
+              handle: data.geeksforgeeksUsername || null,
+              universityRank: data.platforms.geeksforgeeks.universityRank || 0,
+              codingScore: data.platforms.geeksforgeeks.codingScore || 0,
+              problemsSolved: data.platforms.geeksforgeeks.problemSolved || 0,
+            },
           },
 
           badges: [
@@ -163,7 +162,7 @@ const Profile = () => {
           ],
         });
 
-        console.log("Profile Data:", userProfileData);
+        //console.log("Profile Data:", userProfileData);
       }
     } catch (error) {
       ToastMsg("Error fetching profile data! Please try later", "error");
