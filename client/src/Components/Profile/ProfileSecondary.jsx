@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-
-import {FaChevronRight, FaExternalLinkAlt } from "react-icons/fa";
+import { FaChevronRight, FaExternalLinkAlt } from "react-icons/fa";
 import { CgCode, CgTrophy } from "react-icons/cg";
 import { BiError } from "react-icons/bi";
+import { MdCalendarMonth } from "react-icons/md";
 
 import { platformIcons } from "../../Constants";
 import { RotatingCloseButton } from "../../Utilities";
@@ -31,7 +31,7 @@ const Badge = ({ type, name }) => (
   <div className="relative group">
     <div
       className={`
-      w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center
+      w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center
       ${
         type === "gold"
           ? "bg-gradient-to-br from-yellow-200 to-yellow-500"
@@ -44,7 +44,7 @@ const Badge = ({ type, name }) => (
     >
       <div
         className={`
-        w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center
+        w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center
         ${
           type === "gold"
             ? "bg-yellow-100"
@@ -57,7 +57,7 @@ const Badge = ({ type, name }) => (
       >
         <div
           className={`
-          text-base sm:text-2xl font-bold
+          text-xs sm:text-sm font-bold
           ${
             type === "gold"
               ? "text-yellow-600"
@@ -71,7 +71,7 @@ const Badge = ({ type, name }) => (
         </div>
       </div>
     </div>
-    <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-16 sm:w-24 h-6 bg-gradient-to-t from-white via-white to-transparent z-10" />
+    <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-10 sm:w-12 h-2 bg-gradient-to-t from-white via-white to-transparent z-10" />
   </div>
 );
 
@@ -80,53 +80,77 @@ const ProfileSecondary = ({ userProfile }) => {
 
   return (
     <div className="p-3 sm:p-4 md:p-6 font-sans antialiased">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-        {/* Platform Profiles */}
-        <PlatformProfiles userProfile={userProfile} />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+        {/* Platform Profiles - Takes up full width on mobile, 50% on md, 33% on lg */}
+        <div className="lg:col-span-1">
+          <PlatformProfiles userProfile={userProfile} />
+        </div>
 
-        {/* Achievements */}
-        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-          <div className="pt-3 sm:pt-4 px-3 sm:px-4">
-            <h2 className="flex justify-between text-base sm:text-lg font-semibold text-gfgsc-green items-center">
-              <span>Acheivements</span>
-              <CgTrophy className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
-            </h2>
-          </div>
-
-          <div className="p-3 sm:p-4 md:p-6 h-full">
-            {userProfile.badges.length === 0 ? (
-              <div className="flex flex-col h-full pb-8 sm:pb-16 md:pb-24 text-center items-center justify-center p-3 sm:p-6">
-                <BiError className="w-8 h-8 sm:w-12 sm:h-12 text-gray-400" />
-                <p className="mt-2 sm:mt-4 text-sm sm:text-base text-gray-500">
-                  No achievements yet. Keep trying harder!
-                </p>
+        {/* Middle column for Heatmap and small Achievements on lg screens */}
+        <div className="lg:col-span-1">
+          <div className="grid grid-cols-1 gap-4 sm:gap-6">
+            {/* Heatmap */}
+            <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+              <div className="pt-3 sm:pt-4 px-3 sm:px-4">
+                <h2 className="flex justify-between text-base sm:text-lg font-semibold text-gfgsc-green items-center">
+                  <span>Contribution Activity</span>
+                  <MdCalendarMonth className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
+                </h2>
               </div>
-            ) : (
-              <>
-                <div className="grid grid-cols-2 gap-2 sm:gap-4 md:gap-6 mb-4 sm:mb-6">
-                  {userProfile.badges.slice(0, 4).map((badge) => (
-                    <div key={badge.id} className="flex flex-col items-center">
-                      <Badge type={badge.type} name={badge.name} />
-                      <div className="mt-1 sm:mt-2 text-xs sm:text-sm font-medium text-center truncate w-full">
-                        {badge.name}
-                      </div>
+              <div className="p-3 sm:p-4">
+                {/* <ProfileHeatmap /> */}
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Animi in non alias natus. Placeat minus vitae exercitationem consequatur similique. Sapiente.
+                
+              </div>
+            </div>
+
+            {/* Compact Achievements */}
+            <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+              <div className="pt-3 px-3 sm:pt-4 sm:px-4">
+                <h2 className="flex justify-between text-base sm:text-lg font-semibold text-gfgsc-green items-center">
+                  <span>Achievements</span>
+                  <CgTrophy className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
+                </h2>
+              </div>
+
+              <div className="p-3 sm:p-4">
+                {userProfile.badges.length === 0 ? (
+                  <div className="flex flex-col text-center items-center justify-center p-2 sm:p-4">
+                    <BiError className="w-6 h-6 sm:w-8 sm:h-8 text-gray-400" />
+                    <p className="mt-2 text-xs sm:text-sm text-gray-500">
+                      No achievements yet. Keep trying harder!
+                    </p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex justify-center gap-2 sm:gap-3">
+                      {userProfile.badges.slice(0, 3).map((badge) => (
+                        <div key={badge.id} className="flex flex-col items-center">
+                          <Badge type={badge.type} name={badge.name} />
+                          <div className="mt-1 text-xxxs sm:text-xxs font-medium text-center truncate w-full">
+                            {badge.name}
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-                <button
-                  onClick={() => setShowBadges(true)}
-                  className="w-full py-1.5 sm:py-2 px-3 sm:px-4 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-100 transition-colors text-xs sm:text-sm font-medium flex items-center justify-center"
-                >
-                  <span>View all achievements</span>
-                  <FaChevronRight className="w-2.5 h-2.5 sm:w-3 sm:h-3 ml-1" />
-                </button>
-              </>
-            )}
+                    <button
+                      onClick={() => setShowBadges(true)}
+                      className="w-full mt-2 py-1 sm:py-1.5 px-2 sm:px-3 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-100 transition-colors text-xxs sm:text-xs font-medium flex items-center justify-center"
+                    >
+                      <span>View all</span>
+                      <FaChevronRight className="w-2 h-2 sm:w-2.5 sm:h-2.5 ml-1" />
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Announcements */}
-        <NotificationsSection />
+        {/* Announcements - 33% on large screens */}
+        <div className="lg:col-span-1">
+          <NotificationsSection />
+        </div>
       </div>
 
       <CustomDialog open={showBadges} onClose={() => setShowBadges(false)}>
@@ -160,8 +184,6 @@ const ProfileSecondary = ({ userProfile }) => {
 };
 
 const PlatformProfiles = ({ userProfile }) => {
-  console.log("User Profile:", userProfile);
-  
   // Platform-specific color schemes
   const platformStyles = {
     leetcode: {
@@ -199,24 +221,24 @@ const PlatformProfiles = ({ userProfile }) => {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+    <div className="bg-white rounded-2xl shadow-sm overflow-hidden h-full">
       <div className="pt-3 sm:pt-4 px-3 sm:px-4">
         <h2 className="flex justify-between text-base sm:text-lg font-semibold text-gfgsc-green items-center">
           <span>Platform Activity</span>
           <CgCode className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
         </h2>
       </div>
-      <div className="p-3 sm:p-4 md:p-6 space-y-3 sm:space-y-4 md:space-y-6">
+      <div className="p-3 sm:p-4 space-y-3 sm:space-y-4">
         {Object.entries(userProfile.profiles).map(([platform, stats]) => {
           const style = platformStyles[platform];
 
           return (
             <div
               key={platform}
-              className={`group relative bg-white border-2 p-3 sm:p-4 rounded-lg transition-all duration-300 
+              className={`group relative bg-white border-2 p-2 sm:p-3 rounded-lg transition-all duration-300 
                 ${style.borderHover} ${style.shadow} hover:shadow-lg`}
             >
-              <div className="flex items-center justify-between mb-2 sm:mb-3">
+              <div className="flex items-center justify-between mb-1 sm:mb-2">
                 <span className="text-xs sm:text-sm font-medium capitalize flex items-center gap-1 sm:gap-2 flex-wrap">
                   {React.createElement(platformIcons[platform], {
                     className: `w-4 h-4 sm:w-5 sm:h-5 ${style.iconColor}`,
@@ -234,34 +256,34 @@ const PlatformProfiles = ({ userProfile }) => {
                   <FaExternalLinkAlt className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                 </a>
               </div>
-              <div className="flex flex-wrap gap-1.5 sm:gap-2 text-xs sm:text-sm">
+              <div className="flex flex-wrap gap-1 sm:gap-2 text-xxs sm:text-xs">
                 {/* LeetCode specific fields */}
                 {platform === "leetcode" && (
                   <>
                     <div
-                      className={`flex items-center border rounded-md ${style.statsBg} p-1.5 sm:p-2 transition-colors duration-300`}
+                      className={`flex items-center border rounded-md ${style.statsBg} p-1 sm:p-1.5 transition-colors duration-300`}
                     >
                       <div className="font-semibold">{stats.badgesCount}</div>
-                      <div className="text-gray-500 text-xxs sm:text-xs ml-1">
+                      <div className="text-gray-500 text-xxxs sm:text-xxs ml-1">
                         Badges
                       </div>
                     </div>
                     <div
-                      className={`flex items-center border rounded-md ${style.statsBg} p-1.5 sm:p-2 transition-colors duration-300`}
+                      className={`flex items-center border rounded-md ${style.statsBg} p-1 sm:p-1.5 transition-colors duration-300`}
                     >
                       <div className="font-semibold">{stats.ranking}</div>
-                      <div className="text-gray-500 text-xxs sm:text-xs ml-1">
+                      <div className="text-gray-500 text-xxxs sm:text-xxs ml-1">
                         Ranking
                       </div>
                     </div>
                     <div
-                      className={`flex items-center border rounded-md ${style.statsBg} p-1.5 sm:p-2 transition-colors duration-300`}
+                      className={`flex items-center border rounded-md ${style.statsBg} p-1 sm:p-1.5 transition-colors duration-300`}
                     >
                       <div className="font-semibold">
                         {stats.totalProblemSolved}
                       </div>
-                      <div className="text-gray-500 text-xxs sm:text-xs ml-1">
-                        Problems Solved
+                      <div className="text-gray-500 text-xxxs sm:text-xxs ml-1">
+                        Problems
                       </div>
                     </div>
                   </>
@@ -271,27 +293,27 @@ const PlatformProfiles = ({ userProfile }) => {
                 {platform === "codechef" && (
                   <>
                     <div
-                      className={`flex items-center border rounded-md ${style.statsBg} p-1.5 sm:p-2 transition-colors duration-300`}
+                      className={`flex items-center border rounded-md ${style.statsBg} p-1 sm:p-1.5 transition-colors duration-300`}
                     >
                       <div className="font-semibold">{stats.rating}</div>
-                      <div className="text-gray-500 text-xxs sm:text-xs ml-1">
+                      <div className="text-gray-500 text-xxxs sm:text-xxs ml-1">
                         Rating
                       </div>
                     </div>
                     <div
-                      className={`flex items-center border rounded-md ${style.statsBg} p-1.5 sm:p-2 transition-colors duration-300`}
+                      className={`flex items-center border rounded-md ${style.statsBg} p-1 sm:p-1.5 transition-colors duration-300`}
                     >
                       <div className="font-semibold">{stats.highestRating}</div>
-                      <div className="text-gray-500 text-xxs sm:text-xs ml-1">
-                        Highest Rating
+                      <div className="text-gray-500 text-xxxs sm:text-xxs ml-1">
+                        Highest
                       </div>
                     </div>
                     <div
-                      className={`flex items-center border rounded-md ${style.statsBg} p-1.5 sm:p-2 transition-colors duration-300`}
+                      className={`flex items-center border rounded-md ${style.statsBg} p-1 sm:p-1.5 transition-colors duration-300`}
                     >
                       <div className="font-semibold">{stats.countryRank}</div>
-                      <div className="text-gray-500 text-xxs sm:text-xs ml-1">
-                        Country Rank
+                      <div className="text-gray-500 text-xxxs sm:text-xxs ml-1">
+                        Rank
                       </div>
                     </div>
                   </>
@@ -301,29 +323,29 @@ const PlatformProfiles = ({ userProfile }) => {
                 {platform === "codeforces" && (
                   <>
                     <div
-                      className={`flex items-center border rounded-md ${style.statsBg} p-1.5 sm:p-2 transition-colors duration-300`}
+                      className={`flex items-center border rounded-md ${style.statsBg} p-1 sm:p-1.5 transition-colors duration-300`}
                     >
                       <div className="font-semibold">{stats.rating}</div>
-                      <div className="text-gray-500 text-xxs sm:text-xs ml-1">
+                      <div className="text-gray-500 text-xxxs sm:text-xxs ml-1">
                         Rating
                       </div>
                     </div>
                     <div
-                      className={`flex items-center border rounded-md ${style.statsBg} p-1.5 sm:p-2 transition-colors duration-300`}
+                      className={`flex items-center border rounded-md ${style.statsBg} p-1 sm:p-1.5 transition-colors duration-300`}
                     >
                       <div className="font-semibold">{stats.rank}</div>
-                      <div className="text-gray-500 text-xxs sm:text-xs ml-1">
+                      <div className="text-gray-500 text-xxxs sm:text-xxs ml-1">
                         Rank
                       </div>
                     </div>
                     <div
-                      className={`flex items-center border rounded-md ${style.statsBg} p-1.5 sm:p-2 transition-colors duration-300`}
+                      className={`flex items-center border rounded-md ${style.statsBg} p-1 sm:p-1.5 transition-colors duration-300`}
                     >
                       <div className="font-semibold">
                         {stats.totalProblemSolved}
                       </div>
-                      <div className="text-gray-500 text-xxs sm:text-xs ml-1">
-                        Problems Solved
+                      <div className="text-gray-500 text-xxxs sm:text-xxs ml-1">
+                        Problems
                       </div>
                     </div>
                   </>
@@ -333,36 +355,36 @@ const PlatformProfiles = ({ userProfile }) => {
                 {platform === "geeksforgeeks" && (
                   <>
                     <div
-                      className={`flex items-center border rounded-md ${style.statsBg} p-1.5 sm:p-2 transition-colors duration-300`}
+                      className={`flex items-center border rounded-md ${style.statsBg} p-1 sm:p-1.5 transition-colors duration-300`}
                     >
                       <div className="font-semibold">{stats.solvedProblems}</div>
-                      <div className="text-gray-500 text-xxs sm:text-xs ml-1">
-                        Solved Problems
+                      <div className="text-gray-500 text-xxxs sm:text-xxs ml-1">
+                        Problems
                       </div>
                     </div>
                     <div
-                      className={`flex items-center border rounded-md ${style.statsBg} p-1.5 sm:p-2 transition-colors duration-300`}
+                      className={`flex items-center border rounded-md ${style.statsBg} p-1 sm:p-1.5 transition-colors duration-300`}
                     >
                       <div className="font-semibold">{stats.rank}</div>
-                      <div className="text-gray-500 text-xxs sm:text-xs ml-1">
+                      <div className="text-gray-500 text-xxxs sm:text-xxs ml-1">
                         Rank
                       </div>
                     </div>
                     <div
-                      className={`flex items-center border rounded-md ${style.statsBg} p-1.5 sm:p-2 transition-colors duration-300`}
+                      className={`flex items-center border rounded-md ${style.statsBg} p-1 sm:p-1.5 transition-colors duration-300`}
                     >
                       <div className="font-semibold">
                         {stats.codingScore}
                       </div>
-                      <div className="text-gray-500 text-xxs sm:text-xs ml-1">
-                        Coding Score
+                      <div className="text-gray-500 text-xxxs sm:text-xxs ml-1">
+                        Score
                       </div>
                     </div>
                   </>
                 )}
               </div>
-              <div className="absolute bottom-2 right-2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                This gets updated on a weekly basis
+              <div className="absolute bottom-1 right-1 bg-gray-800 text-white text-xxxs sm:text-xxs px-1 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                Updated weekly
               </div>
             </div>
           );

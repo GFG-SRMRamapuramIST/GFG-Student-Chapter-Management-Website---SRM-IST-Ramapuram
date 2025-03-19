@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 // Importing the Icons
-import { IoPersonOutline } from "react-icons/io5";
+import { IoPersonOutline, IoWarningOutline } from "react-icons/io5";
 import { FaSpinner } from "react-icons/fa";
 
 import { LeaderboardHero, LeaderboardTable } from "../Components";
@@ -11,6 +11,7 @@ import { Pagination, ToastMsg } from "../Utilities";
 
 // Importing the API
 import { UserServices } from "../Services";
+import { GfgCoin } from "../Assets";
 
 const Leaderboard = () => {
   const { fetchLeaderboardDataFunction } = UserServices();
@@ -23,6 +24,9 @@ const Leaderboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const itemsPerPage = 10;
+
+  // TODO: GET FROM BACKEND
+  const minimumPassingMark = 20;
 
   useEffect(() => {
     const fetchLeaderboardData = async () => {
@@ -135,6 +139,7 @@ const Leaderboard = () => {
                 <LeaderboardHero
                   topThree={leaderboardData.slice(0, 3)}
                   isTeam={false}
+                  minimumPassingMark={minimumPassingMark}
                 />
                 <LeaderboardTable data={leaderboardData} isTeam={false} />
                 <Pagination
@@ -142,7 +147,56 @@ const Leaderboard = () => {
                   totalPages={totalPages}
                   onPageChange={handlePageChange}
                 />
+                
               </motion.div>
+              <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3, duration: 0.4 }}
+                  className="mt-8 px-16"
+                >
+                  <div className="bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-red-500 rounded-lg shadow-md overflow-hidden">
+                    <div className="flex items-start p-4">
+                      <div className="flex-shrink-0 bg-red-500 text-white p-2 rounded-full">
+                        <IoWarningOutline className="w-5 h-5" />
+                      </div>
+
+                      <div className="ml-4 flex-1">
+                        <div className="flex items-center justify-between">
+                          <h4 className="text-sm font-semibold text-red-800">
+                            Warning: Performance Notice
+                          </h4>
+                          <div className="text-xs bg-red-500 text-white px-3 py-1 rounded-full font-medium">
+                            Bottom 3 Alert
+                          </div>
+                        </div>
+
+                        <p className="mt-2 text-sm text-red-700">
+                          The bottom 3 participants are at risk of being removed
+                          from the club. All members must maintain a minimum
+                          of{" "}
+                          <span className="font-semibold inline-flex items-center">
+                            {minimumPassingMark}
+                            <img
+                              src={GfgCoin}
+                              alt="GfgCoin"
+                              className="w-4 h-4 ml-1"
+                            />
+                          </span>{" "}
+                          to remain active.
+                        </p>
+
+                        <div className="mt-3 bg-white/50 backdrop-blur-sm p-2 rounded border border-red-200">
+                          <p className="text-xs text-red-600 italic">
+                            Performance evaluations occur at the end of each
+                            month. Members below the threshold for two
+                            consecutive evaluations may be asked to step down.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
             </AnimatePresence>
           </>
         )}

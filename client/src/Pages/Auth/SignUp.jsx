@@ -14,7 +14,7 @@ import {
   MdDescription,
 } from "react-icons/md";
 import { FaLinkedin, FaSpinner } from "react-icons/fa";
-import { SiCodechef, SiCodeforces, SiLeetcode } from "react-icons/si";
+import { SiCodechef, SiCodeforces, SiGeeksforgeeks, SiLeetcode } from "react-icons/si";
 import { CgEditMarkup } from "react-icons/cg";
 
 import { AuthBackground } from "../../Components";
@@ -51,6 +51,7 @@ const steps = [
       "leetcodeUsername",
       "codechefUsername",
       "codeforcesUsername",
+      "geeksforgeeksUsername",
       "codolioUsername",
     ],
   },
@@ -92,6 +93,7 @@ const SignUp = () => {
       leetcodeUsername: "",
       codechefUsername: "",
       codeforcesUsername: "",
+      geeksforgeeksUsername: "",
       codolioUsername: "",
       profilePicture: [],
       otp: "",
@@ -185,6 +187,11 @@ const SignUp = () => {
       icon: <SiCodechef />,
       placeholder: "CodeChef Username",
       validation: { required: "CodeChef is required" },
+    },
+    geeksforgeeksUsername: {
+      icon: <SiGeeksforgeeks />,
+      placeholder: "GeeksforGeeks Username",
+      validation: { required: "GeeksforGeeks is required" },
     },
     codeforcesUsername: {
       icon: <SiCodeforces />,

@@ -587,6 +587,7 @@ EditProfile.propTypes = {
       leetcode: PropTypes.string,
       codechef: PropTypes.string,
       codeforces: PropTypes.string,
+      geeksforgeeks: PropTypes.string,
     }),
     social: PropTypes.shape({
       linkedin: PropTypes.string,

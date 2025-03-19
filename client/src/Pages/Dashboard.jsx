@@ -49,7 +49,7 @@ const Dashboard = () => {
   const fetchDashBoardCalenderData = async () => {
     try {
       const response = await getDashboardCalenderDataFunction();
-      // console.log(response.data);
+      console.log(response.data);
       if (response.status === 200) {
         const transformedEvents = [];
 
@@ -262,7 +262,9 @@ const Dashboard = () => {
       <div className="grid lg:grid-cols-12 gap-6">
         {/* Main Content */}
         <div className="lg:col-span-8 space-y-6">
-          <StatsSection stats={stats} />
+          
+        <PlatformPOTDs problems={platformPOTDs} />
+          {/* <StatsSection stats={stats} /> */}
           <CustomCalendar
             events={events}
             fetchDashBoardCalenderData={fetchDashBoardCalenderData}
