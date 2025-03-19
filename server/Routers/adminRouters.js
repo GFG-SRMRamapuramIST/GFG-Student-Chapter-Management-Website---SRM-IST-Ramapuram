@@ -32,6 +32,8 @@ router.use(express.static(path.resolve(__dirname, "Public")));
 15. Edit Constant Values API - "{BACKEND_URL}/api/v1/admin/edit-constant-values"
 16. Fetch Constant Values API - "{BACKEND_URL}/api/v1/admin/fetch-constant-values"
 
+17. Reset achievement API - "{BACKEND_URL}/api/v1/admin/reset-achievement"
+
 **********************************************************
 */
 
@@ -85,6 +87,9 @@ router.put("/edit-constant-values", adminControllers.editConstantValues);
 
 //16. Fetch Constant Values API
 router.get("/fetch-constant-values", adminControllers.getConstantValues);
+
+//17. Reset achievement API
+router.post("/reset-achievement", adminControllers.resetAchievements);
 
 /************************** APIs For Teams **************************
 //11. Update team size API
