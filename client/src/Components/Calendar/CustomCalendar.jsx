@@ -20,7 +20,7 @@ import { CoreMemberServices } from "../../Services";
 import { useUser } from "../../Context/UserContext";
 import { hasMinimumRole, ROLES } from "../../Utilities/roleUtils";
 
-const TodayView = ({ events }) => {
+const TodayView = ({ events, onEventClick }) => {
   const todayEvents = events
     .filter((event) => {
       const eventDate = new Date(event.start_time);
@@ -30,13 +30,11 @@ const TodayView = ({ events }) => {
 
   return todayEvents.length > 0 ? (
     todayEvents.map((event, idx) => (
-      <motion.a
+      <motion.div
         key={idx}
-        href={event.link}
-        target="_blank"
-        rel="noopener noreferrer"
+        onClick={() => onEventClick(new Date())}
         whileHover={{ scale: 1.02, x: 4 }}
-        className={`flex items-center gap-4 p-4 rounded-2xl shadow-lg ${
+        className={`flex items-center gap-4 p-4 rounded-2xl shadow-lg cursor-pointer ${
           event.type === "contest"
             ? "bg-gradient-to-br from-[#002b46] to-[#004b7c] text-white"
             : "bg-gradient-to-br from-[#00895e] to-[#00b377] text-white"
@@ -66,9 +64,10 @@ const TodayView = ({ events }) => {
             })}
           </p>
         </div>
-      </motion.a>
+      </motion.div>
     ))
   ) : (
+    // No events message remains the same
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
@@ -173,7 +172,7 @@ const CustomCalendar = ({ events, fetchDashBoardCalenderData }) => {
         date: eventData.date,
       };
 
-      console.log("Formatted Contest Data:",formatedContestData);
+      console.log("Formatted Contest Data:", formatedContestData);
       await handleContestCreationFunction(formatedContestData);
     }
   };
@@ -201,7 +200,7 @@ const CustomCalendar = ({ events, fetchDashBoardCalenderData }) => {
     if (!date) return { meetings: 0, contests: 0, events: [] };
 
     const dayEvents = events.filter((event) => {
-      const eventDate = (new Date(event.start_time));
+      const eventDate = new Date(event.start_time);
       return eventDate.toDateString() === date.toDateString();
     });
 
@@ -330,7 +329,10 @@ const CustomCalendar = ({ events, fetchDashBoardCalenderData }) => {
           })}
         </div>
       ) : (
-        <TodayView events={events} />
+        <TodayView
+          events={events}
+          onEventClick={(date) => setSelectedDate(date)}
+        />
       )}
 
       <AnimatePresence>

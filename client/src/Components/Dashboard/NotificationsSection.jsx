@@ -6,7 +6,7 @@ import { FaSpinner } from "react-icons/fa";
 
 import { useUser } from "../../Context/UserContext";
 import { hasMinimumRole, ROLES } from "../../Utilities/roleUtils";
-import { ToastMsg } from "../../Utilities";
+import { ConfirmationPopup, ToastMsg } from "../../Utilities";
 
 import NotificationItem from "../ui/NotificationItem";
 import NotificationModal from "../ui/NotificationModal";
@@ -26,6 +26,14 @@ const NotificationsSection = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [notifications, setNotifications] = useState([]);
+
+  const [confirmationState, setConfirmationState] = useState({
+    isOpen: false,
+    type: "info",
+    title: "",
+    message: "",
+    onConfirm: () => {},
+  });
 
   const getAllAnnouncement = async () => {
     setLoading(true);
@@ -81,22 +89,32 @@ const NotificationsSection = () => {
   };
 
   const handleNotificationDelete = async (id) => {
-    //console.log(id);
-    try {
-      const response = await deleteAnnouncementFunction({ announcementId: id });
+    setConfirmationState({
+      isOpen: true,
+      type: "danger",
+      title: "Delete Announcement",
+      message: `Are you sure you want to delete the announcement?`,
+      onConfirm: async () => {
+        //console.log(id);
+        try {
+          const response = await deleteAnnouncementFunction({
+            announcementId: id,
+          });
 
-      if (response.status == 200) {
-        ToastMsg(response.data.message, "success");
-      } else {
-        console.log("Error in deleting announcement");
-        ToastMsg("Error in deleting announcement", "error");
-      }
-    } catch (error) {
-      console.error("Internal Server Error: ", error);
-      ToastMsg("Internal Server Error! Please try later", "error");
-    } finally {
-      getAllAnnouncement();
-    }
+          if (response.status == 200) {
+            ToastMsg(response.data.message, "success");
+          } else {
+            console.log("Error in deleting announcement");
+            ToastMsg("Error in deleting announcement", "error");
+          }
+        } catch (error) {
+          console.error("Internal Server Error: ", error);
+          ToastMsg("Internal Server Error! Please try later", "error");
+        } finally {
+          getAllAnnouncement();
+        }
+      },
+    });
   };
 
   return (
@@ -140,6 +158,17 @@ const NotificationsSection = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleAddNotification}
+      />
+
+      <ConfirmationPopup
+        isOpen={confirmationState.isOpen}
+        onClose={() =>
+          setConfirmationState({ ...confirmationState, isOpen: false })
+        }
+        onConfirm={confirmationState.onConfirm}
+        type={confirmationState.type}
+        title={confirmationState.title}
+        message={confirmationState.message}
       />
     </div>
   );

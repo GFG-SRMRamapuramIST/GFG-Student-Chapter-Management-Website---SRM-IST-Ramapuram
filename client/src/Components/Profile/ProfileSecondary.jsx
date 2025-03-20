@@ -7,6 +7,7 @@ import { MdCalendarMonth } from "react-icons/md";
 import { platformIcons } from "../../Constants";
 import { RotatingCloseButton } from "../../Utilities";
 import NotificationsSection from "../Dashboard/NotificationsSection";
+import MonthlyActivityHeatmap from "./MonthlyActivityHeatmap";
 
 const CustomDialog = ({ open, onClose, children }) => {
   if (!open) return null;
@@ -90,65 +91,55 @@ const ProfileSecondary = ({ userProfile }) => {
         <div className="lg:col-span-1">
           <div className="grid grid-cols-1 gap-4 sm:gap-6">
             {/* Heatmap */}
-            <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-              <div className="pt-3 sm:pt-4 px-3 sm:px-4">
-                <h2 className="flex justify-between text-base sm:text-lg font-semibold text-gfgsc-green items-center">
-                  <span>Contribution Activity</span>
-                  <MdCalendarMonth className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
-                </h2>
-              </div>
-              <div className="p-3 sm:p-4">
-                {/* <ProfileHeatmap /> */}
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Animi in non alias natus. Placeat minus vitae exercitationem consequatur similique. Sapiente.
-                
-              </div>
-            </div>
-
-            {/* Compact Achievements */}
-            <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-              <div className="pt-3 px-3 sm:pt-4 sm:px-4">
-                <h2 className="flex justify-between text-base sm:text-lg font-semibold text-gfgsc-green items-center">
-                  <span>Achievements</span>
-                  <CgTrophy className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
-                </h2>
-              </div>
-
-              <div className="p-3 sm:p-4">
-                {userProfile.badges.length === 0 ? (
-                  <div className="flex flex-col text-center items-center justify-center p-2 sm:p-4">
-                    <BiError className="w-6 h-6 sm:w-8 sm:h-8 text-gray-400" />
-                    <p className="mt-2 text-xs sm:text-sm text-gray-500">
-                      No achievements yet. Keep trying harder!
-                    </p>
-                  </div>
-                ) : (
-                  <>
-                    <div className="flex justify-center gap-2 sm:gap-3">
-                      {userProfile.badges.slice(0, 3).map((badge) => (
-                        <div key={badge.id} className="flex flex-col items-center">
-                          <Badge type={badge.type} name={badge.name} />
-                          <div className="mt-1 text-xxxs sm:text-xxs font-medium text-center truncate w-full">
-                            {badge.name}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                    <button
-                      onClick={() => setShowBadges(true)}
-                      className="w-full mt-2 py-1 sm:py-1.5 px-2 sm:px-3 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-100 transition-colors text-xxs sm:text-xs font-medium flex items-center justify-center"
-                    >
-                      <span>View all</span>
-                      <FaChevronRight className="w-2 h-2 sm:w-2.5 sm:h-2.5 ml-1" />
-                    </button>
-                  </>
-                )}
-              </div>
-            </div>
+            <MonthlyActivityHeatmap />
           </div>
         </div>
 
         {/* Announcements - 33% on large screens */}
-        <div className="lg:col-span-1">
+        <div className="grid lg:col-span-1 gap-4 lg:gap-6">
+          {/* Compact Achievements */}
+          <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+            <div className="pt-3 px-3 sm:pt-4 sm:px-4">
+              <h2 className="flex justify-between text-base sm:text-lg font-semibold text-gfgsc-green items-center">
+                <span>Achievements</span>
+                <CgTrophy className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
+              </h2>
+            </div>
+
+            <div className="p-3 sm:p-4">
+              {userProfile.badges.length === 0 ? (
+                <div className="flex flex-col text-center items-center justify-center p-2 sm:p-4">
+                  <BiError className="w-6 h-6 sm:w-8 sm:h-8 text-gray-400" />
+                  <p className="mt-2 text-xs sm:text-sm text-gray-500">
+                    No achievements yet. Keep trying harder!
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <div className="flex justify-center gap-2 sm:gap-3">
+                    {userProfile.badges.slice(0, 3).map((badge) => (
+                      <div
+                        key={badge.id}
+                        className="flex flex-col items-center"
+                      >
+                        <Badge type={badge.type} name={badge.name} />
+                        <div className="mt-1 text-xxxs sm:text-xxs font-medium text-center truncate w-full">
+                          {badge.name}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <button
+                    onClick={() => setShowBadges(true)}
+                    className="w-full mt-2 py-1 sm:py-1.5 px-2 sm:px-3 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-100 transition-colors text-xxs sm:text-xs font-medium flex items-center justify-center"
+                  >
+                    <span>View all</span>
+                    <FaChevronRight className="w-2 h-2 sm:w-2.5 sm:h-2.5 ml-1" />
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
           <NotificationsSection />
         </div>
       </div>
@@ -238,13 +229,16 @@ const PlatformProfiles = ({ userProfile }) => {
               className={`group relative bg-white border-2 p-2 sm:p-3 rounded-lg transition-all duration-300 
                 ${style.borderHover} ${style.shadow} hover:shadow-lg`}
             >
-              <div className="flex items-center justify-between mb-1 sm:mb-2">
-                <span className="text-xs sm:text-sm font-medium capitalize flex items-center gap-1 sm:gap-2 flex-wrap">
-                  {React.createElement(platformIcons[platform], {
-                    className: `w-4 h-4 sm:w-5 sm:h-5 ${style.iconColor}`,
-                  })}
+              <div className="flex items-center justify-between mb-2 sm:mb-3">
+                <span className="text-sm sm:text-md font-medium capitalize flex items-center gap-1 sm:gap-2 flex-wrap">
+                  <span>
+                    {React.createElement(platformIcons[platform], {
+                      className: `w-4 h-4 sm:w-5 sm:h-5 ${style.iconColor}`,
+                    })}
+                  </span>
+
                   <span>{platform}</span>
-                  <span className="text-xxs sm:text-xs text-gray-500 lowercase">
+                  <span className="text-xs sm:text-sm text-gray-500 lowercase">
                     @{stats.handle || "N/A"}
                   </span>
                 </span>
@@ -263,28 +257,26 @@ const PlatformProfiles = ({ userProfile }) => {
                     <div
                       className={`flex items-center border rounded-md ${style.statsBg} p-1 sm:p-1.5 transition-colors duration-300`}
                     >
-                      <div className="font-semibold">{stats.badgesCount}</div>
-                      <div className="text-gray-500 text-xxxs sm:text-xxs ml-1">
-                        Badges
+                      <div className="font-semibold text-sm">
+                        {stats.badgesCount}
                       </div>
+                      <div className="text-gray-500 text-xs ml-1">Badges</div>
                     </div>
                     <div
                       className={`flex items-center border rounded-md ${style.statsBg} p-1 sm:p-1.5 transition-colors duration-300`}
                     >
-                      <div className="font-semibold">{stats.ranking}</div>
-                      <div className="text-gray-500 text-xxxs sm:text-xxs ml-1">
-                        Ranking
+                      <div className="font-semibold text-sm">
+                        {stats.ranking}
                       </div>
+                      <div className="text-gray-500 text-xs ml-1">Ranking</div>
                     </div>
                     <div
                       className={`flex items-center border rounded-md ${style.statsBg} p-1 sm:p-1.5 transition-colors duration-300`}
                     >
-                      <div className="font-semibold">
+                      <div className="font-semibold text-sm">
                         {stats.totalProblemSolved}
                       </div>
-                      <div className="text-gray-500 text-xxxs sm:text-xxs ml-1">
-                        Problems
-                      </div>
+                      <div className="text-gray-500 text-xs ml-1">Problems</div>
                     </div>
                   </>
                 )}
@@ -295,26 +287,26 @@ const PlatformProfiles = ({ userProfile }) => {
                     <div
                       className={`flex items-center border rounded-md ${style.statsBg} p-1 sm:p-1.5 transition-colors duration-300`}
                     >
-                      <div className="font-semibold">{stats.rating}</div>
-                      <div className="text-gray-500 text-xxxs sm:text-xxs ml-1">
-                        Rating
+                      <div className="font-semibold text-sm">
+                        {stats.rating}
                       </div>
+                      <div className="text-gray-500 text-xs ml-1">Rating</div>
                     </div>
                     <div
                       className={`flex items-center border rounded-md ${style.statsBg} p-1 sm:p-1.5 transition-colors duration-300`}
                     >
-                      <div className="font-semibold">{stats.highestRating}</div>
-                      <div className="text-gray-500 text-xxxs sm:text-xxs ml-1">
-                        Highest
+                      <div className="font-semibold text-sm">
+                        {stats.highestRating}
                       </div>
+                      <div className="text-gray-500 text-xs ml-1">Highest</div>
                     </div>
                     <div
                       className={`flex items-center border rounded-md ${style.statsBg} p-1 sm:p-1.5 transition-colors duration-300`}
                     >
-                      <div className="font-semibold">{stats.countryRank}</div>
-                      <div className="text-gray-500 text-xxxs sm:text-xxs ml-1">
-                        Rank
+                      <div className="font-semibold text-sm">
+                        {stats.countryRank}
                       </div>
+                      <div className="text-gray-500 text-xs ml-1">Rank</div>
                     </div>
                   </>
                 )}
@@ -325,28 +317,24 @@ const PlatformProfiles = ({ userProfile }) => {
                     <div
                       className={`flex items-center border rounded-md ${style.statsBg} p-1 sm:p-1.5 transition-colors duration-300`}
                     >
-                      <div className="font-semibold">{stats.rating}</div>
-                      <div className="text-gray-500 text-xxxs sm:text-xxs ml-1">
-                        Rating
+                      <div className="font-semibold text-sm">
+                        {stats.rating}
                       </div>
+                      <div className="text-gray-500 text-xs ml-1">Rating</div>
                     </div>
                     <div
                       className={`flex items-center border rounded-md ${style.statsBg} p-1 sm:p-1.5 transition-colors duration-300`}
                     >
-                      <div className="font-semibold">{stats.rank}</div>
-                      <div className="text-gray-500 text-xxxs sm:text-xxs ml-1">
-                        Rank
-                      </div>
+                      <div className="font-semibold text-sm">{stats.rank}</div>
+                      <div className="text-gray-500 text-xs ml-1">Rank</div>
                     </div>
                     <div
                       className={`flex items-center border rounded-md ${style.statsBg} p-1 sm:p-1.5 transition-colors duration-300`}
                     >
-                      <div className="font-semibold">
+                      <div className="font-semibold text-sm">
                         {stats.totalProblemSolved}
                       </div>
-                      <div className="text-gray-500 text-xxxs sm:text-xxs ml-1">
-                        Problems
-                      </div>
+                      <div className="text-gray-500 text-xs ml-1">Problems</div>
                     </div>
                   </>
                 )}
@@ -357,28 +345,30 @@ const PlatformProfiles = ({ userProfile }) => {
                     <div
                       className={`flex items-center border rounded-md ${style.statsBg} p-1 sm:p-1.5 transition-colors duration-300`}
                     >
-                      <div className="font-semibold">
+                      <div className="font-semibold text-sm">
                         {stats.universityRank}
                       </div>
-                      <div className="text-gray-500 text-xxs sm:text-xs ml-1">
+                      <div className="text-gray-500 text-xs ml-1">
                         University Rank
                       </div>
                     </div>
                     <div
                       className={`flex items-center border rounded-md ${style.statsBg} p-1 sm:p-1.5 transition-colors duration-300`}
                     >
-                      <div className="font-semibold">{stats.codingScore}</div>
-                      <div className="text-gray-500 text-xxs sm:text-xs ml-1">
+                      <div className="font-semibold text-sm">
+                        {stats.codingScore}
+                      </div>
+                      <div className="text-gray-500 text-xs ml-1">
                         Coding Score
                       </div>
                     </div>
                     <div
                       className={`flex items-center border rounded-md ${style.statsBg} p-1 sm:p-1.5 transition-colors duration-300`}
                     >
-                      <div className="font-semibold">
+                      <div className="font-semibold text-sm">
                         {stats.problemsSolved}
                       </div>
-                      <div className="text-gray-500 text-xxs sm:text-xs ml-1">
+                      <div className="text-gray-500 text-xs ml-1">
                         Problem Solved
                       </div>
                     </div>

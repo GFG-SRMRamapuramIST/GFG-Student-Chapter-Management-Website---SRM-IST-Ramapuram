@@ -50,8 +50,9 @@ import PlatformPOTDs from "./Profile/PlatformPOTDs";
 import PasswordChangeModal from "./Profile/PasswordChangeModal";
 import ProfilePictureEditor from "./Profile/ProfilePictureEditor";
 import PlatformLinkPlaceholder from "./Profile/PlatformLinkPlaceholder";
+import MonthlyActivityHeatmap from "./Profile/MonthlyActivityHeatmap";
 
-export { ProfileHero, PlatformPOTDs, ProfileSecondary, PasswordChangeModal, ProfilePictureEditor, PlatformLinkPlaceholder };
+export { ProfileHero, PlatformPOTDs, ProfileSecondary, PasswordChangeModal, ProfilePictureEditor, PlatformLinkPlaceholder, MonthlyActivityHeatmap };
 
 // Leaderboard Components
 import LeaderboardHero from "./Leaderboard/LeaderboardHero";

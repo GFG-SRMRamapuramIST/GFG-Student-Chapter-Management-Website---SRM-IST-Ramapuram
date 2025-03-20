@@ -78,6 +78,7 @@ const SignUp = () => {
     formState: { errors },
     setValue,
     reset,
+    trigger
   } = useForm({
     mode: "onChange",
     defaultValues: {
@@ -95,7 +96,6 @@ const SignUp = () => {
       codeforcesUsername: "",
       geeksforgeeksUsername: "",
       codolioUsername: "",
-      geeksforgeeksUsername: "vishal100403", // Default user name
       profilePicture: [],
       otp: "",
     },
@@ -515,13 +515,24 @@ const SignUp = () => {
 
   // Function to move to the next section in the form
   const nextStep = async () => {
-    /*const fields = steps[currentStep].fields;
-    const isValid = await trigger(fields);
+    const currentFields = steps[currentStep].fields;
+    
+    // Skip validation for profile picture
+    const fieldsToValidate = currentFields.filter(field => field !== "profilePicture");
+    
+    // Trigger validation only for required fields
+    const validationResults = await Promise.all(
+      fieldsToValidate.map(field => trigger(field))
+    );
+  
+    // Check if all validations passed
+    const isValid = validationResults.every(result => result === true);
   
     if (isValid) {
-      setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
-    }*/
-    setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
+      setCurrentStep(prev => Math.min(prev + 1, steps.length - 1));
+    } else {
+      ToastMsg("Please fill all required fields correctly", "error");
+    }
   };
 
   return (
@@ -600,12 +611,21 @@ const SignUp = () => {
               )}
               {currentStep < steps.length - 1 ? (
                 <button
-                  type="button"
-                  onClick={nextStep}
-                  className="w-full sm:flex-1 py-2.5 sm:py-3 px-4 rounded-lg bg-gfgsc-green text-white hover:bg-gfg-green transition-colors text-sm sm:text-base"
-                >
-                  Next
-                </button>
+                type="button"
+                onClick={nextStep}
+                disabled={Object.keys(errors).some(key => 
+                  steps[currentStep].fields.includes(key) && key !== "profilePicture"
+                )}
+                className={`w-full sm:flex-1 py-2.5 sm:py-3 px-4 rounded-lg 
+                  ${Object.keys(errors).some(key => 
+                    steps[currentStep].fields.includes(key) && key !== "profilePicture"
+                  )
+                    ? "bg-gray-300 cursor-not-allowed"
+                    : "bg-gfgsc-green text-white hover:bg-gfg-green"
+                  } transition-colors text-sm sm:text-base`}
+              >
+                Next
+              </button>
               ) : (
                 <button
                   type="submit"
