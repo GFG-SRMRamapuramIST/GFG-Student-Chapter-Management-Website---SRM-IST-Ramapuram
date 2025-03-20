@@ -4,32 +4,49 @@ import { RotatingCloseButton } from "../../Utilities";
 
 const content = {
   "getting-started": {
-    title: "Getting Started",
+    title: "Introduction",
     subsections: {
-      installation: {
-        title: "Installation",
-        content: "Instructions for installation.",
+      "about-website": {
+        title: "GeeksforGeeks Student Chapter - SRMIST",
+        content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie vehicula. Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor. Ut in nulla enim. Phasellus molestie magna non est bibendum non venenatis nisl tempor.",
       },
-      "quick-start": {
-        title: "Quick Start",
-        content: "A quick overview of the initial setup.",
+      "why-needed": {
+        title: "Website Overview",
+        content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin nibh augue, suscipit a, scelerisque sed, lacinia in, mi. Cras vel lorem. Etiam pellentesque aliquet tellus. Phasellus pharetra nulla ac diam. Quisque semper justo at risus.",
       },
-      "basic-usage": {
-        title: "Basic Usage",
-        content: "How to use the basic features of the framework.",
+      "developers-contributors": {
+        title: "Purpose of Website",
+        content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem.",
       },
     },
   },
-  "advanced-engine": {
-    title: "Advanced Usage",
+  "tech-stack": {
+    title: "Tech Stack",
     subsections: {
-      configuration: {
-        title: "Configuration",
-        content: "Detailed instructions for configuration.",
+      "tech-stack-list": {
+        title: "Technologies Used",
+        content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse nisl elit, rhoncus eget, elementum ac, condimentum eget, diam. Praesent nonummy mi in odio. Nunc interdum lacus sit amet orci. Phasellus gravida semper nisi.",
       },
-      "performance-tuning": {
-        title: "Performance Tuning",
-        content: "How to optimize the performance.",
+      "packages-used": {
+        title: "Libraries & Packages",
+        content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed augue ipsum, egestas nec, vestibulum et, malesuada adipiscing, dui. Vestibulum facilisis, purus nec pulvinar iaculis, ligula mi congue nulla, vitae euismod ligula urna in dolor.",
+      },
+    },
+  },
+  "join-us": {
+    title: "Join us",
+    subsections: {
+      "register": {
+        title: "Sign Up",
+        content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam pretium turpis et arcu. Duis arcu tortor, suscipit eget, imperdiet nec, imperdiet iaculis, ipsum. Sed aliquam ultrices mauris. Integer ante arcu, accumsan a, consectetuer eget, posuere ut, mauris.",
+      },
+      "login": {
+        title: "Login",
+        content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus nec sem in justo pellentesque facilisis. Etiam imperdiet imperdiet orci. Nunc nec neque. Phasellus leo dolor, tempus non, auctor et, hendrerit quis, nisi.",
+      },
+      "forgot-password": {
+        title: "Retrieve Password",
+        content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur ligula sapien, tincidunt non, euismod vitae, posuere imperdiet, leo. Maecenas malesuada. Praesent congue erat at massa. Sed cursus turpis vitae tortor.",
       },
     },
   },
@@ -56,7 +73,8 @@ const NavigationMenu = ({ activeSection, handleNavigation, onClose }) => (
             {Object.entries(section.subsections).map(([subKey, sub]) => (
               <li
                 key={subKey}
-                className="text-xs sm:text-sm text-gray-600 hover:text-emerald-500 transition-colors"
+                className="text-xs sm:text-sm text-gray-600 cursor-pointer"
+                onClick={() => handleNavigation(key, subKey)}
               >
                 {sub.title}
               </li>
@@ -70,25 +88,31 @@ const NavigationMenu = ({ activeSection, handleNavigation, onClose }) => (
 
 const UserManual = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState(null);
+  const [activeSection, setActiveSection] = useState("getting-started");
   const [currentSection, setCurrentSection] = useState("getting-started");
+  const [activeSubsection, setActiveSubsection] = useState(null);
 
   useEffect(() => {
+    setActiveSection("getting-started");
+    
     if (content[currentSection]) {
-      setActiveSection("getting-started");
+      setActiveSection(currentSection);
     } else {
       setCurrentSection("getting-started");
     }
-  }, [currentSection]);
+  }, []);
 
-  const handleNavigation = (section) => {
-    if (section === activeSection) {
+  const handleNavigation = (section, subsection = null) => {
+    if (section === activeSection && !subsection) {
       setActiveSection(null);
     } else {
       setActiveSection(section);
     }
+    
     setCurrentSection(section);
-    setIsMenuOpen(false); // Close mobile menu when navigating
+  
+    
+    setIsMenuOpen(false); 
   };
 
   const handleCloseMenu = () => {
@@ -108,10 +132,9 @@ const UserManual = () => {
       }
     };
 
-    // Add event listener for outside clicks
+ 
     document.addEventListener("mousedown", handleClickOutside);
 
-    // Add body lock when menu is open to prevent scrolling
     if (isMenuOpen) {
       document.body.style.overflow = "hidden";
     } else {
@@ -126,7 +149,6 @@ const UserManual = () => {
 
   return (
     <div className="flex flex-col h-screen bg-white overflow-hidden">
-      {/* Navigation bar with aligned padding */}
       <nav className="flex items-center justify-between py-3 sm:py-4 border-b border-gray-200 px-4 md:px-8 sticky top-0 bg-white z-30 shadow-sm">
         <div className="flex items-center">
           <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-black transition-all">
@@ -143,7 +165,7 @@ const UserManual = () => {
       </nav>
 
       <div className="flex flex-1 relative overflow-hidden">
-        {/* Mobile overlay */}
+
         <div
           className={`fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity duration-300 md:hidden ${
             isMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
@@ -152,7 +174,6 @@ const UserManual = () => {
           aria-hidden="true"
         />
 
-        {/* Mobile sidebar */}
         <div
           id="mobile-sidebar"
           className={`fixed md:hidden top-0 left-0 h-full w-3/4 max-w-xs bg-white transform transition-transform duration-300 ease-in-out z-50 shadow-xl ${
@@ -169,7 +190,6 @@ const UserManual = () => {
           </div>
         </div>
 
-        {/* Desktop sidebar */}
         <aside className="hidden md:block w-1/4 lg:w-1/5 xl:w-1/6 bg-white border-r border-gray-200 flex-shrink-0">
           <div className="p-4 h-full overflow-y-auto sticky top-0">
             <NavigationMenu
@@ -179,7 +199,6 @@ const UserManual = () => {
           </div>
         </aside>
 
-        {/* Main content with aligned padding */}
         <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
           <div className="mb-4 sm:mb-6">
             <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-emerald-600 transition-all">
@@ -191,7 +210,10 @@ const UserManual = () => {
               ([subKey, sub]) => (
                 <div
                   key={subKey}
-                  className="bg-white p-3 sm:p-4 rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-shadow"
+                  id={subKey}
+                  className={`bg-white p-3 sm:p-4 rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-shadow ${
+                    activeSubsection === subKey ? "ring-2 ring-emerald-300" : ""
+                  }`}
                 >
                   <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-emerald-600 mb-2 transition-all">
                     {sub.title}
