@@ -106,7 +106,9 @@ const MonthlyActivityHeatmap = ({
       <div className="flex justify-between items-center mb-6 pt-3 sm:pt-4">
         <div className="flex items-center space-x-2">
           <h2 className="flex justify-between text-base sm:text-lg font-semibold text-gfgsc-green items-center">
-            <span>{monthNames[month]} {year} Activity</span>
+            <span>
+              {monthNames[month]} {year} Activity
+            </span>
           </h2>
         </div>
         <div className="flex items-center space-x-2">
@@ -122,7 +124,6 @@ const MonthlyActivityHeatmap = ({
         </div>
       </div>
 
-      {/* Calendar Grid */}
       <div className="mb-6">
         <div className="grid grid-cols-7 gap-1 mb-1">
           {dayNames.map((day) => (
@@ -142,17 +143,21 @@ const MonthlyActivityHeatmap = ({
           {activityData.map((day) => (
             <motion.div
               key={day.day}
-              className={`h-10 rounded-lg flex items-center justify-center ${getActivityColor(
+              className={`h-10 group cursor-pointer rounded-lg flex items-center justify-center relative ${getActivityColor(
                 day.solved
               )}`}
+              whileHover={{ scale: 1.1 }}
             >
-              <div className="flex flex-col items-center">
+              <div className="flex flex-col items-center ">
                 <span
                   className={`text-xs font-bold ${getActivityTextColor(
                     day.solved
                   )}`}
                 >
                   {day.day}
+                </span>
+                <span className="absolute top-0 whitespace-nowrap text-xs text-gray-700 bg-white text-center px-1 rounded shadow-md opacity-0 group-hover:opacity-100">
+                  {day.solved} solved
                 </span>
               </div>
             </motion.div>

@@ -290,9 +290,6 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="mt-8">
-        <PlatformPOTDs problems={platformPOTDs} />
-      </div>
     </div>
   );
 };

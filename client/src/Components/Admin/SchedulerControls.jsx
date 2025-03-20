@@ -16,9 +16,9 @@ const SchedulerControls = () => {
     achievementScheduler: false,
     backupDataScheduler: false,
     resetDataScheduler: false,
-    passingPercentage: 10,
-    perContestPoint: 2,
-    perDayPracticePoint: 1,
+    passingPercentage: 10, // 10 to 70
+    perContestPoint: 2, // 1 to 10
+    perDayPracticePoint: 1, // 1 to 10
   });
 
   const getConstantValues = async () => {

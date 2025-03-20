@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { FaChevronRight, FaExternalLinkAlt } from "react-icons/fa";
 import { CgCode, CgTrophy } from "react-icons/cg";
 import { BiError } from "react-icons/bi";
-import { MdCalendarMonth } from "react-icons/md";
 
 import { platformIcons } from "../../Constants";
 import { RotatingCloseButton } from "../../Utilities";
@@ -116,7 +115,7 @@ const ProfileSecondary = ({ userProfile }) => {
                 </div>
               ) : (
                 <>
-                  <div className="flex justify-center gap-2 sm:gap-3">
+                  <div className="flex justify-evenly py-2 gap-2 sm:gap-3">
                     {userProfile.badges.slice(0, 3).map((badge) => (
                       <div
                         key={badge.id}
@@ -131,7 +130,7 @@ const ProfileSecondary = ({ userProfile }) => {
                   </div>
                   <button
                     onClick={() => setShowBadges(true)}
-                    className="w-full mt-2 py-1 sm:py-1.5 px-2 sm:px-3 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-100 transition-colors text-xxs sm:text-xs font-medium flex items-center justify-center"
+                    className="w-full mt-2 py-2 sm:py-3 px-2 sm:px-3 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-100 transition-colors text-xs sm:text-sm font-medium flex items-center justify-center"
                   >
                     <span>View all</span>
                     <FaChevronRight className="w-2 h-2 sm:w-2.5 sm:h-2.5 ml-1" />
