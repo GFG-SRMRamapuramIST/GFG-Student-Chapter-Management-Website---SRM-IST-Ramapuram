@@ -19,11 +19,20 @@ const MonthlyActivityHeatmap = ({
     streakDays: 0,
   });
 
+  // Define color ranges with labels
+  const colorRanges = [
+    { range: "0", color: "bg-gray-100", textColor: "text-gray-800" },
+    { range: "1-5", color: "bg-emerald-200", textColor: "text-gray-800" },
+    { range: "6-10", color: "bg-emerald-400", textColor: "text-gray-800" },
+    { range: "11-15", color: "bg-emerald-600", textColor: "text-white" },
+    { range: "15+", color: "bg-emerald-800", textColor: "text-white" }
+  ];
+
   // Generate dummy data for the month
   useEffect(() => {
     const daysInMonth = getDaysInMonth(month, year);
     const data = Array.from({ length: daysInMonth }, (_, i) => {
-      const solved = Math.floor(Math.random() * 8); // 0-7 problems solved
+      const solved = Math.floor(Math.random() * 20); // 0-19 problems solved
       return {
         day: i + 1,
         date: new Date(year, month, i + 1),
@@ -56,8 +65,6 @@ const MonthlyActivityHeatmap = ({
       avgPerDay,
       streakDays: maxStreak,
     });
-
-    console.log(data); // CHECK THIS FOR DATA SCHEMA
   }, [month, year]);
 
   const monthNames = [
@@ -78,19 +85,19 @@ const MonthlyActivityHeatmap = ({
   const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   const getActivityColor = (solved) => {
-    if (solved === 0) return "bg-gray-100";
-    if (solved === 1) return "bg-emerald-100";
-    if (solved === 2) return "bg-emerald-200";
-    if (solved === 3) return "bg-emerald-300";
-    if (solved === 4) return "bg-emerald-400";
-    if (solved === 5) return "bg-emerald-500";
-    if (solved === 6) return "bg-emerald-600";
-    return "bg-emerald-700";
+    if (solved === 0) return colorRanges[0].color;
+    if (solved >= 1 && solved <= 5) return colorRanges[1].color;
+    if (solved >= 6 && solved <= 10) return colorRanges[2].color;
+    if (solved >= 11 && solved <= 15) return colorRanges[3].color;
+    return colorRanges[4].color;
   };
 
   const getActivityTextColor = (solved) => {
-    if (solved >= 5) return "text-white";
-    return "text-gray-800";
+    if (solved === 0) return colorRanges[0].textColor;
+    if (solved >= 1 && solved <= 5) return colorRanges[1].textColor;
+    if (solved >= 6 && solved <= 10) return colorRanges[2].textColor;
+    if (solved >= 11 && solved <= 15) return colorRanges[3].textColor;
+    return colorRanges[4].textColor;
   };
 
   // Calculate empty cells before the first day of the month
@@ -112,13 +119,16 @@ const MonthlyActivityHeatmap = ({
           </h2>
         </div>
         <div className="flex items-center space-x-2">
-          <span className="text-xs text-gray-500">Problems Solved</span>
           <div className="flex items-center space-x-1">
-            {[0, 2, 4, 6].map((level) => (
+            {colorRanges.map((range, index) => (
               <div
-                key={level}
-                className={`w-3 h-3 rounded ${getActivityColor(level)}`}
-              />
+                key={index}
+                className={`w-4 h-4 rounded group relative cursor-pointer ${range.color}`}
+              >
+                <span className="absolute top-6 right-0 whitespace-nowrap text-xs text-gray-700 bg-white text-center px-2 py-1 rounded shadow-md opacity-0 group-hover:opacity-100">
+                  {range.range} problems
+                </span>
+              </div>
             ))}
           </div>
         </div>

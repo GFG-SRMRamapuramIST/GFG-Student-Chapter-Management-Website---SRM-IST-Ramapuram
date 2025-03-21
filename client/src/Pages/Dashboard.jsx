@@ -274,9 +274,7 @@ const Dashboard = () => {
       <div className="grid lg:grid-cols-12 gap-6">
         {/* Main Content */}
         <div className="lg:col-span-8 space-y-6">
-          
-        <PlatformPOTDs problems={platformPOTDs} />
-          {/* <StatsSection stats={stats} /> */}
+          <PlatformPOTDs problems={platformPOTDs} />
           <CustomCalendar
             events={events}
             fetchDashBoardCalenderData={fetchDashBoardCalenderData}
@@ -285,11 +283,11 @@ const Dashboard = () => {
 
         {/* Sidebar */}
         <div className="lg:col-span-4 space-y-6">
+          <StatsSection stats={stats} />
           <LeaderboardSection top5Users={top5Users} />
           <NotificationsSection />
         </div>
       </div>
-
     </div>
   );
 };
