@@ -125,6 +125,12 @@ const userSchema = new mongoose.Schema({
       problemSolved: { type: Number, default: 0 },
     },
   },
+  dailyActivity: [
+    {
+      date: { type: Date, required: true },
+      count: { type: Number, default: 0 },
+    },
+  ],
   subscribed: {
     type: Boolean,
     default: true,
