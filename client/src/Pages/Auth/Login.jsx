@@ -40,7 +40,7 @@ const Login = () => {
         formData.email,
         formData.password
       );
-
+      //console.log(response);
       if (response.status === 200) {
         ToastMsg(response.data.message, "success");
 
