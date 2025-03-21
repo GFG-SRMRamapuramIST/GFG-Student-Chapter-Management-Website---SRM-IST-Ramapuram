@@ -16,6 +16,7 @@ const {
   updateContestDataScheduler,
   updatePracticeQuestionsCount,
   POTDScheduler,
+  updateDailyActivity,
 } = require("./Scheduler");
 
 const {

@@ -24,6 +24,10 @@ const {
 // POTD Scheduler to update POTD data
 const { POTDScheduler } = require("./CodingPlatformScheduler/POTDScheduler");
 
+// Update dailyActivity for the current month
+const { updateDailyActivity } = require("./HeatMapScheduler/HeatMapScheduler");
+
+// Keep Alive Job to prevent server from sleeping
 const keepAliveJob = require("./KeepAliveJob");
 
 
@@ -34,5 +38,6 @@ module.exports = {
   updateUserCodingPlatformsDataScheduler,
   updateContestDataScheduler,
   updatePracticeQuestionsCount,
-  POTDScheduler
+  POTDScheduler,
+  updateDailyActivity,
 };
