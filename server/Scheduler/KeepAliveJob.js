@@ -7,7 +7,7 @@ const keepAliveJob = cron.schedule("*/14 * * * *", async () => {
   try {
     console.log(chalk.yellow("Pinging server to keep it awake..."));
     await axios.get(
-      "https://gfg-student-chapter-management-website.onrender.com"
+      "https://gfgscsrmrmp-management-web-application.onrender.com"
     );
     console.log(chalk.green("Server pinged successfully."));
   } catch (error) {

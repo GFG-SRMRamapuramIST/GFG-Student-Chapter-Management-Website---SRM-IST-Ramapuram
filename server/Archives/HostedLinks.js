@@ -3,5 +3,5 @@
 const GEEKSFORGEEKS_API_URL =
   "https://geeks-for-geeks-webscraper-api.vercel.app";
 
-const CODECHEF_API_URL = "https://codechef-api-9jml.onrender.com";
+const CODECHEF_API_URL = "https://codechef-api-9jml.onrender.com"; //deleted
 /* ********************************************* */
