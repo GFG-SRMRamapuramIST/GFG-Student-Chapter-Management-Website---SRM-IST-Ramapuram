@@ -25,8 +25,18 @@ const Leaderboard = () => {
   const [totalPages, setTotalPages] = useState(1);
   const itemsPerPage = 10;
 
-  // TODO: GET FROM BACKEND
-  const minimumPassingMark = 20;
+  const [passingPercentage, setPassingPercentage] = useState(30);
+  const [perDayPracticePoint, setPerDayPracticePoint] = useState(1);
+  const [perContestPoint, setPerContestPoint] = useState(0);
+  const [minimumPassingMark, setMinimumPassingMark] = useState(30);
+
+  const calculatePassingMarks = () => {
+    const perMonthmarks = 30 * perDayPracticePoint + 4 * perContestPoint;
+    const minPassingMark = Math.floor(
+      (passingPercentage / 100) * perMonthmarks
+    );
+    setMinimumPassingMark(minPassingMark);
+  };
 
   useEffect(() => {
     const fetchLeaderboardData = async () => {
@@ -37,6 +47,10 @@ const Leaderboard = () => {
           limit: itemsPerPage,
         });
         //console.log(response);
+
+        setPassingPercentage(response.data.passingPercentage);
+        setPerDayPracticePoint(response.data.perDayPracticePoint);
+        setPerContestPoint(response.data.perContestPoint);
 
         if (response.status == 200) {
           const formattedData = response.data.data.map((user) => ({
@@ -59,6 +73,7 @@ const Leaderboard = () => {
         ToastMsg("Error fetching leaderboard data", "error");
       } finally {
         setLoading(false);
+        calculatePassingMarks();
       }
     };
 

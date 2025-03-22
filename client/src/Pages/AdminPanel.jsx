@@ -30,6 +30,7 @@ const AdminPanel = () => {
     deleteUserAccount,
     fetchAllowedEmails,
     deleteAllowedEmail,
+    resetAchievement,
   } = AdminServices();
 
   const [loading, setLoading] = useState(false);
@@ -384,6 +385,28 @@ const AdminPanel = () => {
 
   // ***************** Table Operations Ends Here *************************
 
+  // ***************** Reset Achievements Starts Here **********************
+  const [resetAchievementLoading, setResetAchievementLoading] = useState(false);
+
+  const resetAchievementFunction = async () => {
+    try {
+      setResetAchievementLoading(true);
+      const response = await resetAchievement();
+      if (response.status == 200) {
+        ToastMsg(response.data.message, "success");
+      } else {
+        ToastMsg(response.response.data.message, "error");
+        //console.log(response.response.data);
+      }
+    } catch (error) {
+      ToastMsg("Error in resetting achievements! Please try later", "error");
+      console.error("Error in resetting achievements: ", error.message);
+    } finally {
+      setResetAchievementLoading(false);
+    }
+  };
+  // ***************** Reset Achievements Ends Here **********************
+
   const Tab = ({ label, isActive, onClick }) => (
     <button
       onClick={onClick}
@@ -486,7 +509,6 @@ const AdminPanel = () => {
             </div>
 
             <div className="p-6 space-y-6">
-
               {/* Reset Achievements Button */}
               <button
                 onClick={() => {
@@ -504,6 +526,9 @@ const AdminPanel = () => {
                 }}
                 className="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200"
               >
+                {resetAchievementLoading ? (
+                  <FaSpinner className="animate-spin inline-block" />
+                ) : null}{" "}
                 Reset All Achievements
               </button>
             </div>

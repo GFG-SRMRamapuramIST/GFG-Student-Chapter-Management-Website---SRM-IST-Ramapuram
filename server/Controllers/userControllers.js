@@ -2,7 +2,7 @@ const bcrypt = require("bcryptjs");
 
 const streamifier = require("streamifier");
 
-const { Users, potdSchema } = require("../Models");
+const { Users, potdSchema, ConstantValue } = require("../Models");
 const { verifyAuthToken, cloudinary } = require("../Utilities");
 
 // Function to upload image buffer to Cloudinary
@@ -35,6 +35,8 @@ const scriptURL =
 8. Get POTD API
 
 9. Report an Issue API
+
+10. Get all users with there id and name
 
  Join a Team API
  Leave a Team API
@@ -403,12 +405,21 @@ exports.fetchLeaderBoardData = async (req, res) => {
 
     const totalUsers = await Users.countDocuments();
 
+    // Fetching constant values
+    const constantValues = await ConstantValue.findOne();
+    const passingPercentage = constantValues?.passingPercentage || 30;
+    const perDayPracticePoint = constantValues?.perDayPracticePoint || 1;
+    const perContestPoint = constantValues?.perContestPoint || 0;
+
     return res.status(200).json({
       message: "Leaderboard data fetched successfully!",
       data: users,
       totalPages: Math.ceil(totalUsers / limit),
       currentPage: page,
       limit,
+      passingPercentage,
+      perDayPracticePoint,
+      perContestPoint,
     });
   } catch (error) {
     console.error("Error fetching leaderboard data:", error.message);
@@ -525,6 +536,34 @@ exports.reportAnIssue = async (req, res) => {
     }
   } catch (error) {
     console.error("Error reporting an issue:", error.message);
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
+
+//10. Get all users with their id and name
+exports.getAllUsers = async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1]; // Extract token
+  if (!token) {
+    return res.status(401).json({ message: "No token provided" });
+  }
+
+  try {
+    // Verify the auth token
+    const authResult = await verifyAuthToken(token);
+    if (authResult.status !== "not expired") {
+      return res.status(400).json({ message: authResult.message });
+    }
+
+    const users = await Users.find().select("_id name");
+
+    return res.status(200).json({
+      message: "Users fetched successfully",
+      data: users,
+    });
+  } catch (error) {
+    console.error("Error fetching users:", error.message);
     return res
       .status(500)
       .json({ message: "Internal server error", error: error.message });

@@ -1363,6 +1363,7 @@ exports.editConstantValues = async (req, res) => {
     passingPercentage,
     perDayPracticePoint,
     perContestPoint,
+    autoKickScheduler,
   } = req.body; // New constant values
 
   // Check for token
@@ -1377,7 +1378,8 @@ exports.editConstantValues = async (req, res) => {
     resetDataScheduler === null &&
     passingPercentage === null &&
     perDayPracticePoint === null &&
-    perContestPoint === null
+    perContestPoint === null &&
+    autoKickScheduler === null
   ) {
     return res
       .status(400)
@@ -1409,6 +1411,7 @@ exports.editConstantValues = async (req, res) => {
     constant.passingPercentage = passingPercentage;
     constant.perDayPracticePoint = perDayPracticePoint;
     constant.perContestPoint = perContestPoint;
+    constant.autoKickScheduler = autoKickScheduler;
     await constant.save();
 
     // Send success response

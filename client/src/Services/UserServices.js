@@ -114,6 +114,16 @@ const reportAnIssueFunction = async (formData) => {
   )
 }
 
+// Get all users with id and name
+const getAllUsersWithIdAndNameFunction = async (token) => {
+  return await commonrequest(
+    "GET",
+    `${BACKEND_URL}/api/v1/user/get-all-users-with-id-and-name`,
+    null,
+    { Authorization: `Bearer ${token}` }
+  );
+};
+
 // Wrapper to use token inside React components
 const UserService = () => {
   const userToken = useAuthToken();
@@ -133,7 +143,9 @@ const UserService = () => {
       fetchLeaderboardDataFunction(params, userToken),
     fetchTop5UsersFunction: () => fetchTop5UsersFunction(userToken),
     fetchPOTDFunction: () => fetchPOTDFunction(userToken),
-    reportAnIssueFunction: (formData) => reportAnIssueFunction(formData)
+    reportAnIssueFunction: (formData) => reportAnIssueFunction(formData),
+    getAllUsersWithIdAndNameFunction: () =>
+      getAllUsersWithIdAndNameFunction(userToken),
   };
 };
 

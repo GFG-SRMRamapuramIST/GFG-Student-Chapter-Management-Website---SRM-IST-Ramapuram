@@ -93,14 +93,43 @@ const fetchConstantValues = async (userToken) => {
 }
 
 // Edit Constant Values function
-const editConstantValues = async ({achievementScheduler, backupDataScheduler, resetDataScheduler, passingPercentage}, userToken) => {
+const editConstantValues = async (
+  {
+    achievementScheduler,
+    backupDataScheduler,
+    resetDataScheduler,
+    passingPercentage,
+    perDayPracticePoint,
+    perContestPoint,
+    autoKickScheduler,
+  },
+  userToken
+) => {
   return await commonrequest(
     "PUT",
     `${BACKEND_URL}/api/v1/admin/edit-constant-values`,
-    {achievementScheduler, backupDataScheduler, resetDataScheduler, passingPercentage},
+    {
+      achievementScheduler,
+      backupDataScheduler,
+      resetDataScheduler,
+      passingPercentage,
+      perContestPoint,
+      perDayPracticePoint,
+      autoKickScheduler,
+    },
     { Authorization: `Bearer ${userToken}` }
-  )
-}
+  );
+};
+
+// Reset achievement function
+const resetAchievement = async (userToken) => {
+  return await commonrequest(
+    "POST",
+    `${BACKEND_URL}/api/v1/admin/reset-achievement`,
+    {},
+    { Authorization: `Bearer ${userToken}` }
+  );
+};
 
 // Wrapper to use token inside React components
 const AdminServices = () => {
@@ -116,6 +145,7 @@ const AdminServices = () => {
     deleteUserAccount: (params) => deleteUserAccount(params, userToken),
     fetchConstantValues: () => fetchConstantValues(userToken),
     editConstantValues: (params) => editConstantValues(params, userToken),
+    resetAchievement: () => resetAchievement(userToken),
   };
 };
 

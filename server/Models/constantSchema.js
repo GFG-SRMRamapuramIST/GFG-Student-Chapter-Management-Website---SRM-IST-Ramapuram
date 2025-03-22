@@ -13,6 +13,10 @@ const constantSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+  autoKickScheduler: {
+    type: Boolean,
+    default: false,
+  },
   passingPercentage: {
     type: Number,
     required: true,
@@ -22,13 +26,13 @@ const constantSchema = new mongoose.Schema({
     type: Number,
     required: true,
     default: 1,
-    min: 1,
+    min: 0,
     max: 6,
   },
   perContestPoint: {
     type: Number,
     required: true,
-    default: 2,
+    default: 0,
   },
 });
 

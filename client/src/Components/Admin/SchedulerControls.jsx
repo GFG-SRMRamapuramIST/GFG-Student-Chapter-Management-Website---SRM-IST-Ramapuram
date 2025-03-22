@@ -16,10 +16,10 @@ const SchedulerControls = () => {
     achievementScheduler: false,
     backupDataScheduler: false,
     resetDataScheduler: false,
-    autoKickScheduler: false, 
+    autoKickScheduler: false,
     passingPercentage: 10, // 10 to 70
-    perContestPoint: 2, // 1 to 10
-    perDayPracticePoint: 1, // 1 to 10
+    perContestPoint: 0, // 0 to 10
+    perDayPracticePoint: 0, // 0 to 6
   });
 
   const getConstantValues = async () => {
@@ -88,6 +88,7 @@ const SchedulerControls = () => {
     try {
       setLoading(true);
       const response = await editConstantValues(schedulerOptions);
+      //console.log(response);
       if (response.status === 200) {
         ToastMsg("Constant values edited successfully", "success");
       } else {
@@ -119,6 +120,7 @@ const SchedulerControls = () => {
           <div className="space-y-6">
             {/* Scheduler Toggle Options */}
             <div className="space-y-4">
+              {/* Achievement scheduler */}
               <div className="flex items-center justify-between">
                 <label className="text-sm font-medium text-gray-700">
                   Run Achievement Scheduler
@@ -158,6 +160,7 @@ const SchedulerControls = () => {
                 </div>
               </div>
 
+              {/* Backup scheduler */}
               <div className="flex items-center justify-between">
                 <label className="text-sm font-medium text-gray-700">
                   Run Backup Scheduler
@@ -197,9 +200,10 @@ const SchedulerControls = () => {
                 </div>
               </div>
 
+              {/* Reset data scheduler */}
               <div className="flex items-center justify-between">
                 <label className="text-sm font-medium text-gray-700">
-                  Run Reset All Scheduler
+                  Run Reset Data Scheduler
                 </label>
                 <div
                   onClick={() => {
@@ -236,6 +240,7 @@ const SchedulerControls = () => {
                 </div>
               </div>
 
+              {/* Auto kick scheduler */}
               <div className="flex items-center justify-between">
                 <label className="text-sm font-medium text-gray-700">
                   Auto-kick Scheduler
@@ -248,11 +253,6 @@ const SchedulerControls = () => {
                       autoKickScheduler: newValue,
                     }));
                     setIsFormEdited(true);
-                    console.log("Auto-kick scheduler toggled:", newValue);
-                    ToastMsg(
-                      `Auto-kick scheduler ${newValue ? "enabled" : "disabled"}`,
-                      "info"
-                    );
                   }}
                   className="relative inline-flex h-6 w-11 items-center rounded-full cursor-pointer"
                 >
@@ -284,7 +284,7 @@ const SchedulerControls = () => {
             {/* Dropdown for Passing Marks */}
             <div className="mt-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Minimum Passing Marks
+                Minimum Passing Percentage
               </label>
               <div className="relative">
                 <select
@@ -333,7 +333,7 @@ const SchedulerControls = () => {
                   }}
                   className="block w-full rounded-md border-gray-300 shadow-sm focus:border-gfgsc-green-200 focus:ring-gfgsc-green-200 py-2 pl-3 pr-10 text-base bg-white border"
                 >
-                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((point) => (
+                  {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((point) => (
                     <option key={point} value={point}>
                       {point}
                     </option>
@@ -374,7 +374,7 @@ const SchedulerControls = () => {
                   }}
                   className="block w-full rounded-md border-gray-300 shadow-sm focus:border-gfgsc-green-200 focus:ring-gfgsc-green-200 py-2 pl-3 pr-10 text-base bg-white border"
                 >
-                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((point) => (
+                  {[0, 1, 2, 3, 4, 5, 6].map((point) => (
                     <option key={point} value={point}>
                       {point}
                     </option>

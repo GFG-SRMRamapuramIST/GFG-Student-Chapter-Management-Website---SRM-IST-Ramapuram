@@ -21,6 +21,8 @@ const { userControllers } = require("../Controllers");
 
 9. Report an Issue API - "{BACKEND_URL}/api/v1/user/report-an-issue"
 
+10. Get all users with their id and name - "{BACKEND_URL}/api/v1/user/get-all-users-with-id-and-name"
+
  Join a Team API - "{BACKEND_URL}/api/v1/user/join-team"
  Leave a Team API - "{BACKEND_URL}/api/v1/user/leave-team"
 
@@ -85,6 +87,9 @@ router.post(
   uploadIssueScreenShot,
   userControllers.reportAnIssue
 );
+
+//10. Get all users with their id and name
+router.get("/get-all-users-with-id-and-name", userControllers.getAllUsers);
 
 /*
 //4. Join a Team API
