@@ -47,7 +47,7 @@ const PlatformPOTDs = ({ problems }) => {
   ];
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-4 font-sans antialiased">
+    <div className="bg-white rounded-2xl shadow-md p-4 sm:p-6 font-sans antialiased">
       <div>
         <h2 className="text-lg font-semibold text-gray-900 mb-4">
           Problems of the Day
@@ -70,7 +70,7 @@ const PlatformPOTDs = ({ problems }) => {
               return (
                 <div
                   key={problem.platform}
-                  className="group bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow"
+                  className="group bg-white rounded-lg shadow-sm border overflow-hidden hover:shadow-md transition-shadow"
                 >
                   {/* Platform Header - Reduced padding */}
                   <div className={`p-2 ${getPlatformColor(problem.platform)}`}>
@@ -133,7 +133,7 @@ const PlatformPOTDs = ({ problems }) => {
                     <div className="flex items-center justify-between pt-1 border-t border-gray-100">
                       <div className="flex items-center space-x-1 text-xs text-gray-500">
                         {randomText.icon}
-                        <span className="truncate max-w-[100px]">{randomText.text}</span>
+                        <span className="">{randomText.text}</span>
                       </div>
                       <a
                         href={problem.url}

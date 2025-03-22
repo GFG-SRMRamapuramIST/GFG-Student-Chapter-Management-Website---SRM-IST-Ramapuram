@@ -16,6 +16,7 @@ const SchedulerControls = () => {
     achievementScheduler: false,
     backupDataScheduler: false,
     resetDataScheduler: false,
+    autoKickScheduler: false, 
     passingPercentage: 10, // 10 to 70
     perContestPoint: 2, // 1 to 10
     perDayPracticePoint: 1, // 1 to 10
@@ -31,6 +32,7 @@ const SchedulerControls = () => {
           achievementScheduler,
           backupDataScheduler,
           resetDataScheduler,
+          autoKickScheduler,
           passingPercentage,
           perContestPoint,
           perDayPracticePoint,
@@ -39,6 +41,7 @@ const SchedulerControls = () => {
           achievementScheduler,
           backupDataScheduler,
           resetDataScheduler,
+          autoKickScheduler,
           passingPercentage,
           perContestPoint,
           perDayPracticePoint,
@@ -232,6 +235,50 @@ const SchedulerControls = () => {
                   />
                 </div>
               </div>
+
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium text-gray-700">
+                  Auto-kick Scheduler
+                </label>
+                <div
+                  onClick={() => {
+                    const newValue = !schedulerOptions.autoKickScheduler;
+                    setSchedulerOptions((prev) => ({
+                      ...prev,
+                      autoKickScheduler: newValue,
+                    }));
+                    setIsFormEdited(true);
+                    console.log("Auto-kick scheduler toggled:", newValue);
+                    ToastMsg(
+                      `Auto-kick scheduler ${newValue ? "enabled" : "disabled"}`,
+                      "info"
+                    );
+                  }}
+                  className="relative inline-flex h-6 w-11 items-center rounded-full cursor-pointer"
+                >
+                  <span
+                    className={`${
+                      schedulerOptions.autoKickScheduler
+                        ? "bg-gfgsc-green"
+                        : "bg-gray-200"
+                    } absolute inset-0 rounded-full transition-colors duration-200 ease-in-out`}
+                  ></span>
+                  <span
+                    className={`${
+                      schedulerOptions.autoKickScheduler
+                        ? "translate-x-6"
+                        : "translate-x-1"
+                    } inline-block h-4 w-4 transform rounded-full bg-white transition duration-200 ease-in-out`}
+                  ></span>
+                  <input
+                    type="checkbox"
+                    className="sr-only"
+                    name="autoKickScheduler"
+                    checked={schedulerOptions.autoKickScheduler}
+                    onChange={handleToggleChange}
+                  />
+                </div>
+              </div>
             </div>
 
             {/* Dropdown for Passing Marks */}
@@ -248,6 +295,88 @@ const SchedulerControls = () => {
                   {[10, 20, 30, 40, 50, 60, 70].map((mark) => (
                     <option key={mark} value={mark}>
                       {mark}
+                    </option>
+                  ))}
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-hover-gray">
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            {/* Dropdown for Per Contest Points */}
+            <div className="mt-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Points Per Contest
+              </label>
+              <div className="relative">
+                <select
+                  value={schedulerOptions.perContestPoint}
+                  onChange={(e) => {
+                    setSchedulerOptions((prev) => ({
+                      ...prev,
+                      perContestPoint: parseInt(e.target.value, 10),
+                    }));
+                    setIsFormEdited(true);
+                  }}
+                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-gfgsc-green-200 focus:ring-gfgsc-green-200 py-2 pl-3 pr-10 text-base bg-white border"
+                >
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((point) => (
+                    <option key={point} value={point}>
+                      {point}
+                    </option>
+                  ))}
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-hover-gray">
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            {/* Dropdown for Per Day Practice Points */}
+            <div className="mt-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Points Per Day Practice
+              </label>
+              <div className="relative">
+                <select
+                  value={schedulerOptions.perDayPracticePoint}
+                  onChange={(e) => {
+                    setSchedulerOptions((prev) => ({
+                      ...prev,
+                      perDayPracticePoint: parseInt(e.target.value, 10),
+                    }));
+                    setIsFormEdited(true);
+                  }}
+                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-gfgsc-green-200 focus:ring-gfgsc-green-200 py-2 pl-3 pr-10 text-base bg-white border"
+                >
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((point) => (
+                    <option key={point} value={point}>
+                      {point}
                     </option>
                   ))}
                 </select>
