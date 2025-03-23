@@ -26,6 +26,8 @@ import { IoLogOutOutline } from "react-icons/io5";
 import { logo } from "../../Assets";
 
 import { removeUserToken } from "../../Actions";
+import { MdCompare } from "react-icons/md";
+import { FaCodeCompare } from "react-icons/fa6";
 
 const Navbar = ({ isLoggedIn }) => {
   const dispatch = useDispatch();
@@ -86,6 +88,12 @@ const Navbar = ({ isLoggedIn }) => {
       name: "My Profile",
       path: "/profile",
       icon: <CgProfile />,
+      variant: "default",
+    },
+    {
+      name: "Compare Profile",
+      path: "/profile/compare",
+      icon: <FaCodeCompare />,
       variant: "default",
     },
     {

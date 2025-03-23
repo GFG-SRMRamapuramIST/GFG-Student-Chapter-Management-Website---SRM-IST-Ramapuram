@@ -17,7 +17,7 @@ import { BiChevronLeft } from "react-icons/bi";
 
 import { platformColors, platformIcons } from "../../Constants";
 import { AddProblemModal, EditResourceModal } from "../../Components";
-import { ToastMsg } from "../../Utilities";
+import { ConfirmationPopup, ToastMsg } from "../../Utilities";
 
 // Importing APIs
 import { CoreMemberServices } from "../../Services";
@@ -42,6 +42,14 @@ const Resource = () => {
   const [selectedPlatform, setSelectedPlatform] = useState("all");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  const [confirmationState, setConfirmationState] = useState({
+    isOpen: false,
+    type: "info",
+    title: "",
+    message: "",
+    onConfirm: () => {},
+  });
 
   const getAllQuestionsOfResourceHandler = async () => {
     try {
@@ -103,20 +111,29 @@ const Resource = () => {
   };
 
   // Deleting the complete resource
-  const handleDeleteResource = async () => {
-    try {
-      const response = await deleteResourceFunction({ resourceId: id });
-      //console.log(response)
-      if (response.status == 200) {
-        navigate("/resources");
-      } else {
-        ToastMsg(response.response.data.message, "error");
-        console.log(response.response.data.message);
-      }
-    } catch (error) {
-      ToastMsg("Internal Server Error!", "error");
-      console.error("Delete Resource Error: ", error.message);
-    }
+  const handleDeleteResource = () => {
+    setConfirmationState({
+      isOpen: true,
+      type: "danger",
+      title: "Delete Resource",
+      message:
+        "Are you sure you want to delete this resource? This action cannot be undone.",
+      onConfirm: async () => {
+        try {
+          const response = await deleteResourceFunction({ resourceId: id });
+          if (response.status === 200) {
+            ToastMsg("Resource deleted successfully!", "success");
+            navigate("/resources");
+          } else {
+            ToastMsg(response.response.data.message, "error");
+            console.log(response.response.data.message);
+          }
+        } catch (error) {
+          ToastMsg("Internal Server Error!", "error");
+          console.error("Delete Resource Error: ", error.message);
+        }
+      },
+    });
   };
 
   // Deleting a question from a resource
@@ -175,6 +192,16 @@ const Resource = () => {
       animate={{ opacity: 1 }}
       className="p-4 sm:p-6 max-w-7xl mx-auto"
     >
+      <ConfirmationPopup
+        isOpen={confirmationState.isOpen}
+        onClose={() =>
+          setConfirmationState({ ...confirmationState, isOpen: false })
+        }
+        onConfirm={confirmationState.onConfirm}
+        type={confirmationState.type}
+        title={confirmationState.title}
+        message={confirmationState.message}
+      />
       {/* Breadcrumb */}
       <div className="mb-4 sm:mb-6">
         <div className="flex items-center text-sm">
@@ -188,7 +215,7 @@ const Resource = () => {
           </button>
         </div>
       </div>
-  
+
       {/* Loading state check */}
       {isLoading ? (
         <div className="p-4 sm:p-6 flex items-center justify-center min-h-[400px]">
@@ -228,7 +255,7 @@ const Resource = () => {
                       const PlatformIcon = platformIcons[platform];
                       const color =
                         platformColors[platform.toLowerCase()] || "#6B7280";
-  
+
                       return (
                         <div
                           key={platform}
@@ -245,14 +272,14 @@ const Resource = () => {
                       );
                     })}
                   </div>
-  
+
                   <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
                     {resource.title}
                   </h1>
                   <p className="text-sm sm:text-base md:text-lg text-gray-600 mb-4 sm:mb-6 max-w-3xl">
                     {resource.description}
                   </p>
-  
+
                   <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-xs sm:text-sm text-gray-500">
                     <div className="flex items-center px-3 sm:px-4 py-1 sm:py-2 bg-gray-50 rounded-lg">
                       <FaCalendarAlt className="mr-1 sm:mr-2 text-gfgsc-green" />
@@ -265,7 +292,7 @@ const Resource = () => {
                     </div>
                   </div>
                 </div>
-  
+
                 {/* quick actions div */}
                 <div className="flex items-center gap-2 mt-4 sm:mt-0">
                   <motion.button
@@ -288,7 +315,7 @@ const Resource = () => {
               </div>
             </div>
           </div>
-  
+
           {/* Problems Section */}
           <div>
             {/* Filters and Actions */}
@@ -311,7 +338,7 @@ const Resource = () => {
                       </button>
                     ))}
                   </div>
-  
+
                   {/* Platform Filter */}
                   <div className="flex flex-wrap gap-1 sm:gap-2 bg-gray-100 p-1 rounded-lg w-full sm:w-auto">
                     <button
@@ -319,31 +346,22 @@ const Resource = () => {
                       className={`px-3 sm:px-4 py-1 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 ${
                         selectedPlatform === "all"
                           ? "bg-gfgsc-green text-white shadow-md"
-                          : "bg-gray-50 text-gray-600 hover:bg-gray-100"
+                          : " text-gray-600 hover:bg-gray-100"
                       }`}
                     >
                       All Platforms
                     </button>
                     {resource.platforms.map((platform) => {
                       const PlatformIcon = platformIcons[platform];
-                      const colors = platformColors[platform.toLowerCase()] || {
-                        bg: "#6B7280",
-                        text: "white",
-                      };
-  
+
                       return (
                         <button
                           key={platform}
                           onClick={() => setSelectedPlatform(platform)}
-                          style={
-                            selectedPlatform === platform
-                              ? { backgroundColor: colors.bg, color: colors.text }
-                              : {}
-                          }
                           className={`px-3 sm:px-4 py-1 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 flex items-center gap-1 sm:gap-2
                             ${
                               selectedPlatform === platform
-                                ? "shadow-md"
+                                ? "bg-gfgsc-green text-white shadow-md"
                                 : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                             }`}
                         >
@@ -377,10 +395,9 @@ const Resource = () => {
                     <span className="hidden sm:flex">Add Problem</span>
                   </motion.button>
                 </div>
-  
               </div>
             </div>
-  
+
             {/* Problems Table */}
             <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
               <div className="overflow-x-auto scrollbar-thin">
@@ -410,10 +427,17 @@ const Resource = () => {
                     <AnimatePresence>
                       {problems.length === 0 ? (
                         <tr>
-                          <td colSpan={showDelete ? 5 : 4} className="px-6 py-12 text-center text-gray-500">
+                          <td
+                            colSpan={showDelete ? 5 : 4}
+                            className="px-6 py-12 text-center text-gray-500"
+                          >
                             <div className="flex flex-col items-center justify-center gap-2">
-                              <div className="text-gray-400 text-lg">No problems found</div>
-                              <p className="text-sm text-gray-400">Try changing your filters or add a new problem</p>
+                              <div className="text-gray-400 text-lg">
+                                No problems found
+                              </div>
+                              <p className="text-sm text-gray-400">
+                                Try changing your filters or add a new problem
+                              </p>
                             </div>
                           </td>
                         </tr>
@@ -423,7 +447,7 @@ const Resource = () => {
                           const color =
                             platformColors[problem.platform.toLowerCase()] ||
                             "#6B7280";
-  
+
                           return (
                             <motion.tr
                               key={problem.id}
@@ -433,7 +457,9 @@ const Resource = () => {
                               transition={{ duration: 0.2, delay: idx * 0.05 }}
                               className="hover:bg-gray-50 transition-colors group"
                             >
-                              <td className="px-4 sm:px-6 py-3 sm:py-4 text-gray-500 text-xs sm:text-sm">{idx + 1}</td>
+                              <td className="px-4 sm:px-6 py-3 sm:py-4 text-gray-500 text-xs sm:text-sm">
+                                {idx + 1}
+                              </td>
                               <td className="px-4 sm:px-6 py-3 sm:py-4">
                                 <a
                                   href={problem.link}
@@ -493,14 +519,14 @@ const Resource = () => {
               </div>
             </div>
           </div>
-  
+
           <AddProblemModal
             isOpen={isAddModalOpen}
             onClose={() => setIsAddModalOpen(false)}
             onAdd={handleAdd}
             platforms={resource.platforms}
           />
-  
+
           <EditResourceModal
             isOpen={isEditModalOpen}
             onClose={() => setIsEditModalOpen(false)}

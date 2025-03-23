@@ -13,7 +13,7 @@ const ResourceLayout = () => {
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl font-bold text-gray-800 mb-4">Resources</h1>
           <p className="text-gray-600 text-lg leading-relaxed">
-            Master Your Coding Journey.
+            The Best Minds Learn from the Best Resources.
           </p>
         </div>
       </motion.div>

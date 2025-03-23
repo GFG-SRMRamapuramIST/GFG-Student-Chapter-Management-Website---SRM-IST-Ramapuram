@@ -20,6 +20,7 @@ import {
   Resource,
   ReportAnIssue,
   AboutUs,
+  ProfileComparison,
 } from "./Pages";
 import { AuthLayout, RootLayout, AppLayout, ResourceLayout } from "./Layouts";
 
@@ -55,6 +56,7 @@ const appRoutes = {
       children: [
         { index: true, element: <Profile /> },
         { path: "edit", element: <EditProfile /> },
+        { path: "compare", element: <ProfileComparison /> },
         { path: ":id", element: <Profile /> },
       ],
     },

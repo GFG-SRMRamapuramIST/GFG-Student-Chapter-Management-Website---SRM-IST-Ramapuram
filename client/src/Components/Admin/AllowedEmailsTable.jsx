@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 
 // Importing Icons
-import { RiMailAddLine, RiDeleteBin6Line, RiSearchLine } from "react-icons/ri";
+import { RiMailAddLine, RiDeleteBin6Line, RiSearchLine, RiInboxLine } from "react-icons/ri";
 
 const AllowedEmailsTable = ({
   allowedEmails,
@@ -24,7 +24,7 @@ const AllowedEmailsTable = ({
             onChange={(e) =>
               setPageInfo((prevState) => ({
                 ...prevState,
-                itemsPerPage: parseInt(e.target.value, 10), // Corregido aquí
+                itemsPerPage: parseInt(e.target.value, 10),
               }))
             }
           >
@@ -47,68 +47,82 @@ const AllowedEmailsTable = ({
       </div>
 
       <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Email Address
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {allowedEmails.map((item) => (
-              <tr key={item.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center">
-                    <RiMailAddLine className="mr-2 text-gray-400" />
-                    {item.email}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <button
-                    onClick={() =>
-                      handleDeleteAllowedEmail(item.email, item._id)
-                    }
-                    className="p-1 rounded hover:bg-gray-100"
-                  >
-                    <RiDeleteBin6Line className="text-red-600" />
-                  </button>
-                </td>
+        {allowedEmails.length > 0 ? (
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Email Address
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {allowedEmails.map((item) => (
+                <tr key={item.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center">
+                      <RiMailAddLine className="mr-2 text-gray-400" />
+                      {item.email}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <button
+                      onClick={() =>
+                        handleDeleteAllowedEmail(item.email, item._id)
+                      }
+                      className="p-1 rounded hover:bg-gray-100"
+                    >
+                      <RiDeleteBin6Line className="text-red-600" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
+            <RiInboxLine className="text-gray-300 text-5xl mb-4" />
+            <h3 className="text-lg font-medium text-gray-700 mb-1">No emails found</h3>
+            <p className="text-gray-500 max-w-md">
+              {searchUser 
+                ? `No emails matching "${searchUser}" were found.` 
+                : "There are no allowed emails in the system yet. Add an email to get started."}
+            </p>
+          </div>
+        )}
       </div>
 
-      <div className="flex justify-between items-center">
-        <span className="text-sm text-gray-500">
-          Showing {(pageInfo.currentPage - 1) * pageInfo.itemsPerPage + 1} to{" "}
-          {Math.min(
-            pageInfo.currentPage * pageInfo.itemsPerPage,
-            allowedEmails.length
-          )}{" "}
-          of {pageInfo.totalPages} pages
-        </span>
-        <div className="flex space-x-2">
-          <button
-            onClick={handlePrevBtnClick}
-            disabled={pageInfo.currentPage === 1}
-            className="px-3 py-1 rounded-lg border hover:bg-gray-50 disabled:opacity-50"
-          >
-            Previous
-          </button>
-          <button
-            onClick={handleNextBtnClick}
-            disabled={pageInfo.currentPage >= pageInfo.totalPages}
-            className="px-3 py-1 rounded-lg border hover:bg-gray-50 disabled:opacity-50"
-          >
-            Next
-          </button>
+      {allowedEmails.length > 0 && (
+        <div className="flex justify-between items-center">
+          <span className="text-sm text-gray-500">
+            Showing {(pageInfo.currentPage - 1) * pageInfo.itemsPerPage + 1} to{" "}
+            {Math.min(
+              pageInfo.currentPage * pageInfo.itemsPerPage,
+              allowedEmails.length
+            )}{" "}
+            of {pageInfo.totalPages} pages
+          </span>
+          <div className="flex space-x-2">
+            <button
+              onClick={handlePrevBtnClick}
+              disabled={pageInfo.currentPage === 1}
+              className="px-3 py-1 rounded-lg border hover:bg-gray-50 disabled:opacity-50"
+            >
+              Previous
+            </button>
+            <button
+              onClick={handleNextBtnClick}
+              disabled={pageInfo.currentPage >= pageInfo.totalPages}
+              className="px-3 py-1 rounded-lg border hover:bg-gray-50 disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

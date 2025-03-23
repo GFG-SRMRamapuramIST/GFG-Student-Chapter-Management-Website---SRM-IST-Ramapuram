@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { IoChevronForwardOutline } from "react-icons/io5";
 import { GfgCoin } from "../../Assets";
 
-const LeaderboardTable = ({ data, isTeam = false }) => {
+const LeaderboardTable = ({ data, isTeam = false, minimumPassingMark }) => {
   const navigate = useNavigate();
 
   const columns = isTeam
@@ -45,10 +45,6 @@ const LeaderboardTable = ({ data, isTeam = false }) => {
     return "bg-transparent border border-gfgsc-green text-gfgsc-green";
   };
 
-  // Get the indices of the last 3 entries
-  const lastThreeIndices = data.length >= 3 
-    ? [data.length - 3, data.length - 2, data.length - 1] 
-    : [];
 
   return (
     <div className="!z-10 bg-white rounded-xl shadow-md overflow-x-scroll overflow-y-hidden">
@@ -71,17 +67,17 @@ const LeaderboardTable = ({ data, isTeam = false }) => {
         </thead>
         <tbody>
           {data.map((item, index) => {
-            const isLastThree = lastThreeIndices.includes(index);
+            const isInDanger = item.points < minimumPassingMark;
             return (
               <motion.tr
                 key={item.id}
                 onClick={() => navigate(`/profile/${item.id}`)}
                 whileHover={{
-                  backgroundColor: isLastThree ? "#ffcccc" : "#b3e6d4",
+                  backgroundColor: isInDanger ? "#ffcccc" : "#b3e6d4",
                   transition: { duration: 0.1 },
                 }}
                 className={`border-b border-gfgsc-green-200 hover:cursor-pointer group
-                          ${isLastThree ? "bg-red-100 text-red-800" : ""}`}
+                          ${isInDanger ? "bg-red-100 text-red-800" : ""}`}
               >
                 {isTeam ? (
                   <>
@@ -110,7 +106,11 @@ const LeaderboardTable = ({ data, isTeam = false }) => {
                     </td>
                     <td className="flex items-center justify-center px-2 py-4 whitespace-nowrap text-right text-sm font-medium ">
                       {item.points}
-                      <img src={GfgCoin} alt="GfgCoin" className="w-6 h-6 ml-1" />
+                      <img
+                        src={GfgCoin}
+                        alt="GfgCoin"
+                        className="w-6 h-6 ml-1"
+                      />
                     </td>
                   </>
                 ) : (

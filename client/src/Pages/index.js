@@ -18,6 +18,7 @@ import Resource from "./Resources/Resource";
 // User Profile Routes
 import Profile from "./UserProfile/Profile";
 import EditProfile from "./UserProfile/EditProfile";
+import ProfileComparison from "./UserProfile/ProfileComparison";
 
 // User Support Routes
 import TermsAndConditions from "./UserSupport/TermsAndConditions";
@@ -38,6 +39,7 @@ export {
   ForgotPassword,
   Profile,
   EditProfile,
+  ProfileComparison,
   Teams,
   Leaderboard,
   TermsAndConditions,

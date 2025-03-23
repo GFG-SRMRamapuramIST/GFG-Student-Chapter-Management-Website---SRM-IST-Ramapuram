@@ -57,6 +57,9 @@ const AllResources = () => {
       });
 
       if (response.status === 200) {
+        const {currentPage, totalPages} = response.data;
+        setPageInfo({currentPage, totalPages});
+
         const formattedResources = response.data.data.map((resource) => ({
           id: resource.id, // Unique ID
           title: resource.title,

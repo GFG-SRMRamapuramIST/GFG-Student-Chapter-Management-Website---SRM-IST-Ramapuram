@@ -519,8 +519,8 @@ const AdminPanel = () => {
                     message:
                       "Are you sure you want to reset achievements for all users? This action cannot be undone.",
                     onConfirm: () => {
-                      console.log("Resetting all achievements");
-                      ToastMsg("Achievements reset successful", "success");
+                      resetAchievementFunction();
+                      
                     },
                   });
                 }}

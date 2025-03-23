@@ -122,7 +122,7 @@ const Leaderboard = () => {
           </div>
         ) : (
           <>
-            <div className="flex justify-center self-center mx-auto space-x-4 p-3 rounded-lg mb-2 w-fit bg-gfgsc-green-200">
+            {/* <div className="flex justify-center self-center mx-auto space-x-4 p-3 rounded-lg mb-2 w-fit bg-gfgsc-green-200">
               {tabs.map((tab) => (
                 <motion.button
                   key={tab.id}
@@ -142,7 +142,7 @@ const Leaderboard = () => {
                   <span>{tab.label}</span>
                 </motion.button>
               ))}
-            </div>
+            </div> */}
 
             <AnimatePresence mode="wait">
               <motion.div
@@ -156,7 +156,7 @@ const Leaderboard = () => {
                   isTeam={false}
                   minimumPassingMark={minimumPassingMark}
                 />
-                <LeaderboardTable data={leaderboardData} isTeam={false} />
+                <LeaderboardTable data={leaderboardData} isTeam={false} minimumPassingMark={minimumPassingMark}/>
                 <Pagination
                   currentPage={currentPage}
                   totalPages={totalPages}
