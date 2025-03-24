@@ -128,11 +128,11 @@ const AboutUs = () => {
                 />
                 <div>
                     <p className="text-sm md:text-base lg:text-lg text-gray-700 text-justify">
-                        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quibusdam ad error, ratione a beatae provident atque suscipit asperiores deserunt, voluptas fuga veritatis reiciendis placeat facere vero nesciunt cumque. Quas, voluptate!
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Modi sit omnis voluptates porro pariatur dolore vero? Autem, numquam! Labore earum animi, provident ducimus accusamus eveniet doloribus tempore ullam corporis aspernatur!
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Cum dolorum temporibus corrupti amet consequatur qui nemo eum tempore voluptates id ad facere fugit perspiciatis accusantium, laborum alias officiis omnis ut!
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Magni, dolores adipisci aut nostrum culpa labore rerum officiis excepturi ea inventore consequatur in, nemo natus. Expedita eligendi sequi modi autem magnam? Lorem ipsum dolor sit amet consectetur adipisicing elit. Magnam veritatis voluptates blanditiis sequi iusto maiores at tempore molestias tempora amet saepe distinctio, corporis culpa. Quia maxime perspiciatis veniam quas sequi?
-                    </p>
+                    The GeeksforGeeks Student Chapter, SRMIST is a vibrant and driven community committed to bridging the gap between academic knowledge and industry demands. Our mission is to empower students with the technical expertise and problem-solving abilities required to thrive in the fast-evolving tech landscape. We focus extensively on Competitive Programming, treating it as a strategic discipline that sharpens analytical thinking, improves coding efficiency, and prepares students for coding contests and technical interviews. Our structured approach to Data Structures and Algorithms (DSA) ensures that even the most complex concepts are broken down into simplified, intuitive, and practical applications, making them easier to grasp and implement.  </p>
+                    
+                    <p className="text-sm md:text-base lg:text-lg text-gray-700 text-justify">
+                    Beyond technical learning, we provide students with a platform to engage with industry experts through guest lectures, mentorship programs, and networking opportunities. These interactions offer valuable insights into real-world challenges, trends, and career pathways, helping students stay ahead of the curve. Through hands-on projects, hackathons, and collaborative learning sessions, we create an environment that fosters innovation and teamwork. Our ultimate goal is to ensure that by the time our members graduate, they have the knowledge, confidence, and industry exposure to secure positions in leading technology companies. Whether you are a beginner taking your first steps in coding or an experienced programmer looking to refine your skills, our chapter offers a space to learn, grow, and excel.    </p>
+
 
                     <h2 className="text-4xl md:text-2xl mt-6 md:mt-8 mb-6 md:mb-8 font-semibold text-emerald-600">
                         Our Public Website
@@ -159,19 +159,17 @@ const AboutUs = () => {
                             </div>
                         </div>
                         <p className="text-sm md:text-base lg:text-lg text-gray-700 text-justify mt-2">
-                            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quibusdam ad error, ratione a beatae provident atque suscipit asperiores deserunt, voluptas fuga veritatis reiciendis placeat facere vero nesciunt cumque. Quas, voluptate!
-                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Modi sit omnis voluptates porro pariatur dolore vero? Autem, numquam! Labore earum animi, provident ducimus accusamus eveniet doloribus tempore ullam corporis aspernatur!
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Cum dolorum temporibus corrupti amet consequatur qui nemo eum tempore voluptates id ad facere fugit perspiciatis accusantium, laborum alias officiis omnis ut!
-                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Magni, dolores adipisci aut nostrum culpa labore rerum officiis excepturi ea inventore consequatur in, nemo natus. Expedita eligendi sequi modi autem magnam? Lorem ipsum dolor sit amet consectetur adipisicing elit. Magnam veritatis voluptates blanditiis sequi iusto maiores at tempore molestias tempora amet saepe distinctio, corporis culpa. Quia maxime perspiciatis veniam quas sequi?
+                        The GFG Community Hub is a centralized digital platform designed to enhance engagement and provide easy access to resources for tech enthusiasts at SRMIST. Developed using React, GSAP, TailwindCSS, and Sanity, the website seamlessly integrates event listings, leadership profiles, and membership applications. It offers a well-structured and intuitive user experience, allowing students to stay updated on upcoming workshops, coding contests, and mentorship programs. With a refined UI/UX, the platform ensures smooth navigation, making it easier for members to explore various opportunities and actively participate in community activities.  
+
+                       </p>
+                        <p className="text-sm md:text-base lg:text-lg text-gray-700 text-justify mt-2">
+                        Beyond event updates and leadership details, the website includes a dedicated "Join Us" page, encouraging students to become part of the community. It also features a blog section that showcases recent activities, key highlights, and insights from past events, keeping members informed about the latest developments. A testimonials section provides firsthand experiences from students who have gained valuable skills and opportunities through the community. The platform continues to evolve, fostering a collaborative learning environment where students can connect, grow, and build a strong foundation in technology.
                         </p>
+                        <p className="text-sm md:text-base lg:text-lg text-gray-700 text-justify mt-2">
+                        The website not only serves as an information hub but also fosters a sense of belonging within the community. It provides a space where members can explore opportunities, share their experiences, and stay connected with like-minded peers. The dynamic interface ensures that every visitor, whether a beginner or an advanced coder, can find relevant resources to enhance their technical skills. With continuous updates and improvements, the platform remains a vital tool in bridging the gap between learning and industry readiness, empowering students to take meaningful steps toward their careers in technology.  </p>
                     </div>
                     
-                    <p className="text-sm md:text-base lg:text-lg text-gray-700 text-justify clear-both pt-4">
-                        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quibusdam ad error, ratione a beatae provident atque suscipit asperiores deserunt, voluptas fuga veritatis reiciendis placeat facere vero nesciunt cumque. Quas, voluptate!
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Modi sit omnis voluptates porro pariatur dolore vero? Autem, numquam! Labore earum animi, provident ducimus accusamus eveniet doloribus tempore ullam corporis aspernatur!
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Cum dolorum temporibus corrupti amet consequatur qui nemo eum tempore voluptates id ad facere fugit perspiciatis accusantium, laborum alias officiis omnis ut!
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Magni, dolores adipisci aut nostrum culpa labore rerum officiis excepturi ea inventore consequatur in, nemo natus. Expedita eligendi sequi modi autem magnam? Lorem ipsum dolor sit amet consectetur adipisicing elit. Magnam veritatis voluptates blanditiis sequi iusto maiores at tempore molestias tempora amet saepe distinctio, corporis culpa. Quia maxime perspiciatis veniam quas sequi?
-                    </p>
+                  
                 </div>
                 <div className="w-full bg-white rounded-xl shadow-sm p-4 md:p-8 mt-8">
                     <ContinuousCarousel />

@@ -24,13 +24,13 @@ const Footer = () => {
               Empowering students through technology, innovation, and collaborative learning.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-gray-400 hover:text-gfgsc-green transition-colors duration-200">
+              <a  target="_blank" className="text-gray-400  hover:text-gfgsc-green transition-colors duration-200">
                 <BiLogoLinkedin className="w-6 h-6" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-gfgsc-green transition-colors duration-200">
+              <a  target="_blank" className="text-gray-400 hover:text-gfgsc-green transition-colors duration-200">
                 <BiLogoInstagram className="w-6 h-6" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-gfgsc-green transition-colors duration-200">
+              <a  target="_blank" className="text-gray-400 hover:text-gfgsc-green transition-colors duration-200">
                 <FaXTwitter className="w-5 h-5" />
               </a>
             </div>
