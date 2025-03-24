@@ -5,8 +5,8 @@ const { Users } = require("../../Models");
 
 // Initialize dailyActivity for the current month
 const initializeDailyActivity = async (user) => {
-  const startDate = moment().startOf("month"); // 1st of the current month
-  const today = moment().startOf("day"); // Today at midnight
+  const startDate = moment().startOf("month");
+  const today = moment().startOf("day");
   const dailyActivity = [];
 
   for (
@@ -18,18 +18,43 @@ const initializeDailyActivity = async (user) => {
   }
 
   user.dailyActivity = dailyActivity;
+  user.maxStreak = 0;
+  user.avgPerDay = 0;
   await user.save();
 };
-// Update dailyActivity every midnight
+
+// Function to calculate max streak
+const calculateMaxStreak = (dailyActivity) => {
+  let maxStreak = 0;
+  let currentStreak = 0;
+
+  for (const entry of dailyActivity) {
+    if (entry.count > 0) {
+      currentStreak++;
+      maxStreak = Math.max(maxStreak, currentStreak);
+    } else {
+      currentStreak = 0;
+    }
+  }
+  return maxStreak;
+};
+
+// Function to calculate avg per day
+const calculateAvgPerDay = (dailyActivity) => {
+  const totalDays = dailyActivity.length;
+  if (totalDays === 0) return 0;
+
+  const totalCount = dailyActivity.reduce((sum, entry) => sum + entry.count, 0);
+  return (totalCount / totalDays).toFixed(2);
+};
+
+// Update dailyActivity every night at 12:30 AM
 const updateDailyActivity = async () => {
   try {
     console.log(chalk.blue("Starting HeatMap Scheduler..."));
     const users = await Users.find({});
 
     for (const user of users) {
-      user.dailyActivity = []; // Reset dailyActivity
-      await user.save();
-
       const today = moment().startOf("day").toDate();
 
       if (!user.dailyActivity || user.dailyActivity.length === 0) {
@@ -48,8 +73,19 @@ const updateDailyActivity = async () => {
           )
         ) {
           user.dailyActivity.push({ date: today, count: 0 });
-          await user.save();
         }
+
+        // Calculate and update max streak
+        user.maxStreak = calculateMaxStreak(user.dailyActivity);
+
+        // Calculate and update avg per day
+        user.avgPerDay = calculateAvgPerDay(user.dailyActivity);
+
+        console.log(
+          `Updated daily activity for ${user.email} for the day ${today}, max streak: ${user.maxStreak}, avg per day: ${user.avgPerDay}`
+        );
+
+        await user.save();
       }
     }
 
@@ -59,8 +95,8 @@ const updateDailyActivity = async () => {
   }
 };
 
-// Schedule the job to run every day at midnight
-cron.schedule("0 0 * * *", updateDailyActivity);
+// Schedule the job to run every day at 12:30 AM
+cron.schedule("30 0 * * *", updateDailyActivity);
 console.log(chalk.bgMagenta.bold("HeatMap Scheduler Initialized."));
 
 module.exports = { updateDailyActivity };

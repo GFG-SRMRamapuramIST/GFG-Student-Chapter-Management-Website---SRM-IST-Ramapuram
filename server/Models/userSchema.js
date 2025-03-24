@@ -131,6 +131,14 @@ const userSchema = new mongoose.Schema({
       count: { type: Number, default: 0 },
     },
   ],
+  avgPerDay: {
+    type: Number,
+    default: 0,
+  },
+  maxStreak: {
+    type: Number,
+    default: 0,
+  },
   subscribed: {
     type: Boolean,
     default: true,
