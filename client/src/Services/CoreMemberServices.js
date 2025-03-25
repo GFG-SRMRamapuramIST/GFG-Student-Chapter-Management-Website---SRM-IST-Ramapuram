@@ -29,6 +29,26 @@ const deleteMeetingFunction = async ({ dateId, noticeId }, userToken) => {
   );
 };
 
+// Create mom for a meeting API
+const createMoMFunction = async ({ dateId, noticeId, MoMLink }, userToken) => {
+  return await commonrequest(
+    "POST",
+    `${BACKEND_URL}/api/v1/core-member/create-mom`,
+    { dateId, noticeId, MoMLink },
+    { Authorization: `Bearer ${userToken}` }
+  );
+}
+
+// Delete mom for a meeting API
+const deleteMoMFunction = async ({ dateId, noticeId }, userToken) => {
+  return await commonrequest(
+    "DELETE",
+    `${BACKEND_URL}/api/v1/core-member/delete-mom`,
+    { dateId, noticeId },
+    { Authorization: `Bearer ${userToken}` }
+  );
+}
+
 // Create a contest API
 const contestCreationFunction = async (
   { contestName, contestLink, platform, startTime, endTime, date },
@@ -188,6 +208,8 @@ const CoreMemberServices = () => {
     meetingCreationFunction: (params) =>
       meetingCreationFunction(params, userToken),
     deleteMeetingFunction: (params) => deleteMeetingFunction(params, userToken),
+    createMoMFunction: (params) => createMoMFunction(params, userToken),
+    deleteMoMFunction: (params) => deleteMoMFunction(params, userToken),
     contestCreationFunction: (params) =>
       contestCreationFunction(params, userToken),
     deleteContestFunction: (params) => deleteContestFunction(params, userToken),
