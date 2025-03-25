@@ -8,6 +8,8 @@ import {
   FaCalendarAlt,
   FaChartLine,
   FaChevronDown,
+  FaChevronRight,
+  FaExternalLinkAlt,
 } from "react-icons/fa";
 import {
   SiLeetcode,
@@ -16,6 +18,9 @@ import {
   SiGeeksforgeeks,
 } from "react-icons/si";
 import { codolioIcon } from "../../Assets";
+import { Medal } from "../../Components";
+import CustomDialog from "../../Components/ui/CustomDialog";
+import { getPlatformUrl, platformColors, platformIcons } from "../../Constants";
 
 const mockProfiles = {
   leftProfile: {
@@ -204,7 +209,7 @@ const UserSelector = ({ selectedUser, label }) => {
       <label className="block text-emerald-600 text-sm mb-2">{label}</label>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full bg-emerald-900 border border-emerald-700 rounded-lg px-4 py-2 text-left flex items-center justify-between hover:bg-emerald-800/60 transition-colors"
+        className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2 text-left flex items-center justify-between hover:bg-gray-100 transition-colors"
       >
         <div className="flex items-center">
           <img
@@ -213,26 +218,26 @@ const UserSelector = ({ selectedUser, label }) => {
             className="w-8 h-8 rounded-full mr-3"
           />
           <div>
-            <div className="text-white">{selectedUser?.name}</div>
-            <div className="text-emerald-400 text-xs">{selectedUser?.role}</div>
+            <div className="text-black">{selectedUser?.name}</div>
+            <div className="text-emerald-600 text-xs">{selectedUser?.role}</div>
           </div>
         </div>
         <FaChevronDown
-          className={`text-emerald-400 transition-transform ${
+          className={`text-emerald-600 transition-transform ${
             isOpen ? "rotate-180" : ""
           }`}
         />
       </button>
 
       {isOpen && (
-        <div className="absolute w-full mt-2 bg-emerald-900/95 border border-emerald-700 rounded-lg shadow-xl z-50 backdrop-blur-sm max-h-60 overflow-y-auto">
+        <div className="absolute w-full mt-2 bg-white border border-gray-300 rounded-lg shadow-xl z-50 max-h-60 overflow-y-auto">
           {mockUsers.map((user) => (
             <button
               key={user.id}
               onClick={() => {
                 setIsOpen(false);
               }}
-              className="w-full px-4 py-2 flex items-center hover:bg-emerald-800/60 transition-colors"
+              className="w-full px-4 py-2 flex items-center hover:bg-gray-100 transition-colors"
             >
               <img
                 src={user.profilePic || "https://placehold.co/100x100"}
@@ -240,8 +245,8 @@ const UserSelector = ({ selectedUser, label }) => {
                 className="w-8 h-8 rounded-full mr-3"
               />
               <div className="text-left">
-                <div className="text-white">{user.name}</div>
-                <div className="text-emerald-400 text-xs">{user.role}</div>
+                <div className="text-black">{user.name}</div>
+                <div className="text-emerald-600 text-xs">{user.role}</div>
               </div>
             </button>
           ))}
@@ -254,11 +259,8 @@ const UserSelector = ({ selectedUser, label }) => {
 const ProfileComparison = () => {
   const { leftProfile, rightProfile } = mockProfiles;
 
-  // GeeksforGeeks inspired color palette with your primary color
-  const colors = {
-    primary: "#00895e",
-    neutral: "#f5f5f7",
-  };
+  const [showLeftBadges, setShowLeftBadges] = useState(false);
+  const [showRightBadges, setShowRightBadges] = useState(false);
 
   const fadeInVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -288,104 +290,85 @@ const ProfileComparison = () => {
   );
 
   const renderPlatformStats = (platform, data) => {
-    let PlatformIcon;
-    let profileUrl;
-    let platformColor;
+    // Normalize platform name to lowercase for consistency
+    const normalizedPlatform = platform.toLowerCase();
 
-    switch (platform) {
-      case "leetcode":
-        PlatformIcon = SiLeetcode;
-        profileUrl = `https://leetcode.com/${data.handle}`;
-        platformColor = "#FFA116"; // LeetCode orange
-        break;
-      case "codechef":
-        PlatformIcon = SiCodechef;
-        profileUrl = `https://www.codechef.com/users/${data.handle}`;
-        platformColor = "#654321"; // CodeChef brown
-        break;
-      case "codeforces":
-        PlatformIcon = SiCodeforces;
-        profileUrl = `https://codeforces.com/profile/${data.handle}`;
-        platformColor = "#318CE7"; // Codeforces blue
-        break;
-      case "geeksforgeeks":
-        PlatformIcon = SiGeeksforgeeks;
-        profileUrl = `https://geeksforgeeks.org/user/${data.handle}/profile`;
-        platformColor = colors.primary; // GFG green (your primary color)
-        break;
-      default:
-        PlatformIcon = FaCode;
-        profileUrl = "#";
-        platformColor = colors.neutral;
-    }
+    // Get platform-specific properties
+    const PlatformIcon = platformIcons[normalizedPlatform] || FaCode;
+    const platformColor = platformColors[normalizedPlatform] || "#6e6e6e";
+    const profileUrl = data.handle
+      ? `https://${getPlatformUrl(normalizedPlatform)}/${data.handle}`
+      : "#";
 
     return (
-      <motion.a
-        href={profileUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="block bg-white/95 backdrop-blur-sm shadow-md rounded-lg p-4 mb-4 transition-all duration-300 border  hover:border-emerald-400 hover:shadow-lg hover:shadow-emerald-900/20"
-        variants={fadeInVariants}
-        whileHover={{ y: -5 }}
+      <div
+        className="rounded-lg shadow-md p-4 mb-4 transition-all duration-300 hover:shadow-lg"
+        style={{ borderLeft: `4px solid ${platformColor}` }}
       >
         <div className="flex items-center mb-3">
-          <PlatformIcon
-            style={{ color: platformColor }}
-            className="text-xl mr-2"
-          />
-          <h3 className="font-bold text-lg capitalize">{platform}</h3>
+          <div
+            className="p-2 rounded-full mr-3"
+            style={{ backgroundColor: `${platformColor}20` }} // 20 is hex for 12% opacity
+          >
+            <PlatformIcon size={24} color={platformColor} />
+          </div>
+
+          <h3 className="text-lg text-black font-semibold flex-grow capitalize">
+            {normalizedPlatform}
+          </h3>
+
+          {data.handle && (
+            <a
+              href={profileUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center text-sm font-medium transition-colors duration-300 hover:underline"
+              style={{ color: platformColor }}
+            >
+              <span className="hidden md:flex">{data.handle}</span>
+              <FaExternalLinkAlt size={12} className="ml-1" />
+            </a>
+          )}
         </div>
+
         <div className="grid grid-cols-2 gap-3">
           {Object.entries(data).map(
             ([key, value]) =>
               key !== "handle" && (
-                <div key={key} className="text-sm">
-                  <span className="text-gray-400">
+                <div key={key} className="bg-gray-50 p-2 rounded">
+                  <div className="text-xs text-gray-500 mb-1">
                     {key
                       .replace(/([A-Z])/g, " $1")
                       .replace(/^./, (str) => str.toUpperCase())}
-                    :{" "}
-                  </span>
-                  <span className="font-semibold text-emerald-800">
-                    {value}
-                  </span>
+                  </div>
+                  <div className="font-medium text-black">{value}</div>
                 </div>
               )
           )}
         </div>
-      </motion.a>
+      </div>
     );
   };
 
-  const renderBadges = (badges) => (
-    <div className="flex flex-wrap gap-3 mb-4">
-      {badges.map((badge) => (
-        <motion.div
-          key={badge.id}
-          className={`px-4 py-2 rounded-full text-xs font-semibold flex items-center space-x-1.5 shadow-md
-            ${
-              badge.type === "gold"
-                ? "bg-gradient-to-r from-yellow-500 to-yellow-400 text-yellow-900"
-                : badge.type === "silver"
-                ? "bg-gradient-to-r from-gray-400 to-gray-300 text-gray-800"
-                : "bg-gradient-to-r from-amber-700 to-amber-600 text-amber-100"
-            }`}
-          whileHover={{ scale: 1.07, y: -2 }}
-          whileTap={{ scale: 0.95 }}
-          title={badge.description}
-        >
-          <FaTrophy
-            className={
-              badge.type === "gold"
-                ? "text-yellow-800"
-                : badge.type === "silver"
-                ? "text-gray-700"
-                : "text-amber-200"
-            }
-          />
-          <span>{badge.name}</span>
-        </motion.div>
-      ))}
+  const renderBadges = (badges, setShowBadges) => (
+    <div className="space-y-4">
+      <div className="flex  py-2 gap-2 sm:gap-3">
+        {badges.slice(0, 3).map((badge) => (
+          <div
+            key={badge.id}
+            className="flex flex-col items-center justify-center text-center"
+          >
+            <Medal type={badge.type} content={badge.name} size="medium" />
+          </div>
+        ))}
+      </div>
+      <button
+        onClick={() => setShowBadges(true)}
+        className="w-full mt-2 py-2 sm:py-3 px-2 sm:px-3 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-100 transition-colors text-xs sm:text-sm font-medium flex items-center justify-center"
+      >
+        <span>View all</span>
+        <FaChevronRight className="w-2 h-2 sm:w-2.5 sm:h-2.5 ml-1" />
+      </button>
     </div>
   );
 
@@ -400,37 +383,37 @@ const ProfileComparison = () => {
       </h3>
       <div className="grid grid-cols-2 gap-4">
         <div className="flex items-center bg-gradient-to-br from-emerald-800/80 to-emerald-900/80 p-3 rounded-lg">
-          <FaFire className="text-orange-500 mr-3 text-xl" />
+          <FaFire className="hidden md:flex text-orange-500 mr-3 text-xl" />
           <div>
-            <div className="text-sm text-emerald-300">Current Streak</div>
-            <div className="font-bold text-lg">
+            <div className="text-xs md:text-sm text-emerald-300">Current Streak</div>
+            <div className="font-bold text-md md:text-lg">
               {activityData.currentStreak} days
             </div>
           </div>
         </div>
         <div className="flex items-center bg-gradient-to-br from-emerald-800/80 to-emerald-900/80 p-3 rounded-lg">
-          <FaFire className="text-red-500 mr-3 text-xl" />
+          <FaFire className="hidden md:flex text-red-500 mr-3 text-xl" />
           <div>
-            <div className="text-sm text-emerald-300">Longest Streak</div>
-            <div className="font-bold text-lg">
+            <div className="text-xs md:text-sm text-emerald-300">Longest Streak</div>
+            <div className="font-bold text-md md:text-lg">
               {activityData.longestStreak} days
             </div>
           </div>
         </div>
         <div className="flex items-center bg-gradient-to-br from-emerald-800/80 to-emerald-900/80 p-3 rounded-lg">
-          <FaCalendarAlt className="text-blue-400 mr-3 text-xl" />
+          <FaCalendarAlt className="hidden md:flex text-blue-400 mr-3 text-xl" />
           <div>
-            <div className="text-sm text-emerald-300">Last Month</div>
-            <div className="font-bold text-lg">
+            <div className="text-xs md:text-sm text-emerald-300">Last Month</div>
+            <div className="font-bold text-md md:text-lg">
               {activityData.lastMonthSolved} problems
             </div>
           </div>
         </div>
         <div className="flex items-center bg-gradient-to-br from-emerald-800/80 to-emerald-900/80 p-3 rounded-lg">
-          <FaChartLine className="text-emerald-400 mr-3 text-xl" />
+          <FaChartLine className="hidden md:flex text-emerald-400 mr-3 text-xl" />
           <div>
-            <div className="text-sm text-emerald-300">Daily Average</div>
-            <div className="font-bold text-lg">
+            <div className="text-xs md:text-sm text-emerald-300">Daily Average</div>
+            <div className="font-bold text-md md:text-lg">
               {activityData.averagePerDay} problems
             </div>
           </div>
@@ -475,7 +458,11 @@ const ProfileComparison = () => {
     </motion.div>
   );
 
-  const renderProfileCard = (profile, otherProfile) => (
+  const renderProfileCard = (
+    profile,
+    otherProfile,
+    setShowBadges
+  ) => (
     <motion.div
       className="w-full"
       initial="hidden"
@@ -540,7 +527,7 @@ const ProfileComparison = () => {
               <FaTrophy className="mr-2 text-yellow-500" />
               Achievements & Badges
             </h3>
-            {renderBadges(profile.badges)}
+            {renderBadges(profile.badges, setShowBadges)}
           </motion.div>
 
           {renderActivityData(profile.activityData)}
@@ -559,7 +546,7 @@ const ProfileComparison = () => {
   );
 
   return (
-    <div className="min-h-screen  text-white p-6">
+    <div className="min-h-screen  text-white">
       <motion.div
         className="text-center mb-12"
         initial={{ opacity: 0, y: -20 }}
@@ -575,7 +562,7 @@ const ProfileComparison = () => {
         </p>
       </motion.div>
 
-      <div className="container mx-auto">
+      <div className="">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
           <UserSelector
             selectedUser={leftProfile}
@@ -588,7 +575,11 @@ const ProfileComparison = () => {
         </div>
         <div className="flex flex-col md:flex-row gap-8">
           <div className="flex-1">
-            {renderProfileCard(leftProfile, rightProfile)}
+            {renderProfileCard(
+              leftProfile,
+              rightProfile,
+              setShowLeftBadges
+            )}
           </div>
 
           <motion.div
@@ -605,10 +596,79 @@ const ProfileComparison = () => {
           </motion.div>
 
           <div className="flex-1">
-            {renderProfileCard(rightProfile, leftProfile)}
+            {renderProfileCard(
+              rightProfile,
+              leftProfile,
+              setShowRightBadges
+            )}
           </div>
         </div>
       </div>
+
+      {/* Add Badge Popups */}
+      <CustomDialog
+        open={showLeftBadges}
+        onClose={() => setShowLeftBadges(false)}
+      >
+        <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-8">
+          All Achievements - {leftProfile.name}
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
+          {leftProfile.badges.map((badge) => (
+            <div
+              key={badge.id}
+              className="flex flex-col items-center text-center"
+            >
+              <Medal
+                type={badge.type}
+                content={badge.name}
+                size="large"
+                labelClassName="mt-3 sm:mt-4 font-medium text-sm sm:text-base"
+              />
+              <div className="mt-3 sm:mt-4 space-y-1">
+                <div className="text-xs sm:text-sm text-gray-500">
+                  {badge.date}
+                </div>
+                <p className="text-xs sm:text-sm text-gray-600 mt-1 sm:mt-2">
+                  {badge.description}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </CustomDialog>
+
+      <CustomDialog
+        open={showRightBadges}
+        onClose={() => setShowRightBadges(false)}
+      >
+        <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-8">
+          All Achievements - {rightProfile.name}
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
+          {rightProfile.badges.map((badge) => (
+            <div
+              key={badge.id}
+              className="flex flex-col items-center text-center"
+            >
+              <Medal
+                type={badge.type}
+                content={badge.name}
+                size="large"
+                labelClassName="mt-3 sm:mt-4 font-medium text-sm sm:text-base"
+              />
+              <div className="mt-3 sm:mt-4 space-y-1">
+                <div className="text-xs sm:text-sm text-gray-500">
+                  {badge.date}
+                </div>
+                <p className="text-xs sm:text-sm text-gray-600 mt-1 sm:mt-2">
+                  {badge.description}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </CustomDialog>
     </div>
   );
 };

@@ -9,6 +9,10 @@ const MonthlyActivityHeatmap = ({
   maxStreak,
   dailyActivity,
 }) => {
+
+  console.log("avgPerDay", avgPerDay);
+  console.log("maxStreak", maxStreak);
+  console.log("dailyActivity", dailyActivity);
   // Generate dates for the current month
   const getDaysInMonth = (month, year) =>
     new Date(year, month + 1, 0).getDate();
@@ -18,8 +22,8 @@ const MonthlyActivityHeatmap = ({
   const [stats, setStats] = useState({
     maxSolved: 0,
     totalSolved: 0,
-    avgPerDay: 0,
-    streakDays: 0,
+    avgPerDay: avgPerDay,
+    streakDays: maxStreak,
   });
 
   // Define color ranges with labels
@@ -33,42 +37,28 @@ const MonthlyActivityHeatmap = ({
 
   // Generate dummy data for the month
   useEffect(() => {
+    if (!dailyActivity?.length) return;
+
     const daysInMonth = getDaysInMonth(month, year);
-    const data = Array.from({ length: daysInMonth }, (_, i) => {
-      const solved = Math.floor(Math.random() * 20); // 0-19 problems solved
-      return {
-        day: i + 1,
-        date: new Date(year, month, i + 1),
-        solved: solved,
-      };
-    });
+    const data = dailyActivity.map(day => ({
+      day: new Date(day.date).getDate(),
+      date: new Date(day.date),
+      solved: day.count
+    }));
 
     setActivityData(data);
 
     // Calculate stats
-    const maxSolved = Math.max(...data.map((d) => d.solved));
+    const maxSolved = Math.max(...data.map(d => d.solved));
     const totalSolved = data.reduce((sum, d) => sum + d.solved, 0);
-    const avgPerDay = +(totalSolved / daysInMonth).toFixed(1);
-
-    // Calculate streak
-    let currentStreak = 0;
-    let maxStreak = 0;
-    for (const day of data) {
-      if (day.solved > 0) {
-        currentStreak++;
-        maxStreak = Math.max(maxStreak, currentStreak);
-      } else {
-        currentStreak = 0;
-      }
-    }
 
     setStats({
       maxSolved,
       totalSolved,
-      avgPerDay,
-      streakDays: maxStreak,
+      avgPerDay: Number(avgPerDay).toFixed(2),
+      streakDays: maxStreak
     });
-  }, [month, year]);
+  }, [dailyActivity, avgPerDay, maxStreak]);
 
   const monthNames = [
     "January",

@@ -99,14 +99,14 @@ const TopPerformerCard = ({ rank, performer, delay }) => {
                   className="w-full h-full object-cover"
                 />
               </div>
-              <motion.div
+              {/* <motion.div
                 className="absolute -bottom-1 -right-1 bg-white/90 rounded-full px-2 py-1"
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: delay + 0.5 }}
               >
                 <span className="text-xs font-bold">#{rank}</span>
-              </motion.div>
+              </motion.div> */}
             </div>
 
             <div className="flex flex-col items-center justify-center text-center">
@@ -116,12 +116,11 @@ const TopPerformerCard = ({ rank, performer, delay }) => {
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ delay: delay + 0.4 }}
-                  className="bg-white/20 px-2 py-0.5 rounded-full"
+                  className="flex justify-center items-center bg-white/20 px-2 py-0.5 rounded-full"
                 >
                   <span className="text-white font-semibold">
                     {performer.points}
                   </span>
-                  {/* <span className="text-white/80 text-sm ml-1">points</span> */}
                   <img src={GfgCoin} alt="GfgCoin" className="w-4 h-4 ml-1" />
                 </motion.div>
               </div>
