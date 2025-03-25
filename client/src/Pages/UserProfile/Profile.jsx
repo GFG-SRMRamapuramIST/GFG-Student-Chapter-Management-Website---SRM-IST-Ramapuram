@@ -53,10 +53,14 @@ const Profile = () => {
         solvedProblems: 0,
         codingScore: 0,
         rank: 0,
-      }
+      },
     },
 
     badges: [],
+
+    avgPerDay: 0,
+    maxStreak: 0,
+    dailyActivity: [],
   });
 
   //* **************** Fetch Profile Data *****************//
@@ -65,7 +69,7 @@ const Profile = () => {
       setLoading(true);
       //console.log("Fetching profile data for:", profileId);
       const response = await getProfilePageDataFunction({ userId: profileId });
-      console.log(response);
+      //console.log(response);
 
       if (response.status !== 200) {
         ToastMsg("Error fetching profile data! Please try later", "error");
@@ -160,6 +164,10 @@ const Profile = () => {
               description: "Awarded for good performance in coding contests.",
             })),
           ],
+
+          avgPerDay: data.avgPerDay || 0,
+          maxStreak: data.maxStreak || 0,
+          dailyActivity: data.dailyActivity || [],
         });
 
         //console.log("Profile Data:", userProfileData);

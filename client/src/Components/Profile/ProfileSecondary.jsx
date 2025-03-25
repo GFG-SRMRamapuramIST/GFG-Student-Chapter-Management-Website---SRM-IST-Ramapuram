@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+
+// Importing icons
 import { FaChevronRight, FaExternalLinkAlt } from "react-icons/fa";
 import { CgCode, CgTrophy } from "react-icons/cg";
 import { BiError } from "react-icons/bi";
@@ -90,7 +92,7 @@ const ProfileSecondary = ({ userProfile }) => {
         <div className="lg:col-span-1">
           <div className="grid grid-cols-1 gap-4 sm:gap-6">
             {/* Heatmap */}
-            <MonthlyActivityHeatmap />
+            <MonthlyActivityHeatmap avgPerDay={userProfile.avgPerDay} maxStreak={userProfile.maxStreak} dailyActivity={userProfile.dailyActivity} />
           </div>
         </div>
 

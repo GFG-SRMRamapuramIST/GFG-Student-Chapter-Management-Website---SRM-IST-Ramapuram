@@ -5,6 +5,9 @@ import { FaCalendarAlt, FaFireAlt, FaChartLine } from "react-icons/fa";
 const MonthlyActivityHeatmap = ({
   month = new Date().getMonth(),
   year = new Date().getFullYear(),
+  avgPerDay,
+  maxStreak,
+  dailyActivity,
 }) => {
   // Generate dates for the current month
   const getDaysInMonth = (month, year) =>
@@ -25,7 +28,7 @@ const MonthlyActivityHeatmap = ({
     { range: "1-5", color: "bg-emerald-200", textColor: "text-gray-800" },
     { range: "6-10", color: "bg-emerald-400", textColor: "text-gray-800" },
     { range: "11-15", color: "bg-emerald-600", textColor: "text-white" },
-    { range: "15+", color: "bg-emerald-800", textColor: "text-white" }
+    { range: "15+", color: "bg-emerald-800", textColor: "text-white" },
   ];
 
   // Generate dummy data for the month
