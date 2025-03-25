@@ -16,6 +16,16 @@ const addAllowedEmails = async ({ emails }, userToken) => {
   );
 };
 
+// Add csv file of emails to register API
+const addAllowedEmailsCSV = async (formData, userToken) => {
+  return await commonrequest(
+    "POST",
+    `${BACKEND_URL}/api/v1/admin/upload-csv-allowed-emails`,
+    formData,
+    { Authorization: `Bearer ${userToken}` }
+  );
+}
+
 // Fetch all allowed emails API
 const fetchAllowedEmails = async (
   { page = 1, limit = 10, search = "", sortOrder = 1 },
@@ -137,6 +147,7 @@ const AdminServices = () => {
 
   return {
     addAllowedEmails: (params) => addAllowedEmails(params, userToken),
+    addAllowedEmailsCSV: (params) => addAllowedEmailsCSV(params, userToken),
     fetchAllowedEmails: (params) => fetchAllowedEmails(params, userToken),
     deleteAllowedEmail: (params) => deleteAllowedEmail(params, userToken),
     fetchAllUsers: (params) => fetchAllUsers(params, userToken),

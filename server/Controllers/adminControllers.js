@@ -1,3 +1,4 @@
+const fs = require("fs");
 const chalk = require("chalk");
 const nodemailer = require("nodemailer");
 const csv = require("csvtojson");
@@ -57,25 +58,15 @@ const verifyAndAuthorize = async (token, allowedRoles) => {
   return { status: 200, userId: authResult.userId };
 };
 
-// Configure nodemailer transporter
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: "geeksforgeeks.srmistrmp@gmail.com",
-    pass: "fgvh olam gxvk ilds", // Use environment variables in production
-  },
-});
-
 //1. Add Emails using CSV file to register API
 exports.uploadCSVAllowedEmails = async (req, res) => {
-  const token = req.headers.authorization?.split(" ")[1]; // Extract token from header
+  const token = req.headers.authorization?.split(" ")[1];
 
   if (!token) {
     return res.status(401).json({ message: "No token provided" });
   }
 
   try {
-    // Use the helper function for authorization
     const authResult = await verifyAndAuthorize(token, ["ADMIN"]);
     if (authResult.status !== 200) {
       return res
@@ -94,7 +85,7 @@ exports.uploadCSVAllowedEmails = async (req, res) => {
     // Parse CSV file
     const csvData = await csv().fromFile(req.file.path);
     for (const row of csvData) {
-      if (row.Email) {
+      if (row.Email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(row.Email)) {
         userEmails.push(row.Email.trim());
       }
     }
@@ -102,116 +93,21 @@ exports.uploadCSVAllowedEmails = async (req, res) => {
     // Process emails
     for (const email of userEmails) {
       try {
-        // Check if the email is already registered
-        const existingUser = await Users.findOne({ email });
+        // Check if email exists in Users or AllowedEmail schema
+        const existingEntry =
+          (await Users.findOne({ email })) ||
+          (await AllowedEmail.findOne({ email }));
 
-        if (existingUser) {
+        if (existingEntry) {
           skippedEmails.push(email);
           continue;
         }
 
-        // Check if the email already exists in AllowedEmail schema
-        const alreadyAllowed = await AllowedEmail.findOne({ email });
-        if (alreadyAllowed) {
-          skippedEmails.push(email);
-          continue;
-        }
-
-        // Generate a random 6 digit OTP
+        // Generate a random 6-digit OTP
         const OTP = Math.floor(100000 + Math.random() * 900000).toString();
-
-        // Send an email invitation with the OTP
-        const mailOptions = {
-          from: "vitcseguide@gmail.com",
-          to: email,
-          subject: "Invitation to Register",
-          text: `You have been invited to register on our website. Please use your email (${email}) and the following OTP (${OTP}) to create an account.`,
-        };
-
-        await transporter.sendMail(mailOptions);
-
-        // Add the email and OTP to AllowedEmail schema only if email is sent successfully
-        await AllowedEmail.create({ email, OTP, createdAt: new Date() });
-        addedEmails.push(email);
-
-        console.log(chalk.bgGreen.bold.green("Email sent to: "), email);
-      } catch (error) {
-        console.error(
-          chalk.bgRed.bold.red("Error processing email: "),
-          email,
-          error.message
-        );
-        skippedEmails.push(email);
-      }
-    }
-
-    // Response after processing all emails
-    return res.status(200).json({
-      message: "Emails processed successfully",
-      addedCount: addedEmails.length,
-      skippedCount: skippedEmails.length,
-      addedEmails,
-      skippedEmails,
-    });
-  } catch (error) {
-    console.error(
-      chalk.bgRed.bold.red("Error processing CSV: "),
-      error.message
-    );
-    return res
-      .status(500)
-      .json({ message: "Internal server error", error: error.message });
-  }
-};
-
-//2. Add array of Emails to register API
-exports.addAllowedEmails = async (req, res) => {
-  const token = req.headers.authorization?.split(" ")[1]; // Taking token from the header
-  const { emails } = req.body; // Array of emails from the admin
-
-  if (!token) {
-    return res.status(401).json({ message: "No token provided" });
-  }
-
-  if (!Array.isArray(emails) || emails.length === 0) {
-    return res
-      .status(400)
-      .json({ message: "No emails provided or invalid input" });
-  }
-
-  try {
-    // Use the helper function for authorization
-    const authResult = await verifyAndAuthorize(token, ["ADMIN"]);
-    if (authResult.status !== 200) {
-      return res
-        .status(authResult.status)
-        .json({ message: authResult.message });
-    }
-
-    const addedEmails = [];
-    const skippedEmails = [];
-
-    for (const email of emails) {
-      // Check if the email is already registered
-      const existingUser = await Users.findOne({ email });
-
-      if (existingUser) {
-        skippedEmails.push(email);
-        continue;
-      }
-
-      const alreadyAllowed = await AllowedEmail.findOne({ email });
-      if (!alreadyAllowed) {
-        // Generate a random 6 digit OTP
-        const OTP = Math.floor(100000 + Math.random() * 900000).toString();
-
-        // Send an email invitation with the OTP
-        const mailOptions = {
-          from: "vitcseguide@gmail.com",
-          to: email,
-          subject:
-            "Welcome to GeeksForGeeks Student Chapter SRM IST Ramapuram!",
-          html: `
+        const subject =
+          "Welcome to GeeksForGeeks Student Chapter SRM IST Ramapuram!";
+        const message = `
           <!DOCTYPE html>
           <html lang="en">
           <head>
@@ -365,11 +261,247 @@ exports.addAllowedEmails = async (req, res) => {
               </footer>
               </div>
           </body>
-      </html>`,
-        };
+      </html>`;
+
+        await sendEmail(email, subject, message);
+        console.log(chalk.bgGreen.bold.green("Email sent to: "), email);
+
+        // Store email and OTP in AllowedEmail schema only if email is sent successfully
+        await AllowedEmail.create({ email, OTP, createdAt: new Date() });
+        addedEmails.push(email);
+
+        console.log(chalk.bgGreen.bold.green("Email sent to: "), email);
+      } catch (error) {
+        console.error(
+          chalk.bgRed.bold.red("Error processing email: "),
+          email,
+          error.message
+        );
+        skippedEmails.push(email);
+      }
+    }
+
+    // Cleanup: Delete the uploaded CSV file after processing
+    fs.unlinkSync(req.file.path);
+
+    return res.status(200).json({
+      message: "Emails processed successfully",
+      addedCount: addedEmails.length,
+      skippedCount: skippedEmails.length,
+      addedEmails,
+      skippedEmails,
+    });
+  } catch (error) {
+    console.error(
+      chalk.bgRed.bold.red("Error processing CSV: "),
+      error.message
+    );
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
+
+//2. Add array of Emails to register API
+exports.addAllowedEmails = async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1]; // Taking token from the header
+  const { emails } = req.body; // Array of emails from the admin
+
+  if (!token) {
+    return res.status(401).json({ message: "No token provided" });
+  }
+
+  if (!Array.isArray(emails) || emails.length === 0) {
+    return res
+      .status(400)
+      .json({ message: "No emails provided or invalid input" });
+  }
+
+  try {
+    // Use the helper function for authorization
+    const authResult = await verifyAndAuthorize(token, ["ADMIN"]);
+    if (authResult.status !== 200) {
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
+    }
+
+    const addedEmails = [];
+    const skippedEmails = [];
+
+    for (const email of emails) {
+      // Check if the email is already registered
+      const existingUser = await Users.findOne({ email });
+
+      if (existingUser) {
+        skippedEmails.push(email);
+        continue;
+      }
+
+      const alreadyAllowed = await AllowedEmail.findOne({ email });
+      if (!alreadyAllowed) {
+        // Generate a random 6 digit OTP
+        const OTP = Math.floor(100000 + Math.random() * 900000).toString();
+        const subject =
+          "Welcome to GeeksForGeeks Student Chapter SRM IST Ramapuram!";
+        const message = `
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+            
+              <style>
+                  body {
+                      font-family: Arial, sans-serif;
+                      background-color:#b3e6d4 ;
+                      margin: 0;
+                      padding: 0;
+                  }
+                  .container {
+                      width: 100%;
+                      max-width: 600px;
+                      margin: 0 auto;
+                      background-color: #ffffff;
+                      padding: 20px;
+                      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                      border-radius: 10px;
+                  }
+                  .header {
+                      text-align: center;
+                      background-color:white;
+                      border-radius: 10px;
+                      color: white;
+                      padding: 10px 0;
+                      overflow: hidden;
+                      
+                  
+                  }
+                  .header h1 {
+                      margin: 0;
+                  }
+                  .content {
+                      padding: 20px;
+                      text-align: center;
+                  }
+                  .content p {
+                  
+                      color: #555555;
+              text-align: justify;
+              line-height: 1.4;
+              word-break: break-word;
+                  }
+                
+                  .footer {
+                      text-align: center;
+                      padding: 10px;
+                      color: #777777;
+                  }
+                  .footer a {
+                      color: #007bff;
+                      text-decoration: none;
+                  }
+              
+                  .header img{
+                      height: 100px;
+                      width: 400px;
+                  }
+                  
+                  /* Footer Styling */
+                  .footer-container {
+                      max-width: 1200px;
+                      margin: 0 auto;
+                      padding: 40px 20px;
+                      text-align: center;
+                      font-family: Arial, sans-serif;
+                      background-color: #f8f8f8;
+                      
+                  }
+
+                  .footer-logo {
+                      width: 120px;
+                      margin-bottom: 30px;
+                  }
+
+                  .community-text {
+                      font-size: 18px;
+                      color: #666;
+                      margin-bottom: 25px;
+                  }
+
+                  .social-icons {
+                      display: flex;
+                      justify-content: center;
+                      gap: 20px;
+                      margin-bottom: 20px;
+                  }
+                  .social-icons i {
+                      font-size: 32px;
+                      color: #666;
+                      transition: transform 0.2s;
+                  }
+                  .social-icons i:hover {
+                      transform: scale(1.1);
+                      color:#00895e;
+                  }
+
+
+                  .footer-bottom {
+                  
+                      height: 100px;
+                  
+                      padding-top: 10px;
+                      border-top: 1px solid #eee;
+                      color: #666;
+                      font-size: 14px;
+                      overflow: hidden;
+                    
+                  
+                  }
+
+          </style>
+          </head>
+          <body>
+              <div class="container">
+                  <div class="header">
+                      <img src="https://res.cloudinary.com/du1b2thra/image/upload/v1739372825/dyq9xw2oatp9rjthimf4.png">
+                  </div>
+                  <div class="content">
+                      <h2>Welcome to GeeksforGeeks SRM RMP!</h2>
+
+                      <h3 style="text-align: left;">Hi <span style="color: #00895e;">${email}</span>,</h3>
+                      <p>
+                      We are thrilled to welcome you to the <span style="background-color:#b3e6d4 ;">GeeksForGeeks Student Chapter SRM IST Ramapuram</span> online management portal! This platform is designed to help you upskill, collaborate, and grow alongside like-minded peers.
+                      </p>
+                      <p>To complete your onboarding, please use the following <span style="background-color:#b3e6d4; font-weight:bold;">OTP: ${OTP}</span> to verify your account at the time of registration.</p>
+                      <p>We look forward to seeing you make the most of our portal and enhancing your learning journey!</p>
+                  </div>
+
+              <!-- Footer Section -->
+              <footer class="footer-container" style="height: 100px; overflow: hidden;">
+              
+                  
+                  <div class="community-text">
+                      Join our evergrowing unstoppable community
+                  </div>
+                      <div class="social-icons">
+                        <a href="https://www.instagram.com/geeksforgeeks_srm_rmp/"><img width="24" height="24" src="https://res.cloudinary.com/du1b2thra/image/upload/v1739607885/wudcidksorrlsc43i0hn.png" alt="instagram-new--v1"/></a>
+                        <a href="https://www.linkedin.com/company/geeksforgeeks-srm-rmp"><img width="24" height="24" src="https://res.cloudinary.com/du1b2thra/image/upload/v1739608002/lpdxsqycyrszaufpfrap.png" alt="linkedin"/></a>
+                        <a href="https://x.com/GFG_SRM_RMP"><img width="24" height="24" src="https://res.cloudinary.com/du1b2thra/image/upload/v1739608105/dnbjvcdmxstrj9yhoy7e.png" alt="twitterx--v2"/></a>
+                        <a href="https://gfgsrmrmp.vercel.app/"><img width="24" height="24" src="https://res.cloudinary.com/du1b2thra/image/upload/v1739608156/iorqcssxpnwvgftktnkt.png" alt="domain"/></a>                        
+                    </div>
+                  <div class="footer-bottom" style="height: 200px; overflow: hidden;">
+                      <div>Queries? We're just one email away: <span style="color: #00895e;">geeksforgeeks.srmistrmp@gmail.com</span> </div>
+                      <div>© 2025 GFG Student Chapter. All rights reserved.</div>
+                  </div>
+              </footer>
+              </div>
+          </body>
+      </html>`;
 
         try {
-          await transporter.sendMail(mailOptions);
+          await sendEmail(email, subject, message);
           console.log(chalk.bgGreen.bold.green("Email sent to: "), email);
 
           // Add the email and OTP to the allowedEmail collection only after successful email
@@ -1439,7 +1571,7 @@ exports.getConstantValues = async (req, res) => {
         .status(authResult.status)
         .json({ message: authResult.message });
     }
-    
+
     // Find the ConstantValue document
     const constant = await ConstantValue.findOne();
 
@@ -1456,7 +1588,7 @@ exports.getConstantValues = async (req, res) => {
       .status(500)
       .json({ message: "Internal server error", error: error.message });
   }
-}
+};
 
 //17. Reset achievements API
 exports.resetAchievements = async (req, res) => {
@@ -1475,11 +1607,14 @@ exports.resetAchievements = async (req, res) => {
         .json({ message: authResult.message });
     }
 
-    await Users.updateMany({}, { 
-      $set: { 
-        achievement: { gold: [], silver: [], bronze: [] } 
-      } 
-    });
+    await Users.updateMany(
+      {},
+      {
+        $set: {
+          achievement: { gold: [], silver: [], bronze: [] },
+        },
+      }
+    );
 
     res.status(200).json({ message: "Achievements reset successfully" });
   } catch (error) {
@@ -1488,7 +1623,7 @@ exports.resetAchievements = async (req, res) => {
       .status(500)
       .json({ message: "Internal server error", error: error.message });
   }
-}
+};
 
 /************************** APIs For Teams **************************
 
