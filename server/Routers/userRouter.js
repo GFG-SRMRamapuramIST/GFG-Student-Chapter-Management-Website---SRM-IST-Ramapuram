@@ -89,7 +89,10 @@ router.post(
 );
 
 //10. Get all users with their id and name
-router.get("/get-all-users-with-id-and-name", userControllers.getAllUsers);
+router.get(
+  "/get-all-users-with-id-and-name",
+  userControllers.getAllUsersForComparison
+);
 
 /*
 //4. Join a Team API

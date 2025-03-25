@@ -102,6 +102,8 @@ const userSchema = new mongoose.Schema({
     gold: [{ month: Number, year: Number }],
     silver: [{ month: Number, year: Number }],
     bronze: [{ month: Number, year: Number }],
+    maxAvgPerDay: [{ month: Number, year: Number }],
+    dailyActiveStreak: [{ month: Number, year: Number }],
   },
   platforms: {
     codechef: {

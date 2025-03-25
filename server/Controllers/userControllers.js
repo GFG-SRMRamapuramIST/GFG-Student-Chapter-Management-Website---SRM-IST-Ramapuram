@@ -36,7 +36,7 @@ const scriptURL =
 
 9. Report an Issue API
 
-10. Get all users with there id and name
+10. Get all users with there id, name, profile pic and role
 
  Join a Team API
  Leave a Team API
@@ -543,7 +543,7 @@ exports.reportAnIssue = async (req, res) => {
 };
 
 //10. Get all users with their id and name
-exports.getAllUsers = async (req, res) => {
+exports.getAllUsersForComparison = async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1]; // Extract token
   if (!token) {
     return res.status(401).json({ message: "No token provided" });
@@ -556,7 +556,7 @@ exports.getAllUsers = async (req, res) => {
       return res.status(400).json({ message: authResult.message });
     }
 
-    const users = await Users.find().select("_id name");
+    const users = await Users.find().select("_id name role profilePicture");
 
     return res.status(200).json({
       message: "Users fetched successfully",

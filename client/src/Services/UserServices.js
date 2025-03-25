@@ -115,7 +115,7 @@ const reportAnIssueFunction = async (formData) => {
 }
 
 // Get all users with id and name
-const getAllUsersWithIdAndNameFunction = async (token) => {
+const getAllUsersWithIdNameRolePfpFunction = async (token) => {
   return await commonrequest(
     "GET",
     `${BACKEND_URL}/api/v1/user/get-all-users-with-id-and-name`,
@@ -144,8 +144,8 @@ const UserService = () => {
     fetchTop5UsersFunction: () => fetchTop5UsersFunction(userToken),
     fetchPOTDFunction: () => fetchPOTDFunction(userToken),
     reportAnIssueFunction: (formData) => reportAnIssueFunction(formData),
-    getAllUsersWithIdAndNameFunction: () =>
-      getAllUsersWithIdAndNameFunction(userToken),
+    getAllUsersWithIdNameRolePfpFunction: () =>
+      getAllUsersWithIdNameRolePfpFunction(userToken),
   };
 };
 
