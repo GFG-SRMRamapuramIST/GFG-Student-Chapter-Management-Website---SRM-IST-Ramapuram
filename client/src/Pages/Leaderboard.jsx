@@ -28,10 +28,10 @@ const Leaderboard = () => {
   const [totalPages, setTotalPages] = useState(1);
   const itemsPerPage = 10;
 
-  const [passingPercentage, setPassingPercentage] = useState(30);
-  const [perDayPracticePoint, setPerDayPracticePoint] = useState(1);
+  const [passingPercentage, setPassingPercentage] = useState(0);
+  const [perDayPracticePoint, setPerDayPracticePoint] = useState(0);
   const [perContestPoint, setPerContestPoint] = useState(0);
-  const [minimumPassingMark, setMinimumPassingMark] = useState(30);
+  const [minimumPassingMark, setMinimumPassingMark] = useState(0);
 
   const calculatePassingMarks = () => {
     const perMonthmarks = 30 * perDayPracticePoint + 4 * perContestPoint;
@@ -40,6 +40,10 @@ const Leaderboard = () => {
     );
     setMinimumPassingMark(minPassingMark);
   };
+
+  useEffect(() => {
+    calculatePassingMarks();
+  }, [passingPercentage, perDayPracticePoint, perContestPoint]);
 
   useEffect(() => {
     const fetchLeaderboardData = async () => {
@@ -51,11 +55,11 @@ const Leaderboard = () => {
         });
         //console.log(response);
 
-        setPassingPercentage(response.data.passingPercentage);
-        setPerDayPracticePoint(response.data.perDayPracticePoint);
-        setPerContestPoint(response.data.perContestPoint);
-
         if (response.status == 200) {
+          setPassingPercentage(response.data.passingPercentage);
+          setPerDayPracticePoint(response.data.perDayPracticePoint);
+          setPerContestPoint(response.data.perContestPoint);
+
           const formattedData = response.data.data.map((user) => ({
             id: user._id,
             rank: user.currentRank ?? -1,
@@ -79,7 +83,6 @@ const Leaderboard = () => {
         ToastMsg("Error fetching leaderboard data", "error");
       } finally {
         setLoading(false);
-        calculatePassingMarks();
       }
     };
 
@@ -227,7 +230,7 @@ const Leaderboard = () => {
                         </p>
                         <p className="text-xs text-red-600 italic">
                           Passing score = floor(((30 X {perDayPracticePoint}) +
-                          (4 X {perContestPoint})) X {passingPercentage}) ={" "}
+                          (4 X {perContestPoint})) X 0.{passingPercentage}) ={" "}
                           {minimumPassingMark}
                         </p>
                         <p className="text-xs text-red-600 italic">
