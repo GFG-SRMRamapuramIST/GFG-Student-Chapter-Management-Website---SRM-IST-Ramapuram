@@ -10,6 +10,7 @@ import {
   MdAccessTime,
 } from "react-icons/md";
 import { FaSpinner } from "react-icons/fa";
+import { RotatingCloseButton } from "../../Utilities";
 
 const NotificationModal = ({ isOpen, onClose, onSubmit }) => {
   const [loading, setLoading] = useState(false);
@@ -66,19 +67,14 @@ const NotificationModal = ({ isOpen, onClose, onSubmit }) => {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="bg-white rounded-2xl shadow-xl w-full max-w-md m-4"
+            className="bg-white  max-h-[90vh] overflow-y-scroll no-scrollbar rounded-2xl shadow-xl w-full max-w-md m-4"
           >
             <div className="p-6">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-semibold text-gray-800">
                   Add Announcement
                 </h2>
-                <button
-                  onClick={onClose}
-                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                >
-                  <RiCloseLine className="w-6 h-6" />
-                </button>
+                <RotatingCloseButton onClick={onClose} />
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-6">

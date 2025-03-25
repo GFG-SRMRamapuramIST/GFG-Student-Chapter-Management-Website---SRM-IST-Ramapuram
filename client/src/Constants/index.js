@@ -28,6 +28,21 @@ export const platformColors = {
   geeksforgeeks: "#308d46",
 };
 
+export const getPlatformUrl = (platform) => {
+  switch (platform) {
+    case "leetcode":
+      return "leetcode.com";
+    case "codechef":
+      return "codechef.com/users";
+    case "codeforces":
+      return "codeforces.com/profile";
+    case "geeksforgeeks":
+      return "geeksforgeeks.org/user";
+    default:
+      return "";
+  }
+};
+
 // Sample resources data
 export const resources = [
   {

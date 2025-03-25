@@ -7,8 +7,10 @@ export { Logo };*/
 //UI components
 import NotificationItem from "./ui/NotificationItem";
 import HeikiBackground from "./ui/HeikiBackground";
+import Medal from "./ui/Medal";
+import CustomDialog from "./ui/CustomDialog";
 
-export { NotificationItem, HeikiBackground };
+export { NotificationItem, HeikiBackground, Medal, CustomDialog };
 
 // Navigation Components
 import Navbar from "./Navigation/Navbar";
@@ -25,8 +27,10 @@ export { AuthBackground, InputField };
 // Landing Page components
 import HeroSection from "./Landing/HeroSection";
 import AboutSection from "./Landing/AboutSection";
+import TestimonialsSection from "./Landing/Testimonials";
+import VideoFeatureSection from "./Landing/VideoFeatureSection";
 
-export { HeroSection, AboutSection };
+export { HeroSection, AboutSection, TestimonialsSection, VideoFeatureSection };
 
 // Dashboard Components
 import DashboardHeader from "./Dashboard/DashboardHeader";
@@ -34,7 +38,12 @@ import StatsSection from "./Dashboard/StatsSection";
 import NotificationsSection from "./Dashboard/NotificationsSection";
 import LeaderboardSection from "./Dashboard/LeaderboardSection";
 
-export { DashboardHeader, StatsSection, NotificationsSection, LeaderboardSection };
+export {
+  DashboardHeader,
+  StatsSection,
+  NotificationsSection,
+  LeaderboardSection,
+};
 
 // Team Components
 import TeamHero from "./Teams/TeamsHero";
@@ -45,14 +54,22 @@ export { TeamHero, TeamCard, TeamDetailsModal };
 
 // Profile Components
 import ProfileHero from "./Profile/ProfileHero";
-import ProfileSecondary from "./Profile/ProfileSecondary";  
+import ProfileSecondary from "./Profile/ProfileSecondary";
 import PlatformPOTDs from "./Profile/PlatformPOTDs";
 import PasswordChangeModal from "./Profile/PasswordChangeModal";
 import ProfilePictureEditor from "./Profile/ProfilePictureEditor";
 import PlatformLinkPlaceholder from "./Profile/PlatformLinkPlaceholder";
 import MonthlyActivityHeatmap from "./Profile/MonthlyActivityHeatmap";
 
-export { ProfileHero, PlatformPOTDs, ProfileSecondary, PasswordChangeModal, ProfilePictureEditor, PlatformLinkPlaceholder, MonthlyActivityHeatmap };
+export {
+  ProfileHero,
+  PlatformPOTDs,
+  ProfileSecondary,
+  PasswordChangeModal,
+  ProfilePictureEditor,
+  PlatformLinkPlaceholder,
+  MonthlyActivityHeatmap,
+};
 
 // Leaderboard Components
 import LeaderboardHero from "./Leaderboard/LeaderboardHero";
@@ -79,4 +96,9 @@ import CreateResourceModal from "./Resources/CreateResourceModa";
 import ResourceCard from "./Resources/ResourceCard";
 import EditResourceModal from "./Resources/EditResourcemodal";
 
-export { AddProblemModal, CreateResourceModal, ResourceCard, EditResourceModal };
+export {
+  AddProblemModal,
+  CreateResourceModal,
+  ResourceCard,
+  EditResourceModal,
+};
