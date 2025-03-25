@@ -92,6 +92,7 @@ const Dashboard = () => {
               start_time: formattedStartTime,
               link: meeting.meetingLink,
               compulsory: meeting.compulsory,
+              mom: meeting.MoMLink,
               eventId: meeting._id, // Store meeting ID
               dateId: meetingDay._id, // Store date ID
             });

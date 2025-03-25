@@ -3,6 +3,7 @@ import { useState } from "react";
 import PropTypes from "prop-types";
 
 // Importing Icons
+import { FaSpinner } from "react-icons/fa";
 import {
   RiCalendarLine,
   RiVideoLine,
@@ -33,9 +34,16 @@ const EventModal = ({
   onClose,
   fetchDashBoardCalenderData,
 }) => {
-  const { deleteMeetingFunction, deleteContestFunction } = CoreMemberServices();
+  const {
+    deleteMeetingFunction,
+    deleteContestFunction,
+    createMoMFunction,
+    deleteMoMFunction,
+  } = CoreMemberServices();
   //console.log(events);
   // ============ State Management ============
+  const [loading, setLoading] = useState(false);
+
   const [expandedEvent, setExpandedEvent] = useState(null);
   const [momContent, setMomContent] = useState("");
   const [isEditingMom, setIsEditingMom] = useState(false);
@@ -66,7 +74,7 @@ const EventModal = ({
       console.error("Meeting deletion error:", error);
     } finally {
       onClose;
-      fetchDashBoardCalenderData()
+      fetchDashBoardCalenderData();
     }
   };
 
@@ -85,7 +93,7 @@ const EventModal = ({
       console.error("Contest deletion error:", error);
     } finally {
       onClose;
-      fetchDashBoardCalenderData()
+      fetchDashBoardCalenderData();
     }
   };
 
@@ -95,22 +103,64 @@ const EventModal = ({
     //console.log("Deleting event with eventId:", event.eventId);
     if (event.type == "meeting") {
       handleMeetingDeleteFunction(event.dateId, event.eventId);
-    }else{
-      handleContestDeleteFunction(event.dateId, event.eventId)
+    } else {
+      handleContestDeleteFunction(event.dateId, event.eventId);
     }
   };
 
   // ============ MoM Handlers ============
   const handleMomEdit = () => {
-    setIsEditingMom(true);
+    setIsEditingMom(!isEditingMom);
   };
 
-  const handleMomSave = () => {
-    console.log("Saving MoM:", {
-      eventId: expandedEvent,
-      content: momContent,
-    });
-    setIsEditingMom(false);
+  const handleMomSave = async (event) => {
+    try {
+      setLoading(true);
+
+      const dateId = event.dateId;
+      const noticeId = event.eventId;
+      const MoMLink = momContent;
+      //console.log(dateId, noticeId, MoMLink);
+      const response = await createMoMFunction({ dateId, noticeId, MoMLink });
+      //console.log(response);
+      if (response.status == 200) {
+        ToastMsg(response.data.message, "success");
+      } else {
+        ToastMsg(response.response.data.message, "error");
+      }
+    } catch (error) {
+      ToastMsg("Internal Server Error! Please try later!", "error");
+      console.error("Mom creation error:", error);
+    } finally {
+      setLoading(false);
+      setIsEditingMom(!isEditingMom);
+      onClose;
+      fetchDashBoardCalenderData();
+    }
+  };
+
+  const handleMomDelete = async (event) => {
+    try {
+      setLoading(true);
+
+      const dateId = event.dateId;
+      const noticeId = event.eventId;
+      const response = await deleteMoMFunction({ dateId, noticeId });
+      //console.log(response);
+      if (response.status == 200) {
+        ToastMsg(response.data.message, "success");
+      } else {
+        ToastMsg(response.response.data.message, "error");
+      }
+    } catch (error) {
+      ToastMsg("Internal Server Error! Please try later!", "error");
+      console.error("Mom deletion error:", error);
+    } finally {
+      setLoading(false);
+      setIsEditingMom(!isEditingMom);
+      onClose;
+      fetchDashBoardCalenderData();
+    }
   };
 
   // ============ Render Helper Functions ============
@@ -230,13 +280,28 @@ const EventModal = ({
                         <RiFileTextLine className="w-4 h-4" />
                         <span>Minutes of Meeting</span>
                       </div>
-                      <button
-                        onClick={handleMomEdit}
-                        className="flex items-center gap-1 px-3 py-1 bg-gfgsc-green text-white rounded-lg text-sm hover:bg-emerald-600 transition-colors"
-                      >
-                        <RiEditLine className="w-4 h-4" />
-                        {momContent ? "Edit MoM" : "Create MoM"}
-                      </button>
+                      {event.mom ? (
+                        <button
+                          onClick={() => handleMomDelete(event)}
+                          disabled={loading}
+                          className="flex items-center gap-1 px-3 py-1 bg-red-600 text-white rounded-lg text-sm hover:bg-red-400 transition-colors"
+                        >
+                          <RiDeleteBin6Line className="w-4 h-4" />
+                          Delete MOM
+                          {loading ? (
+                            <FaSpinner className="animate-spin inline-block" />
+                          ) : null}{" "}
+                        </button>
+                      ) : (
+                        <button
+                          onClick={handleMomEdit}
+                          disabled={loading}
+                          className="flex items-center gap-1 px-3 py-1 bg-gfgsc-green text-white rounded-lg text-sm hover:bg-emerald-600 transition-colors"
+                        >
+                          <RiEditLine className="w-4 h-4" />
+                          Create MoM
+                        </button>
+                      )}
                     </div>
 
                     {isEditingMom ? (
@@ -244,22 +309,26 @@ const EventModal = ({
                         <textarea
                           className="w-full h-48 p-3 border border-gray-200 rounded-lg text-sm resize-none focus:ring-2 focus:ring-gfgsc-green"
                           placeholder="Write the minutes of meeting..."
-                          value={momContent}
+                          value={event.mom || momContent}
                           onChange={(e) => setMomContent(e.target.value)}
                         />
                         <div className="flex justify-end">
                           <button
-                            onClick={handleMomSave}
+                            onClick={() => handleMomSave(event)}
+                            disabled={loading}
                             className="flex items-center gap-1 px-4 py-2 bg-gfgsc-green text-white rounded-lg text-sm hover:bg-emerald-600 transition-colors"
                           >
                             <RiSaveLine className="w-4 h-4" />
                             Save MoM
+                            {loading ? (
+                              <FaSpinner className="animate-spin inline-block" />
+                            ) : null}{" "}
                           </button>
                         </div>
                       </div>
-                    ) : momContent ? (
+                    ) : event.mom ? (
                       <div className="prose prose-sm max-w-none p-4 bg-gray-50 rounded-lg">
-                        {momContent}
+                        {event.mom}
                       </div>
                     ) : (
                       <p className="text-sm text-gray-500 italic">

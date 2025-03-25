@@ -12,6 +12,7 @@ import { Pagination, ToastMsg } from "../Utilities";
 // Importing the API
 import { UserServices } from "../Services";
 import { GfgCoin } from "../Assets";
+import { GoDotFill } from "react-icons/go";
 
 const Leaderboard = () => {
   const { fetchLeaderboardDataFunction } = UserServices();
@@ -19,6 +20,8 @@ const Leaderboard = () => {
   const [activeTab, setActiveTab] = useState("individual");
 
   const [leaderboardData, setLeaderboardData] = useState([]);
+  const [topThreeUsers, setTopThreeUsers] = useState([]);
+
   const [loading, setLoading] = useState(true);
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -66,6 +69,9 @@ const Leaderboard = () => {
           }));
 
           setLeaderboardData(formattedData);
+          if (currentPage == 1) {
+            setTopThreeUsers(formattedData.slice(0, 3));
+          }
           setTotalPages(response.data.totalPages);
         }
       } catch (error) {
@@ -152,66 +158,90 @@ const Leaderboard = () => {
                 exit={{ opacity: 0 }}
               >
                 <LeaderboardHero
-                  topThree={leaderboardData.slice(0, 3)}
+                  topThree={topThreeUsers}
                   isTeam={false}
                   minimumPassingMark={minimumPassingMark}
                 />
-                <LeaderboardTable data={leaderboardData} isTeam={false} minimumPassingMark={minimumPassingMark}/>
+                <LeaderboardTable
+                  data={leaderboardData}
+                  isTeam={false}
+                  minimumPassingMark={minimumPassingMark}
+                />
                 <Pagination
                   currentPage={currentPage}
                   totalPages={totalPages}
                   onPageChange={handlePageChange}
                 />
-                
               </motion.div>
               <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3, duration: 0.4 }}
-                  className="mt-8 px-16"
-                >
-                  <div className="bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-red-500 rounded-lg shadow-md overflow-hidden">
-                    <div className="flex items-start p-4">
-                      <div className="flex-shrink-0 bg-red-500 text-white p-2 rounded-full">
-                        <IoWarningOutline className="w-5 h-5" />
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3, duration: 0.4 }}
+                className="mt-8 px-16"
+              >
+                <div className="bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-red-500 rounded-lg shadow-md overflow-hidden">
+                  <div className="flex items-start p-4">
+                    <div className="flex-shrink-0 bg-red-500 text-white p-2 rounded-full">
+                      <IoWarningOutline className="w-5 h-5" />
+                    </div>
+
+                    <div className="ml-4 flex-1">
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-sm font-semibold text-red-800">
+                          Warning: Performance Notice
+                        </h4>
                       </div>
 
-                      <div className="ml-4 flex-1">
-                        <div className="flex items-center justify-between">
-                          <h4 className="text-sm font-semibold text-red-800">
-                            Warning: Performance Notice
-                          </h4>
-                          <div className="text-xs bg-red-500 text-white px-3 py-1 rounded-full font-medium">
-                            Bottom 3 Alert
-                          </div>
-                        </div>
+                      <p className="mt-2 text-sm text-red-700">
+                        It has been decided by the admin that every individual
+                        must score a minimum of{" "}
+                        <span className="font-semibold inline-flex items-center">
+                          {minimumPassingMark}
+                          <img
+                            src={GfgCoin}
+                            alt="GfgCoin"
+                            className="w-4 h-4 ml-1"
+                          />
+                        </span>{" "}
+                        points this month to pass. Otherwise, they will be
+                        automatically removed from the website at the end of the
+                        month.{" "}
+                      </p>
 
-                        <p className="mt-2 text-sm text-red-700">
-                          The bottom 3 participants are at risk of being removed
-                          from the club. All members must maintain a minimum
-                          of{" "}
-                          <span className="font-semibold inline-flex items-center">
-                            {minimumPassingMark}
-                            <img
-                              src={GfgCoin}
-                              alt="GfgCoin"
-                              className="w-4 h-4 ml-1"
-                            />
-                          </span>{" "}
-                          to remain active.
+                      <div className="mt-3 bg-white/50 backdrop-blur-sm p-2 rounded border border-red-200">
+                        <p className="text-xs text-red-600 italic">
+                          The minimum passing score is determined using the
+                          following formula:
                         </p>
-
-                        <div className="mt-3 bg-white/50 backdrop-blur-sm p-2 rounded border border-red-200">
-                          <p className="text-xs text-red-600 italic">
-                            Performance evaluations occur at the end of each
-                            month. Members below the threshold for two
-                            consecutive evaluations may be asked to step down.
-                          </p>
-                        </div>
+                        <p className="text-xs text-red-600 italic">
+                          <GoDotFill className="inline" /> Expected points per
+                          day from practicing questions = {perDayPracticePoint}
+                        </p>
+                        <p className="text-xs text-red-600 italic">
+                          <GoDotFill className="inline" /> Expected points per
+                          contest = {perContestPoint}
+                        </p>
+                        <p className="text-xs text-red-600 italic">
+                          <GoDotFill className="inline" /> Passing percentage ={" "}
+                          {passingPercentage}%
+                        </p>
+                        <p className="text-xs text-red-600 italic">
+                          Passing score = floor(((30 X {perDayPracticePoint}) +
+                          (4 X {perContestPoint})) X {passingPercentage}) ={" "}
+                          {minimumPassingMark}
+                        </p>
+                        <p className="text-xs text-red-600 italic">
+                          Here, 30 represents the default number of days in a
+                          month (regardless of whether the month has 28, 29, 30,
+                          or 31 days), and 4 represents the required number of
+                          contests per month (even if more than four contests
+                          are available).
+                        </p>
                       </div>
                     </div>
                   </div>
-                </motion.div>
+                </div>
+              </motion.div>
             </AnimatePresence>
           </>
         )}

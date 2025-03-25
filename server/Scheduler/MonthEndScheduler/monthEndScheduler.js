@@ -16,7 +16,7 @@ function getLastDayCronExpression() {
   const year = today.getFullYear();
   const month = today.getMonth();
   const lastDay = new Date(year, month + 1, 0).getDate();
-  return `59 23 ${lastDay} * *`; // Runs at 23:59 on the last day of the month
+  return `55 23 ${lastDay} * *`; // Runs at 23:55 on the last day of the month
 }
 
 // Function to run the month-end tasks

@@ -684,6 +684,7 @@ exports.createMoM = async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
     const { dateId, noticeId, MoMLink } = req.body;
+    //console.log(req.body);
 
     const authResult = await verifyAndAuthorize(token, ["ADMIN", "COREMEMBER"]);
     if (authResult.status !== 200) {
@@ -699,17 +700,13 @@ exports.createMoM = async (req, res) => {
         .json({ message: "No entry found for the given date ID" });
     }
 
+    // Check if the notice exists
     const notice = dailyNotices.notices.id(noticeId);
     if (!notice) {
-      return res.status(404).json({ message: "Notice not found." });
+      return res.status(404).json({
+        message: "Notice not found for the given ID on the given date",
+      });
     }
-
-    if (!/^https?:\/\/.+/.test(MoMLink)) {
-      return res
-        .status(400)
-        .json({ message: "Invalid URL format for MoM link." });
-    }
-
     notice.MoMLink = MoMLink;
     notice.MoMCreatedBy = authResult.userId;
     notice.MoMCreatedAt = new Date();

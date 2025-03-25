@@ -48,12 +48,22 @@ const updatePracticeQuestionsCount = async () => {
             totalProblemSolved -
             (user.platforms.leetcode.totalProblemSolved || 0);
           increment += calculateIncrement(leetcodeDiff);
-
+          console.log(
+            `Today the user has solved ${leetcodeDiff} questions on leetcode, so he get ${calculateIncrement(
+              leetcodeDiff
+            )} points`
+          );
           user.platforms.leetcode = {
             badgesCount,
             ranking,
             totalProblemSolved,
           };
+
+          // Update today's activity
+          if (user.dailyActivity.length > 0) {
+            user.dailyActivity[user.dailyActivity.length - 1].count +=
+              leetcodeDiff;
+          }
         }
       }
 
@@ -69,16 +79,27 @@ const updatePracticeQuestionsCount = async () => {
           const gfgDiff =
             problemsSolved - (user.platforms.geeksforgeeks.problemSolved || 0);
           increment += calculateIncrement(gfgDiff);
+          console.log(
+            `Today the user has solved ${gfgDiff} questions on gfg, so he get ${calculateIncrement(
+              gfgDiff
+            )} points`
+          );
 
           user.platforms.geeksforgeeks = {
             universityRank,
             codingScore,
             problemSolved: problemsSolved,
           };
+
+          // Update today's activity
+          if (user.dailyActivity.length > 0) {
+            user.dailyActivity[user.dailyActivity.length - 1].count += gfgDiff;
+          }
         }
       }
 
       user.totalQuestionSolved += increment;
+
       await user.save();
 
       console.log(

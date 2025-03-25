@@ -7,5 +7,6 @@
 /* ********************************************************************************* */
 
 /******** Given below link is hosted on geeksforgeeks.srmistrmp@gmail.com account ********/
-export const BACKEND_URL = "https://gfgscsrmrmp-management-web-application.onrender.com"
+export const BACKEND_URL =
+  "https://gfgscsrmrmp-management-web-application.onrender.com";
 /* ************************************************************************************ */
