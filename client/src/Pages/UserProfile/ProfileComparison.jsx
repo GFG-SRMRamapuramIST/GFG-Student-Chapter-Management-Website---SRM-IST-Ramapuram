@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+
+// Importing Icons
 import {
   FaLinkedin,
   FaCode,
@@ -10,6 +12,7 @@ import {
   FaChevronDown,
   FaChevronRight,
   FaExternalLinkAlt,
+  FaSpinner,
 } from "react-icons/fa";
 import {
   SiLeetcode,
@@ -17,10 +20,15 @@ import {
   SiCodeforces,
   SiGeeksforgeeks,
 } from "react-icons/si";
+
 import { codolioIcon } from "../../Assets";
 import { Medal } from "../../Components";
 import CustomDialog from "../../Components/ui/CustomDialog";
 import { getPlatformUrl, platformColors, platformIcons } from "../../Constants";
+import { ToastMsg } from "../../Utilities";
+
+// Importing APIs
+import { UserServices } from "../../Services";
 
 const mockProfiles = {
   leftProfile: {
@@ -193,22 +201,35 @@ const mockProfiles = {
   },
 };
 
-const mockUsers = [
-  { id: "user1", name: "John Doe", role: "Core Member" },
-  { id: "user2", name: "Jane Smith", role: "Member" },
-  { id: "user3", name: "Alex Johnson", role: "Core Member" },
-  { id: "user4", name: "Sarah Williams", role: "Member" },
-  { id: "user5", name: "Mike Brown", role: "Core Member" },
-];
-
-const UserSelector = ({ selectedUser, label }) => {
+const UserSelector = ({
+  selectedUser,
+  label,
+  allUsers,
+  currentUserRole,
+  side,
+  fetchProfileData,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
 
+  const toggleIsOpen = (userId) => {
+    if (
+      side == "left" &&
+      (currentUserRole == "MEMBER" || currentUserRole == "USER")
+    ) {
+      setIsOpen(false);
+    } else {
+      setIsOpen(!isOpen);
+    }
+
+    if (userId) {
+      fetchProfileData(userId, side);
+    }
+  };
   return (
     <div className="relative">
       <label className="block text-emerald-600 text-sm mb-2">{label}</label>
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => toggleIsOpen()}
         className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2 text-left flex items-center justify-between hover:bg-gray-100 transition-colors"
       >
         <div className="flex items-center">
@@ -231,12 +252,10 @@ const UserSelector = ({ selectedUser, label }) => {
 
       {isOpen && (
         <div className="absolute w-full mt-2 bg-white border border-gray-300 rounded-lg shadow-xl z-50 max-h-60 overflow-y-auto">
-          {mockUsers.map((user) => (
+          {allUsers?.map((user) => (
             <button
               key={user.id}
-              onClick={() => {
-                setIsOpen(false);
-              }}
+              onClick={() => toggleIsOpen(user.id)}
               className="w-full px-4 py-2 flex items-center hover:bg-gray-100 transition-colors"
             >
               <img
@@ -257,7 +276,74 @@ const UserSelector = ({ selectedUser, label }) => {
 };
 
 const ProfileComparison = () => {
-  const { leftProfile, rightProfile } = mockProfiles;
+  const { getAllUsersWithIdNameRolePfpFunction, getProfilePageDataFunction } =
+    UserServices();
+  const [loading, setLoading] = useState(false);
+  const [leftProfileLoading, setLeftProfileLoading] = useState(false);
+  const [rightProfileLoading, setRightProfileLoading] = useState(false);
+
+  const [users, setUsers] = useState([]);
+  const [currentUserIdandRole, setCurrentUserIdandRole] = useState({
+    id: "",
+    role: "",
+  });
+  //const { leftProfile, rightProfile } = mockProfiles;
+  const emptyProfile = {
+    id: "",
+    name: "",
+    email: "",
+    role: "",
+    academic_year: "",
+    profilePic: "",
+    bio: "",
+    social: [
+      { platform: "linkedin", url: "" },
+      { platform: "codolio", url: "" },
+    ],
+    stats: {
+      questions: 0,
+      individualRank: 0,
+      previousRank: 0,
+      averageDaily: 0,
+    },
+    profiles: {
+      leetcode: {
+        handle: "",
+        ranking: 0,
+        totalProblemSolved: 0,
+        badgesCount: 0,
+      },
+      codechef: {
+        handle: "",
+        rating: 0,
+        countryRank: 0,
+        highestRating: 0,
+      },
+      codeforces: {
+        handle: "",
+        rating: 0,
+        maxRating: 0,
+        totalProblemSolved: 0,
+      },
+      geeksforgeeks: {
+        handle: "",
+        universityRank: 0,
+        codingScore: 0,
+        problemsSolved: 0,
+      },
+    },
+    badges: [],
+    activityData: {
+      currentStreak: 0,
+      longestStreak: 0,
+      totalContributions: 0,
+      averagePerDay: 0,
+      lastMonthSolved: 0,
+    },
+  };
+
+  const [leftProfile, setLeftProfile] = useState(emptyProfile);
+  const [rightProfile, setRightProfile] = useState(emptyProfile);
 
   const [showLeftBadges, setShowLeftBadges] = useState(false);
   const [showRightBadges, setShowRightBadges] = useState(false);
@@ -266,6 +352,171 @@ const ProfileComparison = () => {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
   };
+
+  const fetchProfileData = async (profileId, label) => {
+    try {
+      if (label === "left") {
+        setLeftProfileLoading(true);
+      } else {
+        setRightProfileLoading(true);
+      }
+      const response = await getProfilePageDataFunction({ userId: profileId });
+
+      if (response.status !== 200) {
+        ToastMsg("Error fetching profile data! Please try later", "error");
+      } else {
+        const data = response.data;
+        //console.log("Profile Data:", data);
+        const formattedProfile = {
+          id: data._id,
+          name: data.name,
+          email: data.email,
+          role: data.role,
+          academic_year: data.academicYear,
+          profilePic: data.profilePicture,
+          bio: data.bio,
+
+          social: [
+            {
+              platform: "linkedin",
+              url: `https://linkedin.com/in/${data.linkedinUsername}`,
+            },
+            {
+              platform: "codolio",
+              url: `https://codolio.com/profile/${data.codolioUsername}`,
+            },
+          ],
+
+          stats: {
+            questions: data.totalQuestionSolved,
+            individualRank: data.currentRank,
+            previousRank: data.prevMonthData?.prevRank || null,
+            monthlyProgress:
+              (data.prevMonthData?.prevRank || 0) - data.currentRank,
+            averageDaily: data.avgPerDay,
+          },
+
+          profiles: {
+            leetcode: {
+              handle: data.leetcodeUsername,
+              ranking: data.platforms.leetcode.ranking,
+              totalProblemSolved: data.platforms.leetcode.totalProblemSolved,
+              badgesCount: data.platforms.leetcode.badgesCount,
+            },
+            codechef: {
+              handle: data.codechefUsername,
+              rating: data.platforms.codechef.rating,
+              countryRank: data.platforms.codechef.countryRank,
+              highestRating: data.platforms.codechef.highestRating,
+            },
+            codeforces: {
+              handle: data.codeforcesUsername,
+              rating: data.platforms.codeforces.rating,
+              maxRating: data.platforms.codechef.highestRating,
+              totalProblemSolved: data.platforms.codeforces.totalProblemSolved,
+            },
+            geeksforgeeks: {
+              handle: data.geeksforgeeksUsername,
+              universityRank: data.platforms.geeksforgeeks.universityRank,
+              codingScore: data.platforms.geeksforgeeks.codingScore,
+              problemsSolved: data.platforms.geeksforgeeks.problemSolved,
+            },
+          },
+
+          badges: [
+            ...data.achievement.gold.map((name, index) => ({
+              id: index + 1,
+              name,
+              type: "gold",
+              date: null,
+              description: "",
+            })),
+            ...data.achievement.silver.map((name, index) => ({
+              id: index + 1 + data.achievement.gold.length,
+              name,
+              type: "silver",
+              date: null,
+              description: "",
+            })),
+            ...data.achievement.bronze.map((name, index) => ({
+              id:
+                index +
+                1 +
+                data.achievement.gold.length +
+                data.achievement.silver.length,
+              name,
+              type: "bronze",
+              date: null,
+              description: "",
+            })),
+          ],
+
+          activityData: {
+            currentStreak: data.maxStreak,
+            longestStreak: data.maxStreak,
+            totalContributions: data.dailyActivity.reduce(
+              (sum, day) => sum + day.count,
+              0
+            ),
+            averagePerDay: data.avgPerDay,
+            lastMonthSolved: data.prevMonthData?.totalQuestionsSolved || 0,
+          },
+        };
+
+        if (label === "left") {
+          setLeftProfile(formattedProfile);
+        } else if (label === "right") {
+          setRightProfile(formattedProfile);
+        } else {
+          setLeftProfile(formattedProfile);
+          setRightProfile(formattedProfile);
+        }
+      }
+    } catch (error) {
+      ToastMsg("Error fetching profile data! Please try later", "error");
+      console.error("Error fetching profile data:", error.message);
+    } finally {
+      if (label === "left") {
+        setLeftProfileLoading(false);
+      } else {
+        setRightProfileLoading(false);
+      }
+    }
+  };
+
+  const fetchAllUsersWithIdNameRolePfp = async () => {
+    try {
+      setLoading(true);
+      const response = await getAllUsersWithIdNameRolePfpFunction();
+      //console.log(response);
+      if (response.status == 200) {
+        const allUsers = response.data.data.map((user) => ({
+          id: user._id,
+          name: user.name,
+          role: user.role,
+          profilePic: user.profilePicture,
+        }));
+        setUsers(allUsers);
+
+        await fetchProfileData(response.data.userId);
+        setCurrentUserIdandRole({
+          id: response.data.userId,
+          role: response.data.role,
+        });
+      } else {
+        ToastMsg(response.response.data.message, "error");
+      }
+    } catch (error) {
+      ToastMsg("Error fetching profile data! Please try later", "error");
+      console.error("Error fetching profile data:", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAllUsersWithIdNameRolePfp();
+  }, []);
 
   const renderSocialLinks = (social) => (
     <div className="flex space-x-4 my-4 justify-center">
@@ -385,7 +636,9 @@ const ProfileComparison = () => {
         <div className="flex items-center bg-gradient-to-br from-emerald-800/80 to-emerald-900/80 p-3 rounded-lg">
           <FaFire className="hidden md:flex text-orange-500 mr-3 text-xl" />
           <div>
-            <div className="text-xs md:text-sm text-emerald-300">Current Streak</div>
+            <div className="text-xs md:text-sm text-emerald-300">
+              Current Streak
+            </div>
             <div className="font-bold text-md md:text-lg">
               {activityData.currentStreak} days
             </div>
@@ -394,7 +647,9 @@ const ProfileComparison = () => {
         <div className="flex items-center bg-gradient-to-br from-emerald-800/80 to-emerald-900/80 p-3 rounded-lg">
           <FaFire className="hidden md:flex text-red-500 mr-3 text-xl" />
           <div>
-            <div className="text-xs md:text-sm text-emerald-300">Longest Streak</div>
+            <div className="text-xs md:text-sm text-emerald-300">
+              Longest Streak
+            </div>
             <div className="font-bold text-md md:text-lg">
               {activityData.longestStreak} days
             </div>
@@ -403,7 +658,9 @@ const ProfileComparison = () => {
         <div className="flex items-center bg-gradient-to-br from-emerald-800/80 to-emerald-900/80 p-3 rounded-lg">
           <FaCalendarAlt className="hidden md:flex text-blue-400 mr-3 text-xl" />
           <div>
-            <div className="text-xs md:text-sm text-emerald-300">Last Month</div>
+            <div className="text-xs md:text-sm text-emerald-300">
+              Last Month
+            </div>
             <div className="font-bold text-md md:text-lg">
               {activityData.lastMonthSolved} problems
             </div>
@@ -412,7 +669,9 @@ const ProfileComparison = () => {
         <div className="flex items-center bg-gradient-to-br from-emerald-800/80 to-emerald-900/80 p-3 rounded-lg">
           <FaChartLine className="hidden md:flex text-emerald-400 mr-3 text-xl" />
           <div>
-            <div className="text-xs md:text-sm text-emerald-300">Daily Average</div>
+            <div className="text-xs md:text-sm text-emerald-300">
+              Daily Average
+            </div>
             <div className="font-bold text-md md:text-lg">
               {activityData.averagePerDay} problems
             </div>
@@ -458,11 +717,7 @@ const ProfileComparison = () => {
     </motion.div>
   );
 
-  const renderProfileCard = (
-    profile,
-    otherProfile,
-    setShowBadges
-  ) => (
+  const renderProfileCard = (profile, otherProfile, setShowBadges) => (
     <motion.div
       className="w-full"
       initial="hidden"
@@ -562,113 +817,147 @@ const ProfileComparison = () => {
         </p>
       </motion.div>
 
-      <div className="">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-          <UserSelector
-            selectedUser={leftProfile}
-            label="Select First Profile"
-          />
-          <UserSelector
-            selectedUser={rightProfile}
-            label="Select Second Profile"
-          />
+      {loading ? (
+        <div className="p-6 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-4">
+            <FaSpinner className="animate-spin text-4xl text-gfgsc-green" />
+            <p className="text-gray-600">Loading resource...</p>
+          </div>
         </div>
-        <div className="flex flex-col md:flex-row gap-8">
-          <div className="flex-1">
-            {renderProfileCard(
-              leftProfile,
-              rightProfile,
-              setShowLeftBadges
-            )}
+      ) : (
+        <>
+          <div className="">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+              <UserSelector
+                selectedUser={leftProfile}
+                label="Select First Profile"
+                allUsers={users}
+                currentUserRole={currentUserIdandRole.role}
+                side="left"
+                fetchProfileData={fetchProfileData}
+              />
+              <UserSelector
+                selectedUser={rightProfile}
+                label="Select Second Profile"
+                allUsers={users}
+                currentUserRole={currentUserIdandRole.role}
+                side="right"
+                fetchProfileData={fetchProfileData}
+              />
+            </div>
+            <div className="flex flex-col md:flex-row gap-8">
+              {leftProfileLoading ? (
+                <div className="p-6 flex-1 items-center justify-center">
+                  <div className="flex flex-col items-center gap-4">
+                    <FaSpinner className="animate-spin text-4xl text-gfgsc-green" />
+                  </div>
+                </div>
+              ) : (
+                <div className="flex-1">
+                  {renderProfileCard(
+                    leftProfile,
+                    rightProfile,
+                    setShowLeftBadges
+                  )}
+                </div>
+              )}
+
+              <motion.div
+                className="hidden md:flex items-center justify-center"
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+              >
+                <div className="w-px h-full bg-emerald-800 relative">
+                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gradient-to-br from-emerald-700 to-emerald-900 rounded-full p-4 border-2 border-emerald-500 shadow-lg shadow-emerald-600/20">
+                    <span className="text-2xl font-bold text-white">VS</span>
+                  </div>
+                </div>
+              </motion.div>
+              {rightProfileLoading ? (
+                <div className="p-6 flex-1 items-center justify-center">
+                  <div className="flex flex-col items-center gap-4">
+                    <FaSpinner className="animate-spin text-4xl text-gfgsc-green" />
+                  </div>
+                </div>
+              ) : (
+                <div className="flex-1">
+                  {renderProfileCard(
+                    rightProfile,
+                    leftProfile,
+                    setShowRightBadges
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
-          <motion.div
-            className="hidden md:flex items-center justify-center"
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+          {/* Add Badge Popups */}
+          <CustomDialog
+            open={showLeftBadges}
+            onClose={() => setShowLeftBadges(false)}
           >
-            <div className="w-px h-full bg-emerald-800 relative">
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gradient-to-br from-emerald-700 to-emerald-900 rounded-full p-4 border-2 border-emerald-500 shadow-lg shadow-emerald-600/20">
-                <span className="text-2xl font-bold text-white">VS</span>
-              </div>
-            </div>
-          </motion.div>
-
-          <div className="flex-1">
-            {renderProfileCard(
-              rightProfile,
-              leftProfile,
-              setShowRightBadges
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Add Badge Popups */}
-      <CustomDialog
-        open={showLeftBadges}
-        onClose={() => setShowLeftBadges(false)}
-      >
-        <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-8">
-          All Achievements - {leftProfile.name}
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
-          {leftProfile.badges.map((badge) => (
-            <div
-              key={badge.id}
-              className="flex flex-col items-center text-center"
-            >
-              <Medal
-                type={badge.type}
-                content={badge.name}
-                size="large"
-                labelClassName="mt-3 sm:mt-4 font-medium text-sm sm:text-base"
-              />
-              <div className="mt-3 sm:mt-4 space-y-1">
-                <div className="text-xs sm:text-sm text-gray-500">
-                  {badge.date}
+            <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-8">
+              All Achievements - {leftProfile.name}
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
+              {leftProfile.badges.map((badge) => (
+                <div
+                  key={badge.id}
+                  className="flex flex-col items-center text-center"
+                >
+                  <Medal
+                    type={badge.type}
+                    content={badge.name}
+                    size="large"
+                    labelClassName="mt-3 sm:mt-4 font-medium text-sm sm:text-base"
+                  />
+                  <div className="mt-3 sm:mt-4 space-y-1">
+                    <div className="text-xs sm:text-sm text-gray-500">
+                      {badge.date}
+                    </div>
+                    <p className="text-xs sm:text-sm text-gray-600 mt-1 sm:mt-2">
+                      {badge.description}
+                    </p>
+                  </div>
                 </div>
-                <p className="text-xs sm:text-sm text-gray-600 mt-1 sm:mt-2">
-                  {badge.description}
-                </p>
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </CustomDialog>
+          </CustomDialog>
 
-      <CustomDialog
-        open={showRightBadges}
-        onClose={() => setShowRightBadges(false)}
-      >
-        <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-8">
-          All Achievements - {rightProfile.name}
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
-          {rightProfile.badges.map((badge) => (
-            <div
-              key={badge.id}
-              className="flex flex-col items-center text-center"
-            >
-              <Medal
-                type={badge.type}
-                content={badge.name}
-                size="large"
-                labelClassName="mt-3 sm:mt-4 font-medium text-sm sm:text-base"
-              />
-              <div className="mt-3 sm:mt-4 space-y-1">
-                <div className="text-xs sm:text-sm text-gray-500">
-                  {badge.date}
+          <CustomDialog
+            open={showRightBadges}
+            onClose={() => setShowRightBadges(false)}
+          >
+            <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-8">
+              All Achievements - {rightProfile.name}
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
+              {rightProfile.badges.map((badge) => (
+                <div
+                  key={badge.id}
+                  className="flex flex-col items-center text-center"
+                >
+                  <Medal
+                    type={badge.type}
+                    content={badge.name}
+                    size="large"
+                    labelClassName="mt-3 sm:mt-4 font-medium text-sm sm:text-base"
+                  />
+                  <div className="mt-3 sm:mt-4 space-y-1">
+                    <div className="text-xs sm:text-sm text-gray-500">
+                      {badge.date}
+                    </div>
+                    <p className="text-xs sm:text-sm text-gray-600 mt-1 sm:mt-2">
+                      {badge.description}
+                    </p>
+                  </div>
                 </div>
-                <p className="text-xs sm:text-sm text-gray-600 mt-1 sm:mt-2">
-                  {badge.description}
-                </p>
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </CustomDialog>
+          </CustomDialog>
+        </>
+      )}
     </div>
   );
 };

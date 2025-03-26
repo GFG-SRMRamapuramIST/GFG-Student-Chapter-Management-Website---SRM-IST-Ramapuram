@@ -561,6 +561,8 @@ exports.getAllUsersForComparison = async (req, res) => {
     return res.status(200).json({
       message: "Users fetched successfully",
       data: users,
+      userId: authResult._id,
+      role: authResult.role,
     });
   } catch (error) {
     console.error("Error fetching users:", error.message);
