@@ -17,7 +17,7 @@ const PracticeSetCard = ({ resource }) => {
       whileHover={{ y: -5 }}
       className="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100"
     >
-      <Link to={`/resources/${resource.id}`}>
+      <Link to={`/practice/${resource.id}`}>
         <div className="p-6">
           {/* Platform Tags */}
           <div className="flex flex-wrap gap-2 mb-4">

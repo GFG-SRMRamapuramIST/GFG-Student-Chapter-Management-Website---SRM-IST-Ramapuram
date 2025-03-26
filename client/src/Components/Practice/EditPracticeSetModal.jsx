@@ -72,7 +72,7 @@ const EditPracticeSetModal = ({ isOpen, onClose, resource, onEdit }) => {
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-gfgsc-green focus:border-transparent transition-all"
-                    placeholder="Resource title"
+                    placeholder="Practice Set title"
                     required
                   />
                 </div>

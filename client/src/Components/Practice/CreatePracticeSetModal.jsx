@@ -42,7 +42,7 @@ const CreatePracticeSetModal = ({ isOpen, onClose, onSubmit }) => {
           >
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-2xl font-bold text-gray-800">
-                Create New Resource
+                Create Practice Set
               </h3>
               <RotatingCloseButton onClick={onClose} />
             </div>
@@ -54,7 +54,7 @@ const CreatePracticeSetModal = ({ isOpen, onClose, onSubmit }) => {
                 onChange={(e) =>
                   setResource((prev) => ({ ...prev, title: e.target.value }))
                 }
-                placeholder="Resource Title"
+                placeholder="Practice Set Title"
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gfgsc-green mb-6"
                 required
               />
@@ -67,7 +67,7 @@ const CreatePracticeSetModal = ({ isOpen, onClose, onSubmit }) => {
                     description: e.target.value,
                   }))
                 }
-                placeholder="Resource Description"
+                placeholder="Practice Set Description"
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gfgsc-green mb-6"
                 required
               />
@@ -80,7 +80,7 @@ const CreatePracticeSetModal = ({ isOpen, onClose, onSubmit }) => {
                   {loading ? (
                     <FaSpinner className="animate-spin inline-block" />
                   ) : null}{" "}
-                  Create Resource
+                  Create Practice Set
                 </button>
               </div>
             </form>
