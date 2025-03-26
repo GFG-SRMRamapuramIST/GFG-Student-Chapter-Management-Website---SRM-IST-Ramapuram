@@ -12,19 +12,20 @@ const {
 const {
   fetchCodeforcesDetails,
 } = require("./CodeForces/CodeForcesProfileDataFunction");
+const {
+  fetchGeeksForGeeksDetails,
+} = require("./GeeksForGeeks/GeeksForGeeksProfileDataFunction");
 
-const updateUserCodingPlatformsDataScheduler = async () => {
-  console.log(
-    chalk.bgBlue.bold("Starting user's coding profile data update scheduler...")
-  );
-
+// Function to fetch users with coding platform usernames
+const fetchUsersWithCodingProfiles = async () => {
   try {
-    const users = await Users.find(
+    return await Users.find(
       {
         $or: [
           { leetcodeUsername: { $ne: null } },
           { codechefUsername: { $ne: null } },
           { codeforcesUsername: { $ne: null } },
+          { geeksforgeeksUsername: { $ne: null } },
         ],
       },
       {
@@ -32,9 +33,22 @@ const updateUserCodingPlatformsDataScheduler = async () => {
         leetcodeUsername: 1,
         codechefUsername: 1,
         codeforcesUsername: 1,
+        geeksforgeeksUsername: 1,
       }
     );
+  } catch (error) {
+    console.error(chalk.bgRed.bold("Error fetching users: "), error.message);
+    return [];
+  }
+};
 
+// Function to update coding platform details
+const updateUserCodingPlatformsDataScheduler = async (users) => {
+  console.log(
+    chalk.bgBlue.bold("Starting user's coding profile data update scheduler...")
+  );
+
+  try {
     for (const user of users) {
       const {
         _id,
@@ -42,6 +56,7 @@ const updateUserCodingPlatformsDataScheduler = async () => {
         leetcodeUsername,
         codechefUsername,
         codeforcesUsername,
+        geeksforgeeksUsername,
       } = user;
       let updateData = {};
 
@@ -52,6 +67,16 @@ const updateUserCodingPlatformsDataScheduler = async () => {
         );
         if (leetcodeData) {
           updateData["platforms.leetcode"] = leetcodeData;
+        }
+      }
+
+      if (geeksforgeeksUsername) {
+        const geeksforgeeksData = await fetchGeeksForGeeksDetails(
+          geeksforgeeksUsername,
+          email
+        );
+        if (geeksforgeeksData) {
+          updateData["platforms.geeksforgeeks"] = geeksforgeeksData;
         }
       }
 
@@ -98,8 +123,25 @@ const updateUserCodingPlatformsDataScheduler = async () => {
   );
 };
 
-// Schedule the function to run every Saturday at 11:59 PM i.e "59 23 * * 6"
-cron.schedule("59 23 * * 6", updateUserCodingPlatformsDataScheduler);
+// Schedule the function to run every Saturday at 11:59 PM
+cron.schedule("59 23 * * 6", async () => {
+  console.log(
+    chalk.bgBlue.bold("Starting user's coding profile data update scheduler...")
+  );
+
+  const users = await fetchUsersWithCodingProfiles();
+
+  if (users.length > 0) {
+    for (const user of users) {
+      await updateUserCodingPlatformsDataScheduler(user); // Process one user at a time
+    }
+    console.log(
+      chalk.bgGreen.bold("Coding Profile Data Update Scheduler Completed.")
+    );
+  } else {
+    console.log(chalk.yellow.bold("No users found for update."));
+  }
+});
 
 console.log(
   chalk.bgMagenta.bold(
