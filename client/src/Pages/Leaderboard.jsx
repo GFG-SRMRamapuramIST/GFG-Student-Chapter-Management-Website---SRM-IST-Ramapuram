@@ -180,22 +180,24 @@ const Leaderboard = () => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3, duration: 0.4 }}
-                className="mt-8 px-16"
+                className="mt-6 md:mt-8 sm:px-4 md:px-16"
               >
                 <div className="bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-red-500 rounded-lg shadow-md overflow-hidden">
-                  <div className="flex items-start p-4">
-                    <div className="flex-shrink-0 bg-red-500 text-white p-2 rounded-full">
-                      <IoWarningOutline className="w-5 h-5" />
+                  <div className="flex flex-col md:flex-row items-start p-4">
+                    <div className="flex justify-center md:block mb-3 md:mb-0 md:mr-4">
+                      <div className="flex-shrink-0 bg-red-500 text-white p-2 rounded-full">
+                        <IoWarningOutline className="w-5 h-5" />
+                      </div>
                     </div>
 
-                    <div className="ml-4 flex-1">
-                      <div className="flex items-center justify-between">
+                    <div className="flex-1 w-full">
+                      <div className="flex items-center justify-between mb-2">
                         <h4 className="text-sm font-semibold text-red-800">
                           Warning: Performance Notice
                         </h4>
                       </div>
 
-                      <p className="mt-2 text-sm text-red-700">
+                      <p className="text-xs md:text-sm text-red-700">
                         It has been decided by the admin that every individual
                         must score a minimum of{" "}
                         <span className="font-semibold inline-flex items-center">
@@ -203,7 +205,7 @@ const Leaderboard = () => {
                           <img
                             src={GfgCoin}
                             alt="GfgCoin"
-                            className="w-4 h-4 ml-1"
+                            className="w-3 h-3 md:w-4 md:h-4 ml-1"
                           />
                         </span>{" "}
                         points this month to pass. Otherwise, they will be
@@ -216,30 +218,33 @@ const Leaderboard = () => {
                           The minimum passing score is determined using the
                           following formula:
                         </p>
-                        <p className="text-xs text-red-600 italic">
-                          <GoDotFill className="inline" /> Expected points per
-                          day from practicing questions = {perDayPracticePoint}
-                        </p>
-                        <p className="text-xs text-red-600 italic">
-                          <GoDotFill className="inline" /> Expected points per
-                          contest = {perContestPoint}
-                        </p>
-                        <p className="text-xs text-red-600 italic">
-                          <GoDotFill className="inline" /> Passing percentage ={" "}
-                          {passingPercentage}%
-                        </p>
-                        <p className="text-xs text-red-600 italic">
-                          Passing score = floor(((30 X {perDayPracticePoint}) +
-                          (4 X {perContestPoint})) X 0.{passingPercentage}) ={" "}
-                          {minimumPassingMark}
-                        </p>
-                        <p className="text-xs text-red-600 italic">
-                          Here, 30 represents the default number of days in a
-                          month (regardless of whether the month has 28, 29, 30,
-                          or 31 days), and 4 represents the required number of
-                          contests per month (even if more than four contests
-                          are available).
-                        </p>
+                        <div className="space-y-1">
+                          <p className="text-[0.6rem] md:text-xs text-red-600 italic flex items-center">
+                            <GoDotFill className="inline mr-1 flex-shrink-0" />
+                            Expected points per day from practicing questions ={" "}
+                            {perDayPracticePoint}
+                          </p>
+                          <p className="text-[0.6rem] md:text-xs text-red-600 italic flex items-center">
+                            <GoDotFill className="inline mr-1 flex-shrink-0" />
+                            Expected points per contest = {perContestPoint}
+                          </p>
+                          <p className="text-[0.6rem] md:text-xs text-red-600 italic flex items-center">
+                            <GoDotFill className="inline mr-1 flex-shrink-0" />
+                            Passing percentage = {passingPercentage}%
+                          </p>
+                          <p className="text-[0.6rem] md:text-xs text-red-600 italic">
+                            Passing score = floor(((30 X {perDayPracticePoint})
+                            + (4 X {perContestPoint})) X 0.{passingPercentage})
+                            = {minimumPassingMark}
+                          </p>
+                          <p className="text-[0.6rem] md:text-xs text-red-600 italic">
+                            Here, 30 represents the default number of days in a
+                            month (regardless of whether the month has 28, 29,
+                            30, or 31 days), and 4 represents the required
+                            number of contests per month (even if more than four
+                            contests are available).
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>

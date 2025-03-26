@@ -2,6 +2,7 @@
 import RootLayout from "./RootLayout";
 import AuthLayout from "./AuthLayout";
 import AppLayout from "./AppLayout";
-import ResourceLayout from "./ResourceLayout";
+import PracticeLayout from "./PracticeLayout";
+import ResourcesLayout from "./ResourcesLayout";
 
-export { RootLayout, AuthLayout, AppLayout, ResourceLayout };
+export { RootLayout, AuthLayout, AppLayout, PracticeLayout, ResourcesLayout };

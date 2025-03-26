@@ -11,9 +11,9 @@ import Dashboard from "./Dashboard";
 import Teams from "./Teams";
 import Leaderboard from "./Leaderboard";
 
-// Resources Route
-import AllResources from "./Resources/AllResources";
-import Resource from "./Resources/Resource";
+// Practice Route
+import Practice from "./Practice/Practice";
+import PracticeSet from "./Practice/PracticeSet";
 
 // User Profile Routes
 import Profile from "./UserProfile/Profile";
@@ -47,6 +47,6 @@ export {
   UserManual,
   ReportAnIssue,
   NotFound,
-  AllResources,
-  Resource
+  Practice,
+  PracticeSet
 };

@@ -10,9 +10,9 @@ const MonthlyActivityHeatmap = ({
   dailyActivity,
 }) => {
 
-  console.log("avgPerDay", avgPerDay);
-  console.log("maxStreak", maxStreak);
-  console.log("dailyActivity", dailyActivity);
+  // console.log("avgPerDay", avgPerDay);
+  // console.log("maxStreak", maxStreak);
+  // console.log("dailyActivity", dailyActivity);
   // Generate dates for the current month
   const getDaysInMonth = (month, year) =>
     new Date(year, month + 1, 0).getDate();
@@ -39,12 +39,16 @@ const MonthlyActivityHeatmap = ({
   useEffect(() => {
     if (!dailyActivity?.length) return;
 
-    const daysInMonth = getDaysInMonth(month, year);
-    const data = dailyActivity.map(day => ({
-      day: new Date(day.date).getDate(),
-      date: new Date(day.date),
-      solved: day.count
-    }));
+    // Populate activity data with dailyActivity or default to 0 solved
+    const data = Array.from({ length: getDaysInMonth(month, year) }, (_, index) => {
+      const day = index + 1;
+      const activity = dailyActivity.find(d => new Date(d.date).getDate() === day);
+      return {
+      day,
+      date: new Date(year, month, day),
+      solved: activity ? activity.count : 0
+      };
+    });
 
     setActivityData(data);
 
@@ -101,7 +105,7 @@ const MonthlyActivityHeatmap = ({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white rounded-2xl px-6 pb-6 shadow-sm"
+      className="flex flex-col justify-evenly bg-white rounded-2xl px-6 pb-6 shadow-sm h-full"
     >
       <div className="flex justify-between items-center mb-6 pt-3 sm:pt-4">
         <div className="flex items-center space-x-2">

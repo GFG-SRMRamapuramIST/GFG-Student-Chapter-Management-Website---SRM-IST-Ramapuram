@@ -6,7 +6,7 @@ import { FaSpinner } from "react-icons/fa";
 
 import { RotatingCloseButton } from "../../Utilities";
 
-const EditResourceModal = ({ isOpen, onClose, resource, onEdit }) => {
+const EditPracticeSetModal = ({ isOpen, onClose, resource, onEdit }) => {
   const [loading, setLoading] = useState(false);
 
   const [title, setTitle] = useState(resource?.title || "");
@@ -122,4 +122,4 @@ const EditResourceModal = ({ isOpen, onClose, resource, onEdit }) => {
   );
 };
 
-export default EditResourceModal;
+export default EditPracticeSetModal;

@@ -9,20 +9,18 @@ import {
   ForgotPassword,
   Profile,
   EditProfile,
-  Teams,
   Leaderboard,
   TermsAndConditions,
   UserManual,
-  PrivacyPolicy,
   AdminPanel,
   NotFound,
-  AllResources,
-  Resource,
+  Practice,
+  PracticeSet,
   ReportAnIssue,
   AboutUs,
   ProfileComparison,
 } from "./Pages";
-import { AuthLayout, RootLayout, AppLayout, ResourceLayout } from "./Layouts";
+import { AuthLayout, RootLayout, AppLayout, PracticeLayout, ResourcesLayout } from "./Layouts";
 
 // Auth routes (public)
 const authRoutes = {
@@ -44,11 +42,19 @@ const appRoutes = {
     { path: "leaderboard", element: <Leaderboard /> },
     // { path: "teams", element: <Teams /> },
     {
-      path: "resources",
-      element: <ResourceLayout />,
+      path: "practice",
+      element: <PracticeLayout />,
       children: [
-        { index: true, element: <AllResources /> },
-        { path: ":id", element: <Resource /> },
+        { index: true, element: <Practice /> },
+        { path: ":id", element: <PracticeSet /> },
+      ],
+    },
+    {
+      path: "resources",
+      element: <ResourcesLayout />,
+      children: [
+        { index: true, element: <Practice /> },
+        { path: ":id", element: <PracticeSet /> },
       ],
     },
     {

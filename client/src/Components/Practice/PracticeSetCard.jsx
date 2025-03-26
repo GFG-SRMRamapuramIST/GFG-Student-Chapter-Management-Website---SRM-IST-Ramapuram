@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 // Constants
 import { platformColors, platformIcons } from "../../Constants";
 
-const ResourceCard = ({ resource }) => {
+const PracticeSetCard = ({ resource }) => {
   const usedPlatforms = resource.platforms || [];
 
   return (
@@ -75,4 +75,4 @@ const ResourceCard = ({ resource }) => {
   );
 };
 
-export default ResourceCard;
+export default PracticeSetCard;

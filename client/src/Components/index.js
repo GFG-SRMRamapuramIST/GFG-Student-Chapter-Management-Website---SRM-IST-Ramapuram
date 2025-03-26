@@ -90,15 +90,15 @@ import SchedulerControls from "./Admin/SchedulerControls";
 
 export { UserTable, AllowedEmailsForm, AllowedEmailsTable, SchedulerControls };
 
-// Resource Page Components
-import AddProblemModal from "./Resources/AddProblemModal";
-import CreateResourceModal from "./Resources/CreateResourceModa";
-import ResourceCard from "./Resources/ResourceCard";
-import EditResourceModal from "./Resources/EditResourcemodal";
+// Practice Page Components
+import AddProblemModal from "./Practice/AddProblemModal";
+import CreatePracticeSetModal from "./Practice/CreatePracticeSetModal";
+import PracticeSetCard from "./Practice/PracticeSetCard";
+import EditPracticeSetModal from "./Practice/EditPracticeSetModal";
 
 export {
   AddProblemModal,
-  CreateResourceModal,
-  ResourceCard,
-  EditResourceModal,
+  CreatePracticeSetModal,
+  PracticeSetCard,
+  EditPracticeSetModal,
 };

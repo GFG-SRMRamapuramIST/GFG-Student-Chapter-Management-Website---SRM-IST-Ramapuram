@@ -73,8 +73,8 @@ const Navbar = ({ isLoggedIn }) => {
         //   icon: <FaUsers className="text-lg" />,
         // },
         {
-          name: "Resources",
-          path: "/resources",
+          name: "Practice",
+          path: "/practice",
           icon: <FiBook className="text-lg" />,
         },
       ]

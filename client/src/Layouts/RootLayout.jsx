@@ -84,7 +84,7 @@ const RootLayout = () => {
         <div className="relative min-h-[50vh]">
           <Outlet />
         </div>
-        <Footer />
+        <Footer isLoggedIn={tokenVerified} />
       </div>
     </div>
   );

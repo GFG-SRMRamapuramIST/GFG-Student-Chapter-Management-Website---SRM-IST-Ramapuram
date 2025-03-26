@@ -11,29 +11,31 @@ import MonthlyActivityHeatmap from "./MonthlyActivityHeatmap";
 import Medal from "../ui/Medal";
 import CustomDialog from "../ui/CustomDialog";
 
-
-
 const ProfileSecondary = ({ userProfile }) => {
   const [showBadges, setShowBadges] = useState(false);
+
+  console.log(userProfile.badges);
 
   return (
     <div className="p-3 sm:p-4 md:p-6 font-sans antialiased">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Platform Profiles - Takes up full width on mobile, 50% on md, 33% on lg */}
-        <div className="lg:col-span-1">
+        <div className="lg:col-span-1 h-full">
           <PlatformProfiles userProfile={userProfile} />
         </div>
 
-        {/* Middle column for Heatmap and small Achievements on lg screens */}
-        <div className="lg:col-span-1">
-          <div className="grid grid-cols-1 gap-4 sm:gap-6">
-            {/* Heatmap */}
-            <MonthlyActivityHeatmap avgPerDay={userProfile.avgPerDay} maxStreak={userProfile.maxStreak} dailyActivity={userProfile.dailyActivity} />
-          </div>
+        {/* Middle column for Heatmap */}
+        <div className="lg:col-span-1 h-full">
+          {/* Heatmap */}
+          <MonthlyActivityHeatmap
+            avgPerDay={userProfile.avgPerDay}
+            maxStreak={userProfile.maxStreak}
+            dailyActivity={userProfile.dailyActivity}
+          />
         </div>
 
         {/* Announcements - 33% on large screens */}
-        <div className="grid lg:col-span-1 gap-4 lg:gap-6">
+        <div className="grid lg:col-span-1 gap-4 lg:gap-6 h-full">
           {/* Compact Achievements */}
           <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
             <div className="pt-3 px-3 sm:pt-4 sm:px-4">

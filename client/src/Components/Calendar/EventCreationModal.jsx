@@ -94,7 +94,7 @@ const EventCreationModal = ({ isOpen, onClose, onSave }) => {
             initial={{ scale: 0.95, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.95, opacity: 0, y: 20 }}
-            className="bg-white rounded-3xl p-6 max-w-lg w-full shadow-2xl"
+            className="bg-white  max-h-[90vh] overflow-y-scroll no-scrollbar rounded-3xl p-6 max-w-lg w-full shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center mb-6">

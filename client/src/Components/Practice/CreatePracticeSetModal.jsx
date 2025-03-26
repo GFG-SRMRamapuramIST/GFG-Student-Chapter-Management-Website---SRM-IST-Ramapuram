@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { FaSpinner } from "react-icons/fa";
 import { RotatingCloseButton } from "../../Utilities";
 
-const CreateResourceModal = ({ isOpen, onClose, onSubmit }) => {
+const CreatePracticeSetModal = ({ isOpen, onClose, onSubmit }) => {
   const [loading, setLoading] = useState(false);
   const [resource, setResource] = useState({ title: "", description: "" });
 
@@ -91,4 +91,4 @@ const CreateResourceModal = ({ isOpen, onClose, onSubmit }) => {
   );
 };
 
-export default CreateResourceModal;
+export default CreatePracticeSetModal;

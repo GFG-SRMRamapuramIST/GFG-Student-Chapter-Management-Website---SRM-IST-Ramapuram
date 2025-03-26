@@ -44,7 +44,7 @@ const TestimonialsSection = () => {
       }
     };
 
-    intervalRef.current = setInterval(scrollToNextTestimonial, 3000); // Change every 3 seconds
+    intervalRef.current = setInterval(scrollToNextTestimonial, 3000);
 
     return () => {
       if (intervalRef.current) {
@@ -57,9 +57,9 @@ const TestimonialsSection = () => {
   const handleMouseLeave = () => setIsPaused(false);
 
   return (
-    <div className="relative py-20 bg-gfg-white">
+    <div className="relative py-12 md:py-20 bg-gfg-white">
       <div
-        className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8"
+        className="max-w-6xl overflow-hidden mx-auto px-4 sm:px-6 lg:px-8"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
@@ -67,14 +67,13 @@ const TestimonialsSection = () => {
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-10 md:mb-16"
         >
-          <h2 className="text-4xl font-bold text-gfg-black mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-gfg-black mb-3 md:mb-4">
             Voices of Our Community
           </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Hear from those who've experienced the transformative power of our
-            platform
+          <p className="text-base md:text-xl text-gray-600 max-w-2xl mx-auto">
+            Hear from those who've experienced the transformative power of our platform
           </p>
         </motion.div>
 
@@ -87,30 +86,46 @@ const TestimonialsSection = () => {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -50 }}
               transition={{ duration: 0.5 }}
-              className="grid md:grid-cols-2 gap-12 items-center"
+              className="flex flex-col-reverse md:grid md:grid-cols-2 gap-8 md:gap-12 items-center"
             >
+              {/* Mobile: Profile Image */}
+              <div className="block md:hidden flex justify-center items-center mb-6">
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  className="relative w-32 h-32"
+                >
+                  <div className="w-full h-full rounded-full overflow-hidden shadow-lg">
+                    <img
+                      src={testimonials[activeTestimonial].image}
+                      alt={testimonials[activeTestimonial].name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </motion.div>
+              </div>
+
               {/* Left - Testimonial Text */}
-              <div className="space-y-8">
+              <div className="space-y-6 md:space-y-8 text-center md:text-left">
                 <div className="relative">
-                  <FaQuoteLeft className="absolute -top-8 -left-8 text-gfgsc-green/20 text-6xl" />
-                  <p className="text-2xl font-light text-gfg-black leading-relaxed italic">
+                  <FaQuoteLeft className="hidden md:block absolute -top-8 -left-8 text-gfgsc-green/20 text-6xl" />
+                  <p className="text-lg md:text-2xl font-light text-gfg-black leading-relaxed italic">
                     "{testimonials[activeTestimonial].quote}"
                   </p>
                 </div>
 
                 <div>
-                  <h3 className="text-2xl font-bold text-gfgsc-green">
+                  <h3 className="text-xl md:text-2xl font-bold text-gfgsc-green">
                     {testimonials[activeTestimonial].name}
                   </h3>
-                  <p className="text-gray-600">
+                  <p className="text-sm md:text-base text-gray-600">
                     {testimonials[activeTestimonial].role} |{" "}
                     {testimonials[activeTestimonial].company}
                   </p>
                 </div>
               </div>
 
-              {/* Right - Profile Image */}
-              <div className="flex justify-center">
+              {/* Desktop: Profile Image */}
+              <div className="hidden md:flex justify-center">
                 <motion.div
                   whileHover={{ scale: 1.05, rotate: 1 }}
                   className="relative"
@@ -129,13 +144,13 @@ const TestimonialsSection = () => {
           </AnimatePresence>
 
           {/* Navigation Dots */}
-          <div className="flex justify-center space-x-4 mt-16">
+          <div className="flex justify-center space-x-2 md:space-x-4 mt-8 md:mt-16">
             {testimonials.map((_, index) => (
               <motion.button
                 key={index}
                 onClick={() => setActiveTestimonial(index)}
                 className={`
-                  w-4 h-4 rounded-full transition-all duration-300
+                  w-3 h-3 md:w-4 md:h-4 rounded-full transition-all duration-300
                   ${
                     activeTestimonial === index
                       ? "bg-gfgsc-green scale-125"
@@ -151,9 +166,9 @@ const TestimonialsSection = () => {
       </div>
 
       {/* Subtle Background Effect */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 left-0 w-64 h-64 bg-gfgsc-green-200/20 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-0 w-64 h-64 bg-gfgsc-green-200/20 rounded-full blur-3xl"></div>
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-0 left-0 w-48 md:w-64 h-48 md:h-64 bg-gfgsc-green-200/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-0 w-48 md:w-64 h-48 md:h-64 bg-gfgsc-green-200/20 rounded-full blur-3xl"></div>
       </div>
     </div>
   );

@@ -286,7 +286,7 @@ const Dashboard = () => {
         <div className="lg:col-span-4 space-y-6">
           <StatsSection stats={stats} />
           <LeaderboardSection top5Users={top5Users} />
-          <NotificationsSection />
+          <NotificationsSection isCarousel={false} />
         </div>
       </div>
     </div>
