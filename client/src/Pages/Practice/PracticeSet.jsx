@@ -115,15 +115,15 @@ const PracticeSet = () => {
     setConfirmationState({
       isOpen: true,
       type: "danger",
-      title: "Delete Resource",
+      title: "Delete Practice Set",
       message:
-        "Are you sure you want to delete this resource? This action cannot be undone.",
+        "Are you sure you want to delete this practice set? This action cannot be undone.",
       onConfirm: async () => {
         try {
           const response = await deleteResourceFunction({ resourceId: id });
           if (response.status === 200) {
             ToastMsg("Resource deleted successfully!", "success");
-            navigate("/resources");
+            navigate("/practice");
           } else {
             ToastMsg(response.response.data.message, "error");
             console.log(response.response.data.message);
