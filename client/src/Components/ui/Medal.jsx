@@ -20,6 +20,20 @@ const medalStyles = {
     text: "text-amber-800",
     border: "border-amber-500",
   },
+  dailyActiveStreak: {
+    background: "bg-gradient-to-br from-emerald-300 via-emerald-400 to-emerald-600",
+    glow: "shadow-emerald-400/50",
+    inner: "bg-gradient-to-br from-emerald-50 to-emerald-100",
+    text: "text-emerald-700",
+    border: "border-emerald-400",
+  },
+  maxAvgPerDay: {
+    background: "bg-gradient-to-br from-blue-300 via-blue-400 to-blue-600",
+    glow: "shadow-blue-400/50",
+    inner: "bg-gradient-to-br from-blue-50 to-blue-100",
+    text: "text-blue-700",
+    border: "border-blue-400",
+  },
 };
 
 const Medal = ({ 

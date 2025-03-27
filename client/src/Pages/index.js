@@ -15,6 +15,10 @@ import Leaderboard from "./Leaderboard";
 import Practice from "./Practice/Practice";
 import PracticeSet from "./Practice/PracticeSet";
 
+// Resources Route
+import Resource from "./Resources/Resource";
+import AllResources from "./Resources/AllResources";
+
 // User Profile Routes
 import Profile from "./UserProfile/Profile";
 import EditProfile from "./UserProfile/EditProfile";
@@ -48,5 +52,7 @@ export {
   ReportAnIssue,
   NotFound,
   Practice,
-  PracticeSet
+  PracticeSet,
+  Resource,
+  AllResources
 };

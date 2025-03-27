@@ -69,7 +69,7 @@ const Profile = () => {
       setLoading(true);
       //console.log("Fetching profile data for:", profileId);
       const response = await getProfilePageDataFunction({ userId: profileId });
-      // console.log(response);
+      console.log(response);
 
       if (response.status !== 200) {
         ToastMsg("Error fetching profile data! Please try later", "error");
@@ -163,6 +163,24 @@ const Profile = () => {
                 .padStart(2, "0")}-01`,
               description: "Awarded for good performance in coding contests.",
             })),
+            ...data.achievement.dailyActiveStreak.map((badge) => ({
+              id: Math.random(),
+              name: "Daily Active Streak",
+              type: "dailyActiveStreak",
+              date: `${badge.year}-${badge.month
+                .toString()
+                .padStart(2, "0")}-01`,
+              description: "Awarded for good performance in coding contests.",
+            })),
+            ...data.achievement.maxAvgPerDay.map((badge) => ({
+              id: Math.random(),
+              name: "Max Average Per Day",
+              type: "maxAvgPerDay",
+              date: `${badge.year}-${badge.month
+                .toString()
+                .padStart(2, "0")}-01`,
+              description: "Awarded for good performance in coding contests.",
+            })),
           ],
 
           avgPerDay: data.avgPerDay || 0,
@@ -170,7 +188,7 @@ const Profile = () => {
           dailyActivity: data.dailyActivity || [],
         });
 
-        //console.log("Profile Data:", userProfileData);
+        console.log("Profile Data:", userProfileData);
       }
     } catch (error) {
       ToastMsg("Error fetching profile data! Please try later", "error");

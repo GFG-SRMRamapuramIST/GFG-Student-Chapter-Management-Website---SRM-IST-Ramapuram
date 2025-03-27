@@ -7,19 +7,12 @@ import {
   FaCode,
   FaTrophy,
   FaFire,
-  FaCalendarAlt,
   FaChartLine,
   FaChevronDown,
   FaChevronRight,
   FaExternalLinkAlt,
   FaSpinner,
 } from "react-icons/fa";
-import {
-  SiLeetcode,
-  SiCodechef,
-  SiCodeforces,
-  SiGeeksforgeeks,
-} from "react-icons/si";
 
 import { codolioIcon } from "../../Assets";
 import { Medal } from "../../Components";
@@ -29,6 +22,7 @@ import { ToastMsg } from "../../Utilities";
 
 // Importing APIs
 import { UserServices } from "../../Services";
+import { BiError } from "react-icons/bi";
 
 const mockProfiles = {
   leftProfile: {
@@ -55,7 +49,6 @@ const mockProfiles = {
       questions: 450,
       individualRank: 3,
       previousRank: 5,
-      monthlyProgress: +2,
       averageDaily: 4.5,
     },
 
@@ -115,7 +108,6 @@ const mockProfiles = {
       longestStreak: 30,
       totalContributions: 450,
       averagePerDay: 4.5,
-      lastMonthSolved: 120,
     },
   },
 
@@ -143,7 +135,6 @@ const mockProfiles = {
       questions: 280,
       individualRank: 8,
       previousRank: 12,
-      monthlyProgress: +4,
       averageDaily: 3.2,
     },
 
@@ -196,7 +187,6 @@ const mockProfiles = {
       longestStreak: 20,
       totalContributions: 280,
       averagePerDay: 3.2,
-      lastMonthSolved: 85,
     },
   },
 };
@@ -338,7 +328,6 @@ const ProfileComparison = () => {
       longestStreak: 0,
       totalContributions: 0,
       averagePerDay: 0,
-      lastMonthSolved: 0,
     },
   };
 
@@ -391,8 +380,6 @@ const ProfileComparison = () => {
             questions: data.totalQuestionSolved,
             individualRank: data.currentRank,
             previousRank: data.prevMonthData?.prevRank || null,
-            monthlyProgress:
-              (data.prevMonthData?.prevRank || 0) - data.currentRank,
             averageDaily: data.avgPerDay,
           },
 
@@ -449,6 +436,24 @@ const ProfileComparison = () => {
               date: null,
               description: "",
             })),
+            ...data.achievement.dailyActiveStreak.map((badge) => ({
+              id: Math.random(),
+              name: "Daily Active Streak",
+              type: "dailyActiveStreak",
+              date: `${badge.year}-${badge.month
+                .toString()
+                .padStart(2, "0")}-01`,
+              description: "Awarded for good performance in coding contests.",
+            })),
+            ...data.achievement.maxAvgPerDay.map((badge) => ({
+              id: Math.random(),
+              name: "Max Average Per Day",
+              type: "maxAvgPerDay",
+              date: `${badge.year}-${badge.month
+                .toString()
+                .padStart(2, "0")}-01`,
+              description: "Awarded for good performance in coding contests.",
+            })),
           ],
 
           activityData: {
@@ -459,7 +464,6 @@ const ProfileComparison = () => {
               0
             ),
             averagePerDay: data.avgPerDay,
-            lastMonthSolved: data.prevMonthData?.totalQuestionsSolved || 0,
           },
         };
 
@@ -603,23 +607,34 @@ const ProfileComparison = () => {
 
   const renderBadges = (badges, setShowBadges) => (
     <div className="space-y-4">
-      <div className="flex  py-2 gap-2 sm:gap-3">
-        {badges.slice(0, 3).map((badge) => (
-          <div
-            key={badge.id}
-            className="flex flex-col items-center justify-center text-center"
-          >
-            <Medal type={badge.type} content={badge.name} size="medium" />
+      {badges.length === 0 ? (
+        <div className="flex flex-col text-center items-center justify-center p-2 sm:p-4">
+          <BiError className="w-6 h-6 sm:w-8 sm:h-8 text-gray-400" />
+          <p className="mt-2 text-xs sm:text-sm text-gray-500">
+            No achievements yet. Keep trying harder!
+          </p>
+        </div>
+      ) : (
+        <>
+          <div className="flex  py-2 gap-2 sm:gap-3">
+            {badges.slice(0, 3).map((badge) => (
+              <div
+                key={badge.id}
+                className="flex flex-col items-center justify-center text-center"
+              >
+                <Medal type={badge.type} content={badge.name} size="medium" />
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-      <button
-        onClick={() => setShowBadges(true)}
-        className="w-full mt-2 py-2 sm:py-3 px-2 sm:px-3 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-100 transition-colors text-xs sm:text-sm font-medium flex items-center justify-center"
-      >
-        <span>View all</span>
-        <FaChevronRight className="w-2 h-2 sm:w-2.5 sm:h-2.5 ml-1" />
-      </button>
+          <button
+            onClick={() => setShowBadges(true)}
+            className="w-full mt-2 py-2 sm:py-3 px-2 sm:px-3 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-100 transition-colors text-xs sm:text-sm font-medium flex items-center justify-center"
+          >
+            <span>View all</span>
+            <FaChevronRight className="w-2 h-2 sm:w-2.5 sm:h-2.5 ml-1" />
+          </button>
+        </>
+      )}
     </div>
   );
 
@@ -652,17 +667,6 @@ const ProfileComparison = () => {
             </div>
             <div className="font-bold text-md md:text-lg">
               {activityData.longestStreak} days
-            </div>
-          </div>
-        </div>
-        <div className="flex items-center bg-gradient-to-br from-emerald-800/80 to-emerald-900/80 p-3 rounded-lg">
-          <FaCalendarAlt className="hidden md:flex text-blue-400 mr-3 text-xl" />
-          <div>
-            <div className="text-xs md:text-sm text-emerald-300">
-              Last Month
-            </div>
-            <div className="font-bold text-md md:text-lg">
-              {activityData.lastMonthSolved} problems
             </div>
           </div>
         </div>
@@ -704,13 +708,6 @@ const ProfileComparison = () => {
           <div className="text-sm text-emerald-200 mb-1">Previous Rank</div>
           <div className="font-bold text-2xl">
             #{profile.stats.previousRank}
-          </div>
-        </div>
-        <div className="bg-white/5 p-3 rounded-lg">
-          <div className="text-sm text-emerald-200 mb-1">Monthly Progress</div>
-          <div className={`font-bold text-2xl `}>
-            {profile.stats.monthlyProgress > 0 ? "+" : ""}
-            {profile.stats.monthlyProgress}
           </div>
         </div>
       </div>
@@ -769,7 +766,7 @@ const ProfileComparison = () => {
 
           {renderSocialLinks(profile.social)}
 
-          <p className="text-center text-sm italic mt-2 text-emerald-100 bg-emerald-950/30 px-4 py-2 rounded-full max-w-xs mx-auto">
+          <p className="text-ellipsis text-center text-sm italic mt-2 text-emerald-100 bg-emerald-950/30 px-4 py-2 rounded-full mx-auto">
             "{profile.bio}"
           </p>
         </div>

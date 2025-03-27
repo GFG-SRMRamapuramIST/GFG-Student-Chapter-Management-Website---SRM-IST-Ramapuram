@@ -19,7 +19,7 @@ import { IoClose } from "react-icons/io5";
 import { SiGeeksforgeeks } from "react-icons/si";
 import { BiSolidDashboard, BiUser, BiUserCircle } from "react-icons/bi";
 import { FiChevronDown, FiBook } from "react-icons/fi";
-import { CgProfile } from "react-icons/cg";
+import { CgCodeSlash, CgProfile } from "react-icons/cg";
 import { IoLogOutOutline } from "react-icons/io5";
 // *********************************************************************
 
@@ -73,9 +73,14 @@ const Navbar = ({ isLoggedIn }) => {
         //   icon: <FaUsers className="text-lg" />,
         // },
         {
+          name: "Resources",
+          path: "/resources",
+          icon: <FiBook className="text-lg" />,
+        },
+        {
           name: "Practice",
           path: "/practice",
-          icon: <FiBook className="text-lg" />,
+          icon: <CgCodeSlash className="text-lg" />,
         },
       ]
     : [

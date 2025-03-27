@@ -102,3 +102,10 @@ export {
   PracticeSetCard,
   EditPracticeSetModal,
 };
+
+// Resources Page Components
+import ResourceCard from "./Resources/ResourceCard";
+import AddResourceModal from "./Resources/AddResourceModal";
+import EditResourceModal from "./Resources/EditResourceModal";
+
+export { ResourceCard, AddResourceModal, EditResourceModal };

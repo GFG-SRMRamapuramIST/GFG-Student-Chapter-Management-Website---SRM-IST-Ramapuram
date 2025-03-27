@@ -130,7 +130,7 @@ const TestimonialsSection = () => {
                   whileHover={{ scale: 1.05, rotate: 1 }}
                   className="relative"
                 >
-                  <div className="w-96 h-96 rounded-3xl overflow-hidden shadow-2xl">
+                  <div className="w-64 h-64 rounded-3xl overflow-hidden shadow-2xl">
                     <img
                       src={testimonials[activeTestimonial].image}
                       alt={testimonials[activeTestimonial].name}

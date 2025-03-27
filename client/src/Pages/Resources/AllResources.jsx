@@ -1,113 +1,105 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-
-// Importing Icons
 import { FaSearch, FaPlus, FaSpinner } from "react-icons/fa";
+import { Link } from "react-router-dom";
+import { BiVideo } from "react-icons/bi";
 
-import { Pagination, ToastMsg } from "../../Utilities";
-import { CreatePracticeSetModal, PracticeSetCard } from "../../Components";
+// Sample Resource Data
+const initialResourcesData = [
+  {
+    id: "1",
+    title: "React Fundamentals",
+    description: "A comprehensive guide to learning React from scratch",
+    videoCount: 12,
+    lastUpdated: "2024-03-15T10:30:00Z"
+  },
+  {
+    id: "2", 
+    title: "Advanced JavaScript Techniques",
+    description: "Deep dive into modern JavaScript programming concepts",
+    videoCount: 8,
+    lastUpdated: "2024-02-20T14:45:00Z"
+  },
+  {
+    id: "3",
+    title: "Node.js Backend Development",
+    description: "Learn to build scalable backend applications with Node.js",
+    videoCount: 15,
+    lastUpdated: "2024-03-10T09:15:00Z"
+  }
+];
 
-// Importing APIs
-import { CoreMemberServices } from "../../Services";
+const ResourceCard = ({ resource }) => {
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      whileHover={{ y: -5 }}
+      className="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100"
+    >
+      <Link to={`/resources/${resource.id}`}>
+        <div className="p-6">
+          <h3 className="text-xl font-bold text-gray-800 mb-3 group-hover:text-gfgsc-green transition-colors">
+            {resource.title}
+          </h3>
 
-const Practice = () => {
-  const { createResourceFunction, fetchAllResourcesFunction } =
-    CoreMemberServices();
+          <p className="text-gray-600 mb-6 line-clamp-2 text-sm">
+            {resource.description}
+          </p>
 
-  const [loading, setLoading] = useState(false);
+          <div className="flex items-center justify-between text-sm text-gray-500 border-t pt-4">
+            <div className="flex items-center">
+              <BiVideo className="mr-2 text-gfgsc-green" />
+              <span className="font-medium">{resource.videoCount}</span>
+              <span className="ml-1">Videos</span>
+            </div>
+            <div className="flex items-center">
+              {new Date(resource.lastUpdated).toLocaleDateString()}
+            </div>
+          </div>
+        </div>
+      </Link>
+    </motion.div>
+  );
+};
 
-  const [showCreateModal, setShowCreateModal] = useState(false);
-
-  // ****************** Fetch all Resources Handlers Starts here *****************
-  // Search Logic
+const AllResources = () => {
+  const [resources, setResources] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [searchResource, setSearchResource] = useState("");
-  const [debouncedSearchResource, setDebouncedSearchResource] =
-    useState(searchResource);
+  const [debouncedSearchResource, setDebouncedSearchResource] = useState(searchResource);
 
-  // Debounce mechanism for serach input
+  // Simulate data fetching
+  useEffect(() => {
+    const fetchResources = () => {
+      // Simulate API delay
+      setTimeout(() => {
+        // Filter resources based on search
+        const filteredResources = initialResourcesData.filter(resource => 
+          resource.title.toLowerCase().includes(debouncedSearchResource.toLowerCase()) ||
+          resource.description.toLowerCase().includes(debouncedSearchResource.toLowerCase())
+        );
+
+        setResources(filteredResources);
+        setLoading(false);
+      }, 500);
+    };
+
+    fetchResources();
+  }, [debouncedSearchResource]);
+
+  // Debounce search input
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearchResource(searchResource);
-    }, 1000); // 1s debounce time
+    }, 500);
 
     return () => {
       clearTimeout(handler);
     };
   }, [searchResource]);
-
-  // Pagination Logic
-  const [pageInfo, setPageInfo] = useState({
-    currentPage: 1,
-    totalPages: null,
-  });
-
-  const setCurrentPage = (page) => {
-    setPageInfo((prev) => ({ ...prev, currentPage: page }));
-  };
-
-  const [resources, setResources] = useState([]);
-
-  // Fetch all resources
-  const fetchAllResourcesHandler = async () => {
-    setLoading(true);
-    try {
-      const response = await fetchAllResourcesFunction({
-        page: pageInfo.currentPage,
-        search: debouncedSearchResource,
-      });
-
-      if (response.status === 200) {
-        const {currentPage, totalPages} = response.data;
-        setPageInfo({currentPage, totalPages});
-
-        const formattedResources = response.data.data.map((resource) => ({
-          id: resource.id, // Unique ID
-          title: resource.title,
-          platforms: resource.platforms || [],
-          count: resource.totalQuestions,
-          lastUpdated: resource.lastUpdatedAt.split("T")[0], // Extract date part
-          description: resource.description,
-        }));
-
-        setResources(formattedResources);
-      } else {
-        ToastMsg(response.response.data.message, "error");
-        console.log(response.response.data.message);
-      }
-    } catch (error) {
-      ToastMsg("Internal Server Error!", "error");
-      console.error("Fetch All Resources Error: ", error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    const fetchResources = async () => {
-      await fetchAllResourcesHandler();
-    };
-
-    fetchResources();
-  }, [pageInfo.currentPage, debouncedSearchResource]);
-
-  // ******************** Fetch all Resources Handler end's here ****************
-
-  // Resources Creating Handlers
-  const handleCreateResource = async (data) => {
-    //console.log("Creating resource:", data);
-    try {
-      const response = await createResourceFunction(data);
-      if (response.status == 200) {
-        ToastMsg(response.data.message, "success");
-      } else {
-        ToastMsg(response.response.data.message, "error");
-        console.log(response);
-      }
-    } catch (error) {
-      ToastMsg("Internal Server Error", "error");
-      console.log("Internal server error: ", error);
-    }
-  };
 
   return (
     <div className="min-h-screen p-3 sm:p-6">
@@ -128,7 +120,6 @@ const Practice = () => {
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            onClick={() => setShowCreateModal(true)}
             className="flex items-center justify-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-gfgsc-green to-emerald-600 text-white rounded-xl hover:from-emerald-600 hover:to-emerald-700 transition-all duration-300 w-full sm:w-auto shadow-lg shadow-gfgsc-green/20"
           >
             <FaPlus className="text-sm" />
@@ -153,32 +144,14 @@ const Practice = () => {
               layout
             >
               {resources.map((resource) => (
-                <PracticeSetCard key={resource.id} resource={resource} />
+                <ResourceCard key={resource.id} resource={resource} />
               ))}
             </motion.div>
           </AnimatePresence>
         )}
-        
-        {/* Pagination */}
-        {!loading && resources.length > 0 && pageInfo.totalPages > 1 && (
-          <div className="mt-8 flex justify-center">
-            <Pagination
-              currentPage={pageInfo.currentPage}
-              totalPages={pageInfo.totalPages}
-              onPageChange={setCurrentPage}
-            />
-          </div>
-        )}
-  
-        {/* Create Resource Modal */}
-        <CreatePracticeSetModal
-          isOpen={showCreateModal}
-          onClose={() => setShowCreateModal(false)}
-          onSubmit={handleCreateResource}
-        />
       </div>
     </div>
   );
 };
 
-export default Practice;
+export default AllResources;

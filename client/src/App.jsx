@@ -19,6 +19,8 @@ import {
   ReportAnIssue,
   AboutUs,
   ProfileComparison,
+  AllResources,
+  Resource,
 } from "./Pages";
 import { AuthLayout, RootLayout, AppLayout, PracticeLayout, ResourcesLayout } from "./Layouts";
 
@@ -53,8 +55,8 @@ const appRoutes = {
       path: "resources",
       element: <ResourcesLayout />,
       children: [
-        { index: true, element: <Practice /> },
-        { path: ":id", element: <PracticeSet /> },
+        { index: true, element: <AllResources /> },
+        { path: ":id", element: <Resource /> },
       ],
     },
     {
