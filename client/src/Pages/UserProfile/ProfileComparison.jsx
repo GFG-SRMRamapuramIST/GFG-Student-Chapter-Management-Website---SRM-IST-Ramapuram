@@ -312,7 +312,7 @@ const ProfileComparison = () => {
       codeforces: {
         handle: "",
         rating: 0,
-        maxRating: 0,
+        rank: 0,
         totalProblemSolved: 0,
       },
       geeksforgeeks: {
@@ -399,7 +399,7 @@ const ProfileComparison = () => {
             codeforces: {
               handle: data.codeforcesUsername,
               rating: data.platforms.codeforces.rating,
-              maxRating: data.platforms.codechef.highestRating,
+              rank: data.platforms.codeforces.rank,
               totalProblemSolved: data.platforms.codeforces.totalProblemSolved,
             },
             geeksforgeeks: {
