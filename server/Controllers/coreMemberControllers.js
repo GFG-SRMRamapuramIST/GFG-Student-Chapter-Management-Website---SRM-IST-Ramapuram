@@ -1260,7 +1260,7 @@ exports.createAnnouncement = async (req, res) => {
     await newAnnouncement.save();
 
     // Get the subscribed users' emails based on the compulsory role
-    const recipients = await getSubscribedUsers("ALL");
+    const recipients = await getSubscribedUsers("ALL", true);
 
     // Send email notification
     const subject = "Official Announcement";

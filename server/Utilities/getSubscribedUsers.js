@@ -1,6 +1,6 @@
 const { Users } = require("../Models");
 
-const getSubscribedUsers = async (role) => {
+const getSubscribedUsers = async (role, isAnnouncement = false) => {
   try {
     // Define role-based filtering
     const roleFilters = {
@@ -16,9 +16,12 @@ const getSubscribedUsers = async (role) => {
     // Get the appropriate filter or default to an empty object (no filtering)
     const roleFilter = roleFilters[role] || {};
 
+    // Define subscription filter
+    const subscriptionFilter = isAnnouncement ? {} : { subscribed: true };
+
     // Query users based on subscription status and role
     const subscribedUsers = await Users.find({
-      subscribed: true,
+      ...subscriptionFilter,
       ...roleFilter,
     })
       .select("email")
