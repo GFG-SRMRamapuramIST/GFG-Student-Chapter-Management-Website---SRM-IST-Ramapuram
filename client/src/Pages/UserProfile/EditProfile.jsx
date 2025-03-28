@@ -522,7 +522,7 @@ const EditProfile = () => {
             </div>
 
             {/* Codolio */}
-            <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-xl">
+            {/* <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-xl">
               <div className="flex items-center space-x-3 mb-3">
                 <img
                   src={codolioIcon}
@@ -548,7 +548,7 @@ const EditProfile = () => {
                   </>
                 )}
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
 
@@ -596,7 +596,7 @@ EditProfile.propTypes = {
     social: PropTypes.shape({
       linkedin: PropTypes.string,
       github: PropTypes.string,
-      codolio: PropTypes.string,
+      // codolio: PropTypes.string,
     }),
     currentPassword: PropTypes.string,
   }),

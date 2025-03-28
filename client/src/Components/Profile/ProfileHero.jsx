@@ -65,13 +65,13 @@ const ProfileHero = ({ userProfile }) => {
                   {platform === "linkedin" && (
                     <FaLinkedin className="w-5 h-5 text-[#0a66c2]" />
                   )}
-                  {platform === "codolio" && (
+                  {/* {platform === "codolio" && (
                     <img
                       src={codolioIcon}
                       alt="codolio"
                       className="w-5 h-5"
                     />
-                  )}
+                  )} */}
                 </a>
               ))}
             </div>

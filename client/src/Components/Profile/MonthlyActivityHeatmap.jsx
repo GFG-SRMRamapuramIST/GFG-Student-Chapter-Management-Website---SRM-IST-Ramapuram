@@ -9,7 +9,6 @@ const MonthlyActivityHeatmap = ({
   maxStreak,
   dailyActivity,
 }) => {
-
   // console.log("avgPerDay", avgPerDay);
   // console.log("maxStreak", maxStreak);
   // console.log("dailyActivity", dailyActivity);
@@ -29,10 +28,10 @@ const MonthlyActivityHeatmap = ({
   // Define color ranges with labels
   const colorRanges = [
     { range: "0", color: "bg-gray-100", textColor: "text-gray-800" },
-    { range: "1-5", color: "bg-emerald-200", textColor: "text-gray-800" },
-    { range: "6-10", color: "bg-emerald-400", textColor: "text-gray-800" },
-    { range: "11-15", color: "bg-emerald-600", textColor: "text-white" },
-    { range: "15+", color: "bg-emerald-800", textColor: "text-white" },
+    { range: "1-2", color: "bg-emerald-200", textColor: "text-gray-800" },
+    { range: "3-5", color: "bg-emerald-400", textColor: "text-gray-800" },
+    { range: "6-10", color: "bg-emerald-600", textColor: "text-white" },
+    { range: "10+", color: "bg-emerald-800", textColor: "text-white" },
   ];
 
   // Generate dummy data for the month
@@ -40,27 +39,32 @@ const MonthlyActivityHeatmap = ({
     if (!dailyActivity?.length) return;
 
     // Populate activity data with dailyActivity or default to 0 solved
-    const data = Array.from({ length: getDaysInMonth(month, year) }, (_, index) => {
-      const day = index + 1;
-      const activity = dailyActivity.find(d => new Date(d.date).getDate() === day);
-      return {
-      day,
-      date: new Date(year, month, day),
-      solved: activity ? activity.count : 0
-      };
-    });
+    const data = Array.from(
+      { length: getDaysInMonth(month, year) },
+      (_, index) => {
+        const day = index + 1;
+        const activity = dailyActivity.find(
+          (d) => new Date(d.date).getDate() === day
+        );
+        return {
+          day,
+          date: new Date(year, month, day),
+          solved: activity ? activity.count : 0,
+        };
+      }
+    );
 
     setActivityData(data);
 
     // Calculate stats
-    const maxSolved = Math.max(...data.map(d => d.solved));
+    const maxSolved = Math.max(...data.map((d) => d.solved));
     const totalSolved = data.reduce((sum, d) => sum + d.solved, 0);
 
     setStats({
       maxSolved,
       totalSolved,
       avgPerDay: Number(avgPerDay).toFixed(2),
-      streakDays: maxStreak
+      streakDays: maxStreak,
     });
   }, [dailyActivity, avgPerDay, maxStreak]);
 
@@ -83,17 +87,17 @@ const MonthlyActivityHeatmap = ({
 
   const getActivityColor = (solved) => {
     if (solved === 0) return colorRanges[0].color;
-    if (solved >= 1 && solved <= 5) return colorRanges[1].color;
-    if (solved >= 6 && solved <= 10) return colorRanges[2].color;
-    if (solved >= 11 && solved <= 15) return colorRanges[3].color;
+    if (solved >= 1 && solved <= 2) return colorRanges[1].color;
+    if (solved >= 3 && solved <= 5) return colorRanges[2].color;
+    if (solved >= 6 && solved <= 10) return colorRanges[3].color;
     return colorRanges[4].color;
   };
 
   const getActivityTextColor = (solved) => {
     if (solved === 0) return colorRanges[0].textColor;
-    if (solved >= 1 && solved <= 5) return colorRanges[1].textColor;
-    if (solved >= 6 && solved <= 10) return colorRanges[2].textColor;
-    if (solved >= 11 && solved <= 15) return colorRanges[3].textColor;
+    if (solved >= 1 && solved <= 2) return colorRanges[1].textColor;
+    if (solved >= 3 && solved <= 5) return colorRanges[2].textColor;
+    if (solved >= 6 && solved <= 10) return colorRanges[3].textColor;
     return colorRanges[4].textColor;
   };
 

@@ -88,10 +88,10 @@ const Profile = () => {
           bio: data.bio || "",
 
           social: [
-            {
-              platform: "codolio",
-              url: `https://codolio.com/profile/${data.codolioUsername}`,
-            },
+            // {
+            //   platform: "codolio",
+            //   url: `https://codolio.com/profile/${data.codolioUsername}`,
+            // },
             {
               platform: "linkedin",
               url: `https://linkedin.com/in/${data.linkedinUsername}`,

@@ -52,7 +52,7 @@ const steps = [
       "codechefUsername",
       "codeforcesUsername",
       "geeksforgeeksUsername",
-      "codolioUsername",
+      // "codolioUsername",
     ],
   },
   {
@@ -95,7 +95,7 @@ const SignUp = () => {
       codechefUsername: "",
       codeforcesUsername: "",
       geeksforgeeksUsername: "",
-      codolioUsername: "",
+      // codolioUsername: "",
       profilePicture: [],
       otp: "",
     },
@@ -199,11 +199,11 @@ const SignUp = () => {
       placeholder: "Codeforces Username",
       validation: { required: "Codeforces is required" },
     },
-    codolioUsername: {
-      icon: <MdCode />,
-      placeholder: "Codolio Username",
-      validation: { required: "Codolio is required" },
-    },
+    // codolioUsername: {
+    //   icon: <MdCode />,
+    //   placeholder: "Codolio Username",
+    //   validation: { required: "Codolio is required" },
+    // },
     profilePicture: {
       icon: <MdAddAPhoto />,
       placeholder: "Upload Profile Picture",

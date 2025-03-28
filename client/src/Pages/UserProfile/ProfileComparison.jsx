@@ -39,10 +39,10 @@ const mockProfiles = {
         platform: "linkedin",
         url: "https://linkedin.com/in/johndoe",
       },
-      {
-        platform: "codolio",
-        url: "https://codolio.com/profile/johndoe",
-      },
+      // {
+      //   platform: "codolio",
+      //   url: "https://codolio.com/profile/johndoe",
+      // },
     ],
 
     stats: {
@@ -125,10 +125,10 @@ const mockProfiles = {
         platform: "linkedin",
         url: "https://linkedin.com/in/janesmith",
       },
-      {
-        platform: "codolio",
-        url: "https://codolio.com/profile/janesmith",
-      },
+      // {
+      //   platform: "codolio",
+      //   url: "https://codolio.com/profile/janesmith",
+      // },
     ],
 
     stats: {
@@ -288,7 +288,7 @@ const ProfileComparison = () => {
     bio: "",
     social: [
       { platform: "linkedin", url: "" },
-      { platform: "codolio", url: "" },
+      // { platform: "codolio", url: "" },
     ],
     stats: {
       questions: 0,
@@ -370,10 +370,10 @@ const ProfileComparison = () => {
               platform: "linkedin",
               url: `https://linkedin.com/in/${data.linkedinUsername}`,
             },
-            {
-              platform: "codolio",
-              url: `https://codolio.com/profile/${data.codolioUsername}`,
-            },
+            // {
+            //   platform: "codolio",
+            //   url: `https://codolio.com/profile/${data.codolioUsername}`,
+            // },
           ],
 
           stats: {

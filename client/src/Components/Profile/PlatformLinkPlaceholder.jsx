@@ -20,10 +20,10 @@ const PlatformLinkPlaceholder = ({ platform, username }) => {
       base: "https://linkedin.com/in/",
       display: "linkedin.com/in/",
     },
-    codolio: {
-      base: "https://codolio.com/profile/",
-      display: "codolio.com/profile/",
-    },
+    // codolio: {
+    //   base: "https://codolio.com/profile/",
+    //   display: "codolio.com/profile/",
+    // },
   };
 
   if (!username) return null;

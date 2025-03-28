@@ -78,7 +78,7 @@ const ConfirmationPopup = ({
 
             {/* Content */}
             <div className="p-6">
-              <p className="text-gray-600">{message}</p>
+              <p className="text-gray-600 whitespace-pre-line">{message}</p>
             </div>
 
             {/* Actions */}
