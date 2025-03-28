@@ -41,12 +41,19 @@ const calculateMaxStreak = (dailyActivity) => {
 
 // Function to calculate avg per day
 const calculateAvgPerDay = (dailyActivity) => {
-  const totalDays = dailyActivity.length;
+  const now = new Date();
+  const totalDays = new Date(
+    now.getFullYear(),
+    now.getMonth() + 1,
+    0
+  ).getDate(); // Get total days in the current month
+
   if (totalDays === 0) return 0;
 
   const totalCount = dailyActivity.reduce((sum, entry) => sum + entry.count, 0);
   return (totalCount / totalDays).toFixed(2);
 };
+
 
 // Update dailyActivity every night at 12:30 AM
 const updateDailyActivity = async () => {
