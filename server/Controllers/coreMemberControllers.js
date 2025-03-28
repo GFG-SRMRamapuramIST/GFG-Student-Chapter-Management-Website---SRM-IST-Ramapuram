@@ -12,7 +12,13 @@ const {
   updateContestDataScheduler,
 } = require("../Scheduler/CodingPlatformScheduler/ContestDataScheduler");
 
-const { DailyContests, Notice, Resources, Announcement } = require("../Models");
+const {
+  DailyContests,
+  Notice,
+  Resources,
+  Announcement,
+  VideoResources,
+} = require("../Models");
 /*
 ************************** APIs **************************
 
@@ -39,6 +45,14 @@ const { DailyContests, Notice, Resources, Announcement } = require("../Models");
 19. Get Announcement API
 
 20. Get contest & meeting data API
+
+21. Create a video resource API
+22. Add a video to a video resource API
+23. Delete a video of a video resource API
+24. Delete a video resource API
+25. Edit a video resource API
+26. Fetch all video resource API
+27. Fetch all videos of a video resource API
 
 **********************************************************
 */
@@ -816,7 +830,7 @@ exports.fetchDashboardCalenderData = async (req, res) => {
 
 //*************************************************************************/
 
-//***************************Resource API ******************************** */
+//*************************** Resource API ******************************** */
 //10. Create a resource API
 exports.createResource = async (req, res) => {
   try {
@@ -1488,3 +1502,346 @@ exports.fetchAllAnnouncement = async (req, res) => {
   }
 };
 //**************************************************************************** */
+
+//*************************** Video Resource API ******************************** */
+
+//21. Create a video resource API
+exports.createVideoResource = async (req, res) => {
+  try {
+    const { title, description } = req.body;
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).json({ message: "No token provided." });
+    }
+
+    const allowedRoles = ["COREMEMBER", "VICEPRESIDENT", "PRESIDENT", "ADMIN"];
+    const authResult = await verifyAndAuthorize(token, allowedRoles);
+
+    if (authResult.status !== 200) {
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
+    }
+
+    const newVideoResource = new VideoResources({
+      title,
+      description,
+    });
+
+    await newVideoResource.save();
+
+    return res.status(200).json({
+      message: "Video Resource created successfully!",
+      resource: newVideoResource,
+    });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Internal server error.", error: error.message });
+  }
+};
+
+//22. Add a video to a video resource API
+exports.addVideoToVideoResource = async (req, res) => {
+  try {
+    const { vidoeResourceId, title, description, link } = req.body;
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).json({ message: "No token provided." });
+    }
+
+    const allowedRoles = ["COREMEMBER", "VICEPRESIDENT", "PRESIDENT", "ADMIN"];
+    const authResult = await verifyAndAuthorize(token, allowedRoles);
+
+    if (authResult.status !== 200) {
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
+    }
+
+    // Find the resource
+    const videoResource = await VideoResources.findById(vidoeResourceId);
+    if (!videoResource) {
+      return res.status(404).json({ message: "Vido Resource not found!" });
+    }
+
+    // Add the new question
+    videoResource.videos.push({ title, description, link });
+
+    // Update last updated time
+    videoResource.createdAt = new Date();
+
+    // Save the updated resource
+    await videoResource.save();
+
+    return res
+      .status(200)
+      .json({ message: "Video added successfully!", videoResource });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Internal server error.", error: error.message });
+  }
+};
+
+//23. Delete a video of a video resource API
+exports.deleteVideoFromVideoResource = async (req, res) => {
+  try {
+    const { videoResourceId, videoId } = req.body;
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).json({ message: "No token provided." });
+    }
+
+    const allowedRoles = ["COREMEMBER", "VICEPRESIDENT", "PRESIDENT", "ADMIN"];
+    const authResult = await verifyAndAuthorize(token, allowedRoles);
+
+    if (authResult.status !== 200) {
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
+    }
+
+    // Find the resource
+    const videoResource = await VideoResources.findById(videoResourceId);
+    if (!videoResource) {
+      return res.status(404).json({ message: "Video Resource not found!" });
+    }
+
+    // Find the video index
+    const videoIndex = videoResource.videos.findIndex(
+      (q) => q._id.toString() === videoId
+    );
+    if (videoIndex === -1) {
+      return res
+        .status(404)
+        .json({ message: "Video not found in the video resource!" });
+    }
+
+
+    // Remove the video from the array
+    videoResource.videos.splice(videoIndex, 1);
+
+    // Update last updated time
+    videoResource.createdAt = new Date();
+
+    // Save the updated resource
+    await videoResource.save();
+
+    return res
+      .status(200)
+      .json({ message: "Video deleted successfully!", videoResource });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Internal server error.", error: error.message });
+  }
+};
+
+//24. Delete a video resource API
+exports.deleteVideoResource = async (req, res) => {
+  try {
+    const { videoResourceId } = req.body;
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).json({ message: "No token provided." });
+    }
+
+    const allowedRoles = ["COREMEMBER", "VICEPRESIDENT", "PRESIDENT", "ADMIN"];
+    const authResult = await verifyAndAuthorize(token, allowedRoles);
+
+    if (authResult.status !== 200) {
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
+    }
+
+    // Find and delete the resource
+    const videoResource = await VideoResources.findByIdAndDelete(videoResourceId);
+
+    if (!videoResource) {
+      return res.status(404).json({ message: "Video Resource not found!" });
+    }
+
+    return res.status(200).json({ message: "Video Resource deleted successfully!" });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Internal server error.", error: error.message });
+  }
+};
+
+//25. Edit a video resource API
+exports.editVideoResource = async (req, res) => {
+  try {
+    const { videoResourceId, title, description } = req.body;
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).json({ message: "No token provided." });
+    }
+
+    const allowedRoles = ["COREMEMBER", "VICEPRESIDENT", "PRESIDENT", "ADMIN"];
+    const authResult = await verifyAndAuthorize(token, allowedRoles);
+
+    if (authResult.status !== 200) {
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
+    }
+
+    // Find and update the video resource
+    const updatedVideoResource = await VideoResources.findByIdAndUpdate(
+      videoResourceId,
+      { title, description, createdAt: new Date() }, // Update createdAt timestamp
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedVideoResource) {
+      return res.status(404).json({ message: "Video Resource not found!" });
+    }
+
+    return res.status(200).json({
+      message: "Video Resource updated successfully!",
+      resource: updatedVideoResource,
+    });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Internal server error.", error: error.message });
+  }
+};
+
+//26. Fetch all video resource API
+exports.fetchAllVideoResources = async (req, res) => {
+  try {
+    // Extract token and validate
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(401).json({ message: "No token provided" });
+
+    const allowedRoles = [
+      "USER",
+      "MEMBER",
+      "COREMEMBER",
+      "VICEPRESIDENT",
+      "PRESIDENT",
+      "ADMIN",
+    ];
+    const authResult = await verifyAndAuthorize(token, allowedRoles);
+    if (authResult.status !== 200) {
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
+    }
+
+    // Extract query params (page and search)
+    let { page = 1, search = "" } = req.body;
+    page = parseInt(page, 10);
+    const limit = 6; // Fixed limit
+
+    const searchFilter = search ? { title: new RegExp(search, "i") } : {}; // Case-insensitive search
+
+    const skip = (page - 1) * limit;
+
+    // Fetch resources and total count concurrently
+    const [resources, totalResources] = await Promise.all([
+      VideoResources.find(searchFilter).skip(skip).limit(limit).lean(), // Optimized query performance
+      VideoResources.countDocuments(searchFilter),
+    ]);
+
+    // Transform response data
+    const formattedVideoResources = resources.map((resource) => ({
+      id: resource._id,
+      title: resource.title,
+      description: resource.description,
+      totalVideos: resource.videos.length,
+      lastUpdatedAt: resource.createdAt, // Same as createdAt
+    }));
+
+    return res.status(200).json({
+      message: "Video Resources fetched successfully!",
+      data: formattedVideoResources,
+      totalPages: Math.ceil(totalResources / limit),
+      currentPage: page,
+      limit,
+    });
+  } catch (error) {
+    console.error("Error fetching resources:", error.message);
+    return res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
+  }
+};
+
+//27. Fetch all videos of a video resource API
+exports.fetchAllVideosOfVideoResource = async (req, res) => {
+  try {
+    // Extract token and validate
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(401).json({ message: "No token provided" });
+
+    const allowedRoles = [
+      "USER",
+      "MEMBER",
+      "COREMEMBER",
+      "VICEPRESIDENT",
+      "PRESIDENT",
+      "ADMIN",
+    ];
+    const authResult = await verifyAndAuthorize(token, allowedRoles);
+    if (authResult.status !== 200) {
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
+    }
+
+    // Extract parameters
+    const { videoResourceId } = req.body;
+    //console.log(videoResourceId);
+    if (!videoResourceId) {
+      return res.status(400).json({ message: "Video Resource ID is required!" });
+    }
+
+    // Find the resource
+    const videoResource = await VideoResources.findById(videoResourceId).lean();
+    if (!videoResource) {
+      return res.status(404).json({ message: "Video Resource not found!" });
+    }
+
+    // Apply filtering
+    let filteredVideos = videoResource.videos;
+
+    // Format response
+    const formattedVideos = filteredVideos.map((q) => ({
+      id: q._id, // Add question ID
+      videoTitle: q.title,
+      videoDescription: q.description,
+      videoLink: q.link
+    }));
+
+    // Return resource info along with questions
+    return res.status(200).json({
+      message: "Videos fetched successfully!",
+      resourceInfo: {
+        id: videoResource._id,
+        title: videoResource.title,
+        description: videoResource.description,
+        lastModifiedAt: videoResource.updatedAt || videoResource.createdAt,
+        totalVideos: videoResource.videos.length,
+      },
+      videos: formattedVideos,
+      totalVideos: formattedVideos.length,
+    });
+  } catch (error) {
+    console.error("Error fetching questions:", error.message);
+    return res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
+  }
+};
+
+//****************************************************************************** */

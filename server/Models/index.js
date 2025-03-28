@@ -7,6 +7,7 @@ const BlockedEmails = require("./blockedEmailsSchema");
 const ConstantValue = require("./constantSchema");
 const potdSchema = require("./potdSchema");
 const Announcement = require("./announcementSchema");
+const VideoResources = require("./videoResourceSchema");
 
 module.exports = {
   Users,
@@ -18,4 +19,5 @@ module.exports = {
   ConstantValue,
   potdSchema,
   Announcement,
+  VideoResources,
 };

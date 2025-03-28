@@ -106,6 +106,8 @@ const Practice = () => {
     } catch (error) {
       ToastMsg("Internal Server Error", "error");
       console.log("Internal server error: ", error);
+    }finally{
+      fetchAllResourcesHandler();
     }
   };
 

@@ -1,33 +1,16 @@
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { FaSearch, FaPlus, FaSpinner } from "react-icons/fa";
 import { Link } from "react-router-dom";
+
+// Importing icons
+import { FaSearch, FaPlus, FaSpinner } from "react-icons/fa";
 import { BiVideo } from "react-icons/bi";
 
-// Sample Resource Data
-const initialResourcesData = [
-  {
-    id: "1",
-    title: "React Fundamentals",
-    description: "A comprehensive guide to learning React from scratch",
-    videoCount: 12,
-    lastUpdated: "2024-03-15T10:30:00Z"
-  },
-  {
-    id: "2", 
-    title: "Advanced JavaScript Techniques",
-    description: "Deep dive into modern JavaScript programming concepts",
-    videoCount: 8,
-    lastUpdated: "2024-02-20T14:45:00Z"
-  },
-  {
-    id: "3",
-    title: "Node.js Backend Development",
-    description: "Learn to build scalable backend applications with Node.js",
-    videoCount: 15,
-    lastUpdated: "2024-03-10T09:15:00Z"
-  }
-];
+import { Pagination, ToastMsg } from "../../Utilities";
+import { CreateResourceSetModal } from "../../Components";
+
+// Importing APIs
+import { CoreMemberServices } from "../../Services";
 
 const ResourceCard = ({ resource }) => {
   return (
@@ -66,40 +49,104 @@ const ResourceCard = ({ resource }) => {
 };
 
 const AllResources = () => {
-  const [resources, setResources] = useState([]);
+  const { createVideoResourceFunction, fetchAllVideoResourcesFunction } =
+    CoreMemberServices();
+
   const [loading, setLoading] = useState(true);
+
+  const [showCreateModal, setShowCreateModal] = useState(false);
+
+  //* ************************* Video Resources APIs Start here***********************/
+  // Search Logic
   const [searchResource, setSearchResource] = useState("");
-  const [debouncedSearchResource, setDebouncedSearchResource] = useState(searchResource);
+  const [debouncedSearchResource, setDebouncedSearchResource] =
+    useState(searchResource);
 
-  // Simulate data fetching
-  useEffect(() => {
-    const fetchResources = () => {
-      // Simulate API delay
-      setTimeout(() => {
-        // Filter resources based on search
-        const filteredResources = initialResourcesData.filter(resource => 
-          resource.title.toLowerCase().includes(debouncedSearchResource.toLowerCase()) ||
-          resource.description.toLowerCase().includes(debouncedSearchResource.toLowerCase())
-        );
-
-        setResources(filteredResources);
-        setLoading(false);
-      }, 500);
-    };
-
-    fetchResources();
-  }, [debouncedSearchResource]);
-
-  // Debounce search input
+  // Debounce mechanism for serach input
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearchResource(searchResource);
-    }, 500);
+    }, 1000); // 1s debounce time
 
     return () => {
       clearTimeout(handler);
     };
   }, [searchResource]);
+
+  // Pagination Logic
+  const [pageInfo, setPageInfo] = useState({
+    currentPage: 1,
+    totalPages: null,
+  });
+
+  const setCurrentPage = (page) => {
+    setPageInfo((prev) => ({ ...prev, currentPage: page }));
+  };
+
+  const [resources, setResources] = useState([]);
+
+  // Fetch all resources
+  const fetchAllVideoResourcesHandler = async () => {
+    setLoading(true);
+    try {
+      const response = await fetchAllVideoResourcesFunction({
+        page: pageInfo.currentPage,
+        search: debouncedSearchResource,
+      });
+
+      if (response.status === 200) {
+        const { currentPage, totalPages } = response.data;
+        setPageInfo({ currentPage, totalPages });
+
+        const formattedResources = response.data.data.map((resource) => ({
+          id: resource.id, // Unique ID
+          title: resource.title,
+          description: resource.description,
+          videoCount: resource.totalVideos,
+          lastUpdated: resource.lastUpdatedAt.split("T")[0],
+        }));
+
+        setResources(formattedResources);
+      } else {
+        ToastMsg(response.response.data.message, "error");
+        console.log(response.response.data.message);
+      }
+    } catch (error) {
+      ToastMsg("Internal Server Error!", "error");
+      console.error("Fetch All Video Resources Error: ", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const fetchVideoResources = async () => {
+      await fetchAllVideoResourcesHandler();
+    };
+
+    fetchVideoResources();
+  }, [pageInfo.currentPage, debouncedSearchResource]);
+
+  // Resources Creating Handlers
+  const handleCreateResource = async (data) => {
+    //console.log("Creating resource:", data);
+    try {
+      const response = await createVideoResourceFunction(data);
+      if (response.status == 200) {
+        ToastMsg(response.data.message, "success");
+      } else {
+        ToastMsg(response.response.data.message, "error");
+        console.log(response);
+      }
+    } catch (error) {
+      ToastMsg("Internal Server Error", "error");
+      console.log("Internal server error: ", error);
+    } finally {
+      fetchAllVideoResourcesHandler();
+    }
+  };
+
+  //* ************************* Video Resources APIs Ends here***********************/
 
   return (
     <div className="min-h-screen p-3 sm:p-6">
@@ -116,17 +163,18 @@ const AllResources = () => {
               className="w-full pl-12 pr-4 py-2 sm:py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gfgsc-green transition-all duration-200"
             />
           </div>
-  
+
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
+            onClick={() => setShowCreateModal(true)}
             className="flex items-center justify-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-gfgsc-green to-emerald-600 text-white rounded-xl hover:from-emerald-600 hover:to-emerald-700 transition-all duration-300 w-full sm:w-auto shadow-lg shadow-gfgsc-green/20"
           >
             <FaPlus className="text-sm" />
             <span>Create Resource</span>
           </motion.button>
         </div>
-  
+
         {/* Resources Grid */}
         {loading ? (
           <div className="flex justify-center items-center h-64">
@@ -134,8 +182,12 @@ const AllResources = () => {
           </div>
         ) : resources.length === 0 ? (
           <div className="flex flex-col justify-center items-center h-64 text-center">
-            <div className="text-gray-400 text-lg sm:text-xl mb-2">No resources found</div>
-            <div className="text-gray-500 text-sm sm:text-base">Try adjusting your search or create a new resource</div>
+            <div className="text-gray-400 text-lg sm:text-xl mb-2">
+              No resources found
+            </div>
+            <div className="text-gray-500 text-sm sm:text-base">
+              Try adjusting your search or create a new resource
+            </div>
           </div>
         ) : (
           <AnimatePresence>
@@ -149,6 +201,24 @@ const AllResources = () => {
             </motion.div>
           </AnimatePresence>
         )}
+
+        {/* Pagination */}
+        {!loading && resources.length > 0 && pageInfo.totalPages > 1 && (
+          <div className="mt-8 flex justify-center">
+            <Pagination
+              currentPage={pageInfo.currentPage}
+              totalPages={pageInfo.totalPages}
+              onPageChange={setCurrentPage}
+            />
+          </div>
+        )}
+
+        {/* Create Video Resource Modal */}
+        <CreateResourceSetModal
+          isOpen={showCreateModal}
+          onClose={() => setShowCreateModal(false)}
+          onSubmit={handleCreateResource}
+        />
       </div>
     </div>
   );

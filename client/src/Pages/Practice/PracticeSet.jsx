@@ -122,7 +122,7 @@ const PracticeSet = () => {
         try {
           const response = await deleteResourceFunction({ resourceId: id });
           if (response.status === 200) {
-            ToastMsg("Resource deleted successfully!", "success");
+            ToastMsg(response.data.message, "success");
             navigate("/practice");
           } else {
             ToastMsg(response.response.data.message, "error");
@@ -130,7 +130,7 @@ const PracticeSet = () => {
           }
         } catch (error) {
           ToastMsg("Internal Server Error!", "error");
-          console.error("Delete Resource Error: ", error.message);
+          console.error("Delete Practice set Error: ", error.message);
         }
       },
     });

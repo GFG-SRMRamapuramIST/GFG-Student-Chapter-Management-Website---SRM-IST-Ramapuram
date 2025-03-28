@@ -200,6 +200,91 @@ const fetchAllAnnouncementFunction = async (userToken) => {
   );
 };
 
+// Create a resource API
+const createVideoResourceFunction = async ({ title, description }, userToken) => {
+  return await commonrequest(
+    "POST",
+    `${BACKEND_URL}/api/v1/core-member/create-video-resource`,
+    { title, description },
+    { Authorization: `Bearer ${userToken}` }
+  );
+};
+
+// Add a question to a resource API
+const addVideoToVideoResourceFunction = async (
+  { vidoeResourceId, title, description, link },
+  userToken
+) => {
+  return await commonrequest(
+    "POST",
+    `${BACKEND_URL}/api/v1/core-member/add-video`,
+    { vidoeResourceId, title, description, link },
+    { Authorization: `Bearer ${userToken}` }
+  );
+};
+
+// Delete a question from a resource API
+const deleteVideoFromVideoResourceFunction = async (
+  { videoResourceId, videoId } ,
+  userToken
+) => {
+  return await commonrequest(
+    "DELETE",
+    `${BACKEND_URL}/api/v1/core-member/delete-video`,
+    { videoResourceId, videoId } ,
+    { Authorization: `Bearer ${userToken}` }
+  );
+};
+
+// Delete a resource API
+const deleteVideoResourceFunction = async ({ videoResourceId }, userToken) => {
+  return await commonrequest(
+    "DELETE",
+    `${BACKEND_URL}/api/v1/core-member/delete-video-resource`,
+    { videoResourceId },
+    { Authorization: `Bearer ${userToken}` }
+  );
+};
+
+// Edit a resource API
+const editVideoResourceFunction = async (
+  { videoResourceId, title, description },
+  userToken
+) => {
+  return await commonrequest(
+    "PUT",
+    `${BACKEND_URL}/api/v1/core-member/edit-video-resource`,
+    { videoResourceId, title, description },
+    { Authorization: `Bearer ${userToken}` }
+  );
+};
+
+// Fetch all resources API
+const fetchAllVideoResourcesFunction = async (
+  { page = 1, search = "" },
+  userToken
+) => {
+  return await commonrequest(
+    "POST",
+    `${BACKEND_URL}/api/v1/core-member/fetch-all-video-resource`,
+    { page, search },
+    { Authorization: `Bearer ${userToken}` }
+  );
+};
+
+// Fetch all questions of a resource API
+const fetchAllVideoOfVideoResourceFunction = async (
+  { videoResourceId },
+  userToken
+) => {
+  return await commonrequest(
+    "POST",
+    `${BACKEND_URL}/api/v1/core-member/fetch-all-video`,
+    { videoResourceId },
+    { Authorization: `Bearer ${userToken}` }
+  );
+};
+
 // Wrapper to use token inside React components
 const CoreMemberServices = () => {
   const userToken = useAuthToken();
@@ -233,6 +318,20 @@ const CoreMemberServices = () => {
     deleteAnnouncementFunction: (params) =>
       deleteAnnouncementFunction(params, userToken),
     fetchAllAnnouncementFunction: () => fetchAllAnnouncementFunction(userToken),
+    createVideoResourceFunction: (params) =>
+      createVideoResourceFunction(params, userToken),
+    addVideoToVideoResourceFunction: (params) =>
+      addVideoToVideoResourceFunction(params, userToken),
+    deleteVideoFromVideoResourceFunction: (params) =>
+      deleteVideoFromVideoResourceFunction(params, userToken),
+    deleteVideoResourceFunction: (params) =>
+      deleteVideoResourceFunction(params, userToken),
+    editVideoResourceFunction: (params) =>
+      editVideoResourceFunction(params, userToken),
+    fetchAllVideoResourcesFunction: (params) =>
+      fetchAllVideoResourcesFunction(params, userToken),
+    fetchAllVideoOfVideoResourceFunction: (params) =>
+      fetchAllVideoOfVideoResourceFunction(params, userToken),
   };
 };
 
