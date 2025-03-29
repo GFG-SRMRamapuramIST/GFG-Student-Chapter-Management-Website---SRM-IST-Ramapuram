@@ -22,6 +22,24 @@ const {
 **********************************************************
 */
 
+const initializeDailyActivity = async (user) => {
+  const startDate = moment().startOf("month");
+  const today = moment().startOf("day");
+  const dailyActivity = [];
+
+  for (
+    let date = startDate;
+    date.isSameOrBefore(today, "day");
+    date.add(1, "day")
+  ) {
+    dailyActivity.push({ date: date.toDate(), count: 0 });
+  }
+
+  user.dailyActivity = dailyActivity;
+  user.maxStreak = 0;
+  user.avgPerDay = 0;
+};
+
 //0. Verify Auth Token
 exports.verifyAuthToken = async (req, res) => {
   try {
@@ -104,7 +122,6 @@ exports.register = async (req, res) => {
       academicYear,
       phoneNumber,
       linkedinUsername,
-      codolioUsername,
       leetcodeUsername,
       codechefUsername,
       codeforcesUsername,
@@ -122,7 +139,6 @@ exports.register = async (req, res) => {
       !academicYear ||
       !phoneNumber ||
       !linkedinUsername ||
-      !codolioUsername ||
       !leetcodeUsername ||
       !codechefUsername ||
       !codeforcesUsername ||
@@ -172,13 +188,15 @@ exports.register = async (req, res) => {
       phoneNumber: phoneNumber || null,
       role: "USER",
       linkedinUsername: linkedinUsername || null,
-      codolioUsername: codolioUsername || null,
       leetcodeUsername: leetcodeUsername || null,
       codechefUsername: codechefUsername || null,
       codeforcesUsername: codeforcesUsername || null,
       geeksforgeeksUsername: geeksforgeeksUsername || null,
       currentRank: lastRank + 1,
     });
+
+    // Initialize dailyActivity with zero counts
+    await initializeDailyActivity(newUser);
 
     // Save the user to the database
     const savedUser = await newUser.save();

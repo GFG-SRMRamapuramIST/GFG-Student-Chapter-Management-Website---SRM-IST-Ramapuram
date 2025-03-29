@@ -65,10 +65,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
-  codolioUsername: {
-    type: String,
-    default: null,
-  },
   leetcodeUsername: {
     type: String,
     default: null,
