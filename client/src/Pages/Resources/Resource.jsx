@@ -14,7 +14,11 @@ import {
 } from "react-icons/fa";
 
 import { AddResourceModal, EditResourceModal } from "../../Components";
-import { ConfirmationPopup, ToastMsg } from "../../Utilities";
+import {
+  ConfirmationPopup,
+  processYouTubeUrl,
+  ToastMsg,
+} from "../../Utilities";
 import { useUser } from "../../Context/UserContext";
 
 // Importing APIs
@@ -183,10 +187,16 @@ const Resource = () => {
   const handleAddVideo = async (newVideo) => {
     //console.log(newVideo);
     try {
+      const processedVideoLink = processYouTubeUrl(newVideo.videoLink);
+      if (!processedVideoLink) {
+        ToastMsg("Invalid YouTube URL", "error");
+        return;
+      }
+
       const response = await addVideoToVideoResourceFunction({
         vidoeResourceId: id,
         title: newVideo.title,
-        link: newVideo.videoLink,
+        link: processedVideoLink,
         description: newVideo.description,
       });
       //console.log(response);
@@ -324,7 +334,7 @@ const Resource = () => {
                 >
                   <div className="relative">
                     <iframe
-                      src={video.videoLink}
+                      src={processYouTubeUrl(video.videoLink)}
                       title={video.videoTitle}
                       className="w-full aspect-video"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

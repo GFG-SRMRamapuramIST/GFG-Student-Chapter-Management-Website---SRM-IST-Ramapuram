@@ -128,6 +128,15 @@ const CustomCalendar = ({ events, fetchDashBoardCalenderData }) => {
 
   const handleContestCreationFunction = async (contestData) => {
     try {
+      // Check if contest is scheduled for last day of the month
+      const contestDate = new Date(contestData.date);
+      const lastDayOfMonth = new Date(contestDate.getFullYear(), contestDate.getMonth() + 1, 0).getDate();
+      
+      if (contestDate.getDate() === lastDayOfMonth) {
+        ToastMsg("Contests cannot be scheduled on the last day of the month", "error");
+        return;
+      }
+      
       const response = await contestCreationFunction(contestData);
       //console.log(response);
 
@@ -211,6 +220,12 @@ const CustomCalendar = ({ events, fetchDashBoardCalenderData }) => {
     };
   };
 
+  // Check if a date is the last day of the month
+  const isLastDayOfMonth = (date) => {
+    if (!date) return false;
+    return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate() === date.getDate();
+  };
+
   const days = getCurrentMonthDates();
 
   return (
@@ -280,22 +295,26 @@ const CustomCalendar = ({ events, fetchDashBoardCalenderData }) => {
             const isToday =
               date && date.toDateString() === new Date().toDateString();
             const hasEvents = meetings > 0 || contests > 0;
+            const isLastDay = date && isLastDayOfMonth(date);
 
             return (
               <motion.button
                 key={idx}
                 whileHover={date ? { scale: 1.05 } : {}}
                 onClick={() => date && hasEvents && setSelectedDate(date)}
-                className={`relative aspect-square p-2 rounded-2xl ${
+                className={`relative aspect-square p-2 rounded-2xl group ${
                   date ? "hover:bg-gray-100" : "bg-gray-50/50"
                 } ${
                   isToday
                     ? "bg-gfgsc-green-200/20 ring-2 ring-gfgsc-green"
+                    : isLastDay 
+                    ? "bg-red-100" 
                     : idx % 7 === 0 && date // Check if Sunday and has date
                     ? "bg-gfgsc-green-200/50"
                     : ""
                 }`}
                 disabled={!date || !hasEvents}
+                title={isLastDay ? "No activity day" : ""}
               >
                 {date && (
                   <div className="h-full flex flex-col">
@@ -306,6 +325,11 @@ const CustomCalendar = ({ events, fetchDashBoardCalenderData }) => {
                     >
                       {date.getDate()}
                     </span>
+                    {isLastDay && (
+                      <div className="hidden group-hover:flex absolute top-0 left-0 right-0 bottom-0 bg-red-100/80 rounded-2xl justify-center items-center">
+                        <span className="text-xs text-red-700 font-medium">No activity day</span>
+                      </div>
+                    )}
                     {hasEvents && (
                       <div className="absolute sm:inset-x-2 bottom-0 sm:bottom-1 md:bottom-2 flex sm:flex-col gap-1">
                         {contests > 0 && (

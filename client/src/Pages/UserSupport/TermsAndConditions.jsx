@@ -29,7 +29,7 @@ const TermsAndConditions = () => {
               <p className="text-gray-700 text-sm md:text-base">
                 Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia accusantium iusto minus repellendus recusandae delectus error fugiat tempore, dolorem maiores pariatur beatae quibusdam perspiciatis distinctio non nesciunt, perferendis molestiae aperiam. Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempora asperiores quis molestiae sapiente nisi illum possimus eius perspiciatis! Similique, voluptates perspiciatis! Quo voluptatum nisi saepe nihil dicta hic, nulla laudantium?
               </p>
-              <div className="p-3 md:p-8 space-y-4 md:space-y-6">
+              <div className="p-3 md:p-8 space-y-4 md:space-y-6 text-gray-700">
                 <div className="flex items-start space-x-2">
                   <div className="w-2 h-2 bg-gfgsc-green rounded-full mt-2 flex-shrink-0"></div>
                   <p className="flex-1 text-sm md:text-base">

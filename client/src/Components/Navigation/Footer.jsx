@@ -37,7 +37,7 @@ const Footer = ({ isLoggedIn }) => {
               Empowering students through technology, innovation, and
               collaborative learning.
             </p>
-            <div className="flex space-x-4">
+            <div className="flex space-x-4 items-center">
               <a
                 href="#"
                 className="text-gray-400 hover:text-gfgsc-green transition-colors duration-200"
@@ -118,10 +118,11 @@ const Footer = ({ isLoggedIn }) => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-12 pt-8 border-t border-gray-800">
-          <div className="text-center text-sm text-gray-400">
-            <p>© {year} GeeksforGeeks Student Chapter. All rights reserved.</p>
-          </div>
+        <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500">
+          <p>
+            © {new Date().getFullYear()} GeeksForGeeks Student Chapter - SRM
+            University. All rights reserved.
+          </p>
         </div>
       </div>
     </footer>

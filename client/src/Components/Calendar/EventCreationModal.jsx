@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import PropTypes from 'prop-types';
 
@@ -13,8 +13,8 @@ import { RotatingCloseButton } from "../../Utilities";
 
 const EventCreationModal = ({ isOpen, onClose, onSave }) => {
   const [loading, setLoading] = useState(false);
-
   const [eventType, setEventType] = useState("meeting");
+  const [isLastDayOfMonth, setIsLastDayOfMonth] = useState(false);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -27,11 +27,30 @@ const EventCreationModal = ({ isOpen, onClose, onSave }) => {
     platform: "leetcode",
   });
 
+  // Check if selected date is the last day of the month
+  useEffect(() => {
+    if (formData.date) {
+      const selectedDate = new Date(formData.date);
+      const lastDay = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0).getDate();
+      setIsLastDayOfMonth(selectedDate.getDate() === lastDay);
+    } else {
+      setIsLastDayOfMonth(false);
+    }
+  }, [formData.date]);
+
   // *** Event Creation Modal Handles ***
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Prevent contest scheduling on the last day of month
+    if (eventType === "contest" && isLastDayOfMonth) {
+      // Instead of just returning, show a toast message
+      const { ToastMsg } = require("../../Utilities");
+      ToastMsg("Contests cannot be scheduled on the last day of the month", "error");
+      return;
+    }
+    
     setLoading(true); // Start loading
-
     
     const eventData = {
       name: formData.title,
@@ -48,10 +67,10 @@ const EventCreationModal = ({ isOpen, onClose, onSave }) => {
           platform: formData.platform,
           endTime: formData.endTime,
         }),
-      };
+    };
       
-      // console.log("Form Data:", formData);
-      // console.log("Event Data:", eventData);
+    // console.log("Form Data:", formData);
+    // console.log("Event Data:", eventData);
 
     try {
       await onSave(eventData); // Call API
@@ -177,6 +196,9 @@ const EventCreationModal = ({ isOpen, onClose, onSave }) => {
                     className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gfgsc-green"
                     required
                   />
+                  {isLastDayOfMonth && eventType === "contest" && (
+                    <p className="text-red-500 text-xs mt-1">Contests cannot be scheduled on the last day of the month</p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -265,8 +287,10 @@ const EventCreationModal = ({ isOpen, onClose, onSave }) => {
               <div className="flex justify-end pt-4">
                 <button
                   type="submit"
-                  disabled={loading}
-                  className="px-6 py-2 bg-gfgsc-green text-white rounded-xl hover:bg-gfgsc-green-600 transition-colors"
+                  disabled={loading || (eventType === "contest" && isLastDayOfMonth)}
+                  className={`px-6 py-2 ${eventType === "contest" && isLastDayOfMonth 
+                    ? "bg-gray-400 cursor-not-allowed" 
+                    : "bg-gfgsc-green hover:bg-gfgsc-green-600"} text-white rounded-xl transition-colors`}
                 >
                   {loading ? (
                     <FaSpinner className="animate-spin inline-block" />

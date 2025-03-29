@@ -84,7 +84,7 @@ const Profile = () => {
               data.role.slice(1).toLowerCase()
             : "User",
           academic_year: data.academicYear || "Unknown",
-          profilePic: data.profilePicture || null,
+          profilePic: data.profilePicture || "https://placehold.co/100x100",
           bio: data.bio || "",
 
           social: [
