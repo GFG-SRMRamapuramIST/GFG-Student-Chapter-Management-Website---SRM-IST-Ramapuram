@@ -53,3 +53,12 @@ export const processYouTubeUrl = (url) => {
 
   return `https://www.youtube.com/embed/${videoId}`;
 };
+
+export const getMonthName = (monthNumber) => {
+  const months = [
+    'January', 'February', 'March', 'April',
+    'May', 'June', 'July', 'August',
+    'September', 'October', 'November', 'December'
+  ];
+  return months[monthNumber - 1];
+};

@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 import { FaSpinner } from "react-icons/fa";
 
 import { ProfileHero, ProfileSecondary } from "../../Components";
-import { ToastMsg } from "../../Utilities";
+import { getMonthName, ToastMsg } from "../../Utilities";
 
 // Importing APIs
 import { UserServices } from "../../Services";
@@ -135,51 +135,42 @@ const Profile = () => {
 
           badges: [
             ...data.achievement.gold.map((badge) => ({
-              id: Math.random(),
-              name: "Gold Medal",
+              id: `gold-${badge.year}-${badge.month}`,
+              name: `Gold - ${getMonthName(badge.month)} ${badge.year}`,
               type: "gold",
-              date: `${badge.year}-${badge.month
-                .toString()
-                .padStart(2, "0")}-01`,
-              description:
-                "Awarded for outstanding performance in coding contests.",
+              date: `${badge.year}-${String(badge.month).padStart(2, "0")}-01`,
+              description: "Secured first place in the monthly leaderboard",
             })),
             ...data.achievement.silver.map((badge) => ({
-              id: Math.random(),
-              name: "Silver Medal",
+              id: `silver-${badge.year}-${badge.month}`,
+              name: `Silver - ${getMonthName(badge.month)} ${badge.year}`,
               type: "silver",
-              date: `${badge.year}-${badge.month
-                .toString()
-                .padStart(2, "0")}-01`,
-              description:
-                "Awarded for excellent performance in coding contests.",
+              date: `${badge.year}-${String(badge.month).padStart(2, "0")}-01`,
+              description: "Secured second place in the monthly leaderboard",
             })),
             ...data.achievement.bronze.map((badge) => ({
-              id: Math.random(),
-              name: "Bronze Medal",
+              id: `bronze-${badge.year}-${badge.month}`,
+              name: `Bronze - ${getMonthName(badge.month)} ${badge.year}`,
               type: "bronze",
-              date: `${badge.year}-${badge.month
-                .toString()
-                .padStart(2, "0")}-01`,
-              description: "Awarded for good performance in coding contests.",
+              date: `${badge.year}-${String(badge.month).padStart(2, "0")}-01`,
+              description: "Secured third place in the monthly leaderboard",
             })),
             ...data.achievement.dailyActiveStreak.map((badge) => ({
-              id: Math.random(),
-              name: "Daily Active Streak",
+              id: `streak-${badge.year}-${badge.month}`,
+              name: `Daily Streak - ${getMonthName(badge.month)} ${
+                badge.year
+              }`,
               type: "dailyActiveStreak",
-              date: `${badge.year}-${badge.month
-                .toString()
-                .padStart(2, "0")}-01`,
-              description: "Awarded for good performance in coding contests.",
+              date: `${badge.year}-${String(badge.month).padStart(2, "0")}-01`,
+              description:
+                "Maintained daily coding streak throughout the month",
             })),
             ...data.achievement.maxAvgPerDay.map((badge) => ({
-              id: Math.random(),
-              name: "Max Average Per Day",
+              id: `avg-${badge.year}-${badge.month}`,
+              name: `Problem Solver - ${getMonthName(badge.month)} ${badge.year}`,
               type: "maxAvgPerDay",
-              date: `${badge.year}-${badge.month
-                .toString()
-                .padStart(2, "0")}-01`,
-              description: "Awarded for good performance in coding contests.",
+              date: `${badge.year}-${String(badge.month).padStart(2, "0")}-01`,
+              description: "Achieved highest average problems solved per day",
             })),
           ],
 
@@ -221,12 +212,9 @@ const Profile = () => {
       ) : (
         <>
           <ProfileHero userProfile={userProfileData} />
-          <ProfileSecondary
-            userProfile={userProfileData}
-          />
+          <ProfileSecondary userProfile={userProfileData} />
         </>
       )}
-      
     </div>
   );
 };

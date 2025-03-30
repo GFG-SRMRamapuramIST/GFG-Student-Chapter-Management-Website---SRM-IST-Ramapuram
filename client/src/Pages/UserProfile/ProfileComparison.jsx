@@ -18,7 +18,7 @@ import { codolioIcon } from "../../Assets";
 import { Medal } from "../../Components";
 import CustomDialog from "../../Components/ui/CustomDialog";
 import { getPlatformUrl, platformColors, platformIcons } from "../../Constants";
-import { ToastMsg } from "../../Utilities";
+import { getMonthName, ToastMsg } from "../../Utilities";
 
 // Importing APIs
 import { UserServices } from "../../Services";
@@ -355,7 +355,7 @@ const ProfileComparison = () => {
         ToastMsg("Error fetching profile data! Please try later", "error");
       } else {
         const data = response.data;
-        //console.log("Profile Data:", data);
+        console.log("Profile Data:", data);
         const formattedProfile = {
           id: data._id,
           name: data.name,
@@ -411,48 +411,43 @@ const ProfileComparison = () => {
           },
 
           badges: [
-            ...data.achievement.gold.map((name, index) => ({
-              id: index + 1,
-              name,
+            ...data.achievement.gold.map((badge) => ({
+              id: `gold-${badge.year}-${badge.month}`,
+              name: `Gold - ${getMonthName(badge.month)} ${badge.year}`,
               type: "gold",
-              date: null,
-              description: "",
+              date: `${badge.year}-${String(badge.month).padStart(2, "0")}-01`,
+              description: "Secured first place in the monthly leaderboard",
             })),
-            ...data.achievement.silver.map((name, index) => ({
-              id: index + 1 + data.achievement.gold.length,
-              name,
+            ...data.achievement.silver.map((badge) => ({
+              id: `silver-${badge.year}-${badge.month}`,
+              name: `Silver - ${getMonthName(badge.month)} ${badge.year}`,
               type: "silver",
-              date: null,
-              description: "",
+              date: `${badge.year}-${String(badge.month).padStart(2, "0")}-01`,
+              description: "Secured second place in the monthly leaderboard",
             })),
-            ...data.achievement.bronze.map((name, index) => ({
-              id:
-                index +
-                1 +
-                data.achievement.gold.length +
-                data.achievement.silver.length,
-              name,
+            ...data.achievement.bronze.map((badge) => ({
+              id: `bronze-${badge.year}-${badge.month}`,
+              name: `Bronze - ${getMonthName(badge.month)} ${badge.year}`,
               type: "bronze",
-              date: null,
-              description: "",
+              date: `${badge.year}-${String(badge.month).padStart(2, "0")}-01`,
+              description: "Secured third place in the monthly leaderboard",
             })),
             ...data.achievement.dailyActiveStreak.map((badge) => ({
-              id: Math.random(),
-              name: "Daily Active Streak",
+              id: `streak-${badge.year}-${badge.month}`,
+              name: `Daily Streak - ${getMonthName(badge.month)} ${
+                badge.year
+              }`,
               type: "dailyActiveStreak",
-              date: `${badge.year}-${badge.month
-                .toString()
-                .padStart(2, "0")}-01`,
-              description: "Awarded for good performance in coding contests.",
+              date: `${badge.year}-${String(badge.month).padStart(2, "0")}-01`,
+              description:
+                "Maintained daily coding streak throughout the month",
             })),
             ...data.achievement.maxAvgPerDay.map((badge) => ({
-              id: Math.random(),
-              name: "Max Average Per Day",
+              id: `avg-${badge.year}-${badge.month}`,
+              name: `Problem Solver - ${getMonthName(badge.month)} ${badge.year}`,
               type: "maxAvgPerDay",
-              date: `${badge.year}-${badge.month
-                .toString()
-                .padStart(2, "0")}-01`,
-              description: "Awarded for good performance in coding contests.",
+              date: `${badge.year}-${String(badge.month).padStart(2, "0")}-01`,
+              description: "Achieved highest average problems solved per day",
             })),
           ],
 

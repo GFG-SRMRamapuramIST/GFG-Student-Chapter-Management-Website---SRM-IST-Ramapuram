@@ -57,9 +57,9 @@ const TestimonialsSection = () => {
   const handleMouseLeave = () => setIsPaused(false);
 
   return (
-    <div className="relative py-12 md:py-20 bg-gfg-white">
+    <div className="relative py-12 md:py-20 bg-gfg-white overflow-hidden">
       <div
-        className="max-w-6xl overflow-hidden mx-auto px-4 sm:px-6 lg:px-8"
+        className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
@@ -86,10 +86,10 @@ const TestimonialsSection = () => {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -50 }}
               transition={{ duration: 0.5 }}
-              className="flex flex-col-reverse md:grid md:grid-cols-2 gap-8 md:gap-12 items-center"
+              className="flex flex-col-reverse md:grid md:grid-cols-3 gap-8 md:gap-12 items-center"
             >
               {/* Mobile: Profile Image */}
-              <div className="block md:hidden flex justify-center items-center mb-6">
+              <div className="md:hidden flex justify-center items-center mb-6">
                 <motion.div
                   whileHover={{ scale: 1.05 }}
                   className="relative w-32 h-32"
@@ -105,7 +105,7 @@ const TestimonialsSection = () => {
               </div>
 
               {/* Left - Testimonial Text */}
-              <div className="space-y-6 md:space-y-8 text-center md:text-left">
+              <div className="md:col-span-2 pace-y-6 md:space-y-8 text-center md:text-left">
                 <div className="relative">
                   <FaQuoteLeft className="hidden md:block absolute -top-8 -left-8 text-gfgsc-green/20 text-6xl" />
                   <p className="text-lg md:text-2xl font-light text-gfg-black leading-relaxed italic">
