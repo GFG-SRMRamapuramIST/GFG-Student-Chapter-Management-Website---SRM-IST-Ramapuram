@@ -355,7 +355,7 @@ const ProfileComparison = () => {
         ToastMsg("Error fetching profile data! Please try later", "error");
       } else {
         const data = response.data;
-        console.log("Profile Data:", data);
+        // console.log("Profile Data:", data);
         const formattedProfile = {
           id: data._id,
           name: data.name,

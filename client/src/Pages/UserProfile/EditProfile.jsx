@@ -38,6 +38,12 @@ const EditProfile = () => {
   // State management for different profile sections
   const [profileData, setProfileData] = useState({});
 
+  const [verificationPopup, setVerificationPopup] = useState({
+    isOpen: false,
+    platform: null,
+    username: null
+  });
+
   // Fetching edit profile page data *****
   const getEditProfilePageData = async () => {
     setLoading(true);
@@ -138,6 +144,18 @@ const EditProfile = () => {
       getEditProfilePageData();
       setLoading(false);
     }
+  };
+
+  const handleVerifyClick = (platform, username) => {
+    setVerificationPopup({
+      isOpen: true,
+      platform,
+      username
+    });
+  };
+  
+  const handleVerificationComplete = () => {
+    getEditProfilePageData(); // Refresh the profile data
   };
 
   // ***** Edit Profile Handle END *****

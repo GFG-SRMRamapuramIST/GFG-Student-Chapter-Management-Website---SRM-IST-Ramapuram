@@ -6,8 +6,8 @@ const ImageLoaderComponent = ({
   hashCode,
   alt,
   className,
-  blurWidth,
-  blurHeight,
+  blurWidth = "400px",
+  blurHeight = "400px",
   rounded,
 }) => {
   const [imageLoaded, setImageLoaded] = useState(false);

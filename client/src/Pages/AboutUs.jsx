@@ -1,21 +1,17 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   motion,
   AnimatePresence,
   useInView,
-  useScroll,
-  useTransform,
 } from "framer-motion";
 import {
   FaGithub,
   FaLinkedin,
   FaInstagram,
-  FaDiscord,
   FaLaptopCode,
 } from "react-icons/fa";
 import {
   BiCalendarEvent,
-  BiTrophy,
   BiCodeAlt,
   BiGroup,
   BiChevronLeft,
@@ -25,11 +21,11 @@ import { BsArrowRight, BsStars } from "react-icons/bs";
 import { HiOutlineLightBulb } from "react-icons/hi";
 
 // Assume these imports are working correctly
-import { logo } from "../Assets";
+import { AakashPic, AbhishekPic, RachitPic, SanjanaPic } from "../Assets";
 import GeekFest from "../Assets/GeekFest.png";
 import HalloweenHangout from "../Assets/HalloweenHangout.jpg";
 import OnboardingMeeting from "../Assets/OnboardingMeeting.jpg";
-import { AakashPfp } from "../Assets";
+import { ImageLoaderComponent } from "../Utilities";
 
 const AboutUs = () => {
   // State for active sections and animations
@@ -72,28 +68,28 @@ const AboutUs = () => {
     {
       name: "Aakash Kumar Yadav",
       role: "President",
-      image: AakashPfp,
+      image: AakashPic,
       quote: "Building the next generation of tech leaders",
       links: { github: "#", linkedin: "#", instagram: "#" },
     },
     {
       name: "Sanjana Jaldu",
       role: "Vice President",
-      image: "https://placehold.co/600/gfgsc-green/fff",
+      image: SanjanaPic,
       quote: "Fostering innovation through collaboration",
       links: { github: "#", linkedin: "#", instagram: "#" },
     },
     {
       name: "Rachit Dhaka",
       role: "Operations Head",
-      image: "https://placehold.co/600/gfgsc-green/fff",
+      image: RachitPic,
       quote: "Connecting minds, sharing knowledge",
       links: { github: "#", linkedin: "#", instagram: "#" },
     },
     {
       name: "Abishek Newase",
       role: "Technical Head",
-      image: "https://placehold.co/600/gfgsc-green/fff",
+      image: AbhishekPic,
       quote: "Creating opportunities for everyone to shine",
       links: { github: "#", linkedin: "#", instagram: "#" },
     },
@@ -503,11 +499,19 @@ const AboutUs = () => {
               >
                 <div className="relative overflow-hidden rounded-2xl shadow-lg">
                   <div className="aspect-w-3 aspect-h-4 bg-gfgsc-green-200">
-                    <img
+                    {/* <img
                       src={member.image}
                       alt={member.name}
                       className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-700 ease-out"
-                    />
+                    /> */}
+                    <ImageLoaderComponent
+                      url={member.image.url}
+                      hashCode={member.image.hashCode}
+                      alt={member.image.alt}
+                      className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-700 ease-out"
+                      blurWidth="100%"
+                      blurHeight="100%"
+                      />
                   </div>
 
                   <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/80 via-black/50 to-transparent">

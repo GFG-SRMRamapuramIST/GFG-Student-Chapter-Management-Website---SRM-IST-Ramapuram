@@ -1,7 +1,8 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaQuoteLeft } from "react-icons/fa";
-import { AakashPfp } from "../../Assets";
+import { AakashPic, AbhishekPic, RachitPic, SanjanaPic } from "../../Assets";
+import { ImageLoaderComponent } from "../../Utilities";
 
 const TestimonialsSection = () => {
   const [activeTestimonial, setActiveTestimonial] = useState(0);
@@ -11,18 +12,18 @@ const TestimonialsSection = () => {
   const testimonials = [
     {
       quote:
-        "The platform transformed my coding journey. It's not just about learning, but about growing together as a tech community.",
-      name: "Sanjana Jaldu",
-      role: "Vice President",
-      image: "https://placehold.co/400x400",
+        "What sets this platform apart is its incredible ability to blend competitive spirit with genuine learning and support.",
+      name: "Aakash Kumar",
+      role: "President",
+      image: AakashPic,
       company: "GeeksforGeeks Student Chapter",
     },
     {
       quote:
-        "What sets this platform apart is its incredible ability to blend competitive spirit with genuine learning and support.",
-      name: "Aakash Kumar",
-      role: "President",
-      image: AakashPfp,
+        "The platform transformed my coding journey. It's not just about learning, but about growing together as a tech community.",
+      name: "Sanjana Jaldu",
+      role: "Vice President",
+      image: SanjanaPic,
       company: "GeeksforGeeks Student Chapter",
     },
     {
@@ -30,7 +31,15 @@ const TestimonialsSection = () => {
         "More than just a platform, it's a launchpad for ambitious tech enthusiasts to transform their potential into reality.",
       name: "Rachit Dhaka",
       role: "Operational Head",
-      image: "https://placehold.co/400x400",
+      image: RachitPic,
+      company: "GeeksforGeeks Student Chapter",
+    },
+    {
+      quote:
+        "Being part of this community has been a game-changer. It has provided me with opportunities to learn, lead, and inspire.",
+      name: "Abhishek Newase",
+      role: "Technical Head",
+      image: AbhishekPic,
       company: "GeeksforGeeks Student Chapter",
     },
   ];
@@ -73,7 +82,8 @@ const TestimonialsSection = () => {
             Voices of Our Community
           </h2>
           <p className="text-base md:text-xl text-gray-600 max-w-2xl mx-auto">
-            Hear from those who've experienced the transformative power of our platform
+            Hear from those who've experienced the transformative power of our
+            platform
           </p>
         </motion.div>
 
@@ -131,10 +141,13 @@ const TestimonialsSection = () => {
                   className="relative"
                 >
                   <div className="w-64 h-64 rounded-3xl overflow-hidden shadow-2xl">
-                    <img
-                      src={testimonials[activeTestimonial].image}
-                      alt={testimonials[activeTestimonial].name}
+                    <ImageLoaderComponent
+                      url={testimonials[activeTestimonial].image.url}
+                      alt={testimonials[activeTestimonial].image.alt}
+                      hashCode={testimonials[activeTestimonial].image.hashCode}
                       className="w-full h-full object-cover"
+                      blurWidth="400px"
+                      blurHeight="400px"
                     />
                   </div>
                   <div className="absolute -bottom-4 -right-4 w-16 h-16 bg-gfgsc-green rounded-full shadow-lg"></div>
