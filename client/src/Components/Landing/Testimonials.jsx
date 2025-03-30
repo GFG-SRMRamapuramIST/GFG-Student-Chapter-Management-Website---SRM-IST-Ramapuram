@@ -60,7 +60,7 @@ const TestimonialsSection = () => {
         clearInterval(intervalRef.current);
       }
     };
-  }, [isPaused]);
+  }, [isPaused, testimonials.length]);
 
   const handleMouseEnter = () => setIsPaused(true);
   const handleMouseLeave = () => setIsPaused(false);

@@ -17,7 +17,8 @@ import {
   FaTrophy,
   FaMedal,
 } from "react-icons/fa";
-import { GfgCoin } from "../../Assets";
+import { AakashPic, AbhishekPic, GfgCoin, RachitPic } from "../../Assets";
+import { ImageLoaderComponent } from "../../Utilities";
 
 const TopPerformerCard = ({ rank, performer, delay }) => {
   const getRankData = () => {
@@ -60,7 +61,9 @@ const TopPerformerCard = ({ rank, performer, delay }) => {
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: delay, duration: 0.5 }}
-      className={`relative ${rank === 1 ? "-mt-4 md:-mt-8" : ""} w-full max-w-[200px]`}
+      className={`relative ${
+        rank === 1 ? "-mt-4 md:-mt-8" : ""
+      } w-full max-w-[200px]`}
       style={{ zIndex: rankData.zIndex }}
     >
       <motion.div
@@ -93,16 +96,21 @@ const TopPerformerCard = ({ rank, performer, delay }) => {
           <div className="flex flex-col justify-center text-center items-center px-2 md:px-4">
             <div className="relative mb-2">
               <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-white/20 overflow-hidden">
-                <img
-                  src={performer.pfp}
-                  alt={performer.name}
-                  className="w-full h-full object-cover"
+                <ImageLoaderComponent
+                  url={performer.pfp.url}
+                  hashCode={performer.pfp.hashCode}
+                  alt={performer.pfp.alt}
+                  className="w-full h-full object-cover bg-white/20"
+                  blurWidth="100%"
+                  blurHeight="100%"
                 />
               </div>
             </div>
 
             <div className="flex flex-col items-center justify-center text-center">
-              <h3 className="text-white font-semibold sm:font-bold text-sm md:text-lg">{performer.name}</h3>
+              <h3 className="text-white font-semibold sm:font-bold text-sm md:text-lg">
+                {performer.name}
+              </h3>
               <div className="flex items-center text-center mt-1">
                 <motion.div
                   initial={{ scale: 0 }}
@@ -113,7 +121,11 @@ const TopPerformerCard = ({ rank, performer, delay }) => {
                   <span className="text-white font-semibold text-xs md:text-sm">
                     {performer.points}
                   </span>
-                  <img src={GfgCoin} alt="GfgCoin" className="w-3 h-3 md:w-4 md:h-4 ml-1" />
+                  <img
+                    src={GfgCoin}
+                    alt="GfgCoin"
+                    className="w-3 h-3 md:w-4 md:h-4 ml-1"
+                  />
                 </motion.div>
               </div>
             </div>
@@ -135,21 +147,21 @@ const HeroSection = () => {
       name: "Aakash Kumar",
       points: 2840,
       monthlyRank: 2,
-      pfp: "https://placehold.co/100x100",
+      pfp: AakashPic,
     },
     {
       id: 1,
-      name: "Sanjana Jaldu",
+      name: "Abhishek Newase",
       points: 3120,
       monthlyRank: 1,
-      pfp: "https://placehold.co/100x100",
+      pfp: AbhishekPic,
     },
     {
       id: 3,
       name: "Rachit Dhaka",
       points: 2695,
       monthlyRank: 3,
-      pfp: "https://placehold.co/100x100",
+      pfp: RachitPic,
     },
   ];
 
