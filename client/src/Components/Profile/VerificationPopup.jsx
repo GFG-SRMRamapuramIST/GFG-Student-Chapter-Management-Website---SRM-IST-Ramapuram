@@ -1,148 +1,146 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { FaSpinner, FaExternalLinkAlt, FaCheck } from 'react-icons/fa';
-import { ToastMsg } from '../Utilities';
+import { useState, useEffect } from "react";
+import { FaSpinner } from "react-icons/fa";
+import { RiExternalLinkLine } from "react-icons/ri";
+import PropTypes from "prop-types";
+import { ToastMsg } from "../../Utilities";
+import { getPlatformUrl } from "../../Constants";
 
-const VerificationPopup = ({ 
-  isOpen, 
-  onClose, 
-  platform, 
+const VerificationPopup = ({
+  isOpen,
+  onClose,
+  platform,
   username,
   onVerificationComplete,
-  verifyFunction,
-  generateFirstNameFunction
 }) => {
-  const [step, setStep] = useState(1);
-  const [firstName, setFirstName] = useState('');
-  const [loading, setLoading] = useState(false);
-  
-  const platformUrls = {
-    leetcode: `https://leetcode.com/${username}`,
-    codechef: `https://www.codechef.com/users/${username}`,
-    codeforces: `https://codeforces.com/profile/${username}`,
-    geeksforgeeks: `https://auth.geeksforgeeks.org/user/${username}`,
-  };
+  const [loading, setLoading] = useState(true);
+  const [firstName, setFirstName] = useState("");
 
   useEffect(() => {
-    if (isOpen) {
+    // Start verification process as soon as popup opens
+    if (isOpen && !firstName) {
       generateFirstName();
     }
   }, [isOpen]);
 
+  // Mock API call to generate firstName
   const generateFirstName = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const response = await generateFirstNameFunction(platform);
-      if (response.status === 200) {
-        setFirstName(response.data.firstName);
-      } else {
-        ToastMsg("Failed to generate verification code", "error");
-        onClose();
-      }
+      // Simulate API call
+      console.log(`Generating firstName for ${platform} user ${username}`);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const mockFirstName = `verify_${Math.random().toString(36).substring(7)}`;
+      setFirstName(mockFirstName);
     } catch (error) {
-      ToastMsg("Error generating verification code", "error");
+      ToastMsg("Failed to generate verification code", "error");
       onClose();
     } finally {
       setLoading(false);
     }
   };
 
-  const handleVerify = async () => {
+  // Mock API call to verify profile
+  const verifyProfile = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const response = await verifyFunction(platform);
-      if (response.status === 200) {
+      // Simulate API call
+      console.log(
+        `Verifying ${platform} user ${username} with firstName ${firstName}`
+      );
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const success = Math.random() > 0.5; // Randomly succeed or fail
+
+      if (success) {
         ToastMsg("Profile verified successfully!", "success");
         onVerificationComplete();
         onClose();
       } else {
-        ToastMsg("Verification failed. Please check your profile name and try again.", "error");
+        ToastMsg(
+          "Verification failed. Please make sure you updated your profile correctly.",
+          "error"
+        );
       }
-    } catch (error) {
-      ToastMsg("Error during verification", "error");
+    } catch (e) {
+      ToastMsg("Verification failed. Please try again.", "error");
+      console.error("Verification error:", e);
     } finally {
       setLoading(false);
     }
   };
 
+  // Get platform-specific profile URL
+  const getProfileUrl = () => {
+    const baseUrl = getPlatformUrl(platform.toLowerCase());
+    return baseUrl ? `https://${baseUrl}/${username}` : "#";
+  };
+
+  if (!isOpen) return null;
+
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
-          onClick={(e) => e.target === e.currentTarget && onClose()}
-        >
-          <motion.div
-            initial={{ scale: 0.95 }}
-            animate={{ scale: 1 }}
-            exit={{ scale: 0.95 }}
-            className="bg-white rounded-xl p-6 max-w-md w-full mx-4 shadow-xl"
-          >
-            <h2 className="text-2xl font-bold text-gfg-black mb-4">
-              Verify {platform.charAt(0).toUpperCase() + platform.slice(1)} Profile
-            </h2>
-            
-            {loading ? (
-              <div className="flex justify-center py-8">
-                <FaSpinner className="animate-spin text-gfgsc-green text-2xl" />
-              </div>
-            ) : (
-              <div className="space-y-6">
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-2 text-sm text-gray-600">
-                    <span className={`w-6 h-6 rounded-full flex items-center justify-center ${step === 1 ? 'bg-gfgsc-green text-white' : 'bg-gray-200'}`}>
-                      1
-                    </span>
-                    <span>Open your {platform} profile</span>
-                  </div>
-                  
-                  <a 
-                    href={platformUrls[platform]}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center space-x-2 text-gfgsc-green hover:underline"
-                  >
-                    <span>Click here to open {platform}</span>
-                    <FaExternalLinkAlt size={12} />
-                  </a>
-                </div>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+        <h2 className="text-xl font-bold mb-4">Verify {platform} Profile</h2>
 
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-2 text-sm text-gray-600">
-                    <span className={`w-6 h-6 rounded-full flex items-center justify-center ${step === 2 ? 'bg-gfgsc-green text-white' : 'bg-gray-200'}`}>
-                      2
+        <div className="space-y-4">
+          {loading ? (
+            <div className="flex justify-center py-4">
+              <FaSpinner className="animate-spin text-2xl text-gfgsc-green" />
+            </div>
+          ) : (
+            <>
+              <div className="space-y-2">
+                <p className="text-sm text-gray-600">Follow these steps:</p>
+                <ol className="list-decimal list-inside space-y-2">
+                  <li>
+                  Open your {platform}  profile
+                    <a
+                      href={getProfileUrl()}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-500 underline"
+                    >
+                        <RiExternalLinkLine className="inline-block ml-1 mb-0.5" />
+                    </a>
+                  </li>
+                  <li>
+                    Edit your first name to:{" "}
+                    <span className="font-mono bg-gray-100 px-2 py-1 rounded">
+                      {firstName}
                     </span>
-                    <span>Set your first name to:</span>
-                  </div>
-                  <div className="bg-gray-100 p-3 rounded font-mono text-sm">
-                    {firstName}
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-2 text-sm text-gray-600">
-                    <span className={`w-6 h-6 rounded-full flex items-center justify-center ${step === 3 ? 'bg-gfgsc-green text-white' : 'bg-gray-200'}`}>
-                      3
-                    </span>
-                    <span>Verify your profile</span>
-                  </div>
-                  <button
-                    onClick={handleVerify}
-                    className="w-full py-2 bg-gfgsc-green text-white rounded-lg hover:bg-gfg-green transition-colors"
-                  >
-                    Verify Now
-                  </button>
-                </div>
+                  </li>
+                  <li>Save your profile changes</li>
+                  <li>Come back here and click verify</li>
+                </ol>
               </div>
-            )}
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+
+
+              <button
+                onClick={verifyProfile}
+                className="w-full py-2 bg-gfgsc-green text-white rounded-lg hover:bg-green-600 transition-colors"
+              >
+                Verify Profile
+              </button>
+
+              <button
+                onClick={onClose}
+                className="w-full py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
   );
+};
+
+VerificationPopup.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  platform: PropTypes.string.isRequired,
+  username: PropTypes.string.isRequired,
+  onVerificationComplete: PropTypes.func.isRequired,
 };
 
 export default VerificationPopup;

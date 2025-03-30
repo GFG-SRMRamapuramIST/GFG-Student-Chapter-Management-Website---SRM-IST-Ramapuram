@@ -3,9 +3,11 @@ import PropTypes from "prop-types";
 
 // Components
 import {
+  EditPlatformCard,
   PasswordChangeModal,
   PlatformLinkPlaceholder,
   ProfilePictureEditor,
+  VerificationPopup,
 } from "../../Components";
 
 // Assets and Icons
@@ -41,7 +43,7 @@ const EditProfile = () => {
   const [verificationPopup, setVerificationPopup] = useState({
     isOpen: false,
     platform: null,
-    username: null
+    username: null,
   });
 
   // Fetching edit profile page data *****
@@ -150,10 +152,10 @@ const EditProfile = () => {
     setVerificationPopup({
       isOpen: true,
       platform,
-      username
+      username,
     });
   };
-  
+
   const handleVerificationComplete = () => {
     getEditProfilePageData(); // Refresh the profile data
   };
@@ -396,114 +398,89 @@ const EditProfile = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
             {/* LeetCode */}
-            <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-xl">
-              <div className="flex items-center space-x-3 mb-3">
-                {platformIcons.leetcode && (
-                  <platformIcons.leetcode className="text-[#FFA116] text-2xl" />
-                )}
-                <label className="font-medium text-gray-800">LeetCode</label>
-              </div>
-              <div className="space-y-2">
-                {loading ? (
-                  <FaSpinner className="animate-spin inline-block" />
-                ) : (
-                  <>
-                    <EditableInput
-                      value={profileData.coding.leetcode}
-                      section="coding"
-                      field="leetcodeUsername"
-                    />
-                    <PlatformLinkPlaceholder
-                      platform="leetcode"
-                      username={profileData.coding.leetcode}
-                    />
-                  </>
-                )}
-              </div>
-            </div>
+            <EditPlatformCard
+              platform="LeetCode"
+              icon={platformIcons.leetcode}
+              iconColor="#FFA116"
+              username={profileData.coding?.leetcode}
+              verified={profileData.coding?.leetcodeVerified}
+              loading={loading}
+              onVerifyClick={handleVerifyClick}
+            >
+              <EditableInput
+                value={profileData.coding?.leetcode}
+                section="coding"
+                field="leetcodeUsername"
+              />
+              <PlatformLinkPlaceholder
+                platform="leetcode"
+                username={profileData.coding?.leetcode}
+              />
+            </EditPlatformCard>
 
             {/* CodeChef */}
-            <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-xl">
-              <div className="flex items-center space-x-3 mb-3">
-                {platformIcons.codechef && (
-                  <platformIcons.codechef className="text-[#5B4638] text-2xl" />
-                )}
-                <label className="font-medium text-gray-800">CodeChef</label>
-              </div>
-              <div className="space-y-2">
-                {loading ? (
-                  <FaSpinner className="animate-spin inline-block" />
-                ) : (
-                  <>
-                    <EditableInput
-                      value={profileData.coding.codechef}
-                      section="coding"
-                      field="codechefUsername"
-                    />
-                    <PlatformLinkPlaceholder
-                      platform="codechef"
-                      username={profileData.coding.codechef}
-                    />
-                  </>
-                )}
-              </div>
-            </div>
+            <EditPlatformCard
+              platform="CodeChef"
+              icon={platformIcons.codechef}
+              iconColor="#5B4638"
+              username={profileData.coding?.codechef}
+              verified={profileData.coding?.codechefVerified}
+              loading={loading}
+              onVerifyClick={handleVerifyClick}
+            >
+              <EditableInput
+                value={profileData.coding?.codechef}
+                section="coding"
+                field="codechefUsername"
+              />
+              <PlatformLinkPlaceholder
+                platform="codechef"
+                username={profileData.coding?.codechef}
+              />
+            </EditPlatformCard>
+
 
             {/* Codeforces */}
-            <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-xl">
-              <div className="flex items-center space-x-3 mb-3">
-                {platformIcons.codeforces && (
-                  <platformIcons.codeforces className="text-[#1F8ACB] text-2xl" />
-                )}
-                <label className="font-medium text-gray-800">Codeforces</label>
-              </div>
-              <div className="space-y-2">
-                {loading ? (
-                  <FaSpinner className="animate-spin inline-block" />
-                ) : (
-                  <>
-                    <EditableInput
-                      value={profileData.coding.codeforces}
-                      section="coding"
-                      field="codeforcesUsername"
-                    />
-                    <PlatformLinkPlaceholder
-                      platform="codeforces"
-                      username={profileData.coding.codeforces}
-                    />
-                  </>
-                )}
-              </div>
-            </div>
+            <EditPlatformCard
+              platform="CodeForces"
+              icon={platformIcons.codeforces}
+              iconColor="#1F8ACB"
+              username={profileData.coding?.codeforces}
+              verified={profileData.coding?.codeforcesVerified}
+              loading={loading}
+              onVerifyClick={handleVerifyClick}
+            >
+              <EditableInput
+                value={profileData.coding?.codeforces}
+                section="coding"
+                field="codeforcesUsername"
+              />
+              <PlatformLinkPlaceholder
+                platform="codeforces"
+                username={profileData.coding?.codeforces}
+              />
+            </EditPlatformCard>
 
             {/* GeeksforGeeks */}
-            <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-xl">
-              <div className="flex items-center space-x-3 mb-3">
-                {platformIcons.geeksforgeeks && (
-                  <platformIcons.geeksforgeeks className="text-[#2F8D46] text-2xl" />
-                )}
-                <label className="font-medium text-gray-800">
-                  GeeksforGeeks
-                </label>
-              </div>
-              <div className="space-y-2">
-                {loading ? (
-                  <FaSpinner className="animate-spin inline-block" />
-                ) : (
-                  <>
-                    <EditableInput
-                      value={profileData.coding.geeksforgeeks}
-                      section="coding"
-                      field="geeksforgeeksUsername"
-                    />
-                    <PlatformLinkPlaceholder
-                      platform="geeksforgeeks"
-                      username={profileData.coding.geeksforgeeks}
-                    />
-                  </>
-                )}
-              </div>
-            </div>
+            <EditPlatformCard
+              platform="GeeksforGeeks"
+              icon={platformIcons.geeksforgeeks}
+              iconColor="#2F8D46"
+              username={profileData.coding?.geeksforgeeks}
+              verified={profileData.coding?.geeksforgeeksVerified}
+              loading={loading}
+              onVerifyClick={handleVerifyClick}
+            >
+              <EditableInput
+                value={profileData.coding?.geeksforgeeks}
+                section="coding"
+                field="geeksforgeeksUsername"
+              />
+              <PlatformLinkPlaceholder
+                platform="geeksforgeeks"
+                username={profileData.coding?.geeksforgeeks}
+              />
+            </EditPlatformCard>
           </div>
         </div>
 
@@ -591,6 +568,21 @@ const EditProfile = () => {
         isOpen={isPasswordModalOpen}
         onClose={() => setIsPasswordModalOpen(false)}
         onSubmit={handlePasswordChange}
+      />
+
+      {/* Verification Popup */}
+      <VerificationPopup
+        isOpen={verificationPopup.isOpen}
+        onClose={() =>
+          setVerificationPopup({
+            isOpen: false,
+            platform: null,
+            username: null,
+          })
+        }
+        platform={verificationPopup.platform}
+        username={verificationPopup.username}
+        onVerificationComplete={handleVerificationComplete}
       />
     </div>
   );

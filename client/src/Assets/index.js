@@ -41,3 +41,28 @@ import logo from "./icons/logo.png";
 import GfgCoin from "./icons/GreenCoin.svg";
 
 export { codolioIcon, logo, codolioBWIcon, GfgCoin };
+
+// Events Images
+import GeekFest from "./events/GeekFest.png";
+import HalloweenHangout from "./events/HalloweenHangout.jpg";
+import OnboardingMeeting from "./events/OnboardingMeeting.jpg";
+
+const GeekFestImg = {
+  url: GeekFest,
+  hashCode: defaulfHash,
+  alt: "GeekFest",
+};
+
+const HalloweenHangoutImg = {
+  url: HalloweenHangout,
+  hashCode: defaulfHash,
+  alt: "Halloween Hangout",
+};
+
+const OnboardingMeetingImg = {
+  url: OnboardingMeeting,
+  hashCode: defaulfHash,
+  alt: "Onboarding Meeting",
+};
+
+export { GeekFestImg, HalloweenHangoutImg, OnboardingMeetingImg };

@@ -145,14 +145,14 @@ const HeroSection = () => {
     {
       id: 2,
       name: "Aakash Kumar",
-      points: 2840,
+      points: 3120,
       monthlyRank: 2,
       pfp: AakashPic,
     },
     {
       id: 1,
       name: "Abhishek Newase",
-      points: 3120,
+      points: 2840,
       monthlyRank: 1,
       pfp: AbhishekPic,
     },

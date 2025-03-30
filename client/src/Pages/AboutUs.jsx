@@ -1,9 +1,16 @@
 import { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence, useInView } from "framer-motion";
+
+// Assets & Icons
 import {
-  motion,
-  AnimatePresence,
-  useInView,
-} from "framer-motion";
+  AakashPic,
+  AbhishekPic,
+  GeekFestImg,
+  HalloweenHangoutImg,
+  OnboardingMeetingImg,
+  RachitPic,
+  SanjanaPic,
+} from "../Assets";
 import {
   FaGithub,
   FaLinkedin,
@@ -20,11 +27,7 @@ import {
 import { BsArrowRight, BsStars } from "react-icons/bs";
 import { HiOutlineLightBulb } from "react-icons/hi";
 
-// Assume these imports are working correctly
-import { AakashPic, AbhishekPic, RachitPic, SanjanaPic } from "../Assets";
-import GeekFest from "../Assets/GeekFest.png";
-import HalloweenHangout from "../Assets/HalloweenHangout.jpg";
-import OnboardingMeeting from "../Assets/OnboardingMeeting.jpg";
+// Utilities
 import { ImageLoaderComponent } from "../Utilities";
 
 const AboutUs = () => {
@@ -125,7 +128,7 @@ const AboutUs = () => {
     {
       id: 1,
       title: "GeekFest 2024",
-      image: GeekFest,
+      image: GeekFestImg,
       date: "March 15, 2024",
       description:
         "Our annual coding festival featuring hackathons, workshops, and guest lectures from industry experts.",
@@ -133,7 +136,7 @@ const AboutUs = () => {
     {
       id: 2,
       title: "Halloween Coding Hangout",
-      image: HalloweenHangout,
+      image: HalloweenHangoutImg,
       date: "October 31, 2023",
       description:
         "A spooky-themed coding session where members solved algorithmic challenges with Halloween-inspired problems.",
@@ -141,7 +144,7 @@ const AboutUs = () => {
     {
       id: 3,
       title: "New Member Onboarding",
-      image: OnboardingMeeting,
+      image: OnboardingMeetingImg,
       date: "September 5, 2023",
       description:
         "Welcoming new members to our chapter with orientation sessions and team-building activities.",
@@ -216,7 +219,7 @@ const AboutUs = () => {
       {/* Hero Section with Parallax Effect */}
       <section
         ref={aboutRef}
-        className="min-h-screen flex items-center justify-center relative overflow-hidden"
+        className="min-h-screen flex items-center justify-center relative overflow-hidden max-md:pt-12"
       >
         {/* Animated background elements */}
         <div className="absolute inset-0 pointer-events-none">
@@ -321,7 +324,7 @@ const AboutUs = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.7, delay: 1 }}
-              className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center"
+              className="hidden md:flex absolute bottom-12 left-1/2 -translate-x-1/2 flex-col items-center"
             >
               <span className="text-sm text-gray-500 mb-2">
                 Scroll to Discover
@@ -464,101 +467,250 @@ const AboutUs = () => {
       </section>
 
       {/* Core Team Section */}
-      <section ref={teamRef} className="py-20 relative">
-        <div className="max-w-6xl mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 1 }}
-            viewport={{ once: true, margin: "-100px" }}
-            className="text-center mb-16"
-          >
-            <span className="inline-block px-4 py-1 rounded-full bg-gfgsc-green-200 text-gfgsc-green font-medium text-sm mb-3">
-              LEADERSHIP
-            </span>
-            <h2 className="text-3xl md:text-4xl font-bold text-gfg-black mb-4">
-              Our Core Team
-            </h2>
-            <div className="w-16 h-1 bg-gfgsc-green mx-auto"></div>
-            <p className="text-gray-600 max-w-2xl mx-auto mt-4">
-              Meet the dedicated student leaders who work tirelessly to create
-              valuable learning experiences and foster a supportive community.
-            </p>
-          </motion.div>
+<section ref={teamRef} className="py-20 relative">
+  <div className="max-w-6xl mx-auto px-4">
+    <motion.div
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      transition={{ duration: 1 }}
+      viewport={{ once: true, margin: "-100px" }}
+      className="text-center mb-16"
+    >
+      <span className="inline-block px-4 py-1 rounded-full bg-gfgsc-green-200 text-gfgsc-green font-medium text-sm mb-3">
+        LEADERSHIP
+      </span>
+      <h2 className="text-3xl md:text-4xl font-bold text-gfg-black mb-4">
+        Our Core Team
+      </h2>
+      <div className="w-16 h-1 bg-gfgsc-green mx-auto"></div>
+      <p className="text-gray-600 max-w-2xl mx-auto mt-4">
+        Meet the dedicated student leaders who work tirelessly to create
+        valuable learning experiences and foster a supportive community.
+      </p>
+    </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {coreTeam.map((member, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true, margin: "-100px" }}
-                whileHover={{ y: -10 }}
-                className="group"
-              >
-                <div className="relative overflow-hidden rounded-2xl shadow-lg">
-                  <div className="aspect-w-3 aspect-h-4 bg-gfgsc-green-200">
-                    {/* <img
-                      src={member.image}
-                      alt={member.name}
-                      className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-700 ease-out"
-                    /> */}
-                    <ImageLoaderComponent
-                      url={member.image.url}
-                      hashCode={member.image.hashCode}
-                      alt={member.image.alt}
-                      className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-700 ease-out"
-                      blurWidth="100%"
-                      blurHeight="100%"
-                      />
-                  </div>
+    {/* Desktop Grid */}
+    <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+      {coreTeam.map((member, index) => (
+        <motion.div
+          key={index}
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: index * 0.1 }}
+          viewport={{ once: true, margin: "-100px" }}
+          whileHover={{ y: -10 }}
+          className="group"
+        >
+          <div className="relative overflow-hidden rounded-2xl shadow-lg">
+            <div className="aspect-w-3 aspect-h-4 bg-gfgsc-green-200">
+              <ImageLoaderComponent
+                url={member.image.url}
+                hashCode={member.image.hashCode}
+                alt={member.image.alt}
+                className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-700 ease-out"
+                blurWidth="100%"
+                blurHeight="100%"
+              />
+            </div>
 
-                  <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/80 via-black/50 to-transparent">
-                    <h3 className="text-lg font-semibold text-white">
-                      {member.name}
-                    </h3>
-                    <p className="text-gfgsc-green-200">{member.role}</p>
-                  </div>
+            <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/80 via-black/50 to-transparent">
+              <h3 className="text-lg font-semibold text-white">
+                {member.name}
+              </h3>
+              <p className="text-gfgsc-green-200">{member.role}</p>
+            </div>
 
-                  <div className="absolute inset-0 bg-gradient-to-t from-gfgsc-green/90 to-gfgsc-green/75 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-6">
-                    <div className="flex justify-end space-x-2">
-                      {Object.entries(member.links).map(
-                        ([platform, url], idx) => (
-                          <a
-                            key={idx}
-                            href={url}
-                            className="p-2 bg-white/10 backdrop-blur-sm rounded-full hover:bg-white/20 transition-colors text-white"
-                            aria-label={`${member.name}'s ${platform}`}
-                          >
-                            {platform === "github" && <FaGithub size={18} />}
-                            {platform === "linkedin" && (
-                              <FaLinkedin size={18} />
-                            )}
-                            {platform === "instagram" && (
-                              <FaInstagram size={18} />
-                            )}
-                          </a>
-                        )
+            <div className="absolute inset-0 bg-gradient-to-t from-gfgsc-green/90 to-gfgsc-green/75 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-6">
+              <div className="flex justify-end space-x-2">
+                {Object.entries(member.links).map(
+                  ([platform, url], idx) => (
+                    <a
+                      key={idx}
+                      href={url}
+                      className="p-2 bg-white/10 backdrop-blur-sm rounded-full hover:bg-white/20 transition-colors text-white"
+                      aria-label={`${member.name}'s ${platform}`}
+                    >
+                      {platform === "github" && <FaGithub size={18} />}
+                      {platform === "linkedin" && (
+                        <FaLinkedin size={18} />
                       )}
-                    </div>
+                      {platform === "instagram" && (
+                        <FaInstagram size={18} />
+                      )}
+                    </a>
+                  )
+                )}
+              </div>
 
-                    <div>
-                      <h3 className="text-lg font-semibold text-white mb-1">
-                        {member.name}
-                      </h3>
-                      <p className="text-gfgsc-green-200 mb-3">{member.role}</p>
-                      <p className="text-white/90 text-sm italic">
-                        "{member.quote}"
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-1">
+                  {member.name}
+                </h3>
+                <p className="text-gfgsc-green-200 mb-3">{member.role}</p>
+                <p className="text-white/90 text-sm italic">
+                  "{member.quote}"
+                </p>
+              </div>
+            </div>
           </div>
-        </div>
-      </section>
+        </motion.div>
+      ))}
+    </div>
+
+    {/* Mobile Carousel */}
+    <div className="md:hidden overflow-hidden">
+      <motion.div
+        initial={{ opacity: 0 }}
+        className="flex"
+        // Animation for infinite scrolling
+        animate={{
+          opacity: 1,
+          x: [0, -300 * coreTeam.length],
+          transition: {
+            x: {
+              repeat: Infinity,
+              repeatType: "loop",
+              duration: coreTeam.length * 5, // Adjust speed as needed
+              ease: "linear",
+            },
+          },
+        }}
+      >
+        {/* Original set of cards */}
+        {coreTeam.map((member, index) => (
+          <div
+            key={`original-${index}`}
+            className="flex-shrink-0 w-72 px-2" // Fixed width for consistent sizing
+          >
+            <div className="relative overflow-hidden rounded-2xl shadow-lg">
+              <div className="aspect-w-3 aspect-h-4 bg-gfgsc-green-200">
+                <ImageLoaderComponent
+                  url={member.image.url}
+                  hashCode={member.image.hashCode}
+                  alt={member.image.alt}
+                  className="w-full h-full object-cover object-center transition-transform duration-700 ease-out"
+                  blurWidth="100%"
+                  blurHeight="100%"
+                />
+              </div>
+
+              <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/80 via-black/50 to-transparent">
+                <h3 className="text-lg font-semibold text-white">
+                  {member.name}
+                </h3>
+                <p className="text-gfgsc-green-200">{member.role}</p>
+              </div>
+
+              <div 
+                className="absolute inset-0 bg-gradient-to-t from-gfgsc-green/90 to-gfgsc-green/75 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-6"
+                onClick={() => {
+                  // Add touch-friendly behavior if needed
+                }}
+              >
+                <div className="flex justify-end space-x-2">
+                  {Object.entries(member.links).map(
+                    ([platform, url], idx) => (
+                      <a
+                        key={idx}
+                        href={url}
+                        className="p-2 bg-white/10 backdrop-blur-sm rounded-full hover:bg-white/20 transition-colors text-white"
+                        aria-label={`${member.name}'s ${platform}`}
+                      >
+                        {platform === "github" && <FaGithub size={18} />}
+                        {platform === "linkedin" && (
+                          <FaLinkedin size={18} />
+                        )}
+                        {platform === "instagram" && (
+                          <FaInstagram size={18} />
+                        )}
+                      </a>
+                    )
+                  )}
+                </div>
+
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-1">
+                    {member.name}
+                  </h3>
+                  <p className="text-gfgsc-green-200 mb-3">{member.role}</p>
+                  <p className="text-white/90 text-sm italic">
+                    "{member.quote}"
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+
+        {/* Duplicate set for seamless infinite loop */}
+        {coreTeam.map((member, index) => (
+          <div
+            key={`duplicate-${index}`}
+            className="flex-shrink-0 w-72 px-2" // Fixed width for consistent sizing
+          >
+            <div className="relative overflow-hidden rounded-2xl shadow-lg">
+              <div className="aspect-w-3 aspect-h-4 bg-gfgsc-green-200">
+                <ImageLoaderComponent
+                  url={member.image.url}
+                  hashCode={member.image.hashCode}
+                  alt={member.image.alt}
+                  className="w-full h-full object-cover object-center transition-transform duration-700 ease-out"
+                  blurWidth="100%"
+                  blurHeight="100%"
+                />
+              </div>
+
+              <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/80 via-black/50 to-transparent">
+                <h3 className="text-lg font-semibold text-white">
+                  {member.name}
+                </h3>
+                <p className="text-gfgsc-green-200">{member.role}</p>
+              </div>
+
+              <div 
+                className="absolute inset-0 bg-gradient-to-t from-gfgsc-green/90 to-gfgsc-green/75 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-6"
+                onClick={() => {
+                  // Add touch-friendly behavior if needed
+                }}
+              >
+                <div className="flex justify-end space-x-2">
+                  {Object.entries(member.links).map(
+                    ([platform, url], idx) => (
+                      <a
+                        key={idx}
+                        href={url}
+                        className="p-2 bg-white/10 backdrop-blur-sm rounded-full hover:bg-white/20 transition-colors text-white"
+                        aria-label={`${member.name}'s ${platform}`}
+                      >
+                        {platform === "github" && <FaGithub size={18} />}
+                        {platform === "linkedin" && (
+                          <FaLinkedin size={18} />
+                        )}
+                        {platform === "instagram" && (
+                          <FaInstagram size={18} />
+                        )}
+                      </a>
+                    )
+                  )}
+                </div>
+
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-1">
+                    {member.name}
+                  </h3>
+                  <p className="text-gfgsc-green-200 mb-3">{member.role}</p>
+                  <p className="text-white/90 text-sm italic">
+                    "{member.quote}"
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </motion.div>
+    </div>
+  </div>
+</section>
 
       {/* Developers Section */}
       <section
@@ -633,7 +785,6 @@ const AboutUs = () => {
                     ))}
                   </div>
                 </div>
-
               </motion.div>
             ))}
           </div>
@@ -681,14 +832,18 @@ const AboutUs = () => {
                   transition={{ duration: 0.5 }}
                   className="relative aspect-w-16 aspect-h-9 md:aspect-h-7"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-t from-gfg-black via-transparent to-transparent z-10"></div>
-                  <img
-                    src={events[currentEvent].image}
-                    alt={events[currentEvent].title}
+                  <div className="md:absolute inset-0 bg-gradient-to-t from-gfg-black via-transparent to-transparent z-10"></div>
+
+                  <ImageLoaderComponent
+                    url={events[currentEvent].image.url}
+                    hashCode={events[currentEvent].image.hashCode}
+                    alt={events[currentEvent].image.alt}
                     className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
+                    blurWidth="100%"
+                    blurHeight="100%"
                   />
 
-                  <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-10 text-white z-20">
+                  <div className="max-md:pb-12 md:absolute inset-0 flex flex-col justify-end p-6 md:p-10 text-black md:text-white  z-20">
                     <div className="max-w-3xl">
                       <div className="inline-block px-3 py-1 bg-gfgsc-green text-white text-sm font-medium rounded-full mb-3">
                         {events[currentEvent].date}
@@ -696,12 +851,12 @@ const AboutUs = () => {
                       <h3 className="text-2xl md:text-4xl font-bold mb-3">
                         {events[currentEvent].title}
                       </h3>
-                      <p className="text-white/90 text-base md:text-lg mb-4 md:mb-6">
+                      <p className="text-black/80 md:text-white/80 text-base md:text-lg mb-4 md:mb-6">
                         {events[currentEvent].description}
                       </p>
                       <a
                         href="#"
-                        className="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm hover:bg-white/20 rounded-lg transition-colors"
+                        className="inline-flex items-center px-4 py-2 bg-gfgsc-green-400/50 md:bg-white/10 backdrop-blur-sm hover:bg-white/20 rounded-lg transition-colors"
                       >
                         View Event Details <BsArrowRight className="ml-2" />
                       </a>
@@ -726,13 +881,13 @@ const AboutUs = () => {
                 <BiChevronRight size={24} />
               </button>
 
-              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex space-x-2">
+              <div className="absolute bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 z-30 flex space-x-2">
                 {events.map((_, index) => (
                   <button
                     key={index}
                     onClick={() => setCurrentEvent(index)}
                     className={`w-2.5 h-2.5 rounded-full transition-colors ${
-                      currentEvent === index ? "bg-white" : "bg-white/50"
+                      currentEvent === index ? "bg-black" : "bg-gray-500/50"
                     }`}
                     aria-label={`Go to event ${index + 1}`}
                   />

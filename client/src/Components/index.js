@@ -60,6 +60,8 @@ import PasswordChangeModal from "./Profile/PasswordChangeModal";
 import ProfilePictureEditor from "./Profile/ProfilePictureEditor";
 import PlatformLinkPlaceholder from "./Profile/PlatformLinkPlaceholder";
 import MonthlyActivityHeatmap from "./Profile/MonthlyActivityHeatmap";
+import VerificationPopup from "./Profile/VerificationPopup";
+import EditPlatformCard from "./Profile/EditPlatformCard";
 
 export {
   ProfileHero,
@@ -69,6 +71,8 @@ export {
   ProfilePictureEditor,
   PlatformLinkPlaceholder,
   MonthlyActivityHeatmap,
+  EditPlatformCard,
+  VerificationPopup,
 };
 
 // Leaderboard Components
