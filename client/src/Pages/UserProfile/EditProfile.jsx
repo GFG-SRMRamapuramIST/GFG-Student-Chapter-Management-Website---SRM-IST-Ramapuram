@@ -403,7 +403,7 @@ const EditProfile = () => {
               icon={platformIcons.leetcode}
               iconColor="#FFA116"
               username={profileData.coding?.leetcode}
-              verified={profileData.coding?.leetcodeVerified}
+              verified= {profileData.coding?.leetcodeVerified}
               loading={loading}
               onVerifyClick={handleVerifyClick}
             >
