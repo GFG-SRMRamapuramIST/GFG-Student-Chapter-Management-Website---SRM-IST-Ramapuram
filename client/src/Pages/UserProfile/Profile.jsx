@@ -111,12 +111,14 @@ const Profile = () => {
               ranking: data.platforms.leetcode.ranking || 0,
               totalProblemSolved:
                 data.platforms.leetcode.totalProblemSolved || 0,
+              verified: data.platforms.leetcode.verified || false,
             },
             codechef: {
               handle: data.codechefUsername || null,
               rating: data.platforms.codechef.rating || 0,
               highestRating: data.platforms.codechef.highestRating || 0,
               countryRank: data.platforms.codechef.countryRank || 0,
+              verified: data.platforms.codechef.verified || false,
             },
             codeforces: {
               handle: data.codeforcesUsername || null,
@@ -124,12 +126,14 @@ const Profile = () => {
               rank: data.platforms.codeforces.rank || "Unrated",
               totalProblemSolved:
                 data.platforms.codeforces.totalProblemSolved || 0,
+              verified: data.platforms.codeforces.verified || false,
             },
             geeksforgeeks: {
               handle: data.geeksforgeeksUsername || null,
               universityRank: data.platforms.geeksforgeeks.universityRank || 0,
               codingScore: data.platforms.geeksforgeeks.codingScore || 0,
               problemsSolved: data.platforms.geeksforgeeks.problemSolved || 0,
+              verified: data.platforms.geeksforgeeks.verified || false,
             },
           },
 
@@ -157,9 +161,7 @@ const Profile = () => {
             })),
             ...data.achievement.dailyActiveStreak.map((badge) => ({
               id: `streak-${badge.year}-${badge.month}`,
-              name: `Daily Streak - ${getMonthName(badge.month)} ${
-                badge.year
-              }`,
+              name: `Daily Streak - ${getMonthName(badge.month)} ${badge.year}`,
               type: "dailyActiveStreak",
               date: `${badge.year}-${String(badge.month).padStart(2, "0")}-01`,
               description:
@@ -167,7 +169,9 @@ const Profile = () => {
             })),
             ...data.achievement.maxAvgPerDay.map((badge) => ({
               id: `avg-${badge.year}-${badge.month}`,
-              name: `Problem Solver - ${getMonthName(badge.month)} ${badge.year}`,
+              name: `Problem Solver - ${getMonthName(badge.month)} ${
+                badge.year
+              }`,
               type: "maxAvgPerDay",
               date: `${badge.year}-${String(badge.month).padStart(2, "0")}-01`,
               description: "Achieved highest average problems solved per day",

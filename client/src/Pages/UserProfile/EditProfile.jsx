@@ -33,6 +33,8 @@ const EditProfile = () => {
     editProfileFunction,
     changePasswordFunction,
     changeProfilePicFunction,
+    generateVerificationCodeForAPlatformFunction,
+    verifyPlatformFunction,
   } = UserServices();
 
   const [loading, setLoading] = useState(true);
@@ -403,7 +405,7 @@ const EditProfile = () => {
               icon={platformIcons.leetcode}
               iconColor="#FFA116"
               username={profileData.coding?.leetcode}
-              verified= {profileData.coding?.leetcodeVerified}
+              verified={profileData.verifiedProfile?.leetcode}
               loading={loading}
               onVerifyClick={handleVerifyClick}
             >
@@ -424,7 +426,7 @@ const EditProfile = () => {
               icon={platformIcons.codechef}
               iconColor="#5B4638"
               username={profileData.coding?.codechef}
-              verified={profileData.coding?.codechefVerified}
+              verified={profileData.verifiedProfile?.codechef}
               loading={loading}
               onVerifyClick={handleVerifyClick}
             >
@@ -439,14 +441,13 @@ const EditProfile = () => {
               />
             </EditPlatformCard>
 
-
             {/* Codeforces */}
             <EditPlatformCard
               platform="CodeForces"
               icon={platformIcons.codeforces}
               iconColor="#1F8ACB"
               username={profileData.coding?.codeforces}
-              verified={profileData.coding?.codeforcesVerified}
+              verified={profileData.verifiedProfile?.codeforces}
               loading={loading}
               onVerifyClick={handleVerifyClick}
             >
@@ -467,7 +468,7 @@ const EditProfile = () => {
               icon={platformIcons.geeksforgeeks}
               iconColor="#2F8D46"
               username={profileData.coding?.geeksforgeeks}
-              verified={profileData.coding?.geeksforgeeksVerified}
+              verified={profileData.verifiedProfile?.geeksforgeeks}
               loading={loading}
               onVerifyClick={handleVerifyClick}
             >

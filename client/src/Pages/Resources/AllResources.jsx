@@ -93,7 +93,7 @@ const AllResources = () => {
         page: pageInfo.currentPage,
         search: debouncedSearchResource,
       });
-
+      //console.log(response);
       if (response.status === 200) {
         const { currentPage, totalPages } = response.data;
         setPageInfo({ currentPage, totalPages });
