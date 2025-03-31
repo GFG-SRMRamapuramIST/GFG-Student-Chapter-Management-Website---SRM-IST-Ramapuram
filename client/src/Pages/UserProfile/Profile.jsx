@@ -183,7 +183,7 @@ const Profile = () => {
           dailyActivity: data.dailyActivity || [],
         });
 
-        console.log("Profile Data:", userProfileData);
+        // console.log("Profile Data:", userProfileData);
       }
     } catch (error) {
       ToastMsg("Error fetching profile data! Please try later", "error");

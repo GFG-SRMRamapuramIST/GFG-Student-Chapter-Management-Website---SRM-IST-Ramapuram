@@ -5,11 +5,10 @@ import { FaXTwitter } from "react-icons/fa6";
 import { SiGeeksforgeeks } from "react-icons/si";
 
 const Footer = ({ isLoggedIn }) => {
-  const year = new Date().getFullYear();
-
   const authenticatedLinks = [
     { to: "/dashboard", label: "Dashboard" },
     { to: "/leaderboard", label: "Leaderboard" },
+    { to: "/resources", label: "Resources" },
     { to: "/practice", label: "Practice" },
   ];
 
