@@ -180,17 +180,12 @@ exports.createContest = async (req, res) => {
     await dailyContest.save();
 
     /* *********** Contest Scheduler starts here ************** */
-    const adjustedContestDate =
-      lowerCasePlatform === "codeforces"
-        ? new Date(contestDate.setDate(contestDate.getDate() + 1))
-        : contestDate;
+    // const adjustedContestDate =
+    //   lowerCasePlatform === "codeforces"
+    //     ? new Date(contestDate.setDate(contestDate.getDate() + 1))
+    //     : contestDate;
 
-    addContest(
-      contestName,
-      adjustedContestDate,
-      contestEndDateTime,
-      lowerCasePlatform
-    );
+    addContest(contestName, contestDate, contestEndDateTime, lowerCasePlatform);
 
     // Schedule the next contest data update system
     updateContestDataScheduler();

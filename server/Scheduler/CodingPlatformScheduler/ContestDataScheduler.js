@@ -155,13 +155,15 @@ function updateContestDataScheduler() {
 
           // Update today's activity
           if (user.dailyActivity.length > 0) {
-            if (type === "codeforces") {
-              user.dailyActivity[user.dailyActivity.length - 2].count +=
-                contestData.totalQuestionsSolved;
-            } else {
-              user.dailyActivity[user.dailyActivity.length - 1].count +=
-                contestData.totalQuestionsSolved;
-            }
+            // if (type === "codeforces") {
+            //   user.dailyActivity[user.dailyActivity.length - 2].count +=
+            //     contestData.totalQuestionsSolved;
+            // } else {
+            //   user.dailyActivity[user.dailyActivity.length - 1].count +=
+            //     contestData.totalQuestionsSolved;
+            // }
+            user.dailyActivity[user.dailyActivity.length - 1].count +=
+              contestData.totalQuestionsSolved;
           }
 
           await user.save();

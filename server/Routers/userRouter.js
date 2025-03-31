@@ -23,6 +23,9 @@ const { userControllers } = require("../Controllers");
 
 10. Get all users with their id and name - "{BACKEND_URL}/api/v1/user/get-all-users-with-id-and-name"
 
+11. Generating Verification code for Platform API - "{BACKEND_URL}/api/v1/user/generate-verification-code"
+12. Verifying platfrom API - "{BACKEND_URL}/api/v1/user/verify-platform"
+
  Join a Team API - "{BACKEND_URL}/api/v1/user/join-team"
  Leave a Team API - "{BACKEND_URL}/api/v1/user/leave-team"
 
@@ -93,6 +96,18 @@ router.get(
   "/get-all-users-with-id-and-name",
   userControllers.getAllUsersForComparison
 );
+
+//11. Generating Verification code for Platform API
+router.post(
+  "/generate-verification-code",
+  userControllers.verificationCodeForPlatform
+)
+
+//12. Verifying platfrom API
+router.post(
+  "/verify-platform",
+  userControllers.verifyPlatform
+)
 
 /*
 //4. Join a Team API

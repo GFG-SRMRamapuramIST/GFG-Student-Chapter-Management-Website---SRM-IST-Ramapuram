@@ -124,6 +124,26 @@ const getAllUsersWithIdNameRolePfpFunction = async (token) => {
   );
 };
 
+// Generating Verification code for Platform API
+const generateVerificationCodeForAPlatformFunction = async ({ platform }, token) => {
+  return await commonrequest(
+    "POST",
+    `${BACKEND_URL}/api/v1/user/generate-verification-code`,
+    { platform },
+    { Authorization: `Bearer ${token}` }
+  );
+}
+
+// Verifying platform API
+const verifyPlatformFunction = async ({ platform }, token) => {
+  return await commonrequest(
+    "POST",
+    `${BACKEND_URL}/api/v1/user/verify-platform`,
+    { platform },
+    { Authorization: `Bearer ${token}` }
+  );
+}
+
 // Wrapper to use token inside React components
 const UserService = () => {
   const userToken = useAuthToken();
@@ -146,6 +166,8 @@ const UserService = () => {
     reportAnIssueFunction: (formData) => reportAnIssueFunction(formData),
     getAllUsersWithIdNameRolePfpFunction: () =>
       getAllUsersWithIdNameRolePfpFunction(userToken),
+    generateVerificationCodeForAPlatformFunction: (params) => generateVerificationCodeForAPlatformFunction(params, userToken),
+    verifyPlatformFunction: (params) => verifyPlatformFunction(params, userToken)
   };
 };
 
