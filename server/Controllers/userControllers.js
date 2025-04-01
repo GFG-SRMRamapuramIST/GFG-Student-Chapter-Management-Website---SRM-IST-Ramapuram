@@ -766,7 +766,7 @@ exports.verifyPlatform = async (req, res) => {
     }
 
     return res.status(400).json({
-      message: "Verification if this platfrom is not yet implemented.",
+      message: "Verification of this platfrom is not yet implemented.",
     });
   } catch (error) {
     console.error("Error verifying given platform: ", error.message);
