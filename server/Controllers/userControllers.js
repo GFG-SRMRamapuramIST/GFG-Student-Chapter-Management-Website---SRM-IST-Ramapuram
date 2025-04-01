@@ -11,6 +11,8 @@ require("dotenv").config();
 
 const CODECHEF_API_URL = `${process.env.CODECHEF_API_URL}/api/info/`;
 const GEEKSFORGEEKS_API_URL = `${process.env.GEEKSFORGEEKS_API_URL}/api/info/`;
+const LEETCODE_API_URL = `${process.env.LEETCODE_API_URL}/api/user-info/`;
+const CODEFORCES_API_URL = `${process.env.CODEFORCES_API_URL}/api/user-info/`;
 
 // Function to upload image buffer to Cloudinary
 const uploadToCloudinary = (buffer) => {
@@ -760,6 +762,64 @@ exports.verifyPlatform = async (req, res) => {
       } catch (error) {
         return res.status(500).json({
           message: "Error fetching Geeksforgeeks data! Please try later.",
+          error: error.message,
+        });
+      }
+    } else if(platform === "leetcode"){
+      try {
+        const response = await axios.get(
+          `${LEETCODE_API_URL}${user.leetcodeUsername}`
+        );
+        const { data } = response;
+
+        if (data?.data?.name?.includes(firstName)) {
+          await Users.findByIdAndUpdate(userId, {
+            $set: {
+              "platforms.leetcode.verified": true,
+              "platforms.leetcode.firstName": null,
+            },
+          });
+
+          return res
+            .status(200)
+            .json({ message: "Leetcode account verified successfully!" });
+        }
+
+        return res
+          .status(400)
+          .json({ message: "Verification failed! Name mismatch." });
+      } catch (error) {
+        return res.status(500).json({
+          message: "Error fetching Leetcode data! Please try later.",
+          error: error.message,
+        });
+      }
+    } else if(platform === "codeforces"){
+      try {
+        const response = await axios.get(
+          `${CODEFORCES_API_URL}${user.codeforcesUsername}`
+        );
+        const { data } = response;
+
+        if (data?.data?.first_name?.includes(firstName)) {
+          await Users.findByIdAndUpdate(userId, {
+            $set: {
+              "platforms.codeforces.verified": true,
+              "platforms.codeforces.firstName": null,
+            },
+          });
+
+          return res
+            .status(200)
+            .json({ message: "Codeforces account verified successfully!" });
+        }
+
+        return res
+          .status(400)
+          .json({ message: "Verification failed! Name mismatch." });
+      } catch (error) {
+        return res.status(500).json({
+          message: "Error fetching Codeforces data! Please try later.",
           error: error.message,
         });
       }

@@ -47,12 +47,18 @@ const updatePracticeQuestionsCount = async () => {
           const leetcodeDiff =
             totalProblemSolved -
             (user.platforms.leetcode.totalProblemSolved || 0);
-          increment += calculateIncrement(leetcodeDiff);
-          console.log(
-            `Today the user has solved ${leetcodeDiff} questions on leetcode, so he get ${calculateIncrement(
-              leetcodeDiff
-            )} points`
-          );
+
+          if (user.platforms.leetcode.verified === true) {
+            increment += calculateIncrement(leetcodeDiff);
+            console.log(
+              `Today the user has solved ${leetcodeDiff} questions on leetcode, so he get ${calculateIncrement(
+                leetcodeDiff
+              )} points`
+            );
+          } else {
+            console.log(`${user.name} has not verified his leetcode account`);
+          }
+
           user.platforms.leetcode = {
             badgesCount,
             ranking,
@@ -78,12 +84,19 @@ const updatePracticeQuestionsCount = async () => {
             geeksforgeeksData;
           const gfgDiff =
             problemsSolved - (user.platforms.geeksforgeeks.problemSolved || 0);
-          increment += calculateIncrement(gfgDiff);
-          console.log(
-            `Today the user has solved ${gfgDiff} questions on gfg, so he get ${calculateIncrement(
-              gfgDiff
-            )} points`
-          );
+
+          if (user.platforms.geeksforgeeks.verified === true) {
+            increment += calculateIncrement(gfgDiff);
+            console.log(
+              `Today the user has solved ${gfgDiff} questions on gfg, so he get ${calculateIncrement(
+                gfgDiff
+              )} points`
+            );
+          } else {
+            console.log(
+              `${user.name} has not verified his GeeksForGeeks account`
+            );
+          }
 
           user.platforms.geeksforgeeks = {
             universityRank,

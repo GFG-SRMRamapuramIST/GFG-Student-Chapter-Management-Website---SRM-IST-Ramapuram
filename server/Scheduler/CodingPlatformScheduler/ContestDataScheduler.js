@@ -122,35 +122,47 @@ function updateContestDataScheduler() {
 
         if (contestData) {
           if (type === "codeforces") {
-            // 3 points for every question solved on codeforces contest
-            user.totalQuestionSolved += contestData.totalQuestionsSolved * 3;
-            console.log(
-              `For the codeforces contest ${user.name} has solved ${
-                contestData.totalQuestionsSolved
-              } questions, so user gets ${
-                contestData.totalQuestionsSolved * 3
-              } points`
-            );
+            if (user.platforms.codeforces.verified === true) {
+              // 3 points for every question solved on codeforces contest
+              user.totalQuestionSolved += contestData.totalQuestionsSolved * 3;
+              console.log(
+                `For the codeforces contest ${user.name} has solved ${
+                  contestData.totalQuestionsSolved
+                } questions, so user gets ${
+                  contestData.totalQuestionsSolved * 3
+                } points`
+              );
+            } else {
+              console.log(
+                `${user.name} has not verified his codeforces account, so no points will be added for contest.`
+              );
+            }
           } else if (type === "codechef") {
-            const pointsPerStar = { 1: 2, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7 };
-            console.log(
-              `${user.name} is a ${
-                user.platforms.codechef.rating
-              } star coder on codechef, so per question user gets ${
-                pointsPerStar[user.platforms.codechef.rating]
-              } points`
-            );
-            console.log(
-              `For the codechef contest ${user.name} has solved ${
-                contestData.totalQuestionsSolved
-              } questions, so user gets ${
+            if( user.platforms.codechef.verified === true) {
+              const pointsPerStar = { 1: 2, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7 };
+              console.log(
+                `${user.name} is a ${
+                  user.platforms.codechef.rating
+                } star coder on codechef, so per question user gets ${
+                  pointsPerStar[user.platforms.codechef.rating]
+                } points`
+              );
+              console.log(
+                `For the codechef contest ${user.name} has solved ${
+                  contestData.totalQuestionsSolved
+                } questions, so user gets ${
+                  contestData.totalQuestionsSolved *
+                  pointsPerStar[user.platforms.codechef.rating]
+                } points`
+              );
+              user.totalQuestionSolved +=
                 contestData.totalQuestionsSolved *
-                pointsPerStar[user.platforms.codechef.rating]
-              } points`
-            );
-            user.totalQuestionSolved +=
-              contestData.totalQuestionsSolved *
-              pointsPerStar[user.platforms.codechef.rating];
+                pointsPerStar[user.platforms.codechef.rating];
+            }else{
+              console.log(
+                `${user.name} has not verified his codechef account, so no points will be added for contest.`
+              );
+            }
           }
 
           // Update today's activity

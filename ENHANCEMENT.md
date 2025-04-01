@@ -15,3 +15,5 @@ Taking birth date as also one of the attribute during registration and wishing t
 ### Achievements reset to 0 for everyone btn for admin
 
 ### User can compare there profile with anyone profile
+
+### Remove console logs from every where especially from server as its consumes run time
