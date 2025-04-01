@@ -1,3 +1,4 @@
+import ReactGA from "react-ga4";
 import { useEffect, useState } from "react";
 
 // Icons
@@ -18,6 +19,15 @@ import { ConfirmationPopup, ToastMsg } from "../Utilities";
 import { UserServices, CoreMemberServices } from "../Services";
 
 const Dashboard = () => {
+  // Google Analytics tracking
+  useEffect(() => {
+    ReactGA.send({
+      hitType: "pageview",
+      page: "gfgsrm-tech.vercel.app/dashboard",
+      title: "Dashboard Page",
+    });
+  }, []);
+
   const {
     toggleSubscribeFunction,
     getProfilePageDataFunction,

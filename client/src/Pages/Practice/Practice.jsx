@@ -1,3 +1,4 @@
+import ReactGA from "react-ga4";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -11,6 +12,15 @@ import { CreatePracticeSetModal, PracticeSetCard } from "../../Components";
 import { CoreMemberServices } from "../../Services";
 
 const Practice = () => {
+  // Google Analytics tracking
+  useEffect(() => {
+    ReactGA.send({
+      hitType: "pageview",
+      page: "gfgsrm-tech.vercel.app/practice",
+      title: "Practice Page",
+    });
+  }, []);
+
   const { createResourceFunction, fetchAllResourcesFunction } =
     CoreMemberServices();
 
@@ -57,8 +67,8 @@ const Practice = () => {
       });
 
       if (response.status === 200) {
-        const {currentPage, totalPages} = response.data;
-        setPageInfo({currentPage, totalPages});
+        const { currentPage, totalPages } = response.data;
+        setPageInfo({ currentPage, totalPages });
 
         const formattedResources = response.data.data.map((resource) => ({
           id: resource.id, // Unique ID
@@ -106,7 +116,7 @@ const Practice = () => {
     } catch (error) {
       ToastMsg("Internal Server Error", "error");
       console.log("Internal server error: ", error);
-    }finally{
+    } finally {
       fetchAllResourcesHandler();
     }
   };
@@ -126,7 +136,7 @@ const Practice = () => {
               className="w-full pl-12 pr-4 py-2 sm:py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gfgsc-green transition-all duration-200"
             />
           </div>
-  
+
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -137,7 +147,7 @@ const Practice = () => {
             <span>Create Resource</span>
           </motion.button>
         </div>
-  
+
         {/* Resources Grid */}
         {loading ? (
           <div className="flex justify-center items-center h-64">
@@ -145,8 +155,12 @@ const Practice = () => {
           </div>
         ) : resources.length === 0 ? (
           <div className="flex flex-col justify-center items-center h-64 text-center">
-            <div className="text-gray-400 text-lg sm:text-xl mb-2">No resources found</div>
-            <div className="text-gray-500 text-sm sm:text-base">Try adjusting your search or create a new resource</div>
+            <div className="text-gray-400 text-lg sm:text-xl mb-2">
+              No resources found
+            </div>
+            <div className="text-gray-500 text-sm sm:text-base">
+              Try adjusting your search or create a new resource
+            </div>
           </div>
         ) : (
           <AnimatePresence>
@@ -160,7 +174,7 @@ const Practice = () => {
             </motion.div>
           </AnimatePresence>
         )}
-        
+
         {/* Pagination */}
         {!loading && resources.length > 0 && pageInfo.totalPages > 1 && (
           <div className="mt-8 flex justify-center">
@@ -171,7 +185,7 @@ const Practice = () => {
             />
           </div>
         )}
-  
+
         {/* Create Resource Modal */}
         <CreatePracticeSetModal
           isOpen={showCreateModal}

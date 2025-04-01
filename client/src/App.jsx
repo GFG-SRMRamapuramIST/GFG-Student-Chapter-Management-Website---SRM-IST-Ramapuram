@@ -1,3 +1,5 @@
+import ReactGA from "react-ga4";
+
 import { RouterProvider } from "react-router-dom";
 import { createBrowserRouter } from "react-router-dom";
 
@@ -22,7 +24,13 @@ import {
   AllResources,
   Resource,
 } from "./Pages";
-import { AuthLayout, RootLayout, AppLayout, PracticeLayout, ResourcesLayout } from "./Layouts";
+import {
+  AuthLayout,
+  RootLayout,
+  AppLayout,
+  PracticeLayout,
+  ResourcesLayout,
+} from "./Layouts";
 
 // Auth routes (public)
 const authRoutes = {
@@ -93,6 +101,10 @@ const router = createBrowserRouter([
     ],
   },
 ]);
+
+// https://www.youtube.com/watch?v=AHSOdHIsYR0
+// Follow the above YT tutorial to integrate Google Analytics with React
+ReactGA.initialize("G-BQHHS79MLQ");
 
 const App = () => {
   return <RouterProvider router={router} />;

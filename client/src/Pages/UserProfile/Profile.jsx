@@ -1,3 +1,4 @@
+import ReactGA from "react-ga4";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
@@ -11,6 +12,15 @@ import { getMonthName, ToastMsg } from "../../Utilities";
 import { UserServices } from "../../Services";
 
 const Profile = () => {
+  // Google Analytics tracking
+  useEffect(() => {
+    ReactGA.send({
+      hitType: "pageview",
+      page: "gfgsrm-tech.vercel.app/profile",
+      title: "Profile Page",
+    });
+  }, []);
+
   const { id } = useParams(); // 67bf1dae9abafaae75f73b7d
 
   const { getProfilePageDataFunction } = UserServices();

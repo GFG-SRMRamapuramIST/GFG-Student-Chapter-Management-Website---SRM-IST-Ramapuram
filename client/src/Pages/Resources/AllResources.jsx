@@ -1,3 +1,4 @@
+import ReactGA from "react-ga4";
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "react-router-dom";
@@ -49,6 +50,15 @@ const ResourceCard = ({ resource }) => {
 };
 
 const AllResources = () => {
+  // Google Analytics tracking
+  useEffect(() => {
+    ReactGA.send({
+      hitType: "pageview",
+      page: "gfgsrm-tech.vercel.app/resources",
+      title: "Resources Page",
+    });
+  }, []);
+
   const { createVideoResourceFunction, fetchAllVideoResourcesFunction } =
     CoreMemberServices();
 

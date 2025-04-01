@@ -1,11 +1,28 @@
+import ReactGA from "react-ga4";
 import { useState, useRef, useEffect } from "react";
 import { motion, useInView } from "framer-motion";
+
 import { BsStars } from "react-icons/bs";
 import { BiGroup, BiVideo } from "react-icons/bi";
 import { FaQuoteRight } from "react-icons/fa";
-import { AboutSection, HeroSection, TestimonialsSection, VideoFeatureSection } from "../Components";
+
+import {
+  AboutSection,
+  HeroSection,
+  TestimonialsSection,
+  VideoFeatureSection,
+} from "../Components";
 
 function LandingPage() {
+  // Google Analytics tracking
+  useEffect(() => {
+    ReactGA.send({
+      hitType: "pageview",
+      page: "gfgsrm-tech.vercel.app/",
+      title: "Landing Page",
+    });
+  }, []);
+
   // State for active section
   const [activeSection, setActiveSection] = useState("hero");
 
@@ -19,7 +36,9 @@ function LandingPage() {
   const heroInView = useInView(heroRef, { margin: "-100px 0px" });
   const aboutInView = useInView(aboutRef, { margin: "-100px 0px" });
   const videoInView = useInView(videoRef, { margin: "-100px 0px" });
-  const testimonialsInView = useInView(testimonialsRef, { margin: "-100px 0px" });
+  const testimonialsInView = useInView(testimonialsRef, {
+    margin: "-100px 0px",
+  });
 
   // Update active section based on scroll position
   useEffect(() => {

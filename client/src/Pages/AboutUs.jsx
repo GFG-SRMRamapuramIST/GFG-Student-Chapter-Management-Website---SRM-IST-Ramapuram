@@ -1,3 +1,4 @@
+import ReactGA from "react-ga4";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence, useInView } from "framer-motion";
 
@@ -31,6 +32,15 @@ import { HiOutlineLightBulb } from "react-icons/hi";
 import { ImageLoaderComponent } from "../Utilities";
 
 const AboutUs = () => {
+  // Google Analytics tracking
+  useEffect(() => {
+    ReactGA.send({
+      hitType: "pageview",
+      page: "gfgsrm-tech.vercel.app/about",
+      title: "About-us Page",
+    });
+  }, []);
+
   // State for active sections and animations
   const [activeSection, setActiveSection] = useState("about");
   const [currentEvent, setCurrentEvent] = useState(0);
@@ -467,250 +477,254 @@ const AboutUs = () => {
       </section>
 
       {/* Core Team Section */}
-<section ref={teamRef} className="py-20 relative">
-  <div className="max-w-6xl mx-auto px-4">
-    <motion.div
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-      transition={{ duration: 1 }}
-      viewport={{ once: true, margin: "-100px" }}
-      className="text-center mb-16"
-    >
-      <span className="inline-block px-4 py-1 rounded-full bg-gfgsc-green-200 text-gfgsc-green font-medium text-sm mb-3">
-        LEADERSHIP
-      </span>
-      <h2 className="text-3xl md:text-4xl font-bold text-gfg-black mb-4">
-        Our Core Team
-      </h2>
-      <div className="w-16 h-1 bg-gfgsc-green mx-auto"></div>
-      <p className="text-gray-600 max-w-2xl mx-auto mt-4">
-        Meet the dedicated student leaders who work tirelessly to create
-        valuable learning experiences and foster a supportive community.
-      </p>
-    </motion.div>
+      <section ref={teamRef} className="py-20 relative">
+        <div className="max-w-6xl mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 1 }}
+            viewport={{ once: true, margin: "-100px" }}
+            className="text-center mb-16"
+          >
+            <span className="inline-block px-4 py-1 rounded-full bg-gfgsc-green-200 text-gfgsc-green font-medium text-sm mb-3">
+              LEADERSHIP
+            </span>
+            <h2 className="text-3xl md:text-4xl font-bold text-gfg-black mb-4">
+              Our Core Team
+            </h2>
+            <div className="w-16 h-1 bg-gfgsc-green mx-auto"></div>
+            <p className="text-gray-600 max-w-2xl mx-auto mt-4">
+              Meet the dedicated student leaders who work tirelessly to create
+              valuable learning experiences and foster a supportive community.
+            </p>
+          </motion.div>
 
-    {/* Desktop Grid */}
-    <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-      {coreTeam.map((member, index) => (
-        <motion.div
-          key={index}
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: index * 0.1 }}
-          viewport={{ once: true, margin: "-100px" }}
-          whileHover={{ y: -10 }}
-          className="group"
-        >
-          <div className="relative overflow-hidden rounded-2xl shadow-lg">
-            <div className="aspect-w-3 aspect-h-4 bg-gfgsc-green-200">
-              <ImageLoaderComponent
-                url={member.image.url}
-                hashCode={member.image.hashCode}
-                alt={member.image.alt}
-                className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-700 ease-out"
-                blurWidth="100%"
-                blurHeight="100%"
-              />
-            </div>
+          {/* Desktop Grid */}
+          <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {coreTeam.map((member, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                viewport={{ once: true, margin: "-100px" }}
+                whileHover={{ y: -10 }}
+                className="group"
+              >
+                <div className="relative overflow-hidden rounded-2xl shadow-lg">
+                  <div className="aspect-w-3 aspect-h-4 bg-gfgsc-green-200">
+                    <ImageLoaderComponent
+                      url={member.image.url}
+                      hashCode={member.image.hashCode}
+                      alt={member.image.alt}
+                      className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-700 ease-out"
+                      blurWidth="100%"
+                      blurHeight="100%"
+                    />
+                  </div>
 
-            <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/80 via-black/50 to-transparent">
-              <h3 className="text-lg font-semibold text-white">
-                {member.name}
-              </h3>
-              <p className="text-gfgsc-green-200">{member.role}</p>
-            </div>
+                  <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/80 via-black/50 to-transparent">
+                    <h3 className="text-lg font-semibold text-white">
+                      {member.name}
+                    </h3>
+                    <p className="text-gfgsc-green-200">{member.role}</p>
+                  </div>
 
-            <div className="absolute inset-0 bg-gradient-to-t from-gfgsc-green/90 to-gfgsc-green/75 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-6">
-              <div className="flex justify-end space-x-2">
-                {Object.entries(member.links).map(
-                  ([platform, url], idx) => (
-                    <a
-                      key={idx}
-                      href={url}
-                      className="p-2 bg-white/10 backdrop-blur-sm rounded-full hover:bg-white/20 transition-colors text-white"
-                      aria-label={`${member.name}'s ${platform}`}
+                  <div className="absolute inset-0 bg-gradient-to-t from-gfgsc-green/90 to-gfgsc-green/75 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-6">
+                    <div className="flex justify-end space-x-2">
+                      {Object.entries(member.links).map(
+                        ([platform, url], idx) => (
+                          <a
+                            key={idx}
+                            href={url}
+                            className="p-2 bg-white/10 backdrop-blur-sm rounded-full hover:bg-white/20 transition-colors text-white"
+                            aria-label={`${member.name}'s ${platform}`}
+                          >
+                            {platform === "github" && <FaGithub size={18} />}
+                            {platform === "linkedin" && (
+                              <FaLinkedin size={18} />
+                            )}
+                            {platform === "instagram" && (
+                              <FaInstagram size={18} />
+                            )}
+                          </a>
+                        )
+                      )}
+                    </div>
+
+                    <div>
+                      <h3 className="text-lg font-semibold text-white mb-1">
+                        {member.name}
+                      </h3>
+                      <p className="text-gfgsc-green-200 mb-3">{member.role}</p>
+                      <p className="text-white/90 text-sm italic">
+                        "{member.quote}"
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Mobile Carousel */}
+          <div className="md:hidden overflow-hidden">
+            <motion.div
+              initial={{ opacity: 0 }}
+              className="flex"
+              // Animation for infinite scrolling
+              animate={{
+                opacity: 1,
+                x: [0, -300 * coreTeam.length],
+                transition: {
+                  x: {
+                    repeat: Infinity,
+                    repeatType: "loop",
+                    duration: coreTeam.length * 5, // Adjust speed as needed
+                    ease: "linear",
+                  },
+                },
+              }}
+            >
+              {/* Original set of cards */}
+              {coreTeam.map((member, index) => (
+                <div
+                  key={`original-${index}`}
+                  className="flex-shrink-0 w-72 px-2" // Fixed width for consistent sizing
+                >
+                  <div className="relative overflow-hidden rounded-2xl shadow-lg">
+                    <div className="aspect-w-3 aspect-h-4 bg-gfgsc-green-200">
+                      <ImageLoaderComponent
+                        url={member.image.url}
+                        hashCode={member.image.hashCode}
+                        alt={member.image.alt}
+                        className="w-full h-full object-cover object-center transition-transform duration-700 ease-out"
+                        blurWidth="100%"
+                        blurHeight="100%"
+                      />
+                    </div>
+
+                    <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/80 via-black/50 to-transparent">
+                      <h3 className="text-lg font-semibold text-white">
+                        {member.name}
+                      </h3>
+                      <p className="text-gfgsc-green-200">{member.role}</p>
+                    </div>
+
+                    <div
+                      className="absolute inset-0 bg-gradient-to-t from-gfgsc-green/90 to-gfgsc-green/75 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-6"
+                      onClick={() => {
+                        // Add touch-friendly behavior if needed
+                      }}
                     >
-                      {platform === "github" && <FaGithub size={18} />}
-                      {platform === "linkedin" && (
-                        <FaLinkedin size={18} />
-                      )}
-                      {platform === "instagram" && (
-                        <FaInstagram size={18} />
-                      )}
-                    </a>
-                  )
-                )}
-              </div>
+                      <div className="flex justify-end space-x-2">
+                        {Object.entries(member.links).map(
+                          ([platform, url], idx) => (
+                            <a
+                              key={idx}
+                              href={url}
+                              className="p-2 bg-white/10 backdrop-blur-sm rounded-full hover:bg-white/20 transition-colors text-white"
+                              aria-label={`${member.name}'s ${platform}`}
+                            >
+                              {platform === "github" && <FaGithub size={18} />}
+                              {platform === "linkedin" && (
+                                <FaLinkedin size={18} />
+                              )}
+                              {platform === "instagram" && (
+                                <FaInstagram size={18} />
+                              )}
+                            </a>
+                          )
+                        )}
+                      </div>
 
-              <div>
-                <h3 className="text-lg font-semibold text-white mb-1">
-                  {member.name}
-                </h3>
-                <p className="text-gfgsc-green-200 mb-3">{member.role}</p>
-                <p className="text-white/90 text-sm italic">
-                  "{member.quote}"
-                </p>
-              </div>
-            </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-white mb-1">
+                          {member.name}
+                        </h3>
+                        <p className="text-gfgsc-green-200 mb-3">
+                          {member.role}
+                        </p>
+                        <p className="text-white/90 text-sm italic">
+                          "{member.quote}"
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {/* Duplicate set for seamless infinite loop */}
+              {coreTeam.map((member, index) => (
+                <div
+                  key={`duplicate-${index}`}
+                  className="flex-shrink-0 w-72 px-2" // Fixed width for consistent sizing
+                >
+                  <div className="relative overflow-hidden rounded-2xl shadow-lg">
+                    <div className="aspect-w-3 aspect-h-4 bg-gfgsc-green-200">
+                      <ImageLoaderComponent
+                        url={member.image.url}
+                        hashCode={member.image.hashCode}
+                        alt={member.image.alt}
+                        className="w-full h-full object-cover object-center transition-transform duration-700 ease-out"
+                        blurWidth="100%"
+                        blurHeight="100%"
+                      />
+                    </div>
+
+                    <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/80 via-black/50 to-transparent">
+                      <h3 className="text-lg font-semibold text-white">
+                        {member.name}
+                      </h3>
+                      <p className="text-gfgsc-green-200">{member.role}</p>
+                    </div>
+
+                    <div
+                      className="absolute inset-0 bg-gradient-to-t from-gfgsc-green/90 to-gfgsc-green/75 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-6"
+                      onClick={() => {
+                        // Add touch-friendly behavior if needed
+                      }}
+                    >
+                      <div className="flex justify-end space-x-2">
+                        {Object.entries(member.links).map(
+                          ([platform, url], idx) => (
+                            <a
+                              key={idx}
+                              href={url}
+                              className="p-2 bg-white/10 backdrop-blur-sm rounded-full hover:bg-white/20 transition-colors text-white"
+                              aria-label={`${member.name}'s ${platform}`}
+                            >
+                              {platform === "github" && <FaGithub size={18} />}
+                              {platform === "linkedin" && (
+                                <FaLinkedin size={18} />
+                              )}
+                              {platform === "instagram" && (
+                                <FaInstagram size={18} />
+                              )}
+                            </a>
+                          )
+                        )}
+                      </div>
+
+                      <div>
+                        <h3 className="text-lg font-semibold text-white mb-1">
+                          {member.name}
+                        </h3>
+                        <p className="text-gfgsc-green-200 mb-3">
+                          {member.role}
+                        </p>
+                        <p className="text-white/90 text-sm italic">
+                          "{member.quote}"
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </motion.div>
           </div>
-        </motion.div>
-      ))}
-    </div>
-
-    {/* Mobile Carousel */}
-    <div className="md:hidden overflow-hidden">
-      <motion.div
-        initial={{ opacity: 0 }}
-        className="flex"
-        // Animation for infinite scrolling
-        animate={{
-          opacity: 1,
-          x: [0, -300 * coreTeam.length],
-          transition: {
-            x: {
-              repeat: Infinity,
-              repeatType: "loop",
-              duration: coreTeam.length * 5, // Adjust speed as needed
-              ease: "linear",
-            },
-          },
-        }}
-      >
-        {/* Original set of cards */}
-        {coreTeam.map((member, index) => (
-          <div
-            key={`original-${index}`}
-            className="flex-shrink-0 w-72 px-2" // Fixed width for consistent sizing
-          >
-            <div className="relative overflow-hidden rounded-2xl shadow-lg">
-              <div className="aspect-w-3 aspect-h-4 bg-gfgsc-green-200">
-                <ImageLoaderComponent
-                  url={member.image.url}
-                  hashCode={member.image.hashCode}
-                  alt={member.image.alt}
-                  className="w-full h-full object-cover object-center transition-transform duration-700 ease-out"
-                  blurWidth="100%"
-                  blurHeight="100%"
-                />
-              </div>
-
-              <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/80 via-black/50 to-transparent">
-                <h3 className="text-lg font-semibold text-white">
-                  {member.name}
-                </h3>
-                <p className="text-gfgsc-green-200">{member.role}</p>
-              </div>
-
-              <div 
-                className="absolute inset-0 bg-gradient-to-t from-gfgsc-green/90 to-gfgsc-green/75 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-6"
-                onClick={() => {
-                  // Add touch-friendly behavior if needed
-                }}
-              >
-                <div className="flex justify-end space-x-2">
-                  {Object.entries(member.links).map(
-                    ([platform, url], idx) => (
-                      <a
-                        key={idx}
-                        href={url}
-                        className="p-2 bg-white/10 backdrop-blur-sm rounded-full hover:bg-white/20 transition-colors text-white"
-                        aria-label={`${member.name}'s ${platform}`}
-                      >
-                        {platform === "github" && <FaGithub size={18} />}
-                        {platform === "linkedin" && (
-                          <FaLinkedin size={18} />
-                        )}
-                        {platform === "instagram" && (
-                          <FaInstagram size={18} />
-                        )}
-                      </a>
-                    )
-                  )}
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-semibold text-white mb-1">
-                    {member.name}
-                  </h3>
-                  <p className="text-gfgsc-green-200 mb-3">{member.role}</p>
-                  <p className="text-white/90 text-sm italic">
-                    "{member.quote}"
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
-
-        {/* Duplicate set for seamless infinite loop */}
-        {coreTeam.map((member, index) => (
-          <div
-            key={`duplicate-${index}`}
-            className="flex-shrink-0 w-72 px-2" // Fixed width for consistent sizing
-          >
-            <div className="relative overflow-hidden rounded-2xl shadow-lg">
-              <div className="aspect-w-3 aspect-h-4 bg-gfgsc-green-200">
-                <ImageLoaderComponent
-                  url={member.image.url}
-                  hashCode={member.image.hashCode}
-                  alt={member.image.alt}
-                  className="w-full h-full object-cover object-center transition-transform duration-700 ease-out"
-                  blurWidth="100%"
-                  blurHeight="100%"
-                />
-              </div>
-
-              <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/80 via-black/50 to-transparent">
-                <h3 className="text-lg font-semibold text-white">
-                  {member.name}
-                </h3>
-                <p className="text-gfgsc-green-200">{member.role}</p>
-              </div>
-
-              <div 
-                className="absolute inset-0 bg-gradient-to-t from-gfgsc-green/90 to-gfgsc-green/75 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-6"
-                onClick={() => {
-                  // Add touch-friendly behavior if needed
-                }}
-              >
-                <div className="flex justify-end space-x-2">
-                  {Object.entries(member.links).map(
-                    ([platform, url], idx) => (
-                      <a
-                        key={idx}
-                        href={url}
-                        className="p-2 bg-white/10 backdrop-blur-sm rounded-full hover:bg-white/20 transition-colors text-white"
-                        aria-label={`${member.name}'s ${platform}`}
-                      >
-                        {platform === "github" && <FaGithub size={18} />}
-                        {platform === "linkedin" && (
-                          <FaLinkedin size={18} />
-                        )}
-                        {platform === "instagram" && (
-                          <FaInstagram size={18} />
-                        )}
-                      </a>
-                    )
-                  )}
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-semibold text-white mb-1">
-                    {member.name}
-                  </h3>
-                  <p className="text-gfgsc-green-200 mb-3">{member.role}</p>
-                  <p className="text-white/90 text-sm italic">
-                    "{member.quote}"
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </motion.div>
-    </div>
-  </div>
-</section>
+        </div>
+      </section>
 
       {/* Developers Section */}
       <section
@@ -839,7 +853,6 @@ const AboutUs = () => {
                     hashCode={events[currentEvent].image.hashCode}
                     alt={events[currentEvent].image.alt}
                     className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
-                    
                   />
 
                   <div className="max-md:pb-12 md:absolute inset-0 flex flex-col justify-end p-6 md:p-10 text-black md:text-white  z-20">

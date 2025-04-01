@@ -1,3 +1,4 @@
+import ReactGA from "react-ga4";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -15,6 +16,15 @@ import { GfgCoin } from "../Assets";
 import { GoDotFill } from "react-icons/go";
 
 const Leaderboard = () => {
+  // Google Analytics tracking
+  useEffect(() => {
+    ReactGA.send({
+      hitType: "pageview",
+      page: "gfgsrm-tech.vercel.app/leaderboard",
+      title: "Leaderboard Page",
+    });
+  }, []);
+
   const { fetchLeaderboardDataFunction } = UserServices();
 
   const [activeTab, setActiveTab] = useState("individual");
