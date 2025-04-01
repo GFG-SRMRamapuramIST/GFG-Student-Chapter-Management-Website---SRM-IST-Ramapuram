@@ -445,7 +445,7 @@ const EditProfile = () => {
             <EditPlatformCard
               platform="CodeForces"
               icon={platformIcons.codeforces}
-              iconColor="#1F8ACB"
+              iconColor="#318CE7"
               username={profileData.coding?.codeforces}
               verified={profileData.verifiedProfile?.codeforces}
               loading={loading}

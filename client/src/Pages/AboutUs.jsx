@@ -816,8 +816,8 @@ const AboutUs = () => {
 
           {/* Events Carousel */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.7 }}
             viewport={{ once: true, margin: "-100px" }}
             className="relative mt-8 mb-8"
@@ -839,8 +839,7 @@ const AboutUs = () => {
                     hashCode={events[currentEvent].image.hashCode}
                     alt={events[currentEvent].image.alt}
                     className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
-                    blurWidth="100%"
-                    blurHeight="100%"
+                    
                   />
 
                   <div className="max-md:pb-12 md:absolute inset-0 flex flex-col justify-end p-6 md:p-10 text-black md:text-white  z-20">

@@ -10,18 +10,17 @@ import NotificationsSection from "../Dashboard/NotificationsSection";
 import MonthlyActivityHeatmap from "./MonthlyActivityHeatmap";
 import Medal from "../ui/Medal";
 import CustomDialog from "../ui/CustomDialog";
+import { RiVerifiedBadgeFill } from "react-icons/ri";
 
 const ProfileSecondary = ({ userProfile }) => {
   const [showBadges, setShowBadges] = useState(false);
-
-  console.log(userProfile.badges);
 
   return (
     <div className="p-3 sm:p-4 md:p-6 font-sans antialiased">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Platform Profiles - Takes up full width on mobile, 50% on md, 33% on lg */}
         <div className="lg:col-span-1 h-full">
-          <PlatformProfiles userProfile={userProfile} />
+          <PlatformProfiles platformProfiles={userProfile.profiles} />
         </div>
 
         {/* Middle column for Heatmap */}
@@ -116,7 +115,7 @@ const ProfileSecondary = ({ userProfile }) => {
   );
 };
 
-const PlatformProfiles = ({ userProfile }) => {
+const PlatformProfiles = ({ platformProfiles }) => {
   // Platform-specific color schemes
   const platformStyles = {
     leetcode: {
@@ -162,7 +161,7 @@ const PlatformProfiles = ({ userProfile }) => {
         </h2>
       </div>
       <div className="p-3 sm:p-4 space-y-3 sm:space-y-4">
-        {Object.entries(userProfile.profiles).map(([platform, stats]) => {
+        {Object.entries(platformProfiles).map(([platform, stats]) => {
           const style = platformStyles[platform];
 
           return (
@@ -183,6 +182,9 @@ const PlatformProfiles = ({ userProfile }) => {
                   <span className="text-xs sm:text-sm text-gray-500 lowercase">
                     @{stats.handle || "N/A"}
                   </span>
+                  {stats.verified && (
+                    <RiVerifiedBadgeFill className="text-green-500" />
+                  )}
                 </span>
                 <a
                   href={style.url(stats.handle)}
@@ -317,8 +319,16 @@ const PlatformProfiles = ({ userProfile }) => {
                   </>
                 )}
               </div>
-              <div className="absolute bottom-1 right-1 bg-gray-800 text-white text-xxxs sm:text-xxs px-1 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                Updated weekly
+              <div className="absolute bottom-1 right-1 bg-gray-800 text-white text-xxxs sm:text-xxs px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                {stats.verified ? (
+                  platform === "leetcode" || platform === "geeksforgeeks" ? (
+                    <span>Updated Daily</span>
+                  ) : (
+                    <span>Updated Weekly</span>
+                  )
+                ) : (
+                  <span className="text-red-400">Verify at Edit Profile</span>
+                )}
               </div>
             </div>
           );

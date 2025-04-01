@@ -69,7 +69,7 @@ const Profile = () => {
       setLoading(true);
       //console.log("Fetching profile data for:", profileId);
       const response = await getProfilePageDataFunction({ userId: profileId });
-      console.log(response);
+      // console.log(response);
 
       if (response.status !== 200) {
         ToastMsg("Error fetching profile data! Please try later", "error");
@@ -183,7 +183,7 @@ const Profile = () => {
           dailyActivity: data.dailyActivity || [],
         });
 
-        console.log("Profile Data:", userProfileData);
+        // console.log("Profile Data:", userProfileData);
       }
     } catch (error) {
       ToastMsg("Error fetching profile data! Please try later", "error");

@@ -5,11 +5,10 @@ import { FaXTwitter } from "react-icons/fa6";
 import { SiGeeksforgeeks } from "react-icons/si";
 
 const Footer = ({ isLoggedIn }) => {
-  const year = new Date().getFullYear();
-
   const authenticatedLinks = [
     { to: "/dashboard", label: "Dashboard" },
     { to: "/leaderboard", label: "Leaderboard" },
+    { to: "/resources", label: "Resources" },
     { to: "/practice", label: "Practice" },
   ];
 
@@ -39,19 +38,19 @@ const Footer = ({ isLoggedIn }) => {
             </p>
             <div className="flex space-x-4 items-center">
               <a
-                href="#"
+                href="https://www.linkedin.com/company/geeksforgeeks-srm-rmp"
                 className="text-gray-400 hover:text-gfgsc-green transition-colors duration-200"
               >
                 <BiLogoLinkedin className="w-6 h-6" />
               </a>
               <a
-                href="#"
+                href="https://www.instagram.com/geeksforgeeks.srm.rmp"
                 className="text-gray-400 hover:text-gfgsc-green transition-colors duration-200"
               >
                 <BiLogoInstagram className="w-6 h-6" />
               </a>
               <a
-                href="#"
+                href="https://x.com/GFG_SRM_RMP"
                 className="text-gray-400 hover:text-gfgsc-green transition-colors duration-200"
               >
                 <FaXTwitter className="w-5 h-5" />
