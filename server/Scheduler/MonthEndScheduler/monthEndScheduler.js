@@ -40,23 +40,6 @@ async function runMonthEndTasks() {
       perContestPoint,
     } = config;
 
-    if (autoKickScheduler) {
-      try {
-        await autoKickFunction(
-          passingPercentage,
-          perDayPracticePoint,
-          perContestPoint
-        );
-      } catch (error) {
-        console.error(chalk.red("Error in Auto Kick Function:"), error.message);
-        await sendEmail(
-          "geeksforgeeks.srmistrmp@gmail.com",
-          "Error in Auto Kick Function",
-          error.message
-        );
-      }
-    }
-
     if (achievementScheduler) {
       try {
         await awardTopPerformers();
@@ -84,6 +67,23 @@ async function runMonthEndTasks() {
         await sendEmail(
           "geeksforgeeks.srmistrmp@gmail.com",
           "Error in Backup Data Function",
+          error.message
+        );
+      }
+    }
+
+    if (autoKickScheduler) {
+      try {
+        await autoKickFunction(
+          passingPercentage,
+          perDayPracticePoint,
+          perContestPoint
+        );
+      } catch (error) {
+        console.error(chalk.red("Error in Auto Kick Function:"), error.message);
+        await sendEmail(
+          "geeksforgeeks.srmistrmp@gmail.com",
+          "Error in Auto Kick Function",
           error.message
         );
       }

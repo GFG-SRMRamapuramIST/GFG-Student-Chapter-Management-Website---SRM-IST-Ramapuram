@@ -14,7 +14,7 @@ const autoKickFunction = async (
   try {
     // Calculate minimum passing marks
     const minPassingMarks = Math.floor(
-      (30 * perDayPracticePoint + 4 * perContestPoint) /
+      (30 * perDayPracticePoint + 4 * perContestPoint) *
         (passingPercentage / 100)
     );
 
@@ -23,6 +23,7 @@ const autoKickFunction = async (
     // Find users who did not meet the minimum passing marks
     const usersToDelete = await Users.find({
       totalQuestionSolved: { $lt: minPassingMarks },
+      role: { $ne: "ADMIN" },
     });
 
     if (!usersToDelete.length) {
