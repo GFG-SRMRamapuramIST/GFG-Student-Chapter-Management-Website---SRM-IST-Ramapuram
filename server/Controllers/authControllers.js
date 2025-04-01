@@ -1,5 +1,6 @@
 const chalk = require("chalk");
 const bcrypt = require("bcryptjs");
+const moment = require("moment");
 
 const { Users, AllowedEmail } = require("../Models");
 
