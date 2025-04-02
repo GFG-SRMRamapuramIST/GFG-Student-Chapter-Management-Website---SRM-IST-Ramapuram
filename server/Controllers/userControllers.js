@@ -1,6 +1,5 @@
 const bcrypt = require("bcryptjs");
 const axios = require("axios");
-const crypto = require("crypto");
 const streamifier = require("streamifier");
 
 const { verifyAuthToken, cloudinary } = require("../Utilities");
@@ -31,7 +30,17 @@ const scriptURL =
 
 // Generate a random 4-character string
 const generateRandomCode = () => {
-  return crypto.randomBytes(2).toString("hex").toUpperCase(); // Ensures 4 characters
+  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const alphanumeric = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+  const firstChar = letters[Math.floor(Math.random() * letters.length)];
+  let code = firstChar;
+
+  for (let i = 0; i < 3; i++) {
+    code += alphanumeric[Math.floor(Math.random() * alphanumeric.length)];
+  }
+
+  return code;
 };
 
 /*
