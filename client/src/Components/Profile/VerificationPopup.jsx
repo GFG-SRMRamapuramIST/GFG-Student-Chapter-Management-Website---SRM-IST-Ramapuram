@@ -31,10 +31,13 @@ const platformSpecificSteps = {
     "Once verified, you can change your name back"
   ],
   codeforces: [
-    "Open your Codeforces profile",
-    "Edit your first name to the verification code shown below",
-    "Wait for your profile to update (15-30 seconds)",
-    "Come back here and click verify"
+    "Click on 'Change Settings'",
+    "Click on 'Socials'",
+    "Edit the field 'First Name'",
+    "Put the verification token",
+    "Scroll down and click 'Save Changes'",
+    "Wait for 15-30 seconds",
+    "Come back here and click 'Verify Profile' in the popup"
   ],
   geeksforgeeks: [
     "Go to your profile page",
