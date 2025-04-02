@@ -34,7 +34,7 @@ const platformSpecificSteps = {
     "Click on 'Change Settings'",
     "Click on 'Socials'",
     "Edit the field 'First Name'",
-    "Put the verification token",
+    "Put the verification code",
     "Scroll down and click 'Save Changes'",
     "Wait for 15-30 seconds",
     "Come back here and click 'Verify Profile' in the popup"
