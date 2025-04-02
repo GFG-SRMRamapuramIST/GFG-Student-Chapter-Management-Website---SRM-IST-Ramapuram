@@ -63,6 +63,7 @@ const updatePracticeQuestionsCount = async () => {
             badgesCount,
             ranking,
             totalProblemSolved,
+            verified: user.platforms.leetcode.verified,
           };
 
           // Update today's activity
@@ -102,6 +103,7 @@ const updatePracticeQuestionsCount = async () => {
             universityRank,
             codingScore,
             problemSolved: problemsSolved,
+            verified: user.platforms.geeksforgeeks.verified,
           };
 
           // Update today's activity
