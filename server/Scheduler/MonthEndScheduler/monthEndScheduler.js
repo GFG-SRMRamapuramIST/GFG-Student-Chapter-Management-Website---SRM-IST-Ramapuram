@@ -7,6 +7,7 @@ const { ConstantValue } = require("../../Models");
 const awardTopPerformers = require("./awardTopPerformersFunction");
 const backUpDataFunction = require("./backUpDataFunction");
 const resetDataFunction = require("./resetDataFunction");
+const autoKickFunction = require("./autoKickFunction");
 
 let monthEndScheduler; // Store reference to the scheduler
 
@@ -16,7 +17,7 @@ function getLastDayCronExpression() {
   const year = today.getFullYear();
   const month = today.getMonth();
   const lastDay = new Date(year, month + 1, 0).getDate();
-  return `59 23 ${lastDay} * *`; // Runs at 23:59 on the last day of the month
+  return `55 23 ${lastDay} * *`; // Runs at 23:55 on the last day of the month
 }
 
 // Function to run the month-end tasks
@@ -29,8 +30,15 @@ async function runMonthEndTasks() {
       throw new Error("No configuration found in ConstantValue schema.");
     }
 
-    const { achievementScheduler, backupDataScheduler, resetDataScheduler } =
-      config;
+    const {
+      achievementScheduler,
+      backupDataScheduler,
+      resetDataScheduler,
+      autoKickScheduler,
+      passingPercentage,
+      perDayPracticePoint,
+      perContestPoint,
+    } = config;
 
     if (achievementScheduler) {
       try {
@@ -59,6 +67,23 @@ async function runMonthEndTasks() {
         await sendEmail(
           "geeksforgeeks.srmistrmp@gmail.com",
           "Error in Backup Data Function",
+          error.message
+        );
+      }
+    }
+
+    if (autoKickScheduler) {
+      try {
+        await autoKickFunction(
+          passingPercentage,
+          perDayPracticePoint,
+          perContestPoint
+        );
+      } catch (error) {
+        console.error(chalk.red("Error in Auto Kick Function:"), error.message);
+        await sendEmail(
+          "geeksforgeeks.srmistrmp@gmail.com",
+          "Error in Auto Kick Function",
           error.message
         );
       }

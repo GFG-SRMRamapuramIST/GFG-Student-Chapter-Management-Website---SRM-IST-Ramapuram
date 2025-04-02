@@ -115,7 +115,7 @@ const reportAnIssueFunction = async (formData) => {
 }
 
 // Get all users with id and name
-const getAllUsersWithIdAndNameFunction = async (token) => {
+const getAllUsersWithIdNameRolePfpFunction = async (token) => {
   return await commonrequest(
     "GET",
     `${BACKEND_URL}/api/v1/user/get-all-users-with-id-and-name`,
@@ -123,6 +123,26 @@ const getAllUsersWithIdAndNameFunction = async (token) => {
     { Authorization: `Bearer ${token}` }
   );
 };
+
+// Generating Verification code for Platform API
+const generateVerificationCodeForAPlatformFunction = async ({ platform }, token) => {
+  return await commonrequest(
+    "POST",
+    `${BACKEND_URL}/api/v1/user/generate-verification-code`,
+    { platform },
+    { Authorization: `Bearer ${token}` }
+  );
+}
+
+// Verifying platform API
+const verifyPlatformFunction = async ({ platform }, token) => {
+  return await commonrequest(
+    "POST",
+    `${BACKEND_URL}/api/v1/user/verify-platform`,
+    { platform },
+    { Authorization: `Bearer ${token}` }
+  );
+}
 
 // Wrapper to use token inside React components
 const UserService = () => {
@@ -144,8 +164,10 @@ const UserService = () => {
     fetchTop5UsersFunction: () => fetchTop5UsersFunction(userToken),
     fetchPOTDFunction: () => fetchPOTDFunction(userToken),
     reportAnIssueFunction: (formData) => reportAnIssueFunction(formData),
-    getAllUsersWithIdAndNameFunction: () =>
-      getAllUsersWithIdAndNameFunction(userToken),
+    getAllUsersWithIdNameRolePfpFunction: () =>
+      getAllUsersWithIdNameRolePfpFunction(userToken),
+    generateVerificationCodeForAPlatformFunction: (params) => generateVerificationCodeForAPlatformFunction(params, userToken),
+    verifyPlatformFunction: (params) => verifyPlatformFunction(params, userToken)
   };
 };
 

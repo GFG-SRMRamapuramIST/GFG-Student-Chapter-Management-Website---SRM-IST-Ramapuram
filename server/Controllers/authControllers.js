@@ -1,9 +1,14 @@
 const chalk = require("chalk");
 const bcrypt = require("bcryptjs");
+const moment = require("moment");
 
 const { Users, AllowedEmail } = require("../Models");
 
 const { sendEmail, cloudinary, verifyAuthToken } = require("../Utilities");
+
+const {
+  updateUserCodingPlatformsDataScheduler,
+} = require("../Scheduler/CodingPlatformScheduler/ProfileDataScheduler");
 
 /*
 ************************** APIs **************************
@@ -17,6 +22,24 @@ const { sendEmail, cloudinary, verifyAuthToken } = require("../Utilities");
 
 **********************************************************
 */
+
+const initializeDailyActivity = async (user) => {
+  const startDate = moment().startOf("month");
+  const today = moment().startOf("day");
+  const dailyActivity = [];
+
+  for (
+    let date = startDate;
+    date.isSameOrBefore(today, "day");
+    date.add(1, "day")
+  ) {
+    dailyActivity.push({ date: date.toDate(), count: 0 });
+  }
+
+  user.dailyActivity = dailyActivity;
+  user.maxStreak = 0;
+  user.avgPerDay = 0;
+};
 
 //0. Verify Auth Token
 exports.verifyAuthToken = async (req, res) => {
@@ -100,7 +123,6 @@ exports.register = async (req, res) => {
       academicYear,
       phoneNumber,
       linkedinUsername,
-      codolioUsername,
       leetcodeUsername,
       codechefUsername,
       codeforcesUsername,
@@ -118,7 +140,6 @@ exports.register = async (req, res) => {
       !academicYear ||
       !phoneNumber ||
       !linkedinUsername ||
-      !codolioUsername ||
       !leetcodeUsername ||
       !codechefUsername ||
       !codeforcesUsername ||
@@ -151,6 +172,10 @@ exports.register = async (req, res) => {
         .json({ message: "User with this email already exists" });
     }
 
+    // Find the last rank (highest currentRank)
+    const lastUser = await Users.findOne().sort({ currentRank: -1 });
+    const lastRank = lastUser ? lastUser.currentRank : 0; // If no users exist, start from 0
+
     // Create a new user
     const newUser = new Users({
       profilePicture:
@@ -164,12 +189,15 @@ exports.register = async (req, res) => {
       phoneNumber: phoneNumber || null,
       role: "USER",
       linkedinUsername: linkedinUsername || null,
-      codolioUsername: codolioUsername || null,
       leetcodeUsername: leetcodeUsername || null,
       codechefUsername: codechefUsername || null,
       codeforcesUsername: codeforcesUsername || null,
       geeksforgeeksUsername: geeksforgeeksUsername || null,
+      currentRank: lastRank + 1,
     });
+
+    // Initialize dailyActivity with zero counts
+    await initializeDailyActivity(newUser);
 
     // Save the user to the database
     const savedUser = await newUser.save();
@@ -177,13 +205,16 @@ exports.register = async (req, res) => {
     // Remove the email from the AllowedEmail schema
     await AllowedEmail.deleteOne({ email });
 
+    // Call updateUserCodingPlatformsDataScheduler after registration
+    await updateUserCodingPlatformsDataScheduler(savedUser, true);
+
     // Respond with success
-    res
+    return res
       .status(200)
       .json({ message: "User registered successfully", user: savedUser });
   } catch (error) {
     console.log(chalk.bgRed.bold.red("Error registering user:"), error.message);
-    res
+    return res
       .status(500)
       .json({ message: "Internal server error", error: error.message });
   }

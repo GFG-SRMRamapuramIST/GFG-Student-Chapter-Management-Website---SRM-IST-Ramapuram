@@ -1,3 +1,4 @@
+import ReactGA from "react-ga4";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
@@ -5,12 +6,21 @@ import { useParams } from "react-router-dom";
 import { FaSpinner } from "react-icons/fa";
 
 import { ProfileHero, ProfileSecondary } from "../../Components";
-import { ToastMsg } from "../../Utilities";
+import { getMonthName, ToastMsg } from "../../Utilities";
 
 // Importing APIs
 import { UserServices } from "../../Services";
 
 const Profile = () => {
+  // Google Analytics tracking
+  useEffect(() => {
+    ReactGA.send({
+      hitType: "pageview",
+      page: "gfgsrm-tech.vercel.app/profile",
+      title: "Profile Page",
+    });
+  }, []);
+
   const { id } = useParams(); // 67bf1dae9abafaae75f73b7d
 
   const { getProfilePageDataFunction } = UserServices();
@@ -53,10 +63,14 @@ const Profile = () => {
         solvedProblems: 0,
         codingScore: 0,
         rank: 0,
-      }
+      },
     },
 
     badges: [],
+
+    avgPerDay: 0,
+    maxStreak: 0,
+    dailyActivity: [],
   });
 
   //* **************** Fetch Profile Data *****************//
@@ -65,7 +79,7 @@ const Profile = () => {
       setLoading(true);
       //console.log("Fetching profile data for:", profileId);
       const response = await getProfilePageDataFunction({ userId: profileId });
-      console.log(response);
+      // console.log(response);
 
       if (response.status !== 200) {
         ToastMsg("Error fetching profile data! Please try later", "error");
@@ -80,14 +94,14 @@ const Profile = () => {
               data.role.slice(1).toLowerCase()
             : "User",
           academic_year: data.academicYear || "Unknown",
-          profilePic: data.profilePicture || null,
+          profilePic: data.profilePicture || "https://placehold.co/100x100",
           bio: data.bio || "",
 
           social: [
-            {
-              platform: "codolio",
-              url: `https://codolio.com/profile/${data.codolioUsername}`,
-            },
+            // {
+            //   platform: "codolio",
+            //   url: `https://codolio.com/profile/${data.codolioUsername}`,
+            // },
             {
               platform: "linkedin",
               url: `https://linkedin.com/in/${data.linkedinUsername}`,
@@ -107,12 +121,14 @@ const Profile = () => {
               ranking: data.platforms.leetcode.ranking || 0,
               totalProblemSolved:
                 data.platforms.leetcode.totalProblemSolved || 0,
+              verified: data.platforms.leetcode.verified || false,
             },
             codechef: {
               handle: data.codechefUsername || null,
               rating: data.platforms.codechef.rating || 0,
               highestRating: data.platforms.codechef.highestRating || 0,
               countryRank: data.platforms.codechef.countryRank || 0,
+              verified: data.platforms.codechef.verified || false,
             },
             codeforces: {
               handle: data.codeforcesUsername || null,
@@ -120,49 +136,64 @@ const Profile = () => {
               rank: data.platforms.codeforces.rank || "Unrated",
               totalProblemSolved:
                 data.platforms.codeforces.totalProblemSolved || 0,
+              verified: data.platforms.codeforces.verified || false,
             },
             geeksforgeeks: {
               handle: data.geeksforgeeksUsername || null,
               universityRank: data.platforms.geeksforgeeks.universityRank || 0,
               codingScore: data.platforms.geeksforgeeks.codingScore || 0,
               problemsSolved: data.platforms.geeksforgeeks.problemSolved || 0,
+              verified: data.platforms.geeksforgeeks.verified || false,
             },
           },
 
           badges: [
             ...data.achievement.gold.map((badge) => ({
-              id: Math.random(),
-              name: "Gold Medal",
+              id: `gold-${badge.year}-${badge.month}`,
+              name: `Gold - ${getMonthName(badge.month)} ${badge.year}`,
               type: "gold",
-              date: `${badge.year}-${badge.month
-                .toString()
-                .padStart(2, "0")}-01`,
-              description:
-                "Awarded for outstanding performance in coding contests.",
+              date: `${badge.year}-${String(badge.month).padStart(2, "0")}-01`,
+              description: "Secured first place in the monthly leaderboard",
             })),
             ...data.achievement.silver.map((badge) => ({
-              id: Math.random(),
-              name: "Silver Medal",
+              id: `silver-${badge.year}-${badge.month}`,
+              name: `Silver - ${getMonthName(badge.month)} ${badge.year}`,
               type: "silver",
-              date: `${badge.year}-${badge.month
-                .toString()
-                .padStart(2, "0")}-01`,
-              description:
-                "Awarded for excellent performance in coding contests.",
+              date: `${badge.year}-${String(badge.month).padStart(2, "0")}-01`,
+              description: "Secured second place in the monthly leaderboard",
             })),
             ...data.achievement.bronze.map((badge) => ({
-              id: Math.random(),
-              name: "Bronze Medal",
+              id: `bronze-${badge.year}-${badge.month}`,
+              name: `Bronze - ${getMonthName(badge.month)} ${badge.year}`,
               type: "bronze",
-              date: `${badge.year}-${badge.month
-                .toString()
-                .padStart(2, "0")}-01`,
-              description: "Awarded for good performance in coding contests.",
+              date: `${badge.year}-${String(badge.month).padStart(2, "0")}-01`,
+              description: "Secured third place in the monthly leaderboard",
+            })),
+            ...data.achievement.dailyActiveStreak.map((badge) => ({
+              id: `streak-${badge.year}-${badge.month}`,
+              name: `Daily Streak - ${getMonthName(badge.month)} ${badge.year}`,
+              type: "dailyActiveStreak",
+              date: `${badge.year}-${String(badge.month).padStart(2, "0")}-01`,
+              description:
+                "Maintained daily coding streak throughout the month",
+            })),
+            ...data.achievement.maxAvgPerDay.map((badge) => ({
+              id: `avg-${badge.year}-${badge.month}`,
+              name: `Problem Solver - ${getMonthName(badge.month)} ${
+                badge.year
+              }`,
+              type: "maxAvgPerDay",
+              date: `${badge.year}-${String(badge.month).padStart(2, "0")}-01`,
+              description: "Achieved highest average problems solved per day",
             })),
           ],
+
+          avgPerDay: data.avgPerDay || 0,
+          maxStreak: data.maxStreak || 0,
+          dailyActivity: data.dailyActivity || [],
         });
 
-        //console.log("Profile Data:", userProfileData);
+        // console.log("Profile Data:", userProfileData);
       }
     } catch (error) {
       ToastMsg("Error fetching profile data! Please try later", "error");
@@ -195,12 +226,9 @@ const Profile = () => {
       ) : (
         <>
           <ProfileHero userProfile={userProfileData} />
-          <ProfileSecondary
-            userProfile={userProfileData}
-          />
+          <ProfileSecondary userProfile={userProfileData} />
         </>
       )}
-      
     </div>
   );
 };

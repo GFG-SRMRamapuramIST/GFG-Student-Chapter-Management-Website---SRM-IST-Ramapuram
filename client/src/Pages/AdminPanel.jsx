@@ -24,6 +24,7 @@ const AdminPanel = () => {
 
   const {
     addAllowedEmails,
+    addAllowedEmailsCSV,
     fetchAllUsers,
     promoteUser,
     demoteUser,
@@ -266,7 +267,7 @@ const AdminPanel = () => {
     }
   };
 
-  const handleCsvUpload = (event) => {
+  const handleCsvUpload = async (event) => {
     const file = event.target.files[0];
     if (file) {
       setConfirmationState({
@@ -274,10 +275,33 @@ const AdminPanel = () => {
         type: "info",
         title: "Upload CSV",
         message: `Are you sure you want to process ${file.name}? This will add new emails to the allowed list.`,
-        onConfirm: () => {
+        onConfirm: async () => {
           setCsvFile(file);
-          // Here you would add the CSV processing logic
-          event.target.value = null; // Reset file input
+
+          const formData = new FormData();
+          formData.append("file", file);
+
+          try {
+            const response = await addAllowedEmailsCSV(formData, userToken);
+            //console.log(response);
+            if (response.status === 200) {
+              ToastMsg(response.data.message, "success");
+            } else {
+              ToastMsg(response.response.data.message, "error");
+            }
+          } catch (error) {
+            ToastMsg(
+              "Error in adding emails through csv! Please try later",
+              "error"
+            );
+            console.error(
+              "Error in adding emails through csv: ",
+              error.message
+            );
+          } finally {
+            event.target.value = null; // Reset file input
+            fetchAllowedEmailsData();
+          }
         },
       });
     }
@@ -388,6 +412,7 @@ const AdminPanel = () => {
   // ***************** Reset Achievements Starts Here **********************
   const [resetAchievementLoading, setResetAchievementLoading] = useState(false);
 
+  // Reset Achievements for all users function
   const resetAchievementFunction = async () => {
     try {
       setResetAchievementLoading(true);
@@ -520,7 +545,6 @@ const AdminPanel = () => {
                       "Are you sure you want to reset achievements for all users? This action cannot be undone.",
                     onConfirm: () => {
                       resetAchievementFunction();
-                      
                     },
                   });
                 }}

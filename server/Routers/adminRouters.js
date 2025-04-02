@@ -1,3 +1,4 @@
+const fs = require("fs");
 const multer = require("multer");
 const path = require("path");
 const bodyParser = require("body-parser");
@@ -37,12 +38,18 @@ router.use(express.static(path.resolve(__dirname, "Public")));
 **********************************************************
 */
 
+// Ensure the upload directory exists
+const uploadDir = "./Public/CSVUploads";
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
 var storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "./Public/CSVUploads");
+    cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
-    cb(null, file.originalname);
+    cb(null, `${Date.now()}-${file.originalname}`);
   },
 });
 
@@ -74,7 +81,7 @@ router.post("/block-email", adminControllers.blockEmail);
 router.post("/unblock-email", adminControllers.unblockEmail);
 
 //8. Delete Users from website API
-router.delete("/delete-user-account", adminControllers.deleteUser)
+router.delete("/delete-user-account", adminControllers.deleteUser);
 
 //9. Promote user one rank above API
 router.post("/promote-user", adminControllers.promoteUser);

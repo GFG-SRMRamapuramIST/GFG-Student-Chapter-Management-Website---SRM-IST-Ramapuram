@@ -40,12 +40,6 @@ const noticeSchema = new mongoose.Schema({
   },
   MoMLink: {
     type: String,
-    validate: {
-      validator: function (v) {
-        return !v || /^https?:\/\/.+/.test(v);
-      },
-      message: "Invalid URL format for MoM link.",
-    },
     default: null,
   },
   MoMCreatedBy: {

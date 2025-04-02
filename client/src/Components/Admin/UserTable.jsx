@@ -9,6 +9,7 @@ import {
   RiSearchLine,
   RiSortAsc,
   RiSortDesc,
+  RiInboxLine,
 } from "react-icons/ri";
 
 const UserTable = ({
@@ -71,137 +72,162 @@ const UserTable = ({
       </div>
 
       <div className="overflow-x-auto bg-white rounded-lg shadow">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                onClick={handleSortOrderChange}
-              >
-                <div className="flex items-center space-x-1">
-                  <span>Name</span>
-                  {sortDirection === "asc" ? <RiSortAsc /> : <RiSortDesc />}
-                </div>
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Email
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Phone No.
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Position
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {users.map((user) => (
-              <tr
-                key={user.id}
-                className={`${user.blocked ? "bg-red-50" : "bg-white"} 
-                  transition-colors duration-200 hover:bg-gray-50`}
-              >
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center">
-                    <RiUserLine
-                      className={`mr-2 ${
-                        user.blocked ? "text-red-400" : "text-gray-400"
-                      }`}
-                    />
-                    <span className={user.blocked ? "text-red-500" : ""}>
-                      {user.name}
-                    </span>
+        {users.length > 0 ? (
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                  onClick={handleSortOrderChange}
+                >
+                  <div className="flex items-center space-x-1">
+                    <span>Name</span>
+                    {sortDirection === "asc" ? <RiSortAsc /> : <RiSortDesc />}
                   </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-gray-500">
-                  {user.email}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-gray-500">
-                  {user.phoneNumber}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs font-medium
-                    ${
-                      user.role === "ADMIN"
-                        ? "bg-purple-100 text-purple-600"
-                        : user.position === "CORE"
-                        ? "bg-blue-100 text-blue-600"
-                        : user.position === "MEMBER"
-                        ? "bg-green-100 text-green-600"
-                        : "bg-gray-100 text-gray-600"
-                    }`}
-                  >
-                    {user.role}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => handlePromote(user)}
-                      className="p-1 rounded hover:bg-gray-100"
-                      disabled={user.position === "ADMIN"}
-                      title={
-                        user.position === "ADMIN"
-                          ? "Cannot promote admin"
-                          : "Promote user"
-                      }
-                    >
-                      <RiArrowUpSLine className="text-green-600" />
-                    </button>
-                    <button
-                      onClick={() => handleDemote(user)}
-                      className="p-1 rounded hover:bg-gray-100"
-                      disabled={user.position === "USER"}
-                      title={
-                        user.position === "USER"
-                          ? "Cannot demote user"
-                          : "Demote user"
-                      }
-                    >
-                      <RiArrowDownSLine className="text-orange-600" />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(user)}
-                      className="p-1 rounded hover:bg-gray-100"
-                      title="Delete user"
-                    >
-                      <RiDeleteBin6Line className="text-red-600" />
-                    </button>
-                  </div>
-                </td>
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Email
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Phone No.
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Subscribed
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Position
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {users.map((user) => (
+                <tr
+                  key={user.id}
+                  className={`${user.blocked ? "bg-red-50" : "bg-white"} 
+            transition-colors duration-200 hover:bg-gray-50`}
+                >
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center">
+                      <RiUserLine
+                        className={`mr-2 ${
+                          user.blocked ? "text-red-400" : "text-gray-400"
+                        }`}
+                      />
+                      <span className={user.blocked ? "text-red-500" : ""}>
+                        {user.name}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-gray-500">
+                    {user.email}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-gray-500">
+                    {user.phoneNumber}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-gray-500">
+                    {user.subscribed ? "Yes" : "No"}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-medium
+              ${
+                user.role === "ADMIN"
+                  ? "bg-purple-100 text-purple-600"
+                  : user.position === "CORE"
+                  ? "bg-blue-100 text-blue-600"
+                  : user.position === "MEMBER"
+                  ? "bg-green-100 text-green-600"
+                  : "bg-gray-100 text-gray-600"
+              }`}
+                    >
+                      {user.role}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => handlePromote(user)}
+                        className="p-1 rounded hover:bg-gray-100"
+                        disabled={user.position === "ADMIN"}
+                        title={
+                          user.position === "ADMIN"
+                            ? "Cannot promote admin"
+                            : "Promote user"
+                        }
+                      >
+                        <RiArrowUpSLine className="text-green-600" />
+                      </button>
+                      <button
+                        onClick={() => handleDemote(user)}
+                        className="p-1 rounded hover:bg-gray-100"
+                        disabled={user.position === "USER"}
+                        title={
+                          user.position === "USER"
+                            ? "Cannot demote user"
+                            : "Demote user"
+                        }
+                      >
+                        <RiArrowDownSLine className="text-orange-600" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(user)}
+                        className="p-1 rounded hover:bg-gray-100"
+                        title="Delete user"
+                      >
+                        <RiDeleteBin6Line className="text-red-600" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
+            <RiInboxLine className="text-gray-300 text-5xl mb-4" />
+            <h3 className="text-lg font-medium text-gray-700 mb-1">
+              No users found
+            </h3>
+            <p className="text-gray-500 max-w-md">
+              {searchUser
+                ? `No users matching "${searchUser}" were found.`
+                : "There are no users registered in the system yet."}
+            </p>
+          </div>
+        )}
       </div>
 
-      <div className="flex justify-between items-center">
-        <span className="text-sm text-gray-500">
-          Showing {(pageInfo.currentPage - 1) * pageInfo.itemsPerPage + 1} to{" "}
-          {Math.min(pageInfo.currentPage * pageInfo.itemsPerPage, users.length)}{" "}
-          of {pageInfo.totalPages} pages
-        </span>
-        <div className="flex space-x-2">
-          <button
-            onClick={handlePrevBtnClick}
-            disabled={pageInfo.currentPage === 1}
-            className="px-3 py-1 rounded-lg border hover:bg-gray-50 disabled:opacity-50"
-          >
-            Previous
-          </button>
-          <button
-            onClick={handleNextBtnClick}
-            disabled={pageInfo.currentPage >= pageInfo.totalPages}
-            className="px-3 py-1 rounded-lg border hover:bg-gray-50 disabled:opacity-50"
-          >
-            Next
-          </button>
+      {users.length > 0 && (
+        <div className="flex justify-between items-center">
+          <span className="text-sm text-gray-500">
+            Showing {(pageInfo.currentPage - 1) * pageInfo.itemsPerPage + 1} to{" "}
+            {Math.min(
+              pageInfo.currentPage * pageInfo.itemsPerPage,
+              users.length
+            )}{" "}
+            of {pageInfo.totalPages} pages
+          </span>
+          <div className="flex space-x-2">
+            <button
+              onClick={handlePrevBtnClick}
+              disabled={pageInfo.currentPage === 1}
+              className="px-3 py-1 rounded-lg border hover:bg-gray-50 disabled:opacity-50"
+            >
+              Previous
+            </button>
+            <button
+              onClick={handleNextBtnClick}
+              disabled={pageInfo.currentPage >= pageInfo.totalPages}
+              className="px-3 py-1 rounded-lg border hover:bg-gray-50 disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

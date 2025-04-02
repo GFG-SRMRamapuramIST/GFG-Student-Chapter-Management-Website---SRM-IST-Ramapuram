@@ -5,7 +5,13 @@ import { FaCalendarAlt, FaFireAlt, FaChartLine } from "react-icons/fa";
 const MonthlyActivityHeatmap = ({
   month = new Date().getMonth(),
   year = new Date().getFullYear(),
+  avgPerDay,
+  maxStreak,
+  dailyActivity,
 }) => {
+  // console.log("avgPerDay", avgPerDay);
+  // console.log("maxStreak", maxStreak);
+  // console.log("dailyActivity", dailyActivity);
   // Generate dates for the current month
   const getDaysInMonth = (month, year) =>
     new Date(year, month + 1, 0).getDate();
@@ -15,57 +21,52 @@ const MonthlyActivityHeatmap = ({
   const [stats, setStats] = useState({
     maxSolved: 0,
     totalSolved: 0,
-    avgPerDay: 0,
-    streakDays: 0,
+    avgPerDay: avgPerDay,
+    streakDays: maxStreak,
   });
 
   // Define color ranges with labels
   const colorRanges = [
     { range: "0", color: "bg-gray-100", textColor: "text-gray-800" },
-    { range: "1-5", color: "bg-emerald-200", textColor: "text-gray-800" },
-    { range: "6-10", color: "bg-emerald-400", textColor: "text-gray-800" },
-    { range: "11-15", color: "bg-emerald-600", textColor: "text-white" },
-    { range: "15+", color: "bg-emerald-800", textColor: "text-white" }
+    { range: "1-2", color: "bg-emerald-200", textColor: "text-gray-800" },
+    { range: "3-5", color: "bg-emerald-400", textColor: "text-gray-800" },
+    { range: "6-10", color: "bg-emerald-600", textColor: "text-white" },
+    { range: "10+", color: "bg-emerald-800", textColor: "text-white" },
   ];
 
   // Generate dummy data for the month
   useEffect(() => {
-    const daysInMonth = getDaysInMonth(month, year);
-    const data = Array.from({ length: daysInMonth }, (_, i) => {
-      const solved = Math.floor(Math.random() * 20); // 0-19 problems solved
-      return {
-        day: i + 1,
-        date: new Date(year, month, i + 1),
-        solved: solved,
-      };
-    });
+    if (!dailyActivity?.length) return;
+
+    // Populate activity data with dailyActivity or default to 0 solved
+    const data = Array.from(
+      { length: getDaysInMonth(month, year) },
+      (_, index) => {
+        const day = index + 1;
+        const activity = dailyActivity.find(
+          (d) => new Date(d.date).getDate() === day
+        );
+        return {
+          day,
+          date: new Date(year, month, day),
+          solved: activity ? activity.count : 0,
+        };
+      }
+    );
 
     setActivityData(data);
 
     // Calculate stats
     const maxSolved = Math.max(...data.map((d) => d.solved));
     const totalSolved = data.reduce((sum, d) => sum + d.solved, 0);
-    const avgPerDay = +(totalSolved / daysInMonth).toFixed(1);
-
-    // Calculate streak
-    let currentStreak = 0;
-    let maxStreak = 0;
-    for (const day of data) {
-      if (day.solved > 0) {
-        currentStreak++;
-        maxStreak = Math.max(maxStreak, currentStreak);
-      } else {
-        currentStreak = 0;
-      }
-    }
 
     setStats({
       maxSolved,
       totalSolved,
-      avgPerDay,
+      avgPerDay: Number(avgPerDay).toFixed(2),
       streakDays: maxStreak,
     });
-  }, [month, year]);
+  }, [dailyActivity, avgPerDay, maxStreak]);
 
   const monthNames = [
     "January",
@@ -86,17 +87,17 @@ const MonthlyActivityHeatmap = ({
 
   const getActivityColor = (solved) => {
     if (solved === 0) return colorRanges[0].color;
-    if (solved >= 1 && solved <= 5) return colorRanges[1].color;
-    if (solved >= 6 && solved <= 10) return colorRanges[2].color;
-    if (solved >= 11 && solved <= 15) return colorRanges[3].color;
+    if (solved >= 1 && solved <= 2) return colorRanges[1].color;
+    if (solved >= 3 && solved <= 5) return colorRanges[2].color;
+    if (solved >= 6 && solved <= 10) return colorRanges[3].color;
     return colorRanges[4].color;
   };
 
   const getActivityTextColor = (solved) => {
     if (solved === 0) return colorRanges[0].textColor;
-    if (solved >= 1 && solved <= 5) return colorRanges[1].textColor;
-    if (solved >= 6 && solved <= 10) return colorRanges[2].textColor;
-    if (solved >= 11 && solved <= 15) return colorRanges[3].textColor;
+    if (solved >= 1 && solved <= 2) return colorRanges[1].textColor;
+    if (solved >= 3 && solved <= 5) return colorRanges[2].textColor;
+    if (solved >= 6 && solved <= 10) return colorRanges[3].textColor;
     return colorRanges[4].textColor;
   };
 
@@ -108,7 +109,7 @@ const MonthlyActivityHeatmap = ({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white rounded-2xl px-6 pb-6 shadow-sm"
+      className="flex flex-col justify-evenly bg-white rounded-2xl px-6 pb-6 shadow-sm h-full"
     >
       <div className="flex justify-between items-center mb-6 pt-3 sm:pt-4">
         <div className="flex items-center space-x-2">

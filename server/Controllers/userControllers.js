@@ -1,9 +1,18 @@
 const bcrypt = require("bcryptjs");
-
+const axios = require("axios");
+const crypto = require("crypto");
 const streamifier = require("streamifier");
 
-const { Users, potdSchema, ConstantValue } = require("../Models");
 const { verifyAuthToken, cloudinary } = require("../Utilities");
+
+const { Users, potdSchema, ConstantValue } = require("../Models");
+
+require("dotenv").config();
+
+const CODECHEF_API_URL = `${process.env.CODECHEF_API_URL}/api/info/`;
+const GEEKSFORGEEKS_API_URL = `${process.env.GEEKSFORGEEKS_API_URL}/api/info/`;
+const LEETCODE_API_URL = `${process.env.LEETCODE_API_URL}/api/user-info/`;
+const CODEFORCES_API_URL = `${process.env.CODEFORCES_API_URL}/api/user-info/`;
 
 // Function to upload image buffer to Cloudinary
 const uploadToCloudinary = (buffer) => {
@@ -19,6 +28,11 @@ const uploadToCloudinary = (buffer) => {
 //! Google Script URL (has to be shifted to env file)
 const scriptURL =
   "https://script.google.com/macros/s/AKfycbw-no7PmM4jwtvkhENHG-pea-AI4hh8Nh1QjSzTrdX6jG4wEBH7FXhKGukF1gtil4bqjg/exec";
+
+// Generate a random 4-character string
+const generateRandomCode = () => {
+  return crypto.randomBytes(2).toString("hex").toUpperCase(); // Ensures 4 characters
+};
 
 /*
 ************************** APIs **************************
@@ -36,7 +50,10 @@ const scriptURL =
 
 9. Report an Issue API
 
-10. Get all users with there id and name
+10. Get all users with there id, name, profile pic and role
+
+11. Generating Verification code for Platform API
+12. Verifying platfrom API
 
  Join a Team API
  Leave a Team API
@@ -59,7 +76,7 @@ exports.getEditProfilePageData = async (req, res) => {
 
     const userId = authResult.userId;
     const user = await Users.findById(userId).select(
-      "name bio phoneNumber academicYear profilePicture linkedinUsername codolioUsername leetcodeUsername codechefUsername codeforcesUsername geeksforgeeksUsername"
+      "name bio phoneNumber academicYear profilePicture linkedinUsername leetcodeUsername codechefUsername codeforcesUsername geeksforgeeksUsername platforms"
     );
 
     if (!user) {
@@ -89,10 +106,16 @@ exports.getEditProfilePageData = async (req, res) => {
         geeksforgeeks: user.geeksforgeeksUsername,
       },
 
+      verifiedProfile: {
+        leetcode: user.platforms.leetcode.verified,
+        codechef: user.platforms.codechef.verified,
+        codeforces: user.platforms.codeforces.verified,
+        geeksforgeeks: user.platforms.geeksforgeeks.verified,
+      },
+
       // Social Links
       social: {
         linkedin: user.linkedinUsername,
-        codolio: user.codolioUsername,
       },
     };
 
@@ -109,7 +132,6 @@ exports.getEditProfilePageData = async (req, res) => {
 exports.editProfile = async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1]; // Extract token
   const updates = req.body; // Extract update fields
-  //console.log(updates)
 
   if (!token) {
     return res.status(401).json({ message: "No token provided" });
@@ -131,7 +153,6 @@ exports.editProfile = async (req, res) => {
       registrationNumber: "Registration Number",
       academicYear: "Academic Year",
       linkedinUsername: "LinkedIn Username",
-      codolioUsername: "Codolio Username",
       leetcodeUsername: "LeetCode Username",
       codechefUsername: "CodeChef Username",
       codeforcesUsername: "Codeforces Username",
@@ -141,7 +162,6 @@ exports.editProfile = async (req, res) => {
 
     // Ensure exactly one field is being updated
     const updateKeys = Object.keys(updates);
-    console.log(updateKeys);
     if (updateKeys.length !== 1) {
       return res
         .status(400)
@@ -149,7 +169,6 @@ exports.editProfile = async (req, res) => {
     }
 
     const fieldToUpdate = updateKeys[0];
-    console.log(allowedFields[fieldToUpdate]);
     if (!allowedFields[fieldToUpdate]) {
       return res.status(400).json({ message: "Invalid field for update" });
     }
@@ -158,11 +177,27 @@ exports.editProfile = async (req, res) => {
       return res.status(400).json({ message: "Email cannot be edited" });
     }
 
+    // Check if the field belongs to a coding platform and update its verified status
+    const platformVerificationUpdates = {};
+    if (fieldToUpdate === "leetcodeUsername") {
+      platformVerificationUpdates["platforms.leetcode.verified"] = false;
+    } else if (fieldToUpdate === "codechefUsername") {
+      platformVerificationUpdates["platforms.codechef.verified"] = false;
+    } else if (fieldToUpdate === "codeforcesUsername") {
+      platformVerificationUpdates["platforms.codeforces.verified"] = false;
+    } else if (fieldToUpdate === "geeksforgeeksUsername") {
+      platformVerificationUpdates["platforms.geeksforgeeks.verified"] = false;
+    }
+
     // Perform update
-    const updatedUser = await Users.findByIdAndUpdate(userId, updates, {
-      new: true, // Return the updated document
-      runValidators: true, // Ensure validation rules in schema are applied
-    });
+    const updatedUser = await Users.findByIdAndUpdate(
+      userId,
+      { ...updates, ...platformVerificationUpdates },
+      {
+        new: true, // Return the updated document
+        runValidators: true, // Ensure validation rules in schema are applied
+      }
+    );
 
     if (!updatedUser) {
       return res.status(404).json({ message: "User not found" });
@@ -542,8 +577,8 @@ exports.reportAnIssue = async (req, res) => {
   }
 };
 
-//10. Get all users with their id and name
-exports.getAllUsers = async (req, res) => {
+//10. Get all users with their id and name and profile pic
+exports.getAllUsersForComparison = async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1]; // Extract token
   if (!token) {
     return res.status(401).json({ message: "No token provided" });
@@ -556,11 +591,13 @@ exports.getAllUsers = async (req, res) => {
       return res.status(400).json({ message: authResult.message });
     }
 
-    const users = await Users.find().select("_id name");
+    const users = await Users.find().select("_id name role profilePicture");
 
     return res.status(200).json({
       message: "Users fetched successfully",
       data: users,
+      userId: authResult._id,
+      role: authResult.role,
     });
   } catch (error) {
     console.error("Error fetching users:", error.message);
@@ -569,6 +606,236 @@ exports.getAllUsers = async (req, res) => {
       .json({ message: "Internal server error", error: error.message });
   }
 };
+
+//11. Generating Verification code for Platform API
+exports.verificationCodeForPlatform = async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1]; // Extract token
+  const { platform } = req.body; // Extract platform name
+
+  if (!token) {
+    return res.status(401).json({ message: "No token provided" });
+  }
+
+  if (
+    !["leetcode", "codechef", "codeforces", "geeksforgeeks"].includes(platform)
+  ) {
+    return res.status(400).json({ message: "Invalid platform name" });
+  }
+
+  try {
+    // Verify the auth token
+    const authResult = await verifyAuthToken(token);
+    if (authResult.status !== "not expired") {
+      return res.status(400).json({ message: authResult.message });
+    }
+
+    const userId = authResult.userId; // Extract userId from token
+    const verificationCode = generateRandomCode(); // Generate 4-character code
+    const updateField = `platforms.${platform}.firstName`; // Field to update
+
+    // Update user's platform firstName
+    const updatedUser = await Users.findByIdAndUpdate(
+      userId,
+      { [updateField]: verificationCode },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).json({
+      message: `Verification code generated for ${platform}`,
+      verificationCode,
+    });
+  } catch (error) {
+    console.error(
+      "Error generating verification code for platform:",
+      error.message
+    );
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
+
+//12. Verifying platform API
+exports.verifyPlatform = async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  const { platform } = req.body;
+
+  if (!token) {
+    return res.status(401).json({ message: "No token provided" });
+  }
+
+  try {
+    // Verify user token
+    const authResult = await verifyAuthToken(token);
+    if (authResult.status !== "not expired") {
+      return res.status(400).json({ message: authResult.message });
+    }
+
+    const userId = authResult.userId;
+    const user = await Users.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Check if platform is valid
+    const validPlatforms = [
+      "codechef",
+      "leetcode",
+      "codeforces",
+      "geeksforgeeks",
+    ];
+    if (!validPlatforms.includes(platform)) {
+      return res.status(400).json({ message: "Invalid platform" });
+    }
+
+    const platformData = user.platforms[platform];
+    if (!platformData) {
+      return res
+        .status(400)
+        .json({ message: "Platform data not found for the user!" });
+    }
+
+    const { firstName } = platformData;
+    if (!firstName) {
+      return res
+        .status(400)
+        .json({ message: "Verification not initiated for the user!" });
+    }
+
+    // Handle CodeChef verification
+    if (platform === "codechef") {
+      try {
+        const response = await axios.get(
+          `${CODECHEF_API_URL}${user.codechefUsername}`
+        );
+        const { data } = response;
+
+        if (data?.Name?.includes(firstName)) {
+          await Users.findByIdAndUpdate(userId, {
+            $set: {
+              "platforms.codechef.verified": true,
+              "platforms.codechef.firstName": null,
+            },
+          });
+
+          return res
+            .status(200)
+            .json({ message: "CodeChef account verified successfully!" });
+        }
+
+        return res
+          .status(400)
+          .json({ message: "Verification failed! Name mismatch." });
+      } catch (error) {
+        return res.status(500).json({
+          message: "Error fetching CodeChef data! Please try later.",
+          error: error.message,
+        });
+      }
+    } else if (platform === "geeksforgeeks") {
+      try {
+        const response = await axios.get(
+          `${GEEKSFORGEEKS_API_URL}${user.geeksforgeeksUsername}`
+        );
+        const { data } = response;
+
+        if (data?.name?.includes(firstName)) {
+          await Users.findByIdAndUpdate(userId, {
+            $set: {
+              "platforms.geeksforgeeks.verified": true,
+              "platforms.geeksforgeeks.firstName": null,
+            },
+          });
+
+          return res
+            .status(200)
+            .json({ message: "Geeksforgeeks account verified successfully!" });
+        }
+
+        return res
+          .status(400)
+          .json({ message: "Verification failed! Name mismatch." });
+      } catch (error) {
+        return res.status(500).json({
+          message: "Error fetching Geeksforgeeks data! Please try later.",
+          error: error.message,
+        });
+      }
+    } else if(platform === "leetcode"){
+      try {
+        const response = await axios.get(
+          `${LEETCODE_API_URL}${user.leetcodeUsername}`
+        );
+        const { data } = response;
+
+        if (data?.data?.name?.includes(firstName)) {
+          await Users.findByIdAndUpdate(userId, {
+            $set: {
+              "platforms.leetcode.verified": true,
+              "platforms.leetcode.firstName": null,
+            },
+          });
+
+          return res
+            .status(200)
+            .json({ message: "Leetcode account verified successfully!" });
+        }
+
+        return res
+          .status(400)
+          .json({ message: "Verification failed! Name mismatch." });
+      } catch (error) {
+        return res.status(500).json({
+          message: "Error fetching Leetcode data! Please try later.",
+          error: error.message,
+        });
+      }
+    } else if(platform === "codeforces"){
+      try {
+        const response = await axios.get(
+          `${CODEFORCES_API_URL}${user.codeforcesUsername}`
+        );
+        const { data } = response;
+
+        if (data?.data?.first_name?.includes(firstName)) {
+          await Users.findByIdAndUpdate(userId, {
+            $set: {
+              "platforms.codeforces.verified": true,
+              "platforms.codeforces.firstName": null,
+            },
+          });
+
+          return res
+            .status(200)
+            .json({ message: "Codeforces account verified successfully!" });
+        }
+
+        return res
+          .status(400)
+          .json({ message: "Verification failed! Name mismatch." });
+      } catch (error) {
+        return res.status(500).json({
+          message: "Error fetching Codeforces data! Please try later.",
+          error: error.message,
+        });
+      }
+    }
+
+    return res.status(400).json({
+      message: "Verification of this platfrom is not yet implemented.",
+    });
+  } catch (error) {
+    console.error("Error verifying given platform: ", error.message);
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
+
 
 /*
 // Join a Team API

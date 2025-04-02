@@ -31,6 +31,14 @@ const router = new express.Router();
 
 20. Get all dashboard calender data API - "{BACKEND_URL}/api/v1/core-member/get-dashboard-calender-data"
 
+21. Create a video resource API - "{BACKEND_URL}/api/v1/core-member/create-video-resource"
+22. Add a video to a video resource API - "{BACKEND_URL}/api/v1/core-member/add-video"
+23. Delete a video of a video resource API - "{BACKEND_URL}/api/v1/core-member/delete-video"
+24. Delete a video resource API - "{BACKEND_URL}/api/v1/core-member/delete-video-resource"
+25. Edit a video resource API - "{BACKEND_URL}/api/v1/core-member/edit-video-resource"
+26. Fetch all video resource API - "{BACKEND_URL}/api/v1/core-member/fetch-all-video-resource"
+27. Fetch all videos of a video resource API - "{BACKEND_URL}/api/v1/core-member/fetch-all-video"
+
 **********************************************************
 */
 
@@ -44,16 +52,16 @@ router.delete("/delete-contest", coreMemberControllers.deleteContest);
 
 /***************************** NOTICE BOARD APIs **************************/
 // Create a Meeting on Notice Board API
-router.post("/create-meeting", coreMemberControllers.createNotice)
+router.post("/create-meeting", coreMemberControllers.createNotice);
 
 // Delete a Meeting on Notice Board API
-router.delete("/delete-meeting", coreMemberControllers.deleteNotice)
+router.delete("/delete-meeting", coreMemberControllers.deleteNotice);
 
 // Create MoM for a Meeting on Notice Board API
-router.post("/create-mom", coreMemberControllers.createMoM)
-  
+router.post("/create-mom", coreMemberControllers.createMoM);
+
 // Delete MoM for a Meeting on Notice Board API
-router.delete("/delete-mom", coreMemberControllers.deleteMoMLink)
+router.delete("/delete-mom", coreMemberControllers.deleteMoMLink);
 /**************************************************************************/
 
 /***************************** Resource APIs ******************************/
@@ -70,10 +78,10 @@ router.delete(
 );
 
 // Delete a resource API
-router.delete("/delete-resource", coreMemberControllers.deleteResource)
+router.delete("/delete-resource", coreMemberControllers.deleteResource);
 
 // Edit a resource API
-router.put("/edit-resource", coreMemberControllers.editResource)
+router.put("/edit-resource", coreMemberControllers.editResource);
 
 // Fetch all resources
 router.post("/fetch-all-resources", coreMemberControllers.fetchAllResources);
@@ -94,11 +102,45 @@ router.post("/create-announcement", coreMemberControllers.createAnnouncement);
 router.delete("/delete-announcement", coreMemberControllers.deleteAnnouncement);
 
 // Get all announcement API
-router.get("/get-all-announcement", coreMemberControllers.fetchAllAnnouncement)
+router.get("/get-all-announcement", coreMemberControllers.fetchAllAnnouncement);
 
 /*****************************************************************************/
 
 // Get all dashboard calender data API
-router.get("/get-dashboard-calender-data", coreMemberControllers.fetchDashboardCalenderData)
+router.get(
+  "/get-dashboard-calender-data",
+  coreMemberControllers.fetchDashboardCalenderData
+);
+
+/***************************** Video Resource APIs ******************************/
+
+// Create a video resource API
+router.post("/create-video-resource", coreMemberControllers.createVideoResource);
+
+// Add a video to a video resource API
+router.post("/add-video", coreMemberControllers.addVideoToVideoResource);
+
+// Delete a video of a video resource API
+router.delete(
+  "/delete-video",
+  coreMemberControllers.deleteVideoFromVideoResource
+);
+
+// Delete a video resource API
+router.delete("/delete-video-resource", coreMemberControllers.deleteVideoResource);
+
+// Edit a video resource API
+router.put("/edit-video-resource", coreMemberControllers.editVideoResource);
+
+// Fetch all video resources
+router.post("/fetch-all-video-resource", coreMemberControllers.fetchAllVideoResources);
+
+// Fetch all videos of a video resource
+router.post(
+  "/fetch-all-video",
+  coreMemberControllers.fetchAllVideosOfVideoResource
+);
+
+/*******************************************************************************/
 
 module.exports = router;

@@ -1,24 +1,72 @@
-import { useEffect, useState } from "react";
+import ReactGA from "react-ga4";
+import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
-// Importing Icons
+// Importing icons
 import { FaSearch, FaPlus, FaSpinner } from "react-icons/fa";
+import { BiVideo } from "react-icons/bi";
 
 import { Pagination, ToastMsg } from "../../Utilities";
-import { CreateResourceModal, ResourceCard } from "../../Components";
+import { CreateResourceSetModal } from "../../Components";
 
 // Importing APIs
 import { CoreMemberServices } from "../../Services";
 
+const ResourceCard = ({ resource }) => {
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      whileHover={{ y: -5 }}
+      className="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100"
+    >
+      <Link to={`/resources/${resource.id}`}>
+        <div className="p-6">
+          <h3 className="text-xl font-bold text-gray-800 mb-3 group-hover:text-gfgsc-green transition-colors">
+            {resource.title}
+          </h3>
+
+          <p className="text-gray-600 mb-6 line-clamp-2 text-sm">
+            {resource.description}
+          </p>
+
+          <div className="flex items-center justify-between text-sm text-gray-500 border-t pt-4">
+            <div className="flex items-center">
+              <BiVideo className="mr-2 text-gfgsc-green" />
+              <span className="font-medium">{resource.videoCount}</span>
+              <span className="ml-1">Videos</span>
+            </div>
+            <div className="flex items-center">
+              {new Date(resource.lastUpdated).toLocaleDateString()}
+            </div>
+          </div>
+        </div>
+      </Link>
+    </motion.div>
+  );
+};
+
 const AllResources = () => {
-  const { createResourceFunction, fetchAllResourcesFunction } =
+  // Google Analytics tracking
+  useEffect(() => {
+    ReactGA.send({
+      hitType: "pageview",
+      page: "gfgsrm-tech.vercel.app/resources",
+      title: "Resources Page",
+    });
+  }, []);
+
+  const { createVideoResourceFunction, fetchAllVideoResourcesFunction } =
     CoreMemberServices();
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const [showCreateModal, setShowCreateModal] = useState(false);
 
-  // ****************** Fetch all Resources Handlers Starts here *****************
+  //* ************************* Video Resources APIs Start here***********************/
   // Search Logic
   const [searchResource, setSearchResource] = useState("");
   const [debouncedSearchResource, setDebouncedSearchResource] =
@@ -48,25 +96,24 @@ const AllResources = () => {
   const [resources, setResources] = useState([]);
 
   // Fetch all resources
-  const fetchAllResourcesHandler = async () => {
+  const fetchAllVideoResourcesHandler = async () => {
     setLoading(true);
     try {
-      const response = await fetchAllResourcesFunction({
+      const response = await fetchAllVideoResourcesFunction({
         page: pageInfo.currentPage,
         search: debouncedSearchResource,
       });
-
+      //console.log(response);
       if (response.status === 200) {
-        const {currentPage, totalPages} = response.data;
-        setPageInfo({currentPage, totalPages});
+        const { currentPage, totalPages } = response.data;
+        setPageInfo({ currentPage, totalPages });
 
         const formattedResources = response.data.data.map((resource) => ({
           id: resource.id, // Unique ID
           title: resource.title,
-          platforms: resource.platforms || [],
-          count: resource.totalQuestions,
-          lastUpdated: resource.lastUpdatedAt.split("T")[0], // Extract date part
           description: resource.description,
+          videoCount: resource.totalVideos,
+          lastUpdated: resource.lastUpdatedAt.split("T")[0],
         }));
 
         setResources(formattedResources);
@@ -76,27 +123,25 @@ const AllResources = () => {
       }
     } catch (error) {
       ToastMsg("Internal Server Error!", "error");
-      console.error("Fetch All Resources Error: ", error.message);
+      console.error("Fetch All Video Resources Error: ", error.message);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    const fetchResources = async () => {
-      await fetchAllResourcesHandler();
+    const fetchVideoResources = async () => {
+      await fetchAllVideoResourcesHandler();
     };
 
-    fetchResources();
+    fetchVideoResources();
   }, [pageInfo.currentPage, debouncedSearchResource]);
-
-  // ******************** Fetch all Resources Handler end's here ****************
 
   // Resources Creating Handlers
   const handleCreateResource = async (data) => {
     //console.log("Creating resource:", data);
     try {
-      const response = await createResourceFunction(data);
+      const response = await createVideoResourceFunction(data);
       if (response.status == 200) {
         ToastMsg(response.data.message, "success");
       } else {
@@ -106,8 +151,12 @@ const AllResources = () => {
     } catch (error) {
       ToastMsg("Internal Server Error", "error");
       console.log("Internal server error: ", error);
+    } finally {
+      fetchAllVideoResourcesHandler();
     }
   };
+
+  //* ************************* Video Resources APIs Ends here***********************/
 
   return (
     <div className="min-h-screen p-3 sm:p-6">
@@ -124,7 +173,7 @@ const AllResources = () => {
               className="w-full pl-12 pr-4 py-2 sm:py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gfgsc-green transition-all duration-200"
             />
           </div>
-  
+
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -135,7 +184,7 @@ const AllResources = () => {
             <span>Create Resource</span>
           </motion.button>
         </div>
-  
+
         {/* Resources Grid */}
         {loading ? (
           <div className="flex justify-center items-center h-64">
@@ -143,8 +192,12 @@ const AllResources = () => {
           </div>
         ) : resources.length === 0 ? (
           <div className="flex flex-col justify-center items-center h-64 text-center">
-            <div className="text-gray-400 text-lg sm:text-xl mb-2">No resources found</div>
-            <div className="text-gray-500 text-sm sm:text-base">Try adjusting your search or create a new resource</div>
+            <div className="text-gray-400 text-lg sm:text-xl mb-2">
+              No resources found
+            </div>
+            <div className="text-gray-500 text-sm sm:text-base">
+              Try adjusting your search or create a new resource
+            </div>
           </div>
         ) : (
           <AnimatePresence>
@@ -158,7 +211,7 @@ const AllResources = () => {
             </motion.div>
           </AnimatePresence>
         )}
-        
+
         {/* Pagination */}
         {!loading && resources.length > 0 && pageInfo.totalPages > 1 && (
           <div className="mt-8 flex justify-center">
@@ -169,9 +222,9 @@ const AllResources = () => {
             />
           </div>
         )}
-  
-        {/* Create Resource Modal */}
-        <CreateResourceModal
+
+        {/* Create Video Resource Modal */}
+        <CreateResourceSetModal
           isOpen={showCreateModal}
           onClose={() => setShowCreateModal(false)}
           onSubmit={handleCreateResource}

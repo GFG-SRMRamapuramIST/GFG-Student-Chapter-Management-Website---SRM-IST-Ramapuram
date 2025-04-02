@@ -339,18 +339,19 @@ const ReportAnIssue = () => {
               <CardContent className="text-xs md:text-sm space-y-4 text-black">
                 <div>
                   <p>
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit.
-                    Repudiandae voluptatem consequuntur quas ratione reiciendis
-                    assumenda minima, impedit accusantium distinctio, nulla
-                    delectus magnam odio quam sapiente in dolorum sint ullam
-                    libero!
+                    If you face any issues while using the website, report them
+                    here. Fill in your details, describe the issue, and submit
+                    the form.
                   </p>
                   <p>
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit.
-                    Repudiandae voluptatem consequuntur quas ratione reiciendis
-                    assumenda minima, impedit accusantium distinctio, nulla
-                    delectus magnam odio quam sapiente in dolorum sint ullam
-                    libero!
+                    Providing a clear subject and description will help us
+                    understand the problem better. You can also attach a
+                    screenshot for reference.
+                  </p>
+                  <p>
+                    Once submitted, our team will review your report and get
+                    back to you if needed. You may receive an email update
+                    regarding the issue status.
                   </p>
                 </div>
               </CardContent>

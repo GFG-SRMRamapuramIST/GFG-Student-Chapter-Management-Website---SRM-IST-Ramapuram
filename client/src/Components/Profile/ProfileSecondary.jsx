@@ -1,79 +1,16 @@
 import React, { useState } from "react";
+
+// Importing icons
 import { FaChevronRight, FaExternalLinkAlt } from "react-icons/fa";
 import { CgCode, CgTrophy } from "react-icons/cg";
 import { BiError } from "react-icons/bi";
 
 import { platformIcons } from "../../Constants";
-import { RotatingCloseButton } from "../../Utilities";
 import NotificationsSection from "../Dashboard/NotificationsSection";
 import MonthlyActivityHeatmap from "./MonthlyActivityHeatmap";
-
-const CustomDialog = ({ open, onClose, children }) => {
-  if (!open) return null;
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-        onClick={onClose}
-      />
-      <div className="relative bg-white rounded-2xl shadow-lg w-full max-w-3xl mx-4 my-6 max-h-[80vh] overflow-y-auto">
-        <div className="absolute right-3 sm:right-4 top-3 sm:top-4">
-          <RotatingCloseButton onClick={onClose} />
-        </div>
-        <div className="p-4 sm:p-6 md:p-8">{children}</div>
-      </div>
-    </div>
-  );
-};
-
-const Badge = ({ type, name }) => (
-  <div className="relative group">
-    <div
-      className={`
-      w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center
-      ${
-        type === "gold"
-          ? "bg-gradient-to-br from-yellow-200 to-yellow-500"
-          : type === "silver"
-          ? "bg-gradient-to-br from-gray-200 to-gray-400"
-          : "bg-gradient-to-br from-amber-400 to-amber-800"
-      }
-      shadow-lg group-hover:scale-105 transform transition-all duration-300
-    `}
-    >
-      <div
-        className={`
-        w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center
-        ${
-          type === "gold"
-            ? "bg-yellow-100"
-            : type === "silver"
-            ? "bg-gray-100"
-            : "bg-amber-200"
-        }
-        shadow-inner
-      `}
-      >
-        <div
-          className={`
-          text-xs sm:text-sm font-bold
-          ${
-            type === "gold"
-              ? "text-yellow-600"
-              : type === "silver"
-              ? "text-gray-600"
-              : "text-amber-900"
-          }
-        `}
-        >
-          {name.slice(0, 2).toUpperCase()}
-        </div>
-      </div>
-    </div>
-    <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-10 sm:w-12 h-2 bg-gradient-to-t from-white via-white to-transparent z-10" />
-  </div>
-);
+import Medal from "../ui/Medal";
+import CustomDialog from "../ui/CustomDialog";
+import { RiVerifiedBadgeFill } from "react-icons/ri";
 
 const ProfileSecondary = ({ userProfile }) => {
   const [showBadges, setShowBadges] = useState(false);
@@ -82,20 +19,22 @@ const ProfileSecondary = ({ userProfile }) => {
     <div className="p-3 sm:p-4 md:p-6 font-sans antialiased">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Platform Profiles - Takes up full width on mobile, 50% on md, 33% on lg */}
-        <div className="lg:col-span-1">
-          <PlatformProfiles userProfile={userProfile} />
+        <div className="lg:col-span-1 h-full">
+          <PlatformProfiles platformProfiles={userProfile.profiles} />
         </div>
 
-        {/* Middle column for Heatmap and small Achievements on lg screens */}
-        <div className="lg:col-span-1">
-          <div className="grid grid-cols-1 gap-4 sm:gap-6">
-            {/* Heatmap */}
-            <MonthlyActivityHeatmap />
-          </div>
+        {/* Middle column for Heatmap */}
+        <div className="lg:col-span-1 h-full">
+          {/* Heatmap */}
+          <MonthlyActivityHeatmap
+            avgPerDay={userProfile.avgPerDay}
+            maxStreak={userProfile.maxStreak}
+            dailyActivity={userProfile.dailyActivity}
+          />
         </div>
 
         {/* Announcements - 33% on large screens */}
-        <div className="grid lg:col-span-1 gap-4 lg:gap-6">
+        <div className="grid lg:col-span-1 gap-4 lg:gap-6 h-full">
           {/* Compact Achievements */}
           <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
             <div className="pt-3 px-3 sm:pt-4 sm:px-4">
@@ -121,10 +60,11 @@ const ProfileSecondary = ({ userProfile }) => {
                         key={badge.id}
                         className="flex flex-col items-center"
                       >
-                        <Badge type={badge.type} name={badge.name} />
-                        <div className="mt-1 text-xxxs sm:text-xxs font-medium text-center truncate w-full">
-                          {badge.name}
-                        </div>
+                        <Medal
+                          type={badge.type}
+                          content={badge.name}
+                          size="medium"
+                        />
                       </div>
                     ))}
                   </div>
@@ -153,11 +93,13 @@ const ProfileSecondary = ({ userProfile }) => {
               key={badge.id}
               className="flex flex-col items-center text-center"
             >
-              <Badge type={badge.type} name={badge.name} />
+              <Medal
+                type={badge.type}
+                content={badge.name}
+                size="large"
+                labelClassName="mt-3 sm:mt-4 font-medium text-sm sm:text-base"
+              />
               <div className="mt-3 sm:mt-4 space-y-1">
-                <div className="font-medium text-sm sm:text-base">
-                  {badge.name}
-                </div>
                 <div className="text-xs sm:text-sm text-gray-500">
                   {badge.date}
                 </div>
@@ -173,7 +115,7 @@ const ProfileSecondary = ({ userProfile }) => {
   );
 };
 
-const PlatformProfiles = ({ userProfile }) => {
+const PlatformProfiles = ({ platformProfiles }) => {
   // Platform-specific color schemes
   const platformStyles = {
     leetcode: {
@@ -219,7 +161,7 @@ const PlatformProfiles = ({ userProfile }) => {
         </h2>
       </div>
       <div className="p-3 sm:p-4 space-y-3 sm:space-y-4">
-        {Object.entries(userProfile.profiles).map(([platform, stats]) => {
+        {Object.entries(platformProfiles).map(([platform, stats]) => {
           const style = platformStyles[platform];
 
           return (
@@ -240,6 +182,9 @@ const PlatformProfiles = ({ userProfile }) => {
                   <span className="text-xs sm:text-sm text-gray-500 lowercase">
                     @{stats.handle || "N/A"}
                   </span>
+                  {stats.verified && (
+                    <RiVerifiedBadgeFill className="text-green-500" />
+                  )}
                 </span>
                 <a
                   href={style.url(stats.handle)}
@@ -374,8 +319,16 @@ const PlatformProfiles = ({ userProfile }) => {
                   </>
                 )}
               </div>
-              <div className="absolute bottom-1 right-1 bg-gray-800 text-white text-xxxs sm:text-xxs px-1 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                Updated weekly
+              <div className="absolute bottom-1 right-1 bg-gray-800 text-white text-xxxs sm:text-xxs px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                {stats.verified ? (
+                  platform === "leetcode" || platform === "geeksforgeeks" ? (
+                    <span>Updated Daily</span>
+                  ) : (
+                    <span>Updated Weekly</span>
+                  )
+                ) : (
+                  <span className="text-red-400">Verify at Edit Profile</span>
+                )}
               </div>
             </div>
           );

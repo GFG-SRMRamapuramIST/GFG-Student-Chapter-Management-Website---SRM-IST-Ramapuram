@@ -1,21 +1,28 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+
+// Importing Icons
 import {
   FaLinkedin,
   FaCode,
   FaTrophy,
   FaFire,
-  FaCalendarAlt,
   FaChartLine,
   FaChevronDown,
+  FaChevronRight,
+  FaExternalLinkAlt,
+  FaSpinner,
 } from "react-icons/fa";
-import {
-  SiLeetcode,
-  SiCodechef,
-  SiCodeforces,
-  SiGeeksforgeeks,
-} from "react-icons/si";
+
 import { codolioIcon } from "../../Assets";
+import { Medal } from "../../Components";
+import CustomDialog from "../../Components/ui/CustomDialog";
+import { getPlatformUrl, platformColors, platformIcons } from "../../Constants";
+import { getMonthName, ToastMsg } from "../../Utilities";
+
+// Importing APIs
+import { UserServices } from "../../Services";
+import { BiError } from "react-icons/bi";
 
 const mockProfiles = {
   leftProfile: {
@@ -32,17 +39,16 @@ const mockProfiles = {
         platform: "linkedin",
         url: "https://linkedin.com/in/johndoe",
       },
-      {
-        platform: "codolio",
-        url: "https://codolio.com/profile/johndoe",
-      },
+      // {
+      //   platform: "codolio",
+      //   url: "https://codolio.com/profile/johndoe",
+      // },
     ],
 
     stats: {
       questions: 450,
       individualRank: 3,
       previousRank: 5,
-      monthlyProgress: +2,
       averageDaily: 4.5,
     },
 
@@ -102,7 +108,6 @@ const mockProfiles = {
       longestStreak: 30,
       totalContributions: 450,
       averagePerDay: 4.5,
-      lastMonthSolved: 120,
     },
   },
 
@@ -120,17 +125,16 @@ const mockProfiles = {
         platform: "linkedin",
         url: "https://linkedin.com/in/janesmith",
       },
-      {
-        platform: "codolio",
-        url: "https://codolio.com/profile/janesmith",
-      },
+      // {
+      //   platform: "codolio",
+      //   url: "https://codolio.com/profile/janesmith",
+      // },
     ],
 
     stats: {
       questions: 280,
       individualRank: 8,
       previousRank: 12,
-      monthlyProgress: +4,
       averageDaily: 3.2,
     },
 
@@ -183,28 +187,40 @@ const mockProfiles = {
       longestStreak: 20,
       totalContributions: 280,
       averagePerDay: 3.2,
-      lastMonthSolved: 85,
     },
   },
 };
 
-const mockUsers = [
-  { id: "user1", name: "John Doe", role: "Core Member" },
-  { id: "user2", name: "Jane Smith", role: "Member" },
-  { id: "user3", name: "Alex Johnson", role: "Core Member" },
-  { id: "user4", name: "Sarah Williams", role: "Member" },
-  { id: "user5", name: "Mike Brown", role: "Core Member" },
-];
-
-const UserSelector = ({ selectedUser, label }) => {
+const UserSelector = ({
+  selectedUser,
+  label,
+  allUsers,
+  currentUserRole,
+  side,
+  fetchProfileData,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
 
+  const toggleIsOpen = (userId) => {
+    if (
+      side == "left" &&
+      (currentUserRole == "MEMBER" || currentUserRole == "USER")
+    ) {
+      setIsOpen(false);
+    } else {
+      setIsOpen(!isOpen);
+    }
+
+    if (userId) {
+      fetchProfileData(userId, side);
+    }
+  };
   return (
     <div className="relative">
       <label className="block text-emerald-600 text-sm mb-2">{label}</label>
       <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-full bg-emerald-900 border border-emerald-700 rounded-lg px-4 py-2 text-left flex items-center justify-between hover:bg-emerald-800/60 transition-colors"
+        onClick={() => toggleIsOpen()}
+        className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2 text-left flex items-center justify-between hover:bg-gray-100 transition-colors"
       >
         <div className="flex items-center">
           <img
@@ -213,26 +229,24 @@ const UserSelector = ({ selectedUser, label }) => {
             className="w-8 h-8 rounded-full mr-3"
           />
           <div>
-            <div className="text-white">{selectedUser?.name}</div>
-            <div className="text-emerald-400 text-xs">{selectedUser?.role}</div>
+            <div className="text-black">{selectedUser?.name}</div>
+            <div className="text-emerald-600 text-xs">{selectedUser?.role}</div>
           </div>
         </div>
         <FaChevronDown
-          className={`text-emerald-400 transition-transform ${
+          className={`text-emerald-600 transition-transform ${
             isOpen ? "rotate-180" : ""
           }`}
         />
       </button>
 
       {isOpen && (
-        <div className="absolute w-full mt-2 bg-emerald-900/95 border border-emerald-700 rounded-lg shadow-xl z-50 backdrop-blur-sm max-h-60 overflow-y-auto">
-          {mockUsers.map((user) => (
+        <div className="absolute w-full mt-2 bg-white border border-gray-300 rounded-lg shadow-xl z-50 max-h-60 overflow-y-auto">
+          {allUsers?.map((user) => (
             <button
               key={user.id}
-              onClick={() => {
-                setIsOpen(false);
-              }}
-              className="w-full px-4 py-2 flex items-center hover:bg-emerald-800/60 transition-colors"
+              onClick={() => toggleIsOpen(user.id)}
+              className="w-full px-4 py-2 flex items-center hover:bg-gray-100 transition-colors"
             >
               <img
                 src={user.profilePic || "https://placehold.co/100x100"}
@@ -240,8 +254,8 @@ const UserSelector = ({ selectedUser, label }) => {
                 className="w-8 h-8 rounded-full mr-3"
               />
               <div className="text-left">
-                <div className="text-white">{user.name}</div>
-                <div className="text-emerald-400 text-xs">{user.role}</div>
+                <div className="text-black">{user.name}</div>
+                <div className="text-emerald-600 text-xs">{user.role}</div>
               </div>
             </button>
           ))}
@@ -252,18 +266,256 @@ const UserSelector = ({ selectedUser, label }) => {
 };
 
 const ProfileComparison = () => {
-  const { leftProfile, rightProfile } = mockProfiles;
+  const { getAllUsersWithIdNameRolePfpFunction, getProfilePageDataFunction } =
+    UserServices();
+  const [loading, setLoading] = useState(false);
+  const [leftProfileLoading, setLeftProfileLoading] = useState(false);
+  const [rightProfileLoading, setRightProfileLoading] = useState(false);
 
-  // GeeksforGeeks inspired color palette with your primary color
-  const colors = {
-    primary: "#00895e",
-    neutral: "#f5f5f7",
+  const [users, setUsers] = useState([]);
+  const [currentUserIdandRole, setCurrentUserIdandRole] = useState({
+    id: "",
+    role: "",
+  });
+  //const { leftProfile, rightProfile } = mockProfiles;
+  const emptyProfile = {
+    id: "",
+    name: "",
+    email: "",
+    role: "",
+    academic_year: "",
+    profilePic: "",
+    bio: "",
+    social: [
+      { platform: "linkedin", url: "" },
+      // { platform: "codolio", url: "" },
+    ],
+    stats: {
+      questions: 0,
+      individualRank: 0,
+      previousRank: 0,
+      averageDaily: 0,
+    },
+    profiles: {
+      leetcode: {
+        handle: "",
+        ranking: 0,
+        totalProblemSolved: 0,
+        badgesCount: 0,
+      },
+      codechef: {
+        handle: "",
+        rating: 0,
+        countryRank: 0,
+        highestRating: 0,
+      },
+      codeforces: {
+        handle: "",
+        rating: 0,
+        rank: 0,
+        totalProblemSolved: 0,
+      },
+      geeksforgeeks: {
+        handle: "",
+        universityRank: 0,
+        codingScore: 0,
+        problemsSolved: 0,
+      },
+    },
+    badges: [],
+    activityData: {
+      currentStreak: 0,
+      longestStreak: 0,
+      totalContributions: 0,
+      averagePerDay: 0,
+    },
   };
+
+  const [leftProfile, setLeftProfile] = useState(emptyProfile);
+  const [rightProfile, setRightProfile] = useState(emptyProfile);
+
+  const [showLeftBadges, setShowLeftBadges] = useState(false);
+  const [showRightBadges, setShowRightBadges] = useState(false);
 
   const fadeInVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
   };
+
+  const fetchProfileData = async (profileId, label) => {
+    try {
+      if (label === "left") {
+        setLeftProfileLoading(true);
+      } else {
+        setRightProfileLoading(true);
+      }
+      const response = await getProfilePageDataFunction({ userId: profileId });
+
+      if (response.status !== 200) {
+        ToastMsg("Error fetching profile data! Please try later", "error");
+      } else {
+        const data = response.data;
+        // console.log("Profile Data:", data);
+        const formattedProfile = {
+          id: data._id,
+          name: data.name,
+          email: data.email,
+          role: data.role,
+          academic_year: data.academicYear,
+          profilePic: data.profilePicture,
+          bio: data.bio,
+
+          social: [
+            {
+              platform: "linkedin",
+              url: `https://linkedin.com/in/${data.linkedinUsername}`,
+            },
+            // {
+            //   platform: "codolio",
+            //   url: `https://codolio.com/profile/${data.codolioUsername}`,
+            // },
+          ],
+
+          stats: {
+            questions: data.totalQuestionSolved,
+            individualRank: data.currentRank,
+            previousRank: data.prevMonthData?.prevRank || null,
+            averageDaily: data.avgPerDay,
+          },
+
+          profiles: {
+            leetcode: {
+              handle: data.leetcodeUsername,
+              ranking: data.platforms.leetcode.ranking,
+              totalProblemSolved: data.platforms.leetcode.totalProblemSolved,
+              badgesCount: data.platforms.leetcode.badgesCount,
+            },
+            codechef: {
+              handle: data.codechefUsername,
+              rating: data.platforms.codechef.rating,
+              countryRank: data.platforms.codechef.countryRank,
+              highestRating: data.platforms.codechef.highestRating,
+            },
+            codeforces: {
+              handle: data.codeforcesUsername,
+              rating: data.platforms.codeforces.rating,
+              rank: data.platforms.codeforces.rank,
+              totalProblemSolved: data.platforms.codeforces.totalProblemSolved,
+            },
+            geeksforgeeks: {
+              handle: data.geeksforgeeksUsername,
+              universityRank: data.platforms.geeksforgeeks.universityRank,
+              codingScore: data.platforms.geeksforgeeks.codingScore,
+              problemsSolved: data.platforms.geeksforgeeks.problemSolved,
+            },
+          },
+
+          badges: [
+            ...data.achievement.gold.map((badge) => ({
+              id: `gold-${badge.year}-${badge.month}`,
+              name: `Gold - ${getMonthName(badge.month)} ${badge.year}`,
+              type: "gold",
+              date: `${badge.year}-${String(badge.month).padStart(2, "0")}-01`,
+              description: "Secured first place in the monthly leaderboard",
+            })),
+            ...data.achievement.silver.map((badge) => ({
+              id: `silver-${badge.year}-${badge.month}`,
+              name: `Silver - ${getMonthName(badge.month)} ${badge.year}`,
+              type: "silver",
+              date: `${badge.year}-${String(badge.month).padStart(2, "0")}-01`,
+              description: "Secured second place in the monthly leaderboard",
+            })),
+            ...data.achievement.bronze.map((badge) => ({
+              id: `bronze-${badge.year}-${badge.month}`,
+              name: `Bronze - ${getMonthName(badge.month)} ${badge.year}`,
+              type: "bronze",
+              date: `${badge.year}-${String(badge.month).padStart(2, "0")}-01`,
+              description: "Secured third place in the monthly leaderboard",
+            })),
+            ...data.achievement.dailyActiveStreak.map((badge) => ({
+              id: `streak-${badge.year}-${badge.month}`,
+              name: `Daily Streak - ${getMonthName(badge.month)} ${
+                badge.year
+              }`,
+              type: "dailyActiveStreak",
+              date: `${badge.year}-${String(badge.month).padStart(2, "0")}-01`,
+              description:
+                "Maintained daily coding streak throughout the month",
+            })),
+            ...data.achievement.maxAvgPerDay.map((badge) => ({
+              id: `avg-${badge.year}-${badge.month}`,
+              name: `Problem Solver - ${getMonthName(badge.month)} ${badge.year}`,
+              type: "maxAvgPerDay",
+              date: `${badge.year}-${String(badge.month).padStart(2, "0")}-01`,
+              description: "Achieved highest average problems solved per day",
+            })),
+          ],
+
+          activityData: {
+            currentStreak: data.maxStreak,
+            longestStreak: data.maxStreak,
+            totalContributions: data.dailyActivity.reduce(
+              (sum, day) => sum + day.count,
+              0
+            ),
+            averagePerDay: data.avgPerDay,
+          },
+        };
+
+        if (label === "left") {
+          setLeftProfile(formattedProfile);
+        } else if (label === "right") {
+          setRightProfile(formattedProfile);
+        } else {
+          setLeftProfile(formattedProfile);
+          setRightProfile(formattedProfile);
+        }
+      }
+    } catch (error) {
+      ToastMsg("Error fetching profile data! Please try later", "error");
+      console.error("Error fetching profile data:", error.message);
+    } finally {
+      if (label === "left") {
+        setLeftProfileLoading(false);
+      } else {
+        setRightProfileLoading(false);
+      }
+    }
+  };
+
+  const fetchAllUsersWithIdNameRolePfp = async () => {
+    try {
+      setLoading(true);
+      const response = await getAllUsersWithIdNameRolePfpFunction();
+      //console.log(response);
+      if (response.status == 200) {
+        const allUsers = response.data.data.map((user) => ({
+          id: user._id,
+          name: user.name,
+          role: user.role,
+          profilePic: user.profilePicture,
+        }));
+        setUsers(allUsers);
+
+        await fetchProfileData(response.data.userId);
+        setCurrentUserIdandRole({
+          id: response.data.userId,
+          role: response.data.role,
+        });
+      } else {
+        ToastMsg(response.response.data.message, "error");
+      }
+    } catch (error) {
+      ToastMsg("Error fetching profile data! Please try later", "error");
+      console.error("Error fetching profile data:", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAllUsersWithIdNameRolePfp();
+  }, []);
 
   const renderSocialLinks = (social) => (
     <div className="flex space-x-4 my-4 justify-center">
@@ -288,104 +540,96 @@ const ProfileComparison = () => {
   );
 
   const renderPlatformStats = (platform, data) => {
-    let PlatformIcon;
-    let profileUrl;
-    let platformColor;
+    // Normalize platform name to lowercase for consistency
+    const normalizedPlatform = platform.toLowerCase();
 
-    switch (platform) {
-      case "leetcode":
-        PlatformIcon = SiLeetcode;
-        profileUrl = `https://leetcode.com/${data.handle}`;
-        platformColor = "#FFA116"; // LeetCode orange
-        break;
-      case "codechef":
-        PlatformIcon = SiCodechef;
-        profileUrl = `https://www.codechef.com/users/${data.handle}`;
-        platformColor = "#654321"; // CodeChef brown
-        break;
-      case "codeforces":
-        PlatformIcon = SiCodeforces;
-        profileUrl = `https://codeforces.com/profile/${data.handle}`;
-        platformColor = "#318CE7"; // Codeforces blue
-        break;
-      case "geeksforgeeks":
-        PlatformIcon = SiGeeksforgeeks;
-        profileUrl = `https://geeksforgeeks.org/user/${data.handle}/profile`;
-        platformColor = colors.primary; // GFG green (your primary color)
-        break;
-      default:
-        PlatformIcon = FaCode;
-        profileUrl = "#";
-        platformColor = colors.neutral;
-    }
+    // Get platform-specific properties
+    const PlatformIcon = platformIcons[normalizedPlatform] || FaCode;
+    const platformColor = platformColors[normalizedPlatform] || "#6e6e6e";
+    const profileUrl = data.handle
+      ? `https://${getPlatformUrl(normalizedPlatform)}/${data.handle}`
+      : "#";
 
     return (
-      <motion.a
-        href={profileUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="block bg-white/95 backdrop-blur-sm shadow-md rounded-lg p-4 mb-4 transition-all duration-300 border  hover:border-emerald-400 hover:shadow-lg hover:shadow-emerald-900/20"
-        variants={fadeInVariants}
-        whileHover={{ y: -5 }}
+      <div
+        className="rounded-lg shadow-md p-4 mb-4 transition-all duration-300 hover:shadow-lg"
+        style={{ borderLeft: `4px solid ${platformColor}` }}
       >
         <div className="flex items-center mb-3">
-          <PlatformIcon
-            style={{ color: platformColor }}
-            className="text-xl mr-2"
-          />
-          <h3 className="font-bold text-lg capitalize">{platform}</h3>
+          <div
+            className="p-2 rounded-full mr-3"
+            style={{ backgroundColor: `${platformColor}20` }} // 20 is hex for 12% opacity
+          >
+            <PlatformIcon size={24} color={platformColor} />
+          </div>
+
+          <h3 className="text-lg text-black font-semibold flex-grow capitalize">
+            {normalizedPlatform}
+          </h3>
+
+          {data.handle && (
+            <a
+              href={profileUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center text-sm font-medium transition-colors duration-300 hover:underline"
+              style={{ color: platformColor }}
+            >
+              <span className="hidden md:flex">{data.handle}</span>
+              <FaExternalLinkAlt size={12} className="ml-1" />
+            </a>
+          )}
         </div>
+
         <div className="grid grid-cols-2 gap-3">
           {Object.entries(data).map(
             ([key, value]) =>
               key !== "handle" && (
-                <div key={key} className="text-sm">
-                  <span className="text-gray-400">
+                <div key={key} className="bg-gray-50 p-2 rounded">
+                  <div className="text-xs text-gray-500 mb-1">
                     {key
                       .replace(/([A-Z])/g, " $1")
                       .replace(/^./, (str) => str.toUpperCase())}
-                    :{" "}
-                  </span>
-                  <span className="font-semibold text-emerald-800">
-                    {value}
-                  </span>
+                  </div>
+                  <div className="font-medium text-black">{value}</div>
                 </div>
               )
           )}
         </div>
-      </motion.a>
+      </div>
     );
   };
 
-  const renderBadges = (badges) => (
-    <div className="flex flex-wrap gap-3 mb-4">
-      {badges.map((badge) => (
-        <motion.div
-          key={badge.id}
-          className={`px-4 py-2 rounded-full text-xs font-semibold flex items-center space-x-1.5 shadow-md
-            ${
-              badge.type === "gold"
-                ? "bg-gradient-to-r from-yellow-500 to-yellow-400 text-yellow-900"
-                : badge.type === "silver"
-                ? "bg-gradient-to-r from-gray-400 to-gray-300 text-gray-800"
-                : "bg-gradient-to-r from-amber-700 to-amber-600 text-amber-100"
-            }`}
-          whileHover={{ scale: 1.07, y: -2 }}
-          whileTap={{ scale: 0.95 }}
-          title={badge.description}
-        >
-          <FaTrophy
-            className={
-              badge.type === "gold"
-                ? "text-yellow-800"
-                : badge.type === "silver"
-                ? "text-gray-700"
-                : "text-amber-200"
-            }
-          />
-          <span>{badge.name}</span>
-        </motion.div>
-      ))}
+  const renderBadges = (badges, setShowBadges) => (
+    <div className="space-y-4">
+      {badges.length === 0 ? (
+        <div className="flex flex-col text-center items-center justify-center p-2 sm:p-4">
+          <BiError className="w-6 h-6 sm:w-8 sm:h-8 text-gray-400" />
+          <p className="mt-2 text-xs sm:text-sm text-gray-500">
+            No achievements yet. Keep trying harder!
+          </p>
+        </div>
+      ) : (
+        <>
+          <div className="flex  py-2 gap-2 sm:gap-3">
+            {badges.slice(0, 3).map((badge) => (
+              <div
+                key={badge.id}
+                className="flex flex-col items-center justify-center text-center"
+              >
+                <Medal type={badge.type} content={badge.name} size="medium" />
+              </div>
+            ))}
+          </div>
+          <button
+            onClick={() => setShowBadges(true)}
+            className="w-full mt-2 py-2 sm:py-3 px-2 sm:px-3 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-100 transition-colors text-xs sm:text-sm font-medium flex items-center justify-center"
+          >
+            <span>View all</span>
+            <FaChevronRight className="w-2 h-2 sm:w-2.5 sm:h-2.5 ml-1" />
+          </button>
+        </>
+      )}
     </div>
   );
 
@@ -400,37 +644,34 @@ const ProfileComparison = () => {
       </h3>
       <div className="grid grid-cols-2 gap-4">
         <div className="flex items-center bg-gradient-to-br from-emerald-800/80 to-emerald-900/80 p-3 rounded-lg">
-          <FaFire className="text-orange-500 mr-3 text-xl" />
+          <FaFire className="hidden md:flex text-orange-500 mr-3 text-xl" />
           <div>
-            <div className="text-sm text-emerald-300">Current Streak</div>
-            <div className="font-bold text-lg">
+            <div className="text-xs md:text-sm text-emerald-300">
+              Current Streak
+            </div>
+            <div className="font-bold text-md md:text-lg">
               {activityData.currentStreak} days
             </div>
           </div>
         </div>
         <div className="flex items-center bg-gradient-to-br from-emerald-800/80 to-emerald-900/80 p-3 rounded-lg">
-          <FaFire className="text-red-500 mr-3 text-xl" />
+          <FaFire className="hidden md:flex text-red-500 mr-3 text-xl" />
           <div>
-            <div className="text-sm text-emerald-300">Longest Streak</div>
-            <div className="font-bold text-lg">
+            <div className="text-xs md:text-sm text-emerald-300">
+              Longest Streak
+            </div>
+            <div className="font-bold text-md md:text-lg">
               {activityData.longestStreak} days
             </div>
           </div>
         </div>
         <div className="flex items-center bg-gradient-to-br from-emerald-800/80 to-emerald-900/80 p-3 rounded-lg">
-          <FaCalendarAlt className="text-blue-400 mr-3 text-xl" />
+          <FaChartLine className="hidden md:flex text-emerald-400 mr-3 text-xl" />
           <div>
-            <div className="text-sm text-emerald-300">Last Month</div>
-            <div className="font-bold text-lg">
-              {activityData.lastMonthSolved} problems
+            <div className="text-xs md:text-sm text-emerald-300">
+              Daily Average
             </div>
-          </div>
-        </div>
-        <div className="flex items-center bg-gradient-to-br from-emerald-800/80 to-emerald-900/80 p-3 rounded-lg">
-          <FaChartLine className="text-emerald-400 mr-3 text-xl" />
-          <div>
-            <div className="text-sm text-emerald-300">Daily Average</div>
-            <div className="font-bold text-lg">
+            <div className="font-bold text-md md:text-lg">
               {activityData.averagePerDay} problems
             </div>
           </div>
@@ -464,18 +705,11 @@ const ProfileComparison = () => {
             #{profile.stats.previousRank}
           </div>
         </div>
-        <div className="bg-white/5 p-3 rounded-lg">
-          <div className="text-sm text-emerald-200 mb-1">Monthly Progress</div>
-          <div className={`font-bold text-2xl `}>
-            {profile.stats.monthlyProgress > 0 ? "+" : ""}
-            {profile.stats.monthlyProgress}
-          </div>
-        </div>
       </div>
     </motion.div>
   );
 
-  const renderProfileCard = (profile, otherProfile) => (
+  const renderProfileCard = (profile, otherProfile, setShowBadges) => (
     <motion.div
       className="w-full"
       initial="hidden"
@@ -527,7 +761,7 @@ const ProfileComparison = () => {
 
           {renderSocialLinks(profile.social)}
 
-          <p className="text-center text-sm italic mt-2 text-emerald-100 bg-emerald-950/30 px-4 py-2 rounded-full max-w-xs mx-auto">
+          <p className="text-ellipsis text-center text-sm italic mt-2 text-emerald-100 bg-emerald-950/30 px-4 py-2 rounded-full mx-auto">
             "{profile.bio}"
           </p>
         </div>
@@ -540,7 +774,7 @@ const ProfileComparison = () => {
               <FaTrophy className="mr-2 text-yellow-500" />
               Achievements & Badges
             </h3>
-            {renderBadges(profile.badges)}
+            {renderBadges(profile.badges, setShowBadges)}
           </motion.div>
 
           {renderActivityData(profile.activityData)}
@@ -559,7 +793,7 @@ const ProfileComparison = () => {
   );
 
   return (
-    <div className="min-h-screen  text-white p-6">
+    <div className="min-h-screen  text-white">
       <motion.div
         className="text-center mb-12"
         initial={{ opacity: 0, y: -20 }}
@@ -575,40 +809,147 @@ const ProfileComparison = () => {
         </p>
       </motion.div>
 
-      <div className="container mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-          <UserSelector
-            selectedUser={leftProfile}
-            label="Select First Profile"
-          />
-          <UserSelector
-            selectedUser={rightProfile}
-            label="Select Second Profile"
-          />
-        </div>
-        <div className="flex flex-col md:flex-row gap-8">
-          <div className="flex-1">
-            {renderProfileCard(leftProfile, rightProfile)}
+      {loading ? (
+        <div className="p-6 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-4">
+            <FaSpinner className="animate-spin text-4xl text-gfgsc-green" />
+            <p className="text-gray-600">Loading resource...</p>
           </div>
-
-          <motion.div
-            className="hidden md:flex items-center justify-center"
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <div className="w-px h-full bg-emerald-800 relative">
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gradient-to-br from-emerald-700 to-emerald-900 rounded-full p-4 border-2 border-emerald-500 shadow-lg shadow-emerald-600/20">
-                <span className="text-2xl font-bold text-white">VS</span>
-              </div>
+        </div>
+      ) : (
+        <>
+          <div className="">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+              <UserSelector
+                selectedUser={leftProfile}
+                label="Select First Profile"
+                allUsers={users}
+                currentUserRole={currentUserIdandRole.role}
+                side="left"
+                fetchProfileData={fetchProfileData}
+              />
+              <UserSelector
+                selectedUser={rightProfile}
+                label="Select Second Profile"
+                allUsers={users}
+                currentUserRole={currentUserIdandRole.role}
+                side="right"
+                fetchProfileData={fetchProfileData}
+              />
             </div>
-          </motion.div>
+            <div className="flex flex-col md:flex-row gap-8">
+              {leftProfileLoading ? (
+                <div className="p-6 flex-1 items-center justify-center">
+                  <div className="flex flex-col items-center gap-4">
+                    <FaSpinner className="animate-spin text-4xl text-gfgsc-green" />
+                  </div>
+                </div>
+              ) : (
+                <div className="flex-1">
+                  {renderProfileCard(
+                    leftProfile,
+                    rightProfile,
+                    setShowLeftBadges
+                  )}
+                </div>
+              )}
 
-          <div className="flex-1">
-            {renderProfileCard(rightProfile, leftProfile)}
+              <motion.div
+                className="hidden md:flex items-center justify-center"
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+              >
+                <div className="w-px h-full bg-emerald-800 relative">
+                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gradient-to-br from-emerald-700 to-emerald-900 rounded-full p-4 border-2 border-emerald-500 shadow-lg shadow-emerald-600/20">
+                    <span className="text-2xl font-bold text-white">VS</span>
+                  </div>
+                </div>
+              </motion.div>
+              {rightProfileLoading ? (
+                <div className="p-6 flex-1 items-center justify-center">
+                  <div className="flex flex-col items-center gap-4">
+                    <FaSpinner className="animate-spin text-4xl text-gfgsc-green" />
+                  </div>
+                </div>
+              ) : (
+                <div className="flex-1">
+                  {renderProfileCard(
+                    rightProfile,
+                    leftProfile,
+                    setShowRightBadges
+                  )}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      </div>
+
+          {/* Add Badge Popups */}
+          <CustomDialog
+            open={showLeftBadges}
+            onClose={() => setShowLeftBadges(false)}
+          >
+            <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-8">
+              All Achievements - {leftProfile.name}
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
+              {leftProfile.badges.map((badge) => (
+                <div
+                  key={badge.id}
+                  className="flex flex-col items-center text-center"
+                >
+                  <Medal
+                    type={badge.type}
+                    content={badge.name}
+                    size="large"
+                    labelClassName="mt-3 sm:mt-4 font-medium text-sm sm:text-base"
+                  />
+                  <div className="mt-3 sm:mt-4 space-y-1">
+                    <div className="text-xs sm:text-sm text-gray-500">
+                      {badge.date}
+                    </div>
+                    <p className="text-xs sm:text-sm text-gray-600 mt-1 sm:mt-2">
+                      {badge.description}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CustomDialog>
+
+          <CustomDialog
+            open={showRightBadges}
+            onClose={() => setShowRightBadges(false)}
+          >
+            <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-8">
+              All Achievements - {rightProfile.name}
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
+              {rightProfile.badges.map((badge) => (
+                <div
+                  key={badge.id}
+                  className="flex flex-col items-center text-center"
+                >
+                  <Medal
+                    type={badge.type}
+                    content={badge.name}
+                    size="large"
+                    labelClassName="mt-3 sm:mt-4 font-medium text-sm sm:text-base"
+                  />
+                  <div className="mt-3 sm:mt-4 space-y-1">
+                    <div className="text-xs sm:text-sm text-gray-500">
+                      {badge.date}
+                    </div>
+                    <p className="text-xs sm:text-sm text-gray-600 mt-1 sm:mt-2">
+                      {badge.description}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CustomDialog>
+        </>
+      )}
     </div>
   );
 };

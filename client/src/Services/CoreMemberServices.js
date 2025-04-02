@@ -29,6 +29,26 @@ const deleteMeetingFunction = async ({ dateId, noticeId }, userToken) => {
   );
 };
 
+// Create mom for a meeting API
+const createMoMFunction = async ({ dateId, noticeId, MoMLink }, userToken) => {
+  return await commonrequest(
+    "POST",
+    `${BACKEND_URL}/api/v1/core-member/create-mom`,
+    { dateId, noticeId, MoMLink },
+    { Authorization: `Bearer ${userToken}` }
+  );
+}
+
+// Delete mom for a meeting API
+const deleteMoMFunction = async ({ dateId, noticeId }, userToken) => {
+  return await commonrequest(
+    "DELETE",
+    `${BACKEND_URL}/api/v1/core-member/delete-mom`,
+    { dateId, noticeId },
+    { Authorization: `Bearer ${userToken}` }
+  );
+}
+
 // Create a contest API
 const contestCreationFunction = async (
   { contestName, contestLink, platform, startTime, endTime, date },
@@ -180,6 +200,91 @@ const fetchAllAnnouncementFunction = async (userToken) => {
   );
 };
 
+// Create a resource API
+const createVideoResourceFunction = async ({ title, description }, userToken) => {
+  return await commonrequest(
+    "POST",
+    `${BACKEND_URL}/api/v1/core-member/create-video-resource`,
+    { title, description },
+    { Authorization: `Bearer ${userToken}` }
+  );
+};
+
+// Add a question to a resource API
+const addVideoToVideoResourceFunction = async (
+  { vidoeResourceId, title, description, link },
+  userToken
+) => {
+  return await commonrequest(
+    "POST",
+    `${BACKEND_URL}/api/v1/core-member/add-video`,
+    { vidoeResourceId, title, description, link },
+    { Authorization: `Bearer ${userToken}` }
+  );
+};
+
+// Delete a question from a resource API
+const deleteVideoFromVideoResourceFunction = async (
+  { videoResourceId, videoId } ,
+  userToken
+) => {
+  return await commonrequest(
+    "DELETE",
+    `${BACKEND_URL}/api/v1/core-member/delete-video`,
+    { videoResourceId, videoId } ,
+    { Authorization: `Bearer ${userToken}` }
+  );
+};
+
+// Delete a resource API
+const deleteVideoResourceFunction = async ({ videoResourceId }, userToken) => {
+  return await commonrequest(
+    "DELETE",
+    `${BACKEND_URL}/api/v1/core-member/delete-video-resource`,
+    { videoResourceId },
+    { Authorization: `Bearer ${userToken}` }
+  );
+};
+
+// Edit a resource API
+const editVideoResourceFunction = async (
+  { videoResourceId, title, description },
+  userToken
+) => {
+  return await commonrequest(
+    "PUT",
+    `${BACKEND_URL}/api/v1/core-member/edit-video-resource`,
+    { videoResourceId, title, description },
+    { Authorization: `Bearer ${userToken}` }
+  );
+};
+
+// Fetch all resources API
+const fetchAllVideoResourcesFunction = async (
+  { page = 1, search = "" },
+  userToken
+) => {
+  return await commonrequest(
+    "POST",
+    `${BACKEND_URL}/api/v1/core-member/fetch-all-video-resource`,
+    { page, search },
+    { Authorization: `Bearer ${userToken}` }
+  );
+};
+
+// Fetch all questions of a resource API
+const fetchAllVideoOfVideoResourceFunction = async (
+  { videoResourceId },
+  userToken
+) => {
+  return await commonrequest(
+    "POST",
+    `${BACKEND_URL}/api/v1/core-member/fetch-all-video`,
+    { videoResourceId },
+    { Authorization: `Bearer ${userToken}` }
+  );
+};
+
 // Wrapper to use token inside React components
 const CoreMemberServices = () => {
   const userToken = useAuthToken();
@@ -188,6 +293,8 @@ const CoreMemberServices = () => {
     meetingCreationFunction: (params) =>
       meetingCreationFunction(params, userToken),
     deleteMeetingFunction: (params) => deleteMeetingFunction(params, userToken),
+    createMoMFunction: (params) => createMoMFunction(params, userToken),
+    deleteMoMFunction: (params) => deleteMoMFunction(params, userToken),
     contestCreationFunction: (params) =>
       contestCreationFunction(params, userToken),
     deleteContestFunction: (params) => deleteContestFunction(params, userToken),
@@ -211,6 +318,20 @@ const CoreMemberServices = () => {
     deleteAnnouncementFunction: (params) =>
       deleteAnnouncementFunction(params, userToken),
     fetchAllAnnouncementFunction: () => fetchAllAnnouncementFunction(userToken),
+    createVideoResourceFunction: (params) =>
+      createVideoResourceFunction(params, userToken),
+    addVideoToVideoResourceFunction: (params) =>
+      addVideoToVideoResourceFunction(params, userToken),
+    deleteVideoFromVideoResourceFunction: (params) =>
+      deleteVideoFromVideoResourceFunction(params, userToken),
+    deleteVideoResourceFunction: (params) =>
+      deleteVideoResourceFunction(params, userToken),
+    editVideoResourceFunction: (params) =>
+      editVideoResourceFunction(params, userToken),
+    fetchAllVideoResourcesFunction: (params) =>
+      fetchAllVideoResourcesFunction(params, userToken),
+    fetchAllVideoOfVideoResourceFunction: (params) =>
+      fetchAllVideoOfVideoResourceFunction(params, userToken),
   };
 };
 

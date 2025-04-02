@@ -65,13 +65,13 @@ const ProfileHero = ({ userProfile }) => {
                   {platform === "linkedin" && (
                     <FaLinkedin className="w-5 h-5 text-[#0a66c2]" />
                   )}
-                  {platform === "codolio" && (
+                  {/* {platform === "codolio" && (
                     <img
                       src={codolioIcon}
                       alt="codolio"
                       className="w-5 h-5"
                     />
-                  )}
+                  )} */}
                 </a>
               ))}
             </div>
@@ -83,21 +83,21 @@ const ProfileHero = ({ userProfile }) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             <StatCard
               icon={<CgCode />}
-              label="Questions Solved"
+              label="Points"
               value={userProfile.stats.questions}
-              trend="+5 this week"
+              // trend="+5 this week"
             />
             <StatCard
               icon={<CgTrophy />}
               label="Individual Rank"
               value={`#${userProfile.stats.individualRank}`}
-              trend="Top 5%"
+              // trend="Top 5%"
             />
             <StatCard
               icon={<GiProgression />}
               label="Previous Rank"
               value={`#${userProfile.stats.previousRank}`}
-              trend="Top 15%"
+              // trend="Top 15%"
             />
           </div>
         </div>

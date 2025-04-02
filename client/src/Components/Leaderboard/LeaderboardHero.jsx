@@ -60,7 +60,7 @@ const LeaderboardHero = ({ topThree, isTeam=false, minimumPassingMark }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
-        className="absolute bottom-2 right-6 md:right-8 lg:right-12 bg-white/10 backdrop-blur-sm 
+        className="hidden md:flex absolute bottom-2 right-6 md:right-8 lg:right-12 bg-white/10 backdrop-blur-sm 
                    px-3 py-2 rounded-xl shadow-lg border border-black/60 
                    text-black text-xs md:text-sm font-medium z-10"
       >

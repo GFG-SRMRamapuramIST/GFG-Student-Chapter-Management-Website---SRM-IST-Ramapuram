@@ -65,10 +65,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
-  codolioUsername: {
-    type: String,
-    default: null,
-  },
   leetcodeUsername: {
     type: String,
     default: null,
@@ -102,27 +98,37 @@ const userSchema = new mongoose.Schema({
     gold: [{ month: Number, year: Number }],
     silver: [{ month: Number, year: Number }],
     bronze: [{ month: Number, year: Number }],
+    maxAvgPerDay: [{ month: Number, year: Number }],
+    dailyActiveStreak: [{ month: Number, year: Number }],
   },
   platforms: {
     codechef: {
       rating: { type: Number, default: 0 },
       countryRank: { type: Number, default: 0 },
       highestRating: { type: Number, default: 0 },
+      verified: { type: Boolean, default: false },
+      firstName: { type: String, default: null },
     },
     leetcode: {
       badgesCount: { type: Number, default: 0 },
       ranking: { type: Number, default: 0 },
       totalProblemSolved: { type: Number, default: 0 },
+      verified: { type: Boolean, default: false },
+      firstName: { type: String, default: null },
     },
     codeforces: {
       rating: { type: Number, default: 0 },
       rank: { type: String, default: "unrated" },
       totalProblemSolved: { type: Number, default: 0 },
+      verified: { type: Boolean, default: false },
+      firstName: { type: String, default: null },
     },
     geeksforgeeks: {
       universityRank: { type: Number, default: 0 },
       codingScore: { type: Number, default: 0 },
       problemSolved: { type: Number, default: 0 },
+      verified: { type: Boolean, default: false },
+      firstName: { type: String, default: null },
     },
   },
   dailyActivity: [

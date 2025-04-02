@@ -2,7 +2,7 @@ const chalk = require("chalk");
 
 const { sendEmail } = require("../../Utilities");
 
-const { Users } = require("../../Models");
+const { Users, DailyContests, Notice } = require("../../Models");
 
 // Function to reset user data
 async function resetData() {
@@ -20,10 +20,25 @@ async function resetData() {
       };
       user.currentRank = null;
       user.totalQuestionSolved = 0;
+
+      user.subscribed = true;
+
+      user.avgPerDay = 0;
+      user.maxStreak = 0;
+      user.dailyActivity = [];
+
       await user.save();
     }
 
     console.log(chalk.green("User data has been reset successfully."));
+
+    await DailyContests.deleteMany();
+    await Notice.deleteMany();
+    console.log(
+      chalk.green(
+        "All then entries for DailyContests and Notice have been deleted."
+      )
+    );
   } catch (error) {
     console.error(
       chalk.red("Error during reset data function:"),

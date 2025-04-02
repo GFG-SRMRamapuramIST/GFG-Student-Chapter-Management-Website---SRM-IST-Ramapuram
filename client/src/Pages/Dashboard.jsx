@@ -1,3 +1,4 @@
+import ReactGA from "react-ga4";
 import { useEffect, useState } from "react";
 
 // Icons
@@ -18,6 +19,15 @@ import { ConfirmationPopup, ToastMsg } from "../Utilities";
 import { UserServices, CoreMemberServices } from "../Services";
 
 const Dashboard = () => {
+  // Google Analytics tracking
+  useEffect(() => {
+    ReactGA.send({
+      hitType: "pageview",
+      page: "gfgsrm-tech.vercel.app/dashboard",
+      title: "Dashboard Page",
+    });
+  }, []);
+
   const {
     toggleSubscribeFunction,
     getProfilePageDataFunction,
@@ -92,6 +102,7 @@ const Dashboard = () => {
               start_time: formattedStartTime,
               link: meeting.meetingLink,
               compulsory: meeting.compulsory,
+              mom: meeting.MoMLink,
               eventId: meeting._id, // Store meeting ID
               dateId: meetingDay._id, // Store date ID
             });
@@ -285,7 +296,7 @@ const Dashboard = () => {
         <div className="lg:col-span-4 space-y-6">
           <StatsSection stats={stats} />
           <LeaderboardSection top5Users={top5Users} />
-          <NotificationsSection />
+          <NotificationsSection isCarousel={false} />
         </div>
       </div>
     </div>

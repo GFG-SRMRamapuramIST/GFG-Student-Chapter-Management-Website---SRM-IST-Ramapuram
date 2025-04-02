@@ -14,7 +14,12 @@ import {
   MdDescription,
 } from "react-icons/md";
 import { FaLinkedin, FaSpinner } from "react-icons/fa";
-import { SiCodechef, SiCodeforces, SiGeeksforgeeks, SiLeetcode } from "react-icons/si";
+import {
+  SiCodechef,
+  SiCodeforces,
+  SiGeeksforgeeks,
+  SiLeetcode,
+} from "react-icons/si";
 import { CgEditMarkup } from "react-icons/cg";
 
 import { AuthBackground } from "../../Components";
@@ -52,7 +57,7 @@ const steps = [
       "codechefUsername",
       "codeforcesUsername",
       "geeksforgeeksUsername",
-      "codolioUsername",
+      // "codolioUsername",
     ],
   },
   {
@@ -78,7 +83,7 @@ const SignUp = () => {
     formState: { errors },
     setValue,
     reset,
-    trigger
+    trigger,
   } = useForm({
     mode: "onChange",
     defaultValues: {
@@ -95,7 +100,7 @@ const SignUp = () => {
       codechefUsername: "",
       codeforcesUsername: "",
       geeksforgeeksUsername: "",
-      codolioUsername: "",
+      // codolioUsername: "",
       profilePicture: [],
       otp: "",
     },
@@ -104,6 +109,10 @@ const SignUp = () => {
   // Password Hidden States
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const USERNAME_PATTERN = /^[a-zA-Z0-9._-]+$/;
+  const USERNAME_ERROR_MESSAGE =
+    "Username can only contain letters, numbers, dots, underscores and hyphens";
 
   // Declaring/defining all our input fields
   const fieldDetails = {
@@ -177,32 +186,57 @@ const SignUp = () => {
     linkedinUsername: {
       icon: <FaLinkedin />,
       placeholder: "LinkedIn Username",
-      validation: { required: "Linkedin is required" },
+      validation: {
+        required: "LinkedIn username is required",
+        pattern: {
+          value: USERNAME_PATTERN,
+          message: USERNAME_ERROR_MESSAGE,
+        },
+      },
     },
     leetcodeUsername: {
       icon: <SiLeetcode />,
       placeholder: "LeetCode Username",
-      validation: { required: "LeetCode is required" },
+      validation: {
+        required: "LeetCode username is required",
+        pattern: {
+          value: USERNAME_PATTERN,
+          message: USERNAME_ERROR_MESSAGE,
+        },
+      },
     },
     codechefUsername: {
       icon: <SiCodechef />,
       placeholder: "CodeChef Username",
-      validation: { required: "CodeChef is required" },
+      validation: {
+        required: "CodeChef username is required",
+        pattern: {
+          value: USERNAME_PATTERN,
+          message: USERNAME_ERROR_MESSAGE,
+        },
+      },
     },
     geeksforgeeksUsername: {
       icon: <SiGeeksforgeeks />,
       placeholder: "GeeksforGeeks Username",
-      validation: { required: "GeeksforGeeks is required" },
+      validation: {
+        required: "GeeksforGeeks username is required",
+        pattern: {
+          value: USERNAME_PATTERN,
+          message: USERNAME_ERROR_MESSAGE,
+        },
+      },
     },
     codeforcesUsername: {
       icon: <SiCodeforces />,
       placeholder: "Codeforces Username",
-      validation: { required: "Codeforces is required" },
-    },
-    codolioUsername: {
-      icon: <MdCode />,
-      placeholder: "Codolio Username",
-      validation: { required: "Codolio is required" },
+      validation: {
+        required: "Codeforces username is required",
+        pattern: {
+          value: USERNAME_PATTERN,
+          message: USERNAME_ERROR_MESSAGE,
+        },
+      },
     },
     profilePicture: {
       icon: <MdAddAPhoto />,
@@ -516,20 +550,22 @@ const SignUp = () => {
   // Function to move to the next section in the form
   const nextStep = async () => {
     const currentFields = steps[currentStep].fields;
-    
+
     // Skip validation for profile picture
-    const fieldsToValidate = currentFields.filter(field => field !== "profilePicture");
-    
+    const fieldsToValidate = currentFields.filter(
+      (field) => field !== "profilePicture"
+    );
+
     // Trigger validation only for required fields
     const validationResults = await Promise.all(
-      fieldsToValidate.map(field => trigger(field))
+      fieldsToValidate.map((field) => trigger(field))
     );
-  
+
     // Check if all validations passed
-    const isValid = validationResults.every(result => result === true);
-  
+    const isValid = validationResults.every((result) => result === true);
+
     if (isValid) {
-      setCurrentStep(prev => Math.min(prev + 1, steps.length - 1));
+      setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
     } else {
       ToastMsg("Please fill all required fields correctly", "error");
     }
@@ -538,7 +574,7 @@ const SignUp = () => {
   return (
     <div className="flex flex-col md:flex-row-reverse">
       {/* AuthBackground component - hidden on mobile */}
-      <AuthBackground isRight={false}/>
+      <AuthBackground isRight={false} />
 
       {/* Main Content Area */}
       <motion.div
@@ -611,21 +647,26 @@ const SignUp = () => {
               )}
               {currentStep < steps.length - 1 ? (
                 <button
-                type="button"
-                onClick={nextStep}
-                disabled={Object.keys(errors).some(key => 
-                  steps[currentStep].fields.includes(key) && key !== "profilePicture"
-                )}
-                className={`w-full sm:flex-1 py-2.5 sm:py-3 px-4 rounded-lg 
-                  ${Object.keys(errors).some(key => 
-                    steps[currentStep].fields.includes(key) && key !== "profilePicture"
-                  )
-                    ? "bg-gray-300 cursor-not-allowed"
-                    : "bg-gfgsc-green text-white hover:bg-gfg-green"
+                  type="button"
+                  onClick={nextStep}
+                  disabled={Object.keys(errors).some(
+                    (key) =>
+                      steps[currentStep].fields.includes(key) &&
+                      key !== "profilePicture"
+                  )}
+                  className={`w-full sm:flex-1 py-2.5 sm:py-3 px-4 rounded-lg 
+                  ${
+                    Object.keys(errors).some(
+                      (key) =>
+                        steps[currentStep].fields.includes(key) &&
+                        key !== "profilePicture"
+                    )
+                      ? "bg-gray-300 cursor-not-allowed"
+                      : "bg-gfgsc-green text-white hover:bg-gfg-green"
                   } transition-colors text-sm sm:text-base`}
-              >
-                Next
-              </button>
+                >
+                  Next
+                </button>
               ) : (
                 <button
                   type="submit"

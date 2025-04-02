@@ -56,11 +56,16 @@ async function backUpData() {
     const backups = users.map((user) => ({
       name: user.name,
       email: user.email,
+      phoneNumber: user.phoneNumber,
+      academicYear: user.academicYear,
+      role: user.role,
       codolioProfileLink: user.codolioUsername
         ? `https://codolio.com/profile/${user.codolioUsername}`
         : "N/A",
       rank: user.currentRank ?? "N/A",
       totalQuestionsSolved: user.totalQuestionSolved,
+      avgPerDay: user.avgPerDay,
+      maxStreak: user.maxStreak,
     }));
 
     // Generate CSV file
@@ -69,9 +74,14 @@ async function backUpData() {
       header: [
         { id: "name", title: "Name" },
         { id: "email", title: "Email" },
+        { id: "phoneNumber", title: "Phone Number" },
+        { id: "academicYear", title: "Academic Year" },
+        { id: "role", title: "Role" },
         { id: "codolioProfileLink", title: "Codolio Profile Link" },
         { id: "rank", title: "Rank" },
-        { id: "totalQuestionsSolved", title: "Total Questions Solved" },
+        { id: "totalQuestionsSolved", title: "Total Points" },
+        { id: "avgPerDay", title: "Avg Per Day" },
+        { id: "maxStreak", title: "Max Streak" },
       ],
     });
 

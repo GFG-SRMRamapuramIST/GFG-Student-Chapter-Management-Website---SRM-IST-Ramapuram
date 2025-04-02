@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 // Importing Icons
@@ -8,9 +8,14 @@ import { RotatingCloseButton } from "../../Utilities";
 
 const EditResourceModal = ({ isOpen, onClose, resource, onEdit }) => {
   const [loading, setLoading] = useState(false);
+  //console.log(resource);
+  const [title, setTitle] = useState(resource?.title);
+  const [description, setDescription] = useState(resource?.description);
 
-  const [title, setTitle] = useState(resource?.title || "");
-  const [description, setDescription] = useState(resource?.description || "");
+  useEffect(() => {
+    setTitle(resource?.title);
+    setDescription(resource?.description);
+  }, [resource]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,8 +26,6 @@ const EditResourceModal = ({ isOpen, onClose, resource, onEdit }) => {
       console.log("Error in creating resource: ", error);
     } finally {
       setLoading(false);
-      setTitle(resource?.title);
-      setDescription(resource?.description);
       onClose();
     }
   };
@@ -72,7 +75,7 @@ const EditResourceModal = ({ isOpen, onClose, resource, onEdit }) => {
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-gfgsc-green focus:border-transparent transition-all"
-                    placeholder="Resource title"
+                    placeholder="Video Resource title"
                     required
                   />
                 </div>
@@ -90,7 +93,7 @@ const EditResourceModal = ({ isOpen, onClose, resource, onEdit }) => {
                     onChange={(e) => setDescription(e.target.value)}
                     rows={4}
                     className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-gfgsc-green focus:border-transparent transition-all"
-                    placeholder="Resource description"
+                    placeholder="Video Resource description"
                     required
                   />
                 </div>

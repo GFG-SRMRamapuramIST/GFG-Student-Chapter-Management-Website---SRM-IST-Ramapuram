@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 import { motion } from "framer-motion";
 
-const ResourceLayout = () => {
+const PracticeLayout = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section with Motivation */}
@@ -11,9 +11,9 @@ const ResourceLayout = () => {
         className="mb-8"
       >
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">Resources</h1>
+          <h1 className="text-4xl font-bold text-gray-800 mb-4">Practice</h1>
           <p className="text-gray-600 text-lg leading-relaxed">
-            The Best Minds Learn from the Best Resources.
+            Solve. Learn. Repeat. Your coding journey starts here!
           </p>
         </div>
       </motion.div>
@@ -24,4 +24,4 @@ const ResourceLayout = () => {
   );
 };
 
-export default ResourceLayout;
+export default PracticeLayout;

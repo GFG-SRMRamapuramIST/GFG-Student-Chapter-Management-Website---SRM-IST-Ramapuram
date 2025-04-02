@@ -12,19 +12,20 @@ const {
 const {
   fetchCodeforcesDetails,
 } = require("./CodeForces/CodeForcesProfileDataFunction");
+const {
+  fetchGeeksForGeeksDetails,
+} = require("./GeeksForGeeks/GeeksForGeeksProfileDataFunction");
 
-const updateUserCodingPlatformsDataScheduler = async () => {
-  console.log(
-    chalk.bgBlue.bold("Starting user's coding profile data update scheduler...")
-  );
-
+// Function to fetch users with coding platform usernames
+const fetchUsersWithCodingProfiles = async () => {
   try {
-    const users = await Users.find(
+    return await Users.find(
       {
         $or: [
           { leetcodeUsername: { $ne: null } },
           { codechefUsername: { $ne: null } },
           { codeforcesUsername: { $ne: null } },
+          { geeksforgeeksUsername: { $ne: null } },
         ],
       },
       {
@@ -32,59 +33,76 @@ const updateUserCodingPlatformsDataScheduler = async () => {
         leetcodeUsername: 1,
         codechefUsername: 1,
         codeforcesUsername: 1,
+        geeksforgeeksUsername: 1,
       }
     );
+  } catch (error) {
+    console.error(chalk.bgRed.bold("Error fetching users: "), error.message);
+    return [];
+  }
+};
 
-    for (const user of users) {
-      const {
-        _id,
-        email,
-        leetcodeUsername,
-        codechefUsername,
+// Function to update coding platform details
+const updateUserCodingPlatformsDataScheduler = async (user, isRegistering) => {
+  /* isRegistering is a flag to  check that the user is registering for the first time if yes then we fetch data for leetcode and geeksforgeeks too else we dont fetch info of the user's leetcode and geeksforgeeks profile on weekly basis */
+  console.log(
+    chalk.bgBlue.bold("Starting user's coding profile data update scheduler...")
+  );
+
+  try {
+    const {
+      _id,
+      email,
+      leetcodeUsername,
+      codechefUsername,
+      codeforcesUsername,
+      geeksforgeeksUsername,
+    } = user;
+    let updateData = {};
+
+    if (leetcodeUsername && isRegistering) {
+      const leetcodeData = await fetchLeetcodeDetails(leetcodeUsername, email);
+      if (leetcodeData) {
+        updateData["platforms.leetcode"] = leetcodeData;
+      }
+    }
+
+    if (geeksforgeeksUsername && isRegistering) {
+      const geeksforgeeksData = await fetchGeeksForGeeksDetails(
+        geeksforgeeksUsername,
+        email
+      );
+      if (geeksforgeeksData) {
+        updateData["platforms.geeksforgeeks"] = geeksforgeeksData;
+      }
+    }
+
+    if (codechefUsername) {
+      const codechefData = await fetchCodechefDetails(codechefUsername, email);
+      if (codechefData) {
+        updateData["platforms.codechef"] = codechefData;
+      }
+    }
+
+    if (codeforcesUsername) {
+      const codeforcesData = await fetchCodeforcesDetails(
         codeforcesUsername,
-      } = user;
-      let updateData = {};
-
-      if (leetcodeUsername) {
-        const leetcodeData = await fetchLeetcodeDetails(
-          leetcodeUsername,
-          email
-        );
-        if (leetcodeData) {
-          updateData["platforms.leetcode"] = leetcodeData;
-        }
+        email
+      );
+      if (codeforcesData) {
+        updateData["platforms.codeforces"] = codeforcesData;
       }
+    }
 
-      if (codechefUsername) {
-        const codechefData = await fetchCodechefDetails(
-          codechefUsername,
-          email
-        );
-        if (codechefData) {
-          updateData["platforms.codechef"] = codechefData;
-        }
-      }
-
-      if (codeforcesUsername) {
-        const codeforcesData = await fetchCodeforcesDetails(
-          codeforcesUsername,
-          email
-        );
-        if (codeforcesData) {
-          updateData["platforms.codeforces"] = codeforcesData;
-        }
-      }
-
-      if (Object.keys(updateData).length > 0) {
-        await Users.updateOne({ _id }, { $set: updateData });
-        console.log(
-          chalk.green(
-            `Updated platforms for user: ${email} for ${
-              Object.keys(updateData).length
-            } platforms`
-          )
-        );
-      }
+    if (Object.keys(updateData).length > 0) {
+      await Users.updateOne({ _id }, { $set: updateData });
+      console.log(
+        chalk.green(
+          `Updated platforms for user: ${email} for ${
+            Object.keys(updateData).length
+          } platforms`
+        )
+      );
     }
   } catch (error) {
     console.error(
@@ -98,8 +116,25 @@ const updateUserCodingPlatformsDataScheduler = async () => {
   );
 };
 
-// Schedule the function to run every Saturday at 11:59 PM i.e "59 23 * * 6"
-cron.schedule("59 23 * * 6", updateUserCodingPlatformsDataScheduler);
+// Schedule the function to run every Saturday at 11:59 PM
+cron.schedule("59 23 * * 6", async () => {
+  console.log(
+    chalk.bgBlue.bold("Starting user's coding profile data update scheduler...")
+  );
+
+  const users = await fetchUsersWithCodingProfiles();
+
+  if (users.length > 0) {
+    for (const user of users) {
+      await updateUserCodingPlatformsDataScheduler(user, false); // Process one user at a time
+    }
+    console.log(
+      chalk.bgGreen.bold("Coding Profile Data Update Scheduler Completed.")
+    );
+  } else {
+    console.log(chalk.yellow.bold("No users found for update."));
+  }
+});
 
 console.log(
   chalk.bgMagenta.bold(

@@ -61,7 +61,7 @@ const PlatformPOTDs = ({ problems }) => {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-2 gap-4">
             {problems.map((problem) => {
               const randomText =
                 staticTextsWithIcons[

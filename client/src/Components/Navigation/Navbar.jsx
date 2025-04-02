@@ -5,20 +5,13 @@ import { useDispatch } from "react-redux";
 
 // Importing Icons ****************************************************
 import {
-  FaHome,
   FaUsers,
-  FaCalendarAlt,
   FaTrophy,
-  FaBook,
-  FaGithub,
-  FaLinkedin,
-  FaDiscord,
 } from "react-icons/fa";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { IoClose } from "react-icons/io5";
-import { SiGeeksforgeeks } from "react-icons/si";
-import { BiSolidDashboard, BiUser, BiUserCircle } from "react-icons/bi";
-import { FiChevronDown, FiBook } from "react-icons/fi";
+import { BiSolidDashboard, BiUserCircle } from "react-icons/bi";
+import { FiChevronDown, FiBook, FiCode } from "react-icons/fi";
 import { CgProfile } from "react-icons/cg";
 import { IoLogOutOutline } from "react-icons/io5";
 // *********************************************************************
@@ -26,7 +19,6 @@ import { IoLogOutOutline } from "react-icons/io5";
 import { logo } from "../../Assets";
 
 import { removeUserToken } from "../../Actions";
-import { MdCompare } from "react-icons/md";
 import { FaCodeCompare } from "react-icons/fa6";
 
 const Navbar = ({ isLoggedIn }) => {
@@ -76,6 +68,11 @@ const Navbar = ({ isLoggedIn }) => {
           name: "Resources",
           path: "/resources",
           icon: <FiBook className="text-lg" />,
+        },
+        {
+          name: "Practice",
+          path: "/practice",
+          icon: <FiCode className="text-lg" />,
         },
       ]
     : [
