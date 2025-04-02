@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
 import {
   SiGeeksforgeeks,
   SiJavascript,
@@ -17,7 +16,14 @@ import {
   FaTrophy,
   FaMedal,
 } from "react-icons/fa";
-import { AakashPic, AbhishekPic, GfgCoin, RachitPic } from "../../Assets";
+import {
+  AakashPic,
+  AbhishekPic,
+  GfgCoin,
+  RachitPic,
+  ShamiPic,
+  AmishPic,
+} from "../../Assets";
 import { ImageLoaderComponent } from "../../Utilities";
 
 const TopPerformerCard = ({ rank, performer, delay }) => {
@@ -137,7 +143,6 @@ const TopPerformerCard = ({ rank, performer, delay }) => {
 };
 
 const HeroSection = () => {
-  const navigate = useNavigate();
   const [hovered, setHovered] = useState(false);
 
   // Sample top performers data
@@ -145,23 +150,23 @@ const HeroSection = () => {
     {
       id: 2,
       name: "Aakash Kumar",
-      points: 3120,
+      points: 33,
       monthlyRank: 2,
       pfp: AakashPic,
     },
     {
       id: 1,
-      name: "Abhishek Newase",
-      points: 2840,
+      name: "Amish Kumar",
+      points: 30,
       monthlyRank: 1,
-      pfp: AbhishekPic,
+      pfp: AmishPic,
     },
     {
       id: 3,
-      name: "Rachit Dhaka",
-      points: 2695,
+      name: "Shamirul Huda",
+      points: 25,
       monthlyRank: 3,
-      pfp: RachitPic,
+      pfp: ShamiPic,
     },
   ];
 
@@ -254,7 +259,9 @@ const HeroSection = () => {
               onHoverEnd={() => setHovered(false)}
             >
               <button
-                onClick={() => navigate("/auth/register")}
+                onClick={() =>
+                  window.open("https://gfgsrmrmp.vercel.app/join-us", "_blank")
+                }
                 className="group relative w-full max-w-[300px] mx-auto lg:mx-0 px-6 py-3 md:px-8 md:py-4 bg-gfgsc-green text-white rounded-xl font-medium text-base md:text-lg overflow-hidden"
               >
                 <motion.div

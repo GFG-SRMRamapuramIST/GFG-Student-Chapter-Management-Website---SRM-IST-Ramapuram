@@ -112,7 +112,7 @@ const AboutUs = () => {
   const developers = [
     {
       name: "Vishal Kumar Yadav",
-      role: "Backend Developer",
+      role: "Full Stack Developer",
       image: "https://placehold.co/600/1f1f1f/fff",
       skills: ["Node.js", "Express", "MongoDB", "Redux"],
       links: { github: "#", linkedin: "#" },
@@ -128,7 +128,7 @@ const AboutUs = () => {
       name: "Amisha Kumari",
       role: "Frontend Developer",
       image: "https://placehold.co/600/1f1f1f/fff",
-      skills: ["React", "Javascript", "UI/UX", "Animation"],
+      skills: ["React", "Javascript", "Google Sheets", "Animation"],
       links: { github: "#", linkedin: "#" },
     },
   ];
@@ -929,7 +929,8 @@ const AboutUs = () => {
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
               <a
-                href="#"
+                href="https://www.whatsapp.com/channel/0029VaqIw7WEQIahAR2NG83Q"
+                target="_blank"
                 className="px-8 py-3 bg-gfgsc-green text-white rounded-lg shadow-md hover:bg-gfg-green transition-colors inline-flex items-center"
               >
                 Join Our Chapter <BsArrowRight className="ml-2" />
