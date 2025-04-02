@@ -24,6 +24,7 @@ import { useUser } from "../../Context/UserContext";
 // Importing APIs
 import { CoreMemberServices } from "../../Services";
 import { BiChevronLeft } from "react-icons/bi";
+import { hasMinimumRole, ROLES } from "../../Utilities/roleUtils";
 
 const Resource = () => {
   const {
@@ -38,18 +39,6 @@ const Resource = () => {
   const navigate = useNavigate();
 
   const { userRole } = useUser();
-  const isAuthorized = (role) => {
-    const roles = [
-      "USER",
-      "MEMBER",
-      "COREMEMBER",
-      "VICEPRESIDENT",
-      "PRESIDENT",
-      "ADMIN",
-    ];
-    const minRequiredRole = "COREMEMBER";
-    return roles.indexOf(role) >= roles.indexOf(minRequiredRole);
-  };
 
   const [isLoading, setIsLoading] = useState(true);
   const [resource, setResource] = useState(null);
@@ -289,22 +278,69 @@ const Resource = () => {
 
               {/* Quick Actions */}
               <div className="flex items-center gap-2 mt-4 sm:mt-0">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setIsEditModalOpen(true)}
-                  className="p-2 sm:p-3 rounded-lg bg-gray-50 hover:bg-gray-100 text-gray-600 transition-colors"
-                >
-                  <FaPencilAlt className="text-sm sm:text-base" />
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleDeleteResource}
-                  className="p-2 sm:p-3 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 transition-colors"
-                >
-                  <FaTrash className="text-sm sm:text-base" />
-                </motion.button>
+                <div className="relative group">
+                  <motion.button
+                    whileHover={
+                      hasMinimumRole(userRole, ROLES.COREMEMBER)
+                        ? { scale: 1.05 }
+                        : {}
+                    }
+                    whileTap={
+                      hasMinimumRole(userRole, ROLES.COREMEMBER)
+                        ? { scale: 0.95 }
+                        : {}
+                    }
+                    onClick={() =>
+                      hasMinimumRole(userRole, ROLES.COREMEMBER) &&
+                      setIsEditModalOpen(true)
+                    }
+                    disabled={!hasMinimumRole(userRole, ROLES.COREMEMBER)}
+                    className={`p-2 sm:p-3 rounded-lg transition-colors ${
+                      hasMinimumRole(userRole, ROLES.COREMEMBER)
+                        ? "bg-gray-50 hover:bg-gray-100 text-gray-600"
+                        : "bg-gray-50 text-gray-300 cursor-not-allowed"
+                    }`}
+                  >
+                    <FaPencilAlt className="text-sm sm:text-base" />
+                  </motion.button>
+                  {!hasMinimumRole(userRole, ROLES.COREMEMBER) && (
+                    <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 w-max px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                      Only core team members can edit
+                    </div>
+                  )}
+                </div>
+
+                <div className="relative group">
+                  <motion.button
+                    whileHover={
+                      hasMinimumRole(userRole, ROLES.COREMEMBER)
+                        ? { scale: 1.05 }
+                        : {}
+                    }
+                    whileTap={
+                      hasMinimumRole(userRole, ROLES.COREMEMBER)
+                        ? { scale: 0.95 }
+                        : {}
+                    }
+                    onClick={() =>
+                      hasMinimumRole(userRole, ROLES.COREMEMBER) &&
+                      handleDeleteResource()
+                    }
+                    disabled={!hasMinimumRole(userRole, ROLES.COREMEMBER)}
+                    className={`p-2 sm:p-3 rounded-lg transition-colors ${
+                      hasMinimumRole(userRole, ROLES.COREMEMBER)
+                        ? "bg-red-50 hover:bg-red-100 text-red-600"
+                        : "bg-gray-50 text-gray-300 cursor-not-allowed"
+                    }`}
+                  >
+                    <FaTrash className="text-sm sm:text-base" />
+                  </motion.button>
+                  {!hasMinimumRole(userRole, ROLES.COREMEMBER) && (
+                    <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 w-max px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                      Only core team members can delete
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -313,15 +349,38 @@ const Resource = () => {
           <div className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg border border-gray-100">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-semibold text-gray-800">Videos</h2>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setIsAddVideoModalOpen(true)}
-                className="flex items-center gap-2 px-3 sm:px-4 py-1 sm:py-2 bg-gfgsc-green text-white rounded-lg hover:bg-emerald-600 transition-colors shadow-lg shadow-gfgsc-green/20 text-xs sm:text-sm"
-              >
-                <FaPlus />
-                <span className="hidden sm:flex">Add Video</span>
-              </motion.button>
+              <div className="relative group">
+                <motion.button
+                  whileHover={
+                    hasMinimumRole(userRole, ROLES.COREMEMBER)
+                      ? { scale: 1.05 }
+                      : {}
+                  }
+                  whileTap={
+                    hasMinimumRole(userRole, ROLES.COREMEMBER)
+                      ? { scale: 0.95 }
+                      : {}
+                  }
+                  onClick={() =>
+                    hasMinimumRole(userRole, ROLES.COREMEMBER) &&
+                    setIsAddVideoModalOpen(true)
+                  }
+                  disabled={!hasMinimumRole(userRole, ROLES.COREMEMBER)}
+                  className={`flex items-center gap-2 px-3 sm:px-4 py-1 sm:py-2 rounded-lg transition-colors ${
+                    hasMinimumRole(userRole, ROLES.COREMEMBER)
+                      ? "bg-gfgsc-green text-white hover:bg-emerald-600 shadow-lg shadow-gfgsc-green/20"
+                      : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                  }`}
+                >
+                  <FaPlus />
+                  <span className="hidden sm:flex">Add Video</span>
+                </motion.button>
+                {!hasMinimumRole(userRole, ROLES.COREMEMBER) && (
+                  <div className="absolute -bottom-8 right-0 w-max px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                    Only core team members can add videos
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -340,7 +399,7 @@ const Resource = () => {
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
                     />
-                    {isAuthorized(userRole) && (
+                    {hasMinimumRole(userRole, ROLES.COREMEMBER) && (
                       <motion.button
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}

@@ -12,6 +12,8 @@ import { CreateResourceSetModal } from "../../Components";
 
 // Importing APIs
 import { CoreMemberServices } from "../../Services";
+import { useUser } from "../../Context/UserContext";
+import { hasMinimumRole, ROLES } from "../../Utilities/roleUtils";
 
 const ResourceCard = ({ resource }) => {
   return (
@@ -58,6 +60,8 @@ const AllResources = () => {
       title: "Resources Page",
     });
   }, []);
+
+  const { userRole } = useUser();
 
   const { createVideoResourceFunction, fetchAllVideoResourcesFunction } =
     CoreMemberServices();
@@ -174,15 +178,28 @@ const AllResources = () => {
             />
           </div>
 
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => setShowCreateModal(true)}
-            className="flex items-center justify-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-gfgsc-green to-emerald-600 text-white rounded-xl hover:from-emerald-600 hover:to-emerald-700 transition-all duration-300 w-full sm:w-auto shadow-lg shadow-gfgsc-green/20"
-          >
-            <FaPlus className="text-sm" />
-            <span>Create Resource</span>
-          </motion.button>
+          <div className="relative group">
+            <motion.button
+              whileHover={hasMinimumRole(userRole, ROLES.COREMEMBER) ? { scale: 1.02 } : {}}
+              whileTap={hasMinimumRole(userRole, ROLES.COREMEMBER) ? { scale: 0.98 } : {}}
+              onClick={() => hasMinimumRole(userRole, ROLES.COREMEMBER) && setShowCreateModal(true)}
+              disabled={!hasMinimumRole(userRole, ROLES.COREMEMBER)}
+              className={`flex items-center justify-center gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-xl transition-all duration-300 w-full sm:w-auto shadow-lg ${
+                hasMinimumRole(userRole, ROLES.COREMEMBER)
+                  ? "bg-gradient-to-r from-gfgsc-green to-emerald-600 text-white hover:from-emerald-600 hover:to-emerald-700 shadow-gfgsc-green/20 cursor-pointer"
+                  : "bg-gray-100 text-gray-400 cursor-not-allowed"
+              }`}
+            >
+              <FaPlus className="text-sm" />
+              <span>Create Resource</span>
+            </motion.button>
+            
+            {!hasMinimumRole(userRole, ROLES.COREMEMBER) && (
+              <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 w-max px-3 py-1 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity">
+                Only core team members can create resources
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Resources Grid */}
