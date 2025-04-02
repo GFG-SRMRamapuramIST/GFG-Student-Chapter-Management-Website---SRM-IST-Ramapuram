@@ -8,16 +8,17 @@ const content = {
     subsections: {
       "about-website": {
         title: "GeeksforGeeks Student Chapter - SRMIST",
-        content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie vehicula. Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor. Ut in nulla enim. Phasellus molestie magna non est bibendum non venenatis nisl tempor.",
-      },
+        content: "  The GeeksforGeeks Student Chapter, SRMIST is a vibrant and driven community committed to bridging the gap between academic knowledge and industry demands. Our mission is to empower students with the technical expertise and problem-solving abilities required to thrive in the fast-evolving tech landscape. We focus extensively on Competitive Programming, treating it as a strategic discipline that sharpens analytical thinking, improves coding efficiency, and prepares students for coding contests and technical interviews. Our structured approach to Data Structures and Algorithms (DSA) ensures that even the most complex concepts are broken down into simplified, intuitive, and practical applications, making them easier to grasp and implement."},
       "why-needed": {
-        title: "Website Overview",
-        content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin nibh augue, suscipit a, scelerisque sed, lacinia in, mi. Cras vel lorem. Etiam pellentesque aliquet tellus. Phasellus pharetra nulla ac diam. Quisque semper justo at risus.",
-      },
+  title: "Website Overview",
+  content: "This platform is a <span class=\"text-emerald-600\">comprehensive coding profile tracker</span> designed for competitive programmers. It integrates profiles from multiple platforms, displaying coding activity through a <span class=\"text-emerald-600\">heatmap</span> and enabling users to track progress effortlessly.\n\nA <span class=\"text-emerald-600\">dynamic leaderboard</span> allows users to compete with their close circle, compare profiles side by side, and stay motivated. <span class=\"text-emerald-600\">Personalized emails</span> notify users of promotions, demotions, and removals if they fail to meet the minimum required points, ensuring active participation.\n\nThe platform also includes a <span class=\"text-emerald-600\">resource hub</span> with <span class=\"text-emerald-600\">video tutorials and CP sheets</span>, providing valuable learning materials. The <span class=\"text-emerald-600\">gamified ranking system</span> keeps users engaged, making skill development more interactive.\n\nWith <span class=\"text-emerald-600\">real-time updates, performance tracking, and a strong coding community</span>, this platform helps users stay competitive and continuously improve. Whether you're a beginner or an experienced coder, it ensures you stay on top of your game. 🚀"
+},
       "developers-contributors": {
-        title: "Purpose of Website",
-        content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem.",
-      },
+        
+          title: "Purpose of Website",
+          content: "Our platform serves as the ultimate companion for competitive programmers seeking to elevate their core coding skills while also developing complementary abilities in design, video editing, and other digital domains. We've created a centralized ecosystem where programming progress becomes visible, achievement is recognized, and holistic growth is continuous through structured resources and community engagement.\n\n<ul class='space-y-2'><li><span class='text-emerald-600'>&#8226;</span> To create a <span class='text-emerald-600'>unified platform</span> that consolidates competitive programming profiles from multiple websites into one comprehensive dashboard.</li><li><span class='text-emerald-600'>&#8226;</span> To <span class='text-emerald-600'>motivate competitive programmers</span> through gamification, leaderboards, and healthy competition among peers.</li><li><span class='text-emerald-600'>&#8226;</span> To provide <span class='text-emerald-600'>comprehensive tracking</span> of coding activities and progress across various programming platforms.</li><li><span class='text-emerald-600'>&#8226;</span> To offer <span class='text-emerald-600'>specialized CP sheets, tutorials and resources</span> that help programmers improve not only their algorithmic skills but also complementary abilities in UI/UX design, video editing, and other professional domains.</li><li><span class='text-emerald-600'>&#8226;</span> To build a <span class='text-emerald-600'>supportive community</span> where competitive programmers can share techniques, celebrate achievements, and develop a well-rounded skillset beyond just coding.</li></ul>"
+        
+         },
     },
   },
   "tech-stack": {
