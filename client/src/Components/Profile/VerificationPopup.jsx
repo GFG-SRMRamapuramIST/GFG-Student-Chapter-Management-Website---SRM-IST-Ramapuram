@@ -10,6 +10,46 @@ import { getPlatformUrl } from "../../Constants";
 // Importing APIs
 import { UserServices } from "../../Services";
 
+const platformSpecificSteps = {
+  leetcode: [
+    "Navigate to your profile page",
+    "Click on 'Edit Profile' below your profile picture",
+    "Click the edit button near the 'Name' field",
+    "Update your name with the verification code shown below",
+    "Wait for 5-10 seconds",
+    "Come back here and click 'Verify Profile'",
+    "Once verified, you can change your name back"
+  ],
+  codechef: [
+    "Go to your profile page",
+    "Click on the edit icon next to your profile picture",
+    "Click on 'General'",
+    "Enter the verification code in 'Your Name' field",
+    "Click Save",
+    "Wait for 5-10 seconds",
+    "Come back here and click 'Verify Profile'",
+    "Once verified, you can change your name back"
+  ],
+  codeforces: [
+    "Open your Codeforces profile",
+    "Edit your first name to the verification code shown below",
+    "Wait for your profile to update (15-30 seconds)",
+    "Come back here and click verify"
+  ],
+  geeksforgeeks: [
+    "Go to your profile page",
+    "Click on 'Edit Profile' button",
+    "Navigate through 'Basic Details' (fill if needed) and click Next",
+    "Navigate through 'Experience Details' (fill if needed) and click Next",
+    "In 'Personal Details', find 'Display Name' field",
+    "Enter the verification code shown below",
+    "Click outside the box and wait for auto-save (5-10 seconds)",
+    "Come back here and click 'Verify Profile'",
+    "Once verified, you can change your name back",
+    "If verification fails, please wait a few minutes and try again"
+  ]
+};
+
 const VerificationPopup = ({
   isOpen,
   onClose,
@@ -24,6 +64,15 @@ const VerificationPopup = ({
 
   const [loading, setLoading] = useState(true);
   const [firstName, setFirstName] = useState(null);
+
+  const getSteps = () => {
+    return platformSpecificSteps[platform.toLowerCase()] || [
+      "Open your profile",
+      "Edit your first name to the verification code shown below",
+      "Save your profile changes",
+      "Come back here and click verify"
+    ];
+  };
 
   useEffect(() => {
     const generateVerificationCodeHandler = async () => {
@@ -95,7 +144,7 @@ const VerificationPopup = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+      <div className="max-h-[90vh] overflow-y-scroll no-scrollbar bg-white rounded-lg p-6 max-w-md w-full mx-4">
         <h2 className="text-xl font-bold mb-4">Verify {platform} Profile</h2>
 
         <div className="space-y-4">
@@ -107,26 +156,28 @@ const VerificationPopup = ({
             <>
               <div className="space-y-2">
                 <p className="text-sm text-gray-600">Follow these steps:</p>
-                <ol className="list-decimal list-inside space-y-2">
-                  <li>
+                <ol className="list-decimal list-outside space-y-2 ml-4">
+                  <li className="mb-2">
                     Open your {platform} profile
                     <a
                       href={getProfileUrl()}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-500 underline"
+                      className="inline-flex items-center ml-1 text-blue-500 hover:text-blue-600"
                     >
-                      <RiExternalLinkLine className="inline-block ml-1 mb-0.5" />
+                      <RiExternalLinkLine className="w-4 h-4" />
                     </a>
                   </li>
-                  <li>
-                    Edit your first name to:{" "}
-                    <span className="font-mono bg-gray-100 px-2 py-1 rounded">
-                      {firstName}
-                    </span>
-                  </li>
-                  <li>Save your profile changes</li>
-                  <li>Come back here and click verify</li>
+                  {getSteps().map((step, index) => (
+                    <li key={index} className="mb-2">
+                      {step}
+                      {step.includes("verification code") && (
+                        <span className="block mt-1 font-mono bg-gray-100 px-2 py-1 rounded">
+                          {firstName}
+                        </span>
+                      )}
+                    </li>
+                  ))}
                 </ol>
               </div>
 
