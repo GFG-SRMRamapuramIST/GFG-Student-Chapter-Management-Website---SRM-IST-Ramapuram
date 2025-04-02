@@ -30,14 +30,17 @@ const NotificationItem = ({ notification, onDelete }) => {
       <div className="flex justify-between items-center mb-2">
         <h4 className="font-semibold text-gray-800">{title}</h4>
         <MdDelete
-          disabled={!hasMinimumRole(userRole, ROLES.COREMEMBER)}
           className={` ${
             hasMinimumRole(userRole, ROLES.COREMEMBER)
               ? "text-red-500 cursor-pointer hover:text-red-700 transition-colors"
-              : "text-grey cursor-pointer hover:text-grey transition-colors"
+              : "text-gray-500 cursor-not-allowed hover:text-grey transition-colors"
           }`}
           size={18}
-          onClick={() => handleDelete(id)} // Call function on click
+          onClick={() => {
+            if (hasMinimumRole(userRole, ROLES.COREMEMBER)) {
+              handleDelete(id); // Call function only if the role is sufficient
+            }
+          }}
         />
       </div>
 
