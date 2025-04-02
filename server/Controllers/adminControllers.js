@@ -501,12 +501,12 @@ exports.addAllowedEmails = async (req, res) => {
       </html>`;
 
         try {
-          await sendEmail(email, subject, message);
-          console.log(chalk.bgGreen.bold.green("Email sent to: "), email);
-
           // Add the email and OTP to the allowedEmail collection only after successful email
           await AllowedEmail.create({ email, OTP, createdAt: new Date() });
           addedEmails.push(email);
+
+          // await sendEmail(email, subject, message);
+          // console.log(chalk.bgGreen.bold.green("Email sent to: "), email);
         } catch (error) {
           console.error(
             chalk.bgRed.bold.red("Error sending email to: "),
