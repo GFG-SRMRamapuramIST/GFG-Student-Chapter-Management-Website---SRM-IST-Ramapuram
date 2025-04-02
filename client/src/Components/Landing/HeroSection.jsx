@@ -303,7 +303,7 @@ const HeroSection = () => {
                 TOP PERFORMERS
               </h2>
               <p className="text-sm md:text-lg font-black text-gfgsc-green tracking-wider">
-                FEBRUARY 2025
+                MARCH 2025
               </p>
             </motion.div>
           </div>
