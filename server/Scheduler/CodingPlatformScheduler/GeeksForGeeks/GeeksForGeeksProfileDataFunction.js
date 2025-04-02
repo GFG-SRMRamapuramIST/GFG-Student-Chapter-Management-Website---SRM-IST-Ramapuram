@@ -16,7 +16,7 @@ const fetchGeeksForGeeksDetails = async (username, email) => {
       return {
         universityRank: Number(response.data.universityRank) || 0,
         codingScore: Number(response.data.codingScore) || 0,
-        problemsSolved: Number(response.data.problemsSolved) || 0,
+        problemSolved: Number(response.data.problemsSolved) || 0,
       };
     } else {
       console.log(chalk.yellow(`No valid data found for ${username}`));

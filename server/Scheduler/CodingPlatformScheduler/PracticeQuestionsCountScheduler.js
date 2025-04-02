@@ -81,7 +81,7 @@ const updatePracticeQuestionsCount = async () => {
           user.email
         );
         if (geeksforgeeksData) {
-          const { universityRank, codingScore, problemsSolved } =
+          const { universityRank, codingScore, problemSolved } =
             geeksforgeeksData;
           const gfgDiff =
             problemsSolved - (user.platforms.geeksforgeeks.problemSolved || 0);
@@ -102,7 +102,7 @@ const updatePracticeQuestionsCount = async () => {
           user.platforms.geeksforgeeks = {
             universityRank,
             codingScore,
-            problemSolved: problemsSolved,
+            problemSolved,
             verified: user.platforms.geeksforgeeks.verified,
           };
 
