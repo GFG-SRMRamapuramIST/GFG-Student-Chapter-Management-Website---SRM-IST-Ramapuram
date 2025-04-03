@@ -84,7 +84,7 @@ const updatePracticeQuestionsCount = async () => {
           const { universityRank, codingScore, problemSolved } =
             geeksforgeeksData;
           const gfgDiff =
-            problemsSolved - (user.platforms.geeksforgeeks.problemSolved || 0);
+            problemSolved - (user.platforms.geeksforgeeks.problemSolved || 0);
 
           if (user.platforms.geeksforgeeks.verified === true) {
             increment += calculateIncrement(gfgDiff);
