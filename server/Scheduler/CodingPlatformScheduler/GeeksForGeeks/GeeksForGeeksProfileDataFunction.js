@@ -34,6 +34,9 @@ const fetchGeeksForGeeksDetails = async (username, email) => {
         chalk.bgRed(`Email sent to ${email} and admin for missing data.`)
       );
 
+      // Delay for 3 seconds before sending the next email
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+
       return null;
     }
   } catch (error) {
@@ -42,21 +45,21 @@ const fetchGeeksForGeeksDetails = async (username, email) => {
       error.message
     );
 
-    const subject = `GeeksForGeeks Data Fetching Failed`;
-    const message = `
-      <p>Dear Admin,</p>
-      <p>Failed to fetch GeeksForGeeks data for <b>${username}</b>.</p>
-      <p>Error Message: <b>${error.message}</b></p>
-      <p>Please investigate the issue.</p>
-      <p>Regards,<br/>GeeksForGeeks Student Chapter SRM IST Ramapuram Automated System</p>
-    `;
+    // const subject = `GeeksForGeeks Data Fetching Failed`;
+    // const message = `
+    //   <p>Dear Admin,</p>
+    //   <p>Failed to fetch GeeksForGeeks data for <b>${username}</b>.</p>
+    //   <p>Error Message: <b>${error.message}</b></p>
+    //   <p>Please investigate the issue.</p>
+    //   <p>Regards,<br/>GeeksForGeeks Student Chapter SRM IST Ramapuram Automated System</p>
+    // `;
 
-    await sendEmail(ADMIN_EMAIL, subject, message);
-    console.log(
-      chalk.bgRed(
-        `Admin notified about GeeksForGeeks data fetch failure for ${username}`
-      )
-    );
+    // await sendEmail(ADMIN_EMAIL, subject, message);
+    // console.log(
+    //   chalk.bgRed(
+    //     `Admin notified about GeeksForGeeks data fetch failure for ${username}`
+    //   )
+    // );
 
     return null;
   }

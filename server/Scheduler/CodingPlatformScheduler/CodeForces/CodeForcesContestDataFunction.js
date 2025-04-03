@@ -55,6 +55,9 @@ const fetchCodeforcesContestData = async (username, contestName, email) => {
         )
       );
 
+      // Delay for 3 seconds before sending the next email
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+
       return null;
     }
 
@@ -74,21 +77,21 @@ const fetchCodeforcesContestData = async (username, contestName, email) => {
       error.message
     );
 
-    const subject = `Codeforces Contest Data Fetching Failed`;
-    const message = `
-      <p>Dear Admin,</p>
-      <p>Failed to fetch Codeforces contest data for <b>${username}</b> in <b>${contestName}</b>.</p>
-      <p>Error Message: <b>${error.message}</b></p>
-      <p>Please investigate the issue.</p>
-      <p>Regards,<br/>GeeksForGeeks Student Chapter SRM IST Ramapuram Automated System</p>
-    `;
+    // const subject = `Codeforces Contest Data Fetching Failed`;
+    // const message = `
+    //   <p>Dear Admin,</p>
+    //   <p>Failed to fetch Codeforces contest data for <b>${username}</b> in <b>${contestName}</b>.</p>
+    //   <p>Error Message: <b>${error.message}</b></p>
+    //   <p>Please investigate the issue.</p>
+    //   <p>Regards,<br/>GeeksForGeeks Student Chapter SRM IST Ramapuram Automated System</p>
+    // `;
 
-    await sendEmail(ADMIN_EMAIL, subject, message);
-    console.log(
-      chalk.bgRed(
-        `Admin notified about Codeforces contest data fetch failure for ${username}`
-      )
-    );
+    // await sendEmail(ADMIN_EMAIL, subject, message);
+    // console.log(
+    //   chalk.bgRed(
+    //     `Admin notified about Codeforces contest data fetch failure for ${username}`
+    //   )
+    // );
 
     return null;
   }

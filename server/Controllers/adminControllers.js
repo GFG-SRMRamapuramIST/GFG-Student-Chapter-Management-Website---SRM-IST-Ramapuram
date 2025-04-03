@@ -271,6 +271,9 @@ exports.uploadCSVAllowedEmails = async (req, res) => {
         addedEmails.push(email);
 
         console.log(chalk.bgGreen.bold.green("Email sent to: "), email);
+
+        // Delay for 10 seconds before sending the next email
+        await new Promise((resolve) => setTimeout(resolve, 10000));
       } catch (error) {
         console.error(
           chalk.bgRed.bold.red("Error processing email: "),
@@ -507,6 +510,9 @@ exports.addAllowedEmails = async (req, res) => {
 
           await sendEmail(email, subject, message);
           console.log(chalk.bgGreen.bold.green("Email sent to: "), email);
+
+          // Delay for 10 seconds before sending the next email
+          await new Promise((resolve) => setTimeout(resolve, 10000));
         } catch (error) {
           console.error(
             chalk.bgRed.bold.red("Error sending email to: "),

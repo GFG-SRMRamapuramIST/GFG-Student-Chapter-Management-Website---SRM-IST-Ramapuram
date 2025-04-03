@@ -55,6 +55,9 @@ const fetchCodeChefContestData = async (username, contestName) => {
       )
     );
 
+    // Delay for 3 seconds before sending the next email
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+
     return null;
   }
 };

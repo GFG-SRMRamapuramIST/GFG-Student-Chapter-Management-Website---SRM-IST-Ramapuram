@@ -44,6 +44,9 @@ const geeksforgeeksPOTDfunction = async () => {
       await sendEmail(ADMIN_EMAIL, subject, message);
       console.log(chalk.bgRed("Admin notified about missing GFG POTD data."));
 
+      // Delay for 3 seconds before sending the next email
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+
       return null;
     }
   } catch (error) {
@@ -52,17 +55,17 @@ const geeksforgeeksPOTDfunction = async () => {
       error.message
     );
 
-    const subject = "GeeksforGeeks POTD Data Fetching Failed";
-    const message = `
-      <p>Dear Admin,</p>
-      <p>Failed to fetch GeeksforGeeks POTD data.</p>
-      <p>Error Message: <b>${error.message}</b></p>
-      <p>Please investigate the issue.</p>
-      <p>Regards,<br/>GeeksForGeeks Student Chapter SRM IST Ramapuram Automated System</p>
-    `;
+    // const subject = "GeeksforGeeks POTD Data Fetching Failed";
+    // const message = `
+    //   <p>Dear Admin,</p>
+    //   <p>Failed to fetch GeeksforGeeks POTD data.</p>
+    //   <p>Error Message: <b>${error.message}</b></p>
+    //   <p>Please investigate the issue.</p>
+    //   <p>Regards,<br/>GeeksForGeeks Student Chapter SRM IST Ramapuram Automated System</p>
+    // `;
 
-    await sendEmail(ADMIN_EMAIL, subject, message);
-    console.log(chalk.bgRed("Admin notified about GFG POTD fetch failure."));
+    // await sendEmail(ADMIN_EMAIL, subject, message);
+    // console.log(chalk.bgRed("Admin notified about GFG POTD fetch failure."));
 
     return null;
   }
