@@ -13,7 +13,7 @@ const Footer = ({ isLoggedIn }) => {
   ];
 
   const unauthenticatedLinks = [
-    { to: "/home", label: "Home" },
+    { to: "/", label: "Home" },
     { to: "/about", label: "About" },
     { to: "/auth/login", label: "Login" },
   ];
