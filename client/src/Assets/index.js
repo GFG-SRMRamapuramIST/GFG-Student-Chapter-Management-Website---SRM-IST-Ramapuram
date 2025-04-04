@@ -8,6 +8,9 @@ import RachitPfp from "./people/RachitPfp.png";
 import AbhishekPfp from "./people/AbhishekPfp.png";
 import AmishPfp from "./people/AmishPfp.jpg";
 import ShamiPfp from "./people/ShamiPfp.jpg";
+import AmishaPfp from "./people/AmishaPfp.jpeg";
+import JeyasuryaPfp from "./people/JeyasuryaPfp.jpeg";
+import VishalKumarPfp from "./people/VishalKumarPfp.jpg";
 
 const AakashPic = {
   url: AakashPfp,
@@ -45,8 +48,26 @@ const ShamiPic = {
   alt: "Shami",
 };
 
+const JeyasuryaPic = {
+  url: JeyasuryaPfp,
+  hashCode: defaulfHash, //TODO: Change this hash
+  alt: "Jeyasurya",
+};
+
+const AmishaPic = {
+  url: AmishaPfp,
+  hashCode: defaulfHash, //TODO: Change this hash
+  alt: "Amisha",
+};
+
+const VishalKumarPic = {
+  url: VishalKumarPfp,
+  hashCode: defaulfHash,
+  alt: "Vishal Kumar",
+}
+
 // export { AakashPfp, SanjanaPfp, RachitPfp, AbhishekPfp };
-export { AakashPic, SanjanaPic, RachitPic, AbhishekPic, AmishPic, ShamiPic };
+export { AakashPic, SanjanaPic, RachitPic, AbhishekPic, AmishPic, ShamiPic, JeyasuryaPic, AmishaPic, VishalKumarPic };
 
 // Icons & Logo
 import codolioIcon from "./icons/codolio.svg";

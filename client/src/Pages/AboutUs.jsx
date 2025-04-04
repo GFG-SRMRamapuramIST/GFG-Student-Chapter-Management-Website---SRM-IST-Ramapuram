@@ -6,11 +6,14 @@ import { motion, AnimatePresence, useInView } from "framer-motion";
 import {
   AakashPic,
   AbhishekPic,
+  AmishaPic,
   GeekFestImg,
   HalloweenHangoutImg,
+  JeyasuryaPic,
   OnboardingMeetingImg,
   RachitPic,
   SanjanaPic,
+  VishalKumarPic,
 } from "../Assets";
 import {
   FaGithub,
@@ -83,28 +86,28 @@ const AboutUs = () => {
       role: "President",
       image: AakashPic,
       quote: "Building the next generation of tech leaders",
-      links: { github: "#", linkedin: "#", instagram: "#" },
+      links: { linkedin: "https://www.linkedin.com/in/aakash-k-yadav" },
     },
     {
       name: "Sanjana Jaldu",
       role: "Vice President",
       image: SanjanaPic,
       quote: "Fostering innovation through collaboration",
-      links: { github: "#", linkedin: "#", instagram: "#" },
+      links: { linkedin: "https://www.linkedin.com/in/sanjana-jaldu" },
     },
     {
       name: "Rachit Dhaka",
       role: "Operations Head",
       image: RachitPic,
       quote: "Connecting minds, sharing knowledge",
-      links: { github: "#", linkedin: "#", instagram: "#" },
+      links: { linkedin: "https://www.linkedin.com/in/rachit-dhaka" },
     },
     {
       name: "Abishek Newase",
       role: "Technical Head",
       image: AbhishekPic,
       quote: "Creating opportunities for everyone to shine",
-      links: { github: "#", linkedin: "#", instagram: "#" },
+      links: { linkedin: "https://www.linkedin.com/in/abhishek-newase" },
     },
   ];
 
@@ -113,21 +116,21 @@ const AboutUs = () => {
     {
       name: "Vishal Kumar Yadav",
       role: "Full Stack Developer",
-      image: "https://placehold.co/600/1f1f1f/fff",
+      image: VishalKumarPic,
       skills: ["Node.js", "Express", "MongoDB", "Redux"],
       links: { github: "#", linkedin: "#" },
     },
     {
       name: "Jeyasurya U R",
       role: "Frontend Developer",
-      image: "https://placehold.co/600/1f1f1f/fff",
+      image: JeyasuryaPic,
       skills: ["React", "Tailwind CSS", "Framer Motion"],
       links: { github: "#", linkedin: "#" },
     },
     {
       name: "Amisha Kumari",
       role: "Frontend Developer",
-      image: "https://placehold.co/600/1f1f1f/fff",
+      image: AmishaPic,
       skills: ["React", "Javascript", "Google Sheets", "Animation"],
       links: { github: "#", linkedin: "#" },
     },
@@ -535,6 +538,7 @@ const AboutUs = () => {
                       {Object.entries(member.links).map(
                         ([platform, url], idx) => (
                           <a
+                            target="_blank"
                             key={idx}
                             href={url}
                             className="p-2 bg-white/10 backdrop-blur-sm rounded-full hover:bg-white/20 transition-colors text-white"
@@ -623,6 +627,7 @@ const AboutUs = () => {
                             <a
                               key={idx}
                               href={url}
+                              target="_blank"
                               className="p-2 bg-white/10 backdrop-blur-sm rounded-full hover:bg-white/20 transition-colors text-white"
                               aria-label={`${member.name}'s ${platform}`}
                             >
@@ -760,43 +765,54 @@ const AboutUs = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.2 }}
                 viewport={{ once: true, margin: "-100px" }}
-                whileHover={{ scale: 1.03 }}
-                className="relative group bg-gfg-black border border-gray-800 rounded-xl overflow-hidden shadow-xl"
+                whileHover={{ y: -10 }}
+                className="group"
               >
-                <div className="h-48 overflow-hidden">
-                  <img
-                    src={dev.image}
-                    alt={dev.name}
-                    className="w-full h-full object-cover transform transition-transform duration-500 hover:scale-110"
-                  />
-                  <div className="absolute hidden group-hover:flex top-3 right-3 space-x-2">
-                    {Object.entries(dev.links).map(([platform, url], idx) => (
-                      <a
-                        key={idx}
-                        href={url}
-                        className="p-2 bg-gfg-black/30 backdrop-blur-sm rounded-full hover:bg-gfgsc-green transition-colors text-white"
-                        aria-label={`${dev.name}'s ${platform}`}
-                      >
-                        {platform === "github" && <FaGithub size={16} />}
-                        {platform === "linkedin" && <FaLinkedin size={16} />}
-                      </a>
-                    ))}
+                <div className="relative overflow-hidden rounded-xl shadow-xl">
+                  <div className="aspect-w-3 aspect-h-4 bg-gfg-black">
+                    <ImageLoaderComponent
+                      url={dev.image.url}
+                      hashCode={dev.image.hashCode}
+                      alt={dev.image.alt}
+                      className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-700 ease-out"
+                      blurWidth="100%"
+                      blurHeight="100%"
+                    />
                   </div>
-                </div>
-
-                <div className="p-6">
-                  <h3 className="text-xl font-bold mb-1">{dev.name}</h3>
-                  <p className="text-gfgsc-green mb-4">{dev.role}</p>
-
-                  <div className="flex flex-wrap gap-2 mt-3">
-                    {dev.skills.map((skill, idx) => (
-                      <span
-                        key={idx}
-                        className="px-2 py-1 bg-gray-800 rounded-full text-xs font-medium"
-                      >
-                        {skill}
-                      </span>
-                    ))}
+          
+                  {/* Permanent gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-gfg-black via-gfg-black/50 to-transparent">
+                    <div className="absolute inset-0 flex flex-col justify-between p-6">
+                      <div className="flex justify-end space-x-2">
+                        {Object.entries(dev.links).map(([platform, url], idx) => (
+                          <a
+                            key={idx}
+                            href={url}
+                            target="_blank"
+                            className="p-2 bg-white/10 backdrop-blur-sm rounded-full hover:bg-gfgsc-green transition-colors text-white"
+                            aria-label={`${dev.name}'s ${platform}`}
+                          >
+                            {platform === "github" && <FaGithub size={16} />}
+                            {platform === "linkedin" && <FaLinkedin size={16} />}
+                          </a>
+                        ))}
+                      </div>
+          
+                      <div>
+                        <h3 className="text-xl font-bold text-white mb-1">{dev.name}</h3>
+                        <p className="text-gfgsc-green mb-3">{dev.role}</p>
+                        <div className="flex flex-wrap gap-2">
+                          {dev.skills.map((skill, idx) => (
+                            <span
+                              key={idx}
+                              className="px-2 py-1 bg-white/10 backdrop-blur-sm rounded-full text-xs font-medium text-white/90"
+                            >
+                              {skill}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </motion.div>

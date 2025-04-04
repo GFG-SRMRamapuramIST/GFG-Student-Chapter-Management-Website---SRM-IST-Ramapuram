@@ -169,9 +169,9 @@ const AboutSection = () => {
           className="mt-16 bg-gfgsc-green/10 rounded-3xl p-8 grid md:grid-cols-3 gap-8 text-center"
         >
           {[
-            { value: "25+", label: "Active Contests" },
-            { value: "500+", label: "Coding Problems" },
-            { value: "15+", label: "Resources Shared" }
+            { value: "15+", label: "Active Contests" },
+            { value: "100+", label: "Coding Problems" },
+            { value: "10+", label: "Resources Shared" }
           ].map((stat, index) => (
             <div key={index}>
               <div className="text-4xl font-bold text-gfgsc-green mb-2">
