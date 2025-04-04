@@ -160,7 +160,7 @@ const PlatformProfiles = ({ platformProfiles }) => {
           <CgCode className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
         </h2>
       </div>
-      <div className="p-3 sm:p-4 space-y-3 sm:space-y-4">
+      <div className="p-3 sm:p-4 space-y-2 sm:space-y-3">
         {Object.entries(platformProfiles).map(([platform, stats]) => {
           const style = platformStyles[platform];
 
@@ -234,7 +234,7 @@ const PlatformProfiles = ({ platformProfiles }) => {
                       <div className="font-semibold text-sm">
                         {stats.rating}
                       </div>
-                      <div className="text-gray-500 text-xs ml-1">Rating</div>
+                      <div className="text-gray-500 text-xs ml-1">Star(s)</div>
                     </div>
                     <div
                       className={`flex items-center border rounded-md ${style.statsBg} p-1 sm:p-1.5 transition-colors duration-300`}
@@ -242,7 +242,7 @@ const PlatformProfiles = ({ platformProfiles }) => {
                       <div className="font-semibold text-sm">
                         {stats.highestRating}
                       </div>
-                      <div className="text-gray-500 text-xs ml-1">Highest</div>
+                      <div className="text-gray-500 text-xs ml-1">Rating</div>
                     </div>
                     <div
                       className={`flex items-center border rounded-md ${style.statsBg} p-1 sm:p-1.5 transition-colors duration-300`}
