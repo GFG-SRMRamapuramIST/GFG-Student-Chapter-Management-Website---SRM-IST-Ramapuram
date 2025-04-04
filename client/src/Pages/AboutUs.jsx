@@ -309,18 +309,27 @@ const AboutUs = () => {
               <div className="flex justify-center text-left items-center gap-4">
                 <div>
                   <div className="flex -space-x-3">
-                    {[1, 2, 3].map((_, i) => (
-                      <div
-                        key={i}
-                        className="w-10 h-10 rounded-full border-2 border-white bg-gfgsc-green-200 overflow-hidden"
-                      >
-                        <img
-                          src={`https://i.pravatar.cc/150?img=${i + 10}`}
-                          alt="Team member"
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    ))}
+                    <div className="w-10 h-10 rounded-full border-2 border-white bg-gfgsc-green-200 overflow-hidden">
+                      <img
+                        src={VishalKumarPic.url}
+                        alt="Team member"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="w-10 h-10 rounded-full border-2 border-white bg-gfgsc-green-200 overflow-hidden">
+                      <img
+                        src={JeyasuryaPic.url}
+                        alt="Team member"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="w-10 h-10 rounded-full border-2 border-white bg-gfgsc-green-200 overflow-hidden">
+                      <img
+                        src={AmishaPic.url}
+                        alt="Team member"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
                   </div>
                 </div>
                 <div className="text-sm">
@@ -779,27 +788,33 @@ const AboutUs = () => {
                       blurHeight="100%"
                     />
                   </div>
-          
+
                   {/* Permanent gradient overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-gfg-black via-gfg-black/50 to-transparent">
                     <div className="absolute inset-0 flex flex-col justify-between p-6">
                       <div className="flex justify-end space-x-2">
-                        {Object.entries(dev.links).map(([platform, url], idx) => (
-                          <a
-                            key={idx}
-                            href={url}
-                            target="_blank"
-                            className="p-2 bg-white/10 backdrop-blur-sm rounded-full hover:bg-gfgsc-green transition-colors text-white"
-                            aria-label={`${dev.name}'s ${platform}`}
-                          >
-                            {platform === "github" && <FaGithub size={16} />}
-                            {platform === "linkedin" && <FaLinkedin size={16} />}
-                          </a>
-                        ))}
+                        {Object.entries(dev.links).map(
+                          ([platform, url], idx) => (
+                            <a
+                              key={idx}
+                              href={url}
+                              target="_blank"
+                              className="p-2 bg-white/10 backdrop-blur-sm rounded-full hover:bg-gfgsc-green transition-colors text-white"
+                              aria-label={`${dev.name}'s ${platform}`}
+                            >
+                              {platform === "github" && <FaGithub size={16} />}
+                              {platform === "linkedin" && (
+                                <FaLinkedin size={16} />
+                              )}
+                            </a>
+                          )
+                        )}
                       </div>
-          
+
                       <div>
-                        <h3 className="text-xl font-bold text-white mb-1">{dev.name}</h3>
+                        <h3 className="text-xl font-bold text-white mb-1">
+                          {dev.name}
+                        </h3>
                         <p className="text-gfgsc-green mb-3">{dev.role}</p>
                         <div className="flex flex-wrap gap-2">
                           {dev.skills.map((skill, idx) => (
