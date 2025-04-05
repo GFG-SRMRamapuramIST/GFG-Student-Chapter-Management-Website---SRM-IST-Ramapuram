@@ -10,6 +10,8 @@ import {
   FaTrophy,
   FaBook,
   FaQuestion,
+  FaChevronUp,
+  FaChevronDown,
 } from "react-icons/fa";
 
 // Content for the user manual
@@ -176,9 +178,9 @@ const content = {
 export default function UserManual() {
   const [activeSection, setActiveSection] = useState("getting-started");
   const [activeSubsection, setActiveSubsection] = useState("about-website");
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const sidebarRef = useRef(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const contentRef = useRef(null);
 
   // Memoize content to prevent unnecessary re-renders
   const currentContent = useMemo(() => {
@@ -196,157 +198,158 @@ export default function UserManual() {
       const defaultSubsection = Object.keys(content[activeSection].subsections)[0];
       setActiveSubsection(defaultSubsection);
     }
+    // Scroll to top when section changes
+    if (contentRef.current) {
+      contentRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   }, [activeSection]);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
-        setMobileMenuOpen(false);
-      }
-    };
-
-    const handleResize = () => {
-      if (window.innerWidth >= 1024) {
-        setMobileMenuOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    window.addEventListener("resize", handleResize);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
 
   if (!currentContent) return null;
 
   return (
-    <div className="flex min-h-screen">
-      {/* Mobile menu button */}
-      <div className="lg:hidden fixed top-4 left-4 z-50">
-        <button
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="p-2 rounded-lg bg-gfgsc-green shadow-lg text-white hover:bg-emerald-600 transition-colors"
-          aria-label="Toggle menu"
-        >
-          {mobileMenuOpen ? <FaTimes className="text-xl" /> : <FaBars className="text-xl" />}
-        </button>
-      </div>
+    <div className="min-h-screen py-6 px-4 sm:px-6 lg:px-8" ref={contentRef}>
+      <div className=" mx-auto">
+        {/* Page Title */}
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gfgsc-green">User Manual</h1>
+          <p className="mt-2 text-gray-600">Everything you need to know about using our platform</p>
+        </div>
 
-      {/* Sidebar */}
-      <AnimatePresence>
-        {(mobileMenuOpen || window.innerWidth >= 1024) && (
-          <motion.div
-            ref={sidebarRef}
-            // initial={{ x: -300, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            // exit={{ x: -300, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed lg:static top-0 left-0 z-40 h-full w-72 bg-white shadow-xl overflow-y-auto"
+        {/* Mobile Section Selector Dropdown */}
+        <div className="mb-6 lg:hidden">
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="w-full flex justify-between items-center p-3 bg-white rounded-lg shadow-sm text-emerald-700 border border-emerald-100"
           >
-            <div className="sticky top-0 bg-white z-10 p-6 border-b">
-              <h2 className="text-2xl font-bold text-emerald-700 mb-2">
-                User Manual
-              </h2>
-              <p className="text-sm text-gray-600">
-                Everything you need to know about using our platform
-              </p>
+            <div className="flex items-center">
+              {content[activeSection].icon}
+              <span className="ml-3 font-medium">{content[activeSection].title}</span>
             </div>
-            
-            <nav className="p-6 space-y-2">
-              {Object.entries(content).map(([section, { title, icon }]) => (
-                <button
-                  key={section}
-                  onClick={() => {
-                    setActiveSection(section);
-                    setMobileMenuOpen(false);
-                  }}
-                  className={`w-full flex items-center p-3 text-left rounded-lg transition-all duration-200 ${
-                    activeSection === section
-                      ? "bg-emerald-100 text-emerald-700 shadow-sm"
-                      : "hover:bg-gray-50 text-gray-700"
-                  }`}
-                >
-                  <span className="mr-3 text-xl">{icon}</span>
-                  <span className="font-medium">{title}</span>
-                </button>
-              ))}
-            </nav>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            {mobileMenuOpen ? <FaChevronUp /> : <FaChevronDown />}
+          </button>
+          
+          <AnimatePresence>
+            {mobileMenuOpen && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.2 }}
+                className="mt-2 bg-white rounded-lg shadow-md overflow-hidden"
+              >
+                <div className="p-2">
+                  {Object.entries(content).map(([section, { title, icon }]) => (
+                    <button
+                      key={section}
+                      onClick={() => {
+                        setActiveSection(section);
+                        setMobileMenuOpen(false);
+                      }}
+                      className={`w-full flex items-center p-3 text-left rounded-lg mb-1 transition-all duration-200 ${
+                        activeSection === section
+                          ? "bg-emerald-100 text-emerald-700"
+                          : "hover:bg-gray-50 text-gray-700"
+                      }`}
+                    >
+                      <span className="mr-3 text-xl">{icon}</span>
+                      <span className="font-medium">{title}</span>
+                    </button>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
 
-      {/* Content Area */}
-      <motion.div 
-        className="flex-1 px-4 lg:px-8"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.3 }}
-      >
-        <div className="max-w-4xl mx-auto space-y-6">
-          {/* Header */}
-          <motion.div
-            className="bg-white rounded-xl shadow-md overflow-hidden"
-            initial={{ y: -20 }}
-            animate={{ y: 0 }}
-          >
-            <div className="rounded-xl text-gfgsc-green p-6">
-              <h1 className="text-2xl font-bold flex items-center">
-                {content[activeSection].icon}
-                <span className="ml-3">{content[activeSection].title}</span>
-              </h1>
-            </div>
-          </motion.div>
-
-          {/* Subsection Navigation */}
-          <div className="bg-white rounded-xl shadow-sm p-4 overflow-x-auto">
-            <div className="flex space-x-2 min-w-max">
-              {Object.entries(content[activeSection].subsections).map(
-                ([subsection, { title }]) => (
+        <div className="flex flex-col lg:flex-row lg:gap-6">
+          {/* Desktop Sidebar - Hidden on Mobile */}
+          <div className="hidden lg:block lg:w-72 flex-shrink-0">
+            <div className="bg-white rounded-xl shadow-sm p-4 sticky top-6">
+              <nav className="space-y-1">
+                {Object.entries(content).map(([section, { title, icon }]) => (
                   <button
-                    key={subsection}
-                    onClick={() => setActiveSubsection(subsection)}
-                    className={`px-4 py-2 rounded-lg transition-all duration-200 whitespace-nowrap ${
-                      activeSubsection === subsection
-                        ? "bg-emerald-100 text-emerald-700 font-medium shadow-sm"
+                    key={section}
+                    onClick={() => setActiveSection(section)}
+                    className={`w-full flex items-center p-3 text-left rounded-lg transition-all duration-200 ${
+                      activeSection === section
+                        ? "bg-emerald-100 text-emerald-700 shadow-sm"
                         : "hover:bg-gray-50 text-gray-700"
                     }`}
                   >
-                    {title}
+                    <span className="mr-3 text-xl">{icon}</span>
+                    <span className="font-medium">{title}</span>
                   </button>
-                )
-              )}
+                ))}
+              </nav>
             </div>
           </div>
 
-          {/* Content Display */}
-          <motion.div
-            className="bg-white rounded-xl shadow-sm"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            {isLoading ? (
-              <div className="p-6 flex items-center justify-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gfgsc-green"></div>
+          {/* Content Area */}
+          <div className="flex-1">
+            {/* Active Section Header */}
+            <motion.div
+              className="hidden md:flex bg-white rounded-xl shadow-md mb-4 overflow-hidden"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              key={activeSection}
+            >
+              <div className="text-gfgsc-green p-4 sm:p-6 flex items-center">
+                {content[activeSection].icon}
+                <h2 className="ml-3 text-xl font-bold">{content[activeSection].title}</h2>
               </div>
-            ) : (
-              <div className="p-6">
-                <h2 className="text-xl font-bold text-emerald-700 mb-6">
-                  {currentContent.title}
-                </h2>
-                <div
-                  className="prose max-w-none"
-                  dangerouslySetInnerHTML={{
-                    __html: currentContent.content,
-                  }}
-                />
+            </motion.div>
+
+            {/* Subsection Navigation - Horizontal Scrollable on Mobile */}
+            <div className="bg-white rounded-xl shadow-sm p-3 mb-4 overflow-x-auto">
+              <div className="flex space-x-2 min-w-max">
+                {Object.entries(content[activeSection].subsections).map(
+                  ([subsection, { title }]) => (
+                    <button
+                      key={subsection}
+                      onClick={() => setActiveSubsection(subsection)}
+                      className={`px-4 py-2 rounded-lg transition-all duration-200 whitespace-nowrap ${
+                        activeSubsection === subsection
+                          ? "bg-emerald-100 text-emerald-700 font-medium shadow-sm"
+                          : "hover:bg-gray-50 text-gray-700"
+                      }`}
+                    >
+                      {title}
+                    </button>
+                  )
+                )}
               </div>
-            )}
-          </motion.div>
+            </div>
+
+            {/* Content Display */}
+            <motion.div
+              className="bg-white rounded-xl shadow-sm"
+              key={`${activeSection}-${activeSubsection}`}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              {isLoading ? (
+                <div className="p-6 flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gfgsc-green"></div>
+                </div>
+              ) : (
+                <div className="p-4 sm:p-6">
+                  <h3 className="text-xl font-bold text-emerald-700 mb-6">
+                    {currentContent.title}
+                  </h3>
+                  <div
+                    className="prose max-w-none"
+                    dangerouslySetInnerHTML={{
+                      __html: currentContent.content,
+                    }}
+                  />
+                </div>
+              )}
+            </motion.div>
+          </div>
         </div>
-      </motion.div>
+      </div>
     </div>
+  
   );
 }
