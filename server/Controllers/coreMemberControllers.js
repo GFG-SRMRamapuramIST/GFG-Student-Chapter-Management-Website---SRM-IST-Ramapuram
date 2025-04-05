@@ -548,6 +548,21 @@ exports.createNotice = async (req, res) => {
             font-size: 14px;
             color: #666;
           }
+          .footer a {
+            color: #00895e;
+            text-decoration: none;
+            font-weight: bold;
+          }
+          .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+          }
+          .social-icons img {
+            width: 24px;
+            height: 24px;
+          }
         </style>
       </head>
       <body>
@@ -573,11 +588,48 @@ exports.createNotice = async (req, res) => {
 
             <p>
               For more details, please visit
-              our official website.
+              our official website:
+            </p>
+            <p style="text-align: center">
+              <a
+                href="https://gfgsc-management-website-srm-ist-ramapuram-testing.vercel.app/"
+                style="
+                  background-color: #00895e;
+                  color: #ffffff;
+                  padding: 10px 20px;
+                  border-radius: 5px;
+                  text-decoration: none;
+                  display: inline-block;
+                "
+                >Visit Our Website</a
+              >
             </p>
           </div>
 
           <div class="footer">
+            <p>Join our ever-growing community!</p>
+            <div class="social-icons">
+              <a href="https://www.instagram.com/geeksforgeeks_srm_rmp/"
+                ><img
+                  src="https://res.cloudinary.com/du1b2thra/image/upload/v1739607885/wudcidksorrlsc43i0hn.png"
+                  alt="Instagram"
+              /></a>
+              <a href="https://www.linkedin.com/company/geeksforgeeks-srm-rmp"
+                ><img
+                  src="https://res.cloudinary.com/du1b2thra/image/upload/v1739608002/lpdxsqycyrszaufpfrap.png"
+                  alt="LinkedIn"
+              /></a>
+              <a href="https://x.com/GFG_SRM_RMP"
+                ><img
+                  src="https://res.cloudinary.com/du1b2thra/image/upload/v1739608105/dnbjvcdmxstrj9yhoy7e.png"
+                  alt="Twitter/X"
+              /></a>
+              <a href="https://gfgsrmrmp.vercel.app/"
+                ><img
+                  src="https://res.cloudinary.com/du1b2thra/image/upload/v1739608156/iorqcssxpnwvgftktnkt.png"
+                  alt="Website"
+              /></a>
+            </div>
            <div class="footer-bottom" style="height: 200px; overflow: hidden;">
                           <div>Queries? We're just one email away: <span style="color: #00895e;">geeksforgeeks.srmistrmp@gmail.com</span> </div>
                           <div>© 2025 GFG Student Chapter. All rights reserved.</div>
