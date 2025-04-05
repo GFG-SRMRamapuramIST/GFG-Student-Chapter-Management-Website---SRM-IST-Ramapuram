@@ -88,14 +88,14 @@ exports.loginUser = async (req, res) => {
     // Verify password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return res.status(401).json({ message: "Invalid email or password !" });
+      return res.status(401).json({ message: "Invalid password !" });
     }
 
     // Generate auth token using the userSchema method
     const token = await user.generateAuthtoken();
 
     // Return the token to the client
-    res.status(200).json({ message: "Login successful !!", token });
+    res.status(200).json({ message: "Login successful !", token });
   } catch (error) {
     console.error(chalk.bgRed.bold.red("Error during login:"), error.message);
     res
