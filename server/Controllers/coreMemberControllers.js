@@ -582,7 +582,7 @@ exports.createNotice = async (req, res) => {
             <h3 style="color: #00895e">${title}</h3>
             <p>${description}</p>
             <p>Meeting Link: <a href="${meetingLink}"}>Link</a></p>
-            <p>Start Time: ${meetingTime}</p>
+            <p>Start Date/Time: ${meetingDate} at ${meetingTime}</p>
 
             <p>We would appriciate your participation in the meeting.</p>
 
