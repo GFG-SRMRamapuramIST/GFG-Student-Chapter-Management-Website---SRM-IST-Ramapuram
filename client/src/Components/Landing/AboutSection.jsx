@@ -107,12 +107,13 @@ const AboutSection = () => {
           className="text-center mb-16"
         >
           <h2 className="text-4xl font-bold text-gfg-black mb-4">
-            Your Complete 
+            Your Complete
             <span className="text-gfgsc-green block">Coding Ecosystem</span>
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            A holistic platform designed to elevate your competitive programming journey, 
-            fostering skill development, team collaboration, and continuous learning.
+            A holistic platform designed to elevate your competitive programming
+            journey, fostering skill development, team collaboration, and
+            continuous learning.
           </p>
         </motion.div>
 
@@ -135,16 +136,13 @@ const AboutSection = () => {
 
             <div className="grid grid-cols-2 gap-6">
               {platforms.map((platform, index) => (
-                <PlatformIcon 
-                  key={index} 
-                  {...platform} 
-                />
+                <PlatformIcon key={index} {...platform} />
               ))}
             </div>
 
-            <motion.div 
+            <motion.div
               initial={{ width: 0 }}
-              whileInView={{ width: '100%' }}
+              whileInView={{ width: "100%" }}
               transition={{ duration: 1.5 }}
               className="h-1 bg-gradient-to-r from-gfgsc-green to-gfgsc-green-200 mt-8 rounded-full"
             />
@@ -153,10 +151,7 @@ const AboutSection = () => {
           {/* Features Grid */}
           <div className="grid md:grid-cols-2 gap-6">
             {features.map((feature, index) => (
-              <FeatureCard 
-                key={index}
-                {...feature}
-              />
+              <FeatureCard key={index} {...feature} />
             ))}
           </div>
         </div>
@@ -169,9 +164,9 @@ const AboutSection = () => {
           className="mt-16 bg-gfgsc-green/10 rounded-3xl p-8 grid md:grid-cols-3 gap-8 text-center"
         >
           {[
-            { value: "15+", label: "Active Contests" },
-            { value: "100+", label: "Coding Problems" },
-            { value: "10+", label: "Resources Shared" }
+            { value: "40+", label: "Active Users" },
+            { value: "150+", label: "Practice Problems" },
+            { value: "5+", label: "Resources Shared" },
           ].map((stat, index) => (
             <div key={index}>
               <div className="text-4xl font-bold text-gfgsc-green mb-2">
