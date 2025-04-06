@@ -18,6 +18,7 @@ const fetchCodeforcesDetails = async (username, email) => {
         rating: data.data.current_rating || 0,
         rank: data.data.rank || "unrated",
         totalProblemSolved: data.data.total_solved || 0,
+        verified: user.platforms.codeforces.verified,
       };
     } else {
       console.log(chalk.yellow(`No valid data found for ${username}`));

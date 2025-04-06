@@ -60,22 +60,22 @@ const updateUserCodingPlatformsDataScheduler = async (user, isRegistering) => {
     } = user;
     let updateData = {};
 
-    if (leetcodeUsername && isRegistering) {
-      const leetcodeData = await fetchLeetcodeDetails(leetcodeUsername, email);
-      if (leetcodeData) {
-        updateData["platforms.leetcode"] = leetcodeData;
-      }
-    }
+    // if (leetcodeUsername && isRegistering) {
+    //   const leetcodeData = await fetchLeetcodeDetails(leetcodeUsername, email);
+    //   if (leetcodeData) {
+    //     updateData["platforms.leetcode"] = leetcodeData;
+    //   }
+    // }
 
-    if (geeksforgeeksUsername && isRegistering) {
-      const geeksforgeeksData = await fetchGeeksForGeeksDetails(
-        geeksforgeeksUsername,
-        email
-      );
-      if (geeksforgeeksData) {
-        updateData["platforms.geeksforgeeks"] = geeksforgeeksData;
-      }
-    }
+    // if (geeksforgeeksUsername && isRegistering) {
+    //   const geeksforgeeksData = await fetchGeeksForGeeksDetails(
+    //     geeksforgeeksUsername,
+    //     email
+    //   );
+    //   if (geeksforgeeksData) {
+    //     updateData["platforms.geeksforgeeks"] = geeksforgeeksData;
+    //   }
+    // }
 
     if (codechefUsername) {
       const codechefData = await fetchCodechefDetails(codechefUsername, email);
