@@ -48,7 +48,7 @@ const fetchCodechefDetails = async (username, email) => {
     }
   } catch (error) {
     console.error(
-      chalk.red(`Error fetching data for ${username}:`),
+      chalk.red(`Error fetching codechef data for ${username}:`),
       error.message
     );
 

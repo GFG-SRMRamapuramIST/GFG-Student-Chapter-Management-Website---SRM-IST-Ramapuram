@@ -43,7 +43,7 @@ const fetchCodeforcesDetails = async (username, email) => {
     }
   } catch (error) {
     console.error(
-      chalk.red(`Error fetching data for ${username}:`),
+      chalk.red(`Error fetching codeforces data for ${username}:`),
       error.message
     );
 
