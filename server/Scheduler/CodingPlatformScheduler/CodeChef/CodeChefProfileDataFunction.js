@@ -23,7 +23,6 @@ const fetchCodechefDetails = async (username, email) => {
         rating: numericRating,
         highestRating: Number(data.Rating_Details?.Highest_Rating) || 0,
         countryRank: Number(data.Rating_Details?.Country_Rank) || 0,
-        verified: user.platforms.codechef.verified,
       };
     } else {
       console.log(chalk.yellow(`No valid data found for ${username}`));

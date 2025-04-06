@@ -17,6 +17,11 @@ const constantSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  passingMarks: {
+    type: Number,
+    required: true,
+    default: 30,
+  },
   passingPercentage: {
     type: Number,
     required: true,

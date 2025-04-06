@@ -17,6 +17,7 @@ const SchedulerControls = () => {
     backupDataScheduler: false,
     resetDataScheduler: false,
     autoKickScheduler: false,
+    passingMarks: 30,
     passingPercentage: 10, // 10 to 70
     perContestPoint: 0, // 0 to 10
     perDayPracticePoint: 0, // 0 to 6
@@ -41,13 +42,14 @@ const SchedulerControls = () => {
     try {
       setLoading(true);
       const response = await fetchConstantValues();
-      //console.log(response);
+      console.log(response);
       if (response.status === 200) {
         const {
           achievementScheduler,
           backupDataScheduler,
           resetDataScheduler,
           autoKickScheduler,
+          passingMarks,
           passingPercentage,
           perContestPoint,
           perDayPracticePoint,
@@ -57,6 +59,7 @@ const SchedulerControls = () => {
           backupDataScheduler,
           resetDataScheduler,
           autoKickScheduler,
+          passingMarks,
           passingPercentage,
           perContestPoint,
           perDayPracticePoint,

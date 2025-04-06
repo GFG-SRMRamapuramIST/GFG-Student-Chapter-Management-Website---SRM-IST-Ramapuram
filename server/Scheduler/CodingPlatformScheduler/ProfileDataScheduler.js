@@ -80,7 +80,12 @@ const updateUserCodingPlatformsDataScheduler = async (user, isRegistering) => {
     if (codechefUsername) {
       const codechefData = await fetchCodechefDetails(codechefUsername, email);
       if (codechefData) {
-        updateData["platforms.codechef"] = codechefData;
+        // Merge with existing fields
+        const existing = user.platforms?.codechef || {};
+        updateData["platforms.codechef"] = {
+          ...existing,
+          ...codechefData,
+        };
       }
     }
 
@@ -90,7 +95,11 @@ const updateUserCodingPlatformsDataScheduler = async (user, isRegistering) => {
         email
       );
       if (codeforcesData) {
-        updateData["platforms.codeforces"] = codeforcesData;
+        const existing = user.platforms?.codeforces || {};
+        updateData["platforms.codeforces"] = {
+          ...existing,
+          ...codeforcesData,
+        };
       }
     }
 

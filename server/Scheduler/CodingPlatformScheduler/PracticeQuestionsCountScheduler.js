@@ -14,11 +14,12 @@ const { Users } = require("../../Models");
 
 // Function to calculate increment based on the difference
 const calculateIncrement = (diff) => {
-  if (diff >= 1 && diff <= 3) return 1;
-  if (diff >= 4 && diff <= 6) return 2;
-  if (diff >= 7 && diff <= 9) return 3;
-  if (diff > 9) return 3;
-  return 0;
+  return diff >= 1 ? 1 : 0;
+  // if (diff >= 1 && diff <= 3) return 1;
+  // if (diff >= 4 && diff <= 6) return 2;
+  // if (diff >= 7 && diff <= 9) return 3;
+  // if (diff > 9) return 3;
+  // return 0;
 };
 
 // Function to update practice question counts
