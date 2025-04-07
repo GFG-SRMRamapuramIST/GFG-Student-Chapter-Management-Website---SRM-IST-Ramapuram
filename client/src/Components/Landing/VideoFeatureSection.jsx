@@ -70,7 +70,7 @@ const VideoFeatureSection = () => {
               <iframe
                 width="100%"
                 height="100%"
-                src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1"
+                src="https://www.youtube.com/embed/0QkqQ5_hO8c?si=LVxECxsu3yve-gnU?autoplay=1&mute=1"
                 title="GFGSC Promo Video"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
