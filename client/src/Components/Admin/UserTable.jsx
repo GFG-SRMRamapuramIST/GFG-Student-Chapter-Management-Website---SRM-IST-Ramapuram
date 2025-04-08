@@ -11,6 +11,7 @@ import {
   RiSortDesc,
   RiInboxLine,
 } from "react-icons/ri";
+import { Link } from "react-router-dom";
 
 const UserTable = ({
   users,
@@ -37,27 +38,15 @@ const UserTable = ({
             onChange={(e) =>
               setPageInfo((prevState) => ({
                 ...prevState,
-                itemsPerPage: parseInt(e.target.value, 10), // Corregido aquí
+                itemsPerPage: parseInt(e.target.value, 20),
               }))
             }
           >
-            <option value={1}>1 per page</option>
             <option value={5}>5 per page</option>
             <option value={10}>10 per page</option>
             <option value={20}>20 per page</option>
+            <option value={50}>50 per page</option>
           </select>
-          {/*<button
-            onClick={() => setShowBlockedUsers(!showBlockedUsers)}
-            className={`px-4 py-2 rounded-lg transition-colors duration-200
-              ${
-                showBlockedUsers
-                  ? "bg-red-100 text-red-600 hover:bg-red-200"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-              }`}
-          >
-            <IoBan className="inline mr-2" />
-            {showBlockedUsers ? "Hide" : "Show"} Blocked
-          </button>*/}
         </div>
         <div className="relative">
           <RiSearchLine className="absolute left-3 top-3 text-gray-400" />
@@ -105,12 +94,15 @@ const UserTable = ({
             <tbody className="divide-y divide-gray-200">
               {users.map((user) => (
                 <tr
-                  key={user.id}
-                  className={`${user.blocked ? "bg-red-50" : "bg-white"} 
+                  key={user._id}
+                  className={` ${user.blocked ? "bg-red-50" : "bg-white"} 
             transition-colors duration-200 hover:bg-gray-50`}
                 >
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
+                    <Link
+                      to={`/profile/${user._id}`}
+                      className="flex items-center"
+                    >
                       <RiUserLine
                         className={`mr-2 ${
                           user.blocked ? "text-red-400" : "text-gray-400"
@@ -119,7 +111,7 @@ const UserTable = ({
                       <span className={user.blocked ? "text-red-500" : ""}>
                         {user.name}
                       </span>
-                    </div>
+                    </Link>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-gray-500">
                     {user.email}
