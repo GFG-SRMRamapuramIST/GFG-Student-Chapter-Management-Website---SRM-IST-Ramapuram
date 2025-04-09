@@ -173,6 +173,12 @@ const AdminPanel = () => {
       },
     });
   };
+
+  // handler function for protecting users
+  const handleProtect = (user) => {
+    console.log(`Protecting user with id: ${user._id}`);
+  };
+
   // ******************** Fetch & Operate on User Data Ends Here *****************
 
   // **************** Fetch & Operate on Allowed Emails Data Starts Here **********
@@ -488,6 +494,7 @@ const AdminPanel = () => {
             handlePromote={handlePromote}
             handleDemote={handleDemote}
             handleDelete={handleDelete}
+            handleProtect={handleProtect}
             handleNextBtnClick={handleNextBtnClick}
             handlePrevBtnClick={handlePrevBtnClick}
             handleSortOrderChange={handleSortOrderChange}

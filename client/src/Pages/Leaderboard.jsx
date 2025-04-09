@@ -36,7 +36,7 @@ const Leaderboard = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 20;
 
   const [passingPercentage, setPassingPercentage] = useState(0);
   const [perDayPracticePoint, setPerDayPracticePoint] = useState(0);
@@ -223,7 +223,7 @@ const Leaderboard = () => {
                         month.{" "}
                       </p>
 
-                      <div className="mt-3 bg-white/50 backdrop-blur-sm p-2 rounded border border-red-200">
+                      {/* <div className="mt-3 bg-white/50 backdrop-blur-sm p-2 rounded border border-red-200">
                         <p className="text-xs text-red-600 italic">
                           The minimum passing score is determined using the
                           following formula:
@@ -255,7 +255,7 @@ const Leaderboard = () => {
                             contests are available).
                           </p>
                         </div>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 </div>

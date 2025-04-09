@@ -10,6 +10,7 @@ import {
   RiSortAsc,
   RiSortDesc,
   RiInboxLine,
+  RiShieldFill,
 } from "react-icons/ri";
 import { Link } from "react-router-dom";
 
@@ -18,6 +19,7 @@ const UserTable = ({
   handlePromote,
   handleDemote,
   handleDelete,
+  handleProtect,
   handleNextBtnClick,
   handlePrevBtnClick,
   handleSortOrderChange,
@@ -141,6 +143,13 @@ const UserTable = ({
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     <div className="flex space-x-2">
                       <button
+                        onClick={() => handleProtect(user)}
+                        className="p-1 rounded hover:bg-gray-100"
+                        title="Protect user"
+                      >
+                        <RiShieldFill className="text-blue-600" />
+                      </button>
+                      <button
                         onClick={() => handlePromote(user)}
                         className="p-1 rounded hover:bg-gray-100"
                         disabled={user.position === "ADMIN"}
@@ -236,6 +245,7 @@ UserTable.propTypes = {
   handlePromote: PropTypes.func.isRequired,
   handleDemote: PropTypes.func.isRequired,
   handleDelete: PropTypes.func.isRequired,
+  handleProtect: PropTypes.func.isRequired,
   handleNextBtnClick: PropTypes.func.isRequired,
   handlePrevBtnClick: PropTypes.func.isRequired,
   handleSortOrderChange: PropTypes.func.isRequired,

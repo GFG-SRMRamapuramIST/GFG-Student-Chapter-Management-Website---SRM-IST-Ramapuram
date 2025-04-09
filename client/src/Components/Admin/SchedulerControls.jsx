@@ -18,9 +18,6 @@ const SchedulerControls = () => {
     resetDataScheduler: false,
     autoKickScheduler: false,
     passingMarks: 30,
-    passingPercentage: 10, // 10 to 70
-    perContestPoint: 0, // 0 to 10
-    perDayPracticePoint: 0, // 0 to 6
   });
 
   const [confirmationState, setConfirmationState] = useState({
@@ -30,13 +27,6 @@ const SchedulerControls = () => {
     message: "",
     onConfirm: () => {},
   });
-
-  // Calculate minimum passing marks
-  const calculateMinimumPassingMarks = (options) => {
-    const perMonthMarks =
-      30 * options.perDayPracticePoint + 4 * options.perContestPoint;
-    return Math.floor((options.passingPercentage / 100) * perMonthMarks);
-  };
 
   const getConstantValues = async () => {
     try {
@@ -50,9 +40,6 @@ const SchedulerControls = () => {
           resetDataScheduler,
           autoKickScheduler,
           passingMarks,
-          passingPercentage,
-          perContestPoint,
-          perDayPracticePoint,
         } = response.data.constant;
         setSchedulerOptions({
           achievementScheduler,
@@ -60,9 +47,6 @@ const SchedulerControls = () => {
           resetDataScheduler,
           autoKickScheduler,
           passingMarks,
-          passingPercentage,
-          perContestPoint,
-          perDayPracticePoint,
         });
       } else {
         ToastMsg("Error fetching constant values", "error");
@@ -90,19 +74,17 @@ const SchedulerControls = () => {
     setIsFormEdited(true);
   };
 
-  const handleDropdownChange = (e) => {
-    const { value } = e.target;
+  const handlePassingMarksChange = (e) => {
+    const value = parseInt(e.target.value, 10) || 0;
     setSchedulerOptions((prev) => ({
       ...prev,
-      passingPercentage: parseInt(value, 10),
+      passingMarks: value,
     }));
     setIsFormEdited(true);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const minimumPassingMarks = calculateMinimumPassingMarks(schedulerOptions);
 
     // Format scheduler changes
     const schedulerChanges = [
@@ -113,33 +95,14 @@ const SchedulerControls = () => {
       schedulerOptions.autoKickScheduler && "• Auto-kick Scheduler: Enabled",
     ].filter(Boolean); // Remove false values
 
-    // Format point system changes
-    const pointChanges = [
-      `• Passing Percentage: ${schedulerOptions.passingPercentage}%`,
-      `• Points Per Contest: ${schedulerOptions.perContestPoint}`,
-      `• Points Per Day Practice: ${schedulerOptions.perDayPracticePoint}`,
-    ];
-
-    // Calculate monthly points
-    const monthlyPracticePoints = 30 * schedulerOptions.perDayPracticePoint;
-    const monthlyContestPoints = 4 * schedulerOptions.perContestPoint;
-    const totalMonthlyPoints = monthlyPracticePoints + monthlyContestPoints;
-
     const message = [
       "📋 Scheduler Changes:",
       ...(schedulerChanges.length
         ? schedulerChanges
         : ["No scheduler changes"]),
       "",
-      "⚙️ Point System Updates:",
-      ...pointChanges,
-      "",
-      "📊 Monthly Point Calculation:",
-      `• Refer to notice in Leaderboard for more details`,
-      "",
       "🎯 Passing Criteria:",
-      `• Required Percentage: ${schedulerOptions.passingPercentage}%`,
-      `• Minimum Points Required: ${minimumPassingMarks} points`,
+      `• Minimum Passing Marks: ${schedulerOptions.passingMarks}`,
     ].join("\n");
 
     setConfirmationState({
@@ -346,121 +309,19 @@ const SchedulerControls = () => {
                 </div>
               </div>
 
-              {/* Dropdown for Passing Marks */}
+              {/* Simple Integer Input for Passing Marks */}
               <div className="mt-6">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Minimum Passing Percentage
+                  Minimum Passing Marks
                 </label>
-                <div className="relative">
-                  <select
-                    value={schedulerOptions.passingPercentage}
-                    onChange={handleDropdownChange}
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-gfgsc-green-200 focus:ring-gfgsc-green-200 py-2 pl-3 pr-10 text-base bg-white border"
-                  >
-                    {[10, 20, 30, 40, 50, 60, 70].map((mark) => (
-                      <option key={mark} value={mark}>
-                        {mark}
-                      </option>
-                    ))}
-                  </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-hover-gray">
-                    <svg
-                      className="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-
-              {/* Dropdown for Per Contest Points */}
-              <div className="mt-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Points Per Contest
-                </label>
-                <div className="relative">
-                  <select
-                    value={schedulerOptions.perContestPoint}
-                    onChange={(e) => {
-                      setSchedulerOptions((prev) => ({
-                        ...prev,
-                        perContestPoint: parseInt(e.target.value, 10),
-                      }));
-                      setIsFormEdited(true);
-                    }}
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-gfgsc-green-200 focus:ring-gfgsc-green-200 py-2 pl-3 pr-10 text-base bg-white border"
-                  >
-                    {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((point) => (
-                      <option key={point} value={point}>
-                        {point}
-                      </option>
-                    ))}
-                  </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-hover-gray">
-                    <svg
-                      className="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-
-              {/* Dropdown for Per Day Practice Points */}
-              <div className="mt-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Points Per Day Practice
-                </label>
-                <div className="relative">
-                  <select
-                    value={schedulerOptions.perDayPracticePoint}
-                    onChange={(e) => {
-                      setSchedulerOptions((prev) => ({
-                        ...prev,
-                        perDayPracticePoint: parseInt(e.target.value, 10),
-                      }));
-                      setIsFormEdited(true);
-                    }}
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-gfgsc-green-200 focus:ring-gfgsc-green-200 py-2 pl-3 pr-10 text-base bg-white border"
-                  >
-                    {[0, 1, 2, 3, 4, 5, 6].map((point) => (
-                      <option key={point} value={point}>
-                        {point}
-                      </option>
-                    ))}
-                  </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-hover-gray">
-                    <svg
-                      className="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
-                  </div>
-                </div>
+                <input
+                  type="number"
+                  min="0"
+                  step="1"
+                  value={schedulerOptions.passingMarks}
+                  onChange={handlePassingMarksChange}
+                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-gfgsc-green-200 focus:ring-gfgsc-green-200 py-2 px-3 text-base bg-white border"
+                />
               </div>
 
               {/* Submit Button */}
