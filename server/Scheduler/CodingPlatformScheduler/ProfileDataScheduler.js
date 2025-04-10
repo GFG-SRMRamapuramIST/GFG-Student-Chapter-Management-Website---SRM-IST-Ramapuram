@@ -44,7 +44,7 @@ const fetchUsersWithCodingProfiles = async () => {
 
 // Function to update coding platform details
 const updateUserCodingPlatformsDataScheduler = async (user, isRegistering) => {
-  /* isRegistering is a flag to  check that the user is registering for the first time if yes then we fetch data for leetcode and geeksforgeeks too else we dont fetch info of the user's leetcode and geeksforgeeks profile on weekly basis */
+  /* isRegistering is a flag to  check that the user is registering for the first time if yes then we fetch data for leetcode and geeksforgeeks too else we dont fetch info of the user's leetcode and geeksforgeeks profile on weekly basis as they are already being fetched on daily basis*/
   console.log(
     chalk.bgBlue.bold("Starting user's coding profile data update scheduler...")
   );

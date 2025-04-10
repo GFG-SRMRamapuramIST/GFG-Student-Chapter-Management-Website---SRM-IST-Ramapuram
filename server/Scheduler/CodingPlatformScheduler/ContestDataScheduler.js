@@ -138,7 +138,7 @@ function updateContestDataScheduler() {
               );
             }
           } else if (type === "codechef") {
-            if( user.platforms.codechef.verified === true) {
+            if (user.platforms.codechef.verified === true) {
               const pointsPerStar = { 1: 2, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7 };
               console.log(
                 `${user.name} is a ${
@@ -158,7 +158,7 @@ function updateContestDataScheduler() {
               user.totalQuestionSolved +=
                 contestData.totalQuestionsSolved *
                 pointsPerStar[user.platforms.codechef.rating];
-            }else{
+            } else {
               console.log(
                 `${user.name} has not verified his codechef account, so no points will be added for contest.`
               );
@@ -183,6 +183,10 @@ function updateContestDataScheduler() {
             chalk.green(`Updated contest data for ${user.email} (${type})`)
           );
         }
+
+        // Delay for 5 seconds before fetching data for next user
+        // This is to avoid hitting the API rate limit or getting our IP blocked
+        await new Promise((resolve) => setTimeout(resolve, 5000));
       }
 
       console.log(chalk.blue("Updating leaderboard rankings..."));

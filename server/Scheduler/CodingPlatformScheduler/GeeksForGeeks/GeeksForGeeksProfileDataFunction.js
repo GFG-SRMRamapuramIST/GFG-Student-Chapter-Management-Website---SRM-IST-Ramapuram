@@ -41,7 +41,7 @@ const fetchGeeksForGeeksDetails = async (username, email) => {
     }
   } catch (error) {
     console.error(
-      chalk.red(`Error fetching data for ${username}:`),
+      chalk.red(`Error fetching GeeksforGeeks data for ${username}:`),
       error.message
     );
 

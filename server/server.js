@@ -26,6 +26,10 @@ const {
   userRouter,
 } = require("./Routers");
 
+const {
+  updateLeaderboardRankings,
+} = require("./Scheduler/CodingPlatformScheduler/LeaderBoardSorting");
+
 const PORT = process.env.PORT || 4002;
 
 app.set("trust proxy", 1);
@@ -53,6 +57,7 @@ connectDB().then((isConnected) => {
           `Server started at Port No: http://localhost:${PORT}`
         )
       );
+      //updateLeaderboardRankings();
     });
   } else {
     console.error(

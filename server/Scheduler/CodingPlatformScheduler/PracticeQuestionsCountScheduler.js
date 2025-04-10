@@ -44,10 +44,14 @@ const updatePracticeQuestionsCount = async () => {
           user.email
         );
         if (leetcodeData) {
-          const { badgesCount, ranking, totalProblemSolved } = leetcodeData;
-          const leetcodeDiff =
-            totalProblemSolved -
-            (user.platforms.leetcode.totalProblemSolved || 0);
+          const {
+            badgesCount = 0,
+            ranking = 0,
+            totalProblemSolved = 0,
+          } = leetcodeData;
+
+          const previousTotal = user.platforms.leetcode.totalProblemSolved || 0;
+          const leetcodeDiff = Math.max(totalProblemSolved - previousTotal, 0);
 
           if (user.platforms.leetcode.verified === true) {
             increment += calculateIncrement(leetcodeDiff);
@@ -82,10 +86,14 @@ const updatePracticeQuestionsCount = async () => {
           user.email
         );
         if (geeksforgeeksData) {
-          const { universityRank, codingScore, problemSolved } =
-            geeksforgeeksData;
-          const gfgDiff =
-            problemSolved - (user.platforms.geeksforgeeks.problemSolved || 0);
+          const {
+            universityRank = 0,
+            codingScore = 0,
+            problemSolved = 0,
+          } = geeksforgeeksData;
+
+          const previousTotal = user.platforms.geeksforgeeks.problemSolved || 0;
+          const gfgDiff = Math.max(problemSolved - previousTotal, 0);
 
           if (user.platforms.geeksforgeeks.verified === true) {
             increment += calculateIncrement(gfgDiff);
