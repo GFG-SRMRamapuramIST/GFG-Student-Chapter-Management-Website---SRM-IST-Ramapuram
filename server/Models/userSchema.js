@@ -86,6 +86,20 @@ const userSchema = new mongoose.Schema({
     default: 0,
     min: 0,
   },
+  pointsIncreased: {
+    type: Number,
+    default: 0,
+    min: 0,
+  },
+  yesterdayTotalQuestionSolved: {
+    type: Number,
+    default: 0,
+    min: 0,
+  },
+  protected: {
+    type: Boolean,
+    default: false,
+  },
   currentRank: {
     type: Number,
     default: null,

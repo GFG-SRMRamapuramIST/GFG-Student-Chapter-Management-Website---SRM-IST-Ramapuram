@@ -86,54 +86,67 @@ const UserTable = ({
             onChange={(e) =>
               setPageInfo((prevState) => ({
                 ...prevState,
-                itemsPerPage: parseInt(e.target.value, 20),
+                itemsPerPage: parseInt(e.target.value, 10),
               }))
             }
           >
-            <option value={5}>5 per page</option>
             <option value={10}>10 per page</option>
             <option value={20}>20 per page</option>
             <option value={50}>50 per page</option>
           </select>
-          
+
           {/* Filter Button */}
           <div className="relative">
             <button
               onClick={() => setShowFilters(!showFilters)}
               className={`px-3 py-2 border rounded-lg flex items-center space-x-2 hover:bg-gray-50 ${
-                selectedPositions.length > 0 || selectedProtectionStatus !== "" ? "bg-green-50 text-green-600 border-green-300" : ""
+                selectedPositions.length > 0 || selectedProtectionStatus !== ""
+                  ? "bg-green-50 text-green-600 border-green-300"
+                  : ""
               }`}
             >
               <RiFilterLine />
               <span>Filters</span>
-              {(selectedPositions.length > 0 || selectedProtectionStatus !== "") && (
+              {(selectedPositions.length > 0 ||
+                selectedProtectionStatus !== "") && (
                 <span className="inline-flex items-center justify-center w-5 h-5 text-xs bg-green-500 text-white rounded-full">
-                  {selectedPositions.length + (selectedProtectionStatus !== "" ? 1 : 0)}
+                  {selectedPositions.length +
+                    (selectedProtectionStatus !== "" ? 1 : 0)}
                 </span>
               )}
             </button>
-            
+
             {/* Filter Dropdown */}
             {showFilters && (
               <div className="absolute left-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
                 <div className="p-4">
                   <div className="flex justify-between items-center mb-4">
                     <h3 className="font-medium">Filter Users</h3>
-                    <button onClick={() => setShowFilters(false)} className="text-gray-500 hover:text-gray-700">
+                    <button
+                      onClick={() => setShowFilters(false)}
+                      className="text-gray-500 hover:text-gray-700"
+                    >
                       <RiCloseLine className="w-5 h-5" />
                     </button>
                   </div>
-                  
+
                   {/* Position Filter */}
                   <div className="mb-4">
-                    <h4 className="text-sm font-medium mb-2 text-gray-700">Position</h4>
+                    <h4 className="text-sm font-medium mb-2 text-gray-700">
+                      Position
+                    </h4>
                     <div className="space-y-2 max-h-40 overflow-y-auto">
-                      {allPositions.map(position => (
-                        <label key={position} className="flex items-center space-x-2">
+                      {allPositions.map((position) => (
+                        <label
+                          key={position}
+                          className="flex items-center space-x-2"
+                        >
                           <input
                             type="checkbox"
                             checked={selectedPositions.includes(position)}
-                            onChange={() => handlePositionFilterChange(position)}
+                            onChange={() =>
+                              handlePositionFilterChange(position)
+                            }
                             className="rounded border-gray-300 text-green-600 focus:ring-green-500"
                           />
                           <span className="text-sm">{position}</span>
@@ -141,36 +154,44 @@ const UserTable = ({
                       ))}
                     </div>
                   </div>
-                  
+
                   {/* Protection Status Filter */}
                   <div className="mb-4">
-                    <h4 className="text-sm font-medium mb-2 text-gray-700">Protection Status</h4>
+                    <h4 className="text-sm font-medium mb-2 text-gray-700">
+                      Protection Status
+                    </h4>
                     <div className="space-y-2">
                       <label className="flex items-center space-x-2">
                         <input
                           type="radio"
                           checked={selectedProtectionStatus === "protected"}
-                          onChange={() => handleProtectionStatusFilterChange("protected")}
+                          onChange={() =>
+                            handleProtectionStatusFilterChange("protected")
+                          }
                           className="rounded-full border-gray-300 text-green-600 focus:ring-green-500"
                         />
                         <span className="text-sm flex items-center">
-                          <RiShieldFill className="text-blue-600 mr-1" /> Protected
+                          <RiShieldFill className="text-blue-600 mr-1" />{" "}
+                          Protected
                         </span>
                       </label>
                       <label className="flex items-center space-x-2">
                         <input
                           type="radio"
                           checked={selectedProtectionStatus === "unprotected"}
-                          onChange={() => handleProtectionStatusFilterChange("unprotected")}
+                          onChange={() =>
+                            handleProtectionStatusFilterChange("unprotected")
+                          }
                           className="rounded-full border-gray-300 text-green-600 focus:ring-green-500"
                         />
                         <span className="text-sm flex items-center">
-                          <RiShieldLine className="text-gray-600 mr-1" /> Unprotected
+                          <RiShieldLine className="text-gray-600 mr-1" />{" "}
+                          Unprotected
                         </span>
                       </label>
                     </div>
                   </div>
-                  
+
                   {/* Filter Actions */}
                   <div className="flex justify-between pt-4 border-t border-gray-200">
                     <button
@@ -191,7 +212,7 @@ const UserTable = ({
             )}
           </div>
         </div>
-        
+
         <div className="relative">
           <RiSearchLine className="absolute left-3 top-3 text-gray-400" />
           <input
@@ -203,16 +224,19 @@ const UserTable = ({
           />
         </div>
       </div>
-      
+
       {/* Active Filters Display */}
       {(selectedPositions.length > 0 || selectedProtectionStatus !== "") && (
         <div className="flex flex-wrap gap-2 items-center">
           <span className="text-sm text-gray-500">Active filters:</span>
-          
-          {selectedPositions.map(position => (
-            <div key={position} className="bg-green-50 border border-green-200 rounded-full px-3 py-1 text-xs flex items-center">
+
+          {selectedPositions.map((position) => (
+            <div
+              key={position}
+              className="bg-green-50 border border-green-200 rounded-full px-3 py-1 text-xs flex items-center"
+            >
               <span className="text-green-700">{position}</span>
-              <button 
+              <button
                 onClick={() => handlePositionFilterChange(position)}
                 className="ml-2 text-green-500 hover:text-green-700"
               >
@@ -220,13 +244,15 @@ const UserTable = ({
               </button>
             </div>
           ))}
-          
+
           {selectedProtectionStatus && (
             <div className="bg-green-50 border border-green-200 rounded-full px-3 py-1 text-xs flex items-center">
               <span className="text-green-700">
-                {selectedProtectionStatus === "protected" ? "Protected" : "Unprotected"}
+                {selectedProtectionStatus === "protected"
+                  ? "Protected"
+                  : "Unprotected"}
               </span>
-              <button 
+              <button
                 onClick={() => setSelectedProtectionStatus("")}
                 className="ml-2 text-green-500 hover:text-green-700"
               >
@@ -234,7 +260,7 @@ const UserTable = ({
               </button>
             </div>
           )}
-          
+
           <button
             onClick={resetFilters}
             className="text-xs text-gray-500 hover:text-gray-700 underline"
@@ -279,7 +305,13 @@ const UserTable = ({
               {users.map((user) => (
                 <tr
                   key={user._id}
-                  className={` ${user.blocked ? "bg-red-50" : user.protected ? "bg-blue-50" : "bg-white"} 
+                  className={` ${
+                    user.blocked
+                      ? "bg-red-50"
+                      : user.protected
+                      ? "bg-blue-50"
+                      : "bg-white"
+                  } 
                     transition-colors duration-200 hover:bg-gray-50`}
                 >
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -289,10 +321,22 @@ const UserTable = ({
                     >
                       <RiUserLine
                         className={`mr-2 ${
-                          user.blocked ? "text-red-400" : user.protected ? "text-blue-400" : "text-gray-400"
+                          user.blocked
+                            ? "text-red-400"
+                            : user.protected
+                            ? "text-blue-400"
+                            : "text-gray-400"
                         }`}
                       />
-                      <span className={user.blocked ? "text-red-500" : user.protected ? "text-blue-700" : ""}>
+                      <span
+                        className={
+                          user.blocked
+                            ? "text-red-500"
+                            : user.protected
+                            ? "text-blue-700"
+                            : ""
+                        }
+                      >
                         {user.name}
                       </span>
                     </Link>
@@ -314,7 +358,8 @@ const UserTable = ({
                           ? "bg-purple-100 text-purple-600"
                           : user.role === "COREMEMBER"
                           ? "bg-blue-100 text-blue-600"
-                          : user.role === "VICEPRESIDENT" || user.role === "PRESIDENT"
+                          : user.role === "VICEPRESIDENT" ||
+                            user.role === "PRESIDENT"
                           ? "bg-amber-100 text-amber-600"
                           : user.role === "MEMBER"
                           ? "bg-green-100 text-green-600"
@@ -330,7 +375,9 @@ const UserTable = ({
                       <button
                         onClick={() => handleProtect(user)}
                         className="p-1 rounded hover:bg-gray-100"
-                        title={user.protected ? "Remove protection" : "Protect user"}
+                        title={
+                          user.protected ? "Remove protection" : "Protect user"
+                        }
                       >
                         {user.protected ? (
                           <RiShieldFill className="text-blue-600" />
@@ -348,7 +395,13 @@ const UserTable = ({
                             : "Promote user"
                         }
                       >
-                        <RiArrowUpSLine className={user.role === "ADMIN" ? "text-gray-400" : "text-green-600"} />
+                        <RiArrowUpSLine
+                          className={
+                            user.role === "ADMIN"
+                              ? "text-gray-400"
+                              : "text-green-600"
+                          }
+                        />
                       </button>
                       <button
                         onClick={() => handleDemote(user)}
@@ -360,15 +413,29 @@ const UserTable = ({
                             : "Demote user"
                         }
                       >
-                        <RiArrowDownSLine className={user.role === "USER" ? "text-gray-400" : "text-orange-600"} />
+                        <RiArrowDownSLine
+                          className={
+                            user.role === "USER"
+                              ? "text-gray-400"
+                              : "text-orange-600"
+                          }
+                        />
                       </button>
                       <button
                         onClick={() => handleDelete(user)}
                         className="p-1 rounded hover:bg-gray-100"
                         disabled={user.protected}
-                        title={user.protected ? "Protected user cannot be deleted" : "Delete user"}
+                        title={
+                          user.protected
+                            ? "Protected user cannot be deleted"
+                            : "Delete user"
+                        }
                       >
-                        <RiDeleteBin6Line className={user.protected ? "text-gray-400" : "text-red-600"} />
+                        <RiDeleteBin6Line
+                          className={
+                            user.protected ? "text-gray-400" : "text-red-600"
+                          }
+                        />
                       </button>
                     </div>
                   </td>
@@ -383,7 +450,9 @@ const UserTable = ({
               No users found
             </h3>
             <p className="text-gray-500 max-w-md">
-              {searchUser || selectedPositions.length > 0 || selectedProtectionStatus
+              {searchUser ||
+              selectedPositions.length > 0 ||
+              selectedProtectionStatus
                 ? `No users matching the current filters were found.`
                 : "There are no users registered in the system yet."}
             </p>

@@ -346,7 +346,7 @@ const AdminPanel = () => {
   // **************** Table Display Opertions Starts Here ********************
   const [pageInfo, setPageInfo] = useState({
     currentPage: 1,
-    itemsPerPage: 10,
+    itemsPerPage: 20,
     totalPage: null,
   });
   const [searchUser, setSearchUser] = useState("");

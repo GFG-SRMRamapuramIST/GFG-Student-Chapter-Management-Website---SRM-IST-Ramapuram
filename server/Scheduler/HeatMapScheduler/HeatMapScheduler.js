@@ -88,6 +88,11 @@ const updateDailyActivity = async () => {
         // Calculate and update avg per day
         user.avgPerDay = calculateAvgPerDay(user.dailyActivity);
 
+        // Calculating point difference btw today's totalQuestionSolved and yesterday's totalQuestionSolved
+        user.pointsIncreased =
+          user.totalQuestionSolved - user.yesterdayTotalQuestionSolved;
+        user.yesterdayTotalQuestionSolved = user.totalQuestionSolved;
+
         console.log(
           `Updated daily activity for ${user.email} for the day ${today}, max streak: ${user.maxStreak}, avg per day: ${user.avgPerDay}`
         );

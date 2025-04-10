@@ -45,6 +45,7 @@ const Leaderboard = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [minimumPassingMark, setMinimumPassingMarks] = useState(0);
   const itemsPerPage = 20;
 
   useEffect(() => {
@@ -59,6 +60,8 @@ const Leaderboard = () => {
         //console.log(response);
 
         if (response.status == 200) {
+          setMinimumPassingMarks(response.data.minimumPassingMark);
+
           const formattedData = response.data.data.map((user) => ({
             id: user._id,
             rank: user.currentRank ?? -1,
@@ -188,7 +191,7 @@ const Leaderboard = () => {
                     <LeaderboardTable
                       data={filteredData}
                       isTeam={false}
-                      minimumPassingMark={60}
+                      minimumPassingMark={minimumPassingMark}
                     />
                     {!searchQuery && (
                       <Pagination
@@ -225,7 +228,7 @@ const Leaderboard = () => {
                         It has been decided by the admin that every individual
                         must score a minimum of{" "}
                         <span className="font-semibold inline-flex items-center">
-                          {60}
+                          {minimumPassingMark}
                           <img
                             src={GfgCoin}
                             alt="GfgCoin"

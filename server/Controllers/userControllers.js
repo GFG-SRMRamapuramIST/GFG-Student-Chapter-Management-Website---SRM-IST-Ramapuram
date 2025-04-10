@@ -453,12 +453,16 @@ exports.fetchLeaderBoardData = async (req, res) => {
       return rankA - rankB;
     });
 
+    // Getting minimum passing marks from constant schema
+    const constant = await ConstantValue.findOne();
+
     return res.status(200).json({
       message: "Leaderboard data fetched successfully!",
       data: users,
       totalPages: Math.ceil(totalUsers / limit),
       currentPage: page,
       limit,
+      minimumPassingMark: constant.passingMarks,
     });
   } catch (error) {
     console.error("Error fetching leaderboard data:", error.message);

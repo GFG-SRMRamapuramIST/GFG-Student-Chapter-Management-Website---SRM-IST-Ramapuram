@@ -32,7 +32,7 @@ const SchedulerControls = () => {
     try {
       setLoading(true);
       const response = await fetchConstantValues();
-      console.log(response);
+      //console.log(response);
       if (response.status === 200) {
         const {
           achievementScheduler,

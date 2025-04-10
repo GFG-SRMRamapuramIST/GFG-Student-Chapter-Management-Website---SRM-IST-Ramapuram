@@ -51,13 +51,20 @@ const deleteAllowedEmail = async ({ userId }, userToken) => {
 
 // Fetach all users API
 const fetchAllUsers = async (
-  { page = 1, limit = 10, search = "", sortOrder = 1 },
+  {
+    page = 1,
+    limit = 10,
+    search = "",
+    sortOrder = 1,
+    roles = [],
+    protected: isProtected,
+  },
   userToken
 ) => {
   return await commonrequest(
     "POST",
     `${BACKEND_URL}/api/v1/admin/fetch-all-users`,
-    { page, limit, search, sortOrder },
+    { page, limit, search, sortOrder, roles, protected: isProtected },
     { Authorization: `Bearer ${userToken}` }
   );
 };
@@ -99,8 +106,8 @@ const fetchConstantValues = async (userToken) => {
     `${BACKEND_URL}/api/v1/admin/fetch-constant-values`,
     {},
     { Authorization: `Bearer ${userToken}` }
-  )
-}
+  );
+};
 
 // Edit Constant Values function
 const editConstantValues = async (
@@ -108,10 +115,8 @@ const editConstantValues = async (
     achievementScheduler,
     backupDataScheduler,
     resetDataScheduler,
-    passingPercentage,
-    perDayPracticePoint,
-    perContestPoint,
     autoKickScheduler,
+    passingMarks,
   },
   userToken
 ) => {
@@ -122,10 +127,8 @@ const editConstantValues = async (
       achievementScheduler,
       backupDataScheduler,
       resetDataScheduler,
-      passingPercentage,
-      perContestPoint,
-      perDayPracticePoint,
       autoKickScheduler,
+      passingMarks,
     },
     { Authorization: `Bearer ${userToken}` }
   );

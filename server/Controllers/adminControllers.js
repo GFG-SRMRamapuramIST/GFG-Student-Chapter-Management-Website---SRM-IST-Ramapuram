@@ -1,6 +1,5 @@
 const fs = require("fs");
 const chalk = require("chalk");
-const nodemailer = require("nodemailer");
 const csv = require("csvtojson");
 
 const {
@@ -300,7 +299,15 @@ exports.fetchAllUsers = async (req, res) => {
     }
 
     // Extract query params with default values
-    let { page = 1, limit = 10, search = "", sortOrder = 1 } = req.body;
+    let {
+      page = 1,
+      limit = 10,
+      search = "",
+      sortOrder = 1,
+      roles = [],
+      protected: isProtected,
+    } = req.body;
+
     page = parseInt(page, 10);
     limit = parseInt(limit, 10);
     sortOrder = parseInt(sortOrder, 10);
@@ -313,20 +320,33 @@ exports.fetchAllUsers = async (req, res) => {
           ],
         }
       : {};
+
+    const roleFilter =
+      Array.isArray(roles) && roles.length > 0 ? { role: { $in: roles } } : {};
+
+    const protectedFilter =
+      typeof isProtected === "boolean" ? { protected: isProtected } : {};
+
+    const finalFilter = {
+      ...searchFilter,
+      ...roleFilter,
+      ...protectedFilter,
+    };
+
     const skip = (page - 1) * limit;
 
     // Fetch users and total count simultaneously
     const [users, totalUsers] = await Promise.all([
-      Users.find(searchFilter)
-        .sort({ name: sortOrder }) // Sort by name instead of createdAt
+      Users.find(finalFilter)
+        .sort({ name: sortOrder })
         .skip(skip)
         .limit(limit)
         .lean(),
-      Users.countDocuments(searchFilter),
+      Users.countDocuments(finalFilter),
     ]);
 
     return res.status(200).json({
-      message: "Allowed users fetched successfully!",
+      message: "Filtered users fetched successfully!",
       data: users,
       totalPages: Math.ceil(totalUsers / limit),
       currentPage: page,
@@ -1025,9 +1045,6 @@ exports.editConstantValues = async (req, res) => {
     achievementScheduler,
     backupDataScheduler,
     resetDataScheduler,
-    passingPercentage,
-    perDayPracticePoint,
-    perContestPoint,
     autoKickScheduler,
     passingMarks,
   } = req.body; // New constant values
@@ -1042,9 +1059,6 @@ exports.editConstantValues = async (req, res) => {
     achievementScheduler === null &&
     backupDataScheduler === null &&
     resetDataScheduler === null &&
-    passingPercentage === null &&
-    perDayPracticePoint === null &&
-    perContestPoint === null &&
     autoKickScheduler === null &&
     passingMarks === null
   ) {
@@ -1075,9 +1089,6 @@ exports.editConstantValues = async (req, res) => {
     constant.achievementScheduler = achievementScheduler;
     constant.backupDataScheduler = backupDataScheduler;
     constant.resetDataScheduler = resetDataScheduler;
-    constant.passingPercentage = passingPercentage;
-    constant.perDayPracticePoint = perDayPracticePoint;
-    constant.perContestPoint = perContestPoint;
     constant.autoKickScheduler = autoKickScheduler;
     constant.passingMarks = passingMarks;
     await constant.save();
