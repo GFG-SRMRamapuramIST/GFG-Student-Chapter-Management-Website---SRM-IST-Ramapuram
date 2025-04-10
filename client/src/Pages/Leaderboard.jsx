@@ -1,9 +1,13 @@
 import ReactGA from "react-ga4";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 // Importing the Icons
-import { IoPersonOutline, IoWarningOutline, IoCloseOutline } from "react-icons/io5";
+import {
+  IoPersonOutline,
+  IoWarningOutline,
+  IoCloseOutline,
+} from "react-icons/io5";
 import { FaSpinner, FaSearch } from "react-icons/fa";
 
 import { LeaderboardHero, LeaderboardTable } from "../Components";
@@ -13,7 +17,6 @@ import { Pagination, ToastMsg } from "../Utilities";
 // Importing the API
 import { UserServices } from "../Services";
 import { GfgCoin } from "../Assets";
-import { GoDotFill } from "react-icons/go";
 
 const Leaderboard = () => {
   // Google Analytics tracking
@@ -28,9 +31,11 @@ const Leaderboard = () => {
   const { fetchLeaderboardDataFunction } = UserServices();
 
   const [activeTab, setActiveTab] = useState("individual");
+
+  const [searchUser, setSearchUser] = useState("");
+  const [debouncedSearchUser, setDebouncedSearchUser] = useState(searchUser);
+
   const [searchQuery, setSearchQuery] = useState("");
-  const [isSearchVisible, setIsSearchVisible] = useState(false);
-  const [searching, setSearching] = useState(false);
 
   const [leaderboardData, setLeaderboardData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
@@ -42,54 +47,6 @@ const Leaderboard = () => {
   const [totalPages, setTotalPages] = useState(1);
   const itemsPerPage = 20;
 
-  const [passingPercentage, setPassingPercentage] = useState(0);
-  const [perDayPracticePoint, setPerDayPracticePoint] = useState(0);
-  const [perContestPoint, setPerContestPoint] = useState(0);
-  const [minimumPassingMark, setMinimumPassingMark] = useState(0);
-
-  const calculatePassingMarks = () => {
-    const perMonthmarks = 30 * perDayPracticePoint + 4 * perContestPoint;
-    const minPassingMark = Math.floor(
-      (passingPercentage / 100) * perMonthmarks
-    );
-    setMinimumPassingMark(minPassingMark);
-  };
-
-  useEffect(() => {
-    calculatePassingMarks();
-  }, [passingPercentage, perDayPracticePoint, perContestPoint]);
-
-  // Debounced search handler
-  const debouncedSearch = useCallback(
-    (query) => {
-      if (!query.trim()) {
-        setFilteredData(leaderboardData);
-        return;
-      }
-
-      setSearching(true);
-      console.log(`Searching for ${query}`);
-      
-      // API call here
-      const filtered = leaderboardData.filter((user) =>
-        user.name.toLowerCase().includes(query.toLowerCase())
-      );
-      
-      setFilteredData(filtered);
-      setSearching(false);
-    },
-    [leaderboardData]
-  );
-
-  // Handle search input changes with debounce
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      debouncedSearch(searchQuery);
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [searchQuery, debouncedSearch]);
-
   useEffect(() => {
     const fetchLeaderboardData = async () => {
       setLoading(true);
@@ -97,14 +54,11 @@ const Leaderboard = () => {
         const response = await fetchLeaderboardDataFunction({
           page: currentPage,
           limit: itemsPerPage,
+          search: debouncedSearchUser,
         });
         //console.log(response);
 
         if (response.status == 200) {
-          setPassingPercentage(response.data.passingPercentage);
-          setPerDayPracticePoint(response.data.perDayPracticePoint);
-          setPerContestPoint(response.data.perContestPoint);
-
           const formattedData = response.data.data.map((user) => ({
             id: user._id,
             rank: user.currentRank ?? -1,
@@ -119,7 +73,7 @@ const Leaderboard = () => {
 
           setLeaderboardData(formattedData);
           setFilteredData(formattedData); // Initialize filtered data with all data
-          if (currentPage == 1) {
+          if (currentPage == 1 && debouncedSearchUser == "") {
             setTopThreeUsers(formattedData.slice(0, 3));
           }
           setTotalPages(response.data.totalPages);
@@ -133,7 +87,18 @@ const Leaderboard = () => {
     };
 
     fetchLeaderboardData();
-  }, [currentPage]);
+  }, [currentPage, debouncedSearchUser]);
+
+  // Debounce mechanism for serach input
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchUser(searchUser);
+    }, 1000); // 1s debounce time
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchUser]);
 
   const getYearSuffix = (year) => {
     if (year === 1) return "st";
@@ -189,13 +154,13 @@ const Leaderboard = () => {
                 <input
                   type="text"
                   placeholder="Search users..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  value={searchUser}
+                  onChange={(e) => setSearchUser(e.target.value)}
                   className="w-full pl-10 pr-10 py-2 rounded-full border border-green-300 focus:border-gfgsc-green focus:outline-none focus:ring-2 focus:ring-gfgsc-green/20 shadow-sm text-sm"
                 />
                 <FaSearch className="absolute left-3.5 top-2.5 text-green-500" />
                 {searchQuery && (
-                  <button 
+                  <button
                     onClick={clearSearch}
                     className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600"
                   >
@@ -212,13 +177,9 @@ const Leaderboard = () => {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
               >
-                <LeaderboardHero
-                  topThree={topThreeUsers}
-                  isTeam={false}
-                  minimumPassingMark={minimumPassingMark}
-                />
-                
-                {searching ? (
+                <LeaderboardHero topThree={topThreeUsers} isTeam={false} />
+
+                {loading ? (
                   <div className="flex justify-center my-8">
                     <FaSpinner className="animate-spin text-2xl text-gfgsc-green" />
                   </div>
@@ -227,7 +188,7 @@ const Leaderboard = () => {
                     <LeaderboardTable
                       data={filteredData}
                       isTeam={false}
-                      minimumPassingMark={minimumPassingMark}
+                      minimumPassingMark={60}
                     />
                     {!searchQuery && (
                       <Pagination
@@ -264,7 +225,7 @@ const Leaderboard = () => {
                         It has been decided by the admin that every individual
                         must score a minimum of{" "}
                         <span className="font-semibold inline-flex items-center">
-                          {minimumPassingMark}
+                          {60}
                           <img
                             src={GfgCoin}
                             alt="GfgCoin"

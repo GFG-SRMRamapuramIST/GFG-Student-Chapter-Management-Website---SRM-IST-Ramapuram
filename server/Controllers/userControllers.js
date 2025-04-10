@@ -414,46 +414,44 @@ exports.getProfilePageData = async (req, res) => {
 
 //6. Get Leaderboard data API
 exports.fetchLeaderBoardData = async (req, res) => {
-  const token = req.headers.authorization?.split(" ")[1]; // Extract token
+  const token = req.headers.authorization?.split(" ")[1];
   if (!token) {
     return res.status(401).json({ message: "No token provided" });
   }
+
   try {
-    // Verify the auth token
     const authResult = await verifyAuthToken(token);
     if (authResult.status !== "not expired") {
       return res.status(400).json({ message: authResult.message });
     }
 
-    let { page = 1, limit = 10 } = req.body;
+    let { page = 1, limit = 10, search = "" } = req.body;
     page = parseInt(page, 10);
     limit = parseInt(limit, 10);
-
     const skip = (page - 1) * limit;
 
-    // Fetch users sorted by currentRank (null values treated as -1)
-    const users = await Users.find()
+    // Build query for name filtering
+    const query = {};
+    if (search.trim() !== "") {
+      query.name = { $regex: search.trim(), $options: "i" }; // case-insensitive search
+    }
+
+    // Get total count after applying search
+    const totalUsers = await Users.countDocuments(query);
+
+    // Fetch and sort users
+    const users = await Users.find(query)
       .lean()
-      .sort({
-        currentRank: 1, // Ascending order
-      })
+      .sort({ currentRank: 1 }) // Ascending
       .skip(skip)
       .limit(limit);
 
-    // Handle null ranks (move them to the end)
+    // Move null ranks to the end
     users.sort((a, b) => {
       const rankA = a.currentRank ?? Infinity;
       const rankB = b.currentRank ?? Infinity;
       return rankA - rankB;
     });
-
-    const totalUsers = await Users.countDocuments();
-
-    // Fetching constant values
-    const constantValues = await ConstantValue.findOne();
-    const passingPercentage = constantValues?.passingPercentage || 30;
-    const perDayPracticePoint = constantValues?.perDayPracticePoint || 1;
-    const perContestPoint = constantValues?.perContestPoint || 0;
 
     return res.status(200).json({
       message: "Leaderboard data fetched successfully!",
@@ -461,15 +459,13 @@ exports.fetchLeaderBoardData = async (req, res) => {
       totalPages: Math.ceil(totalUsers / limit),
       currentPage: page,
       limit,
-      passingPercentage,
-      perDayPracticePoint,
-      perContestPoint,
     });
   } catch (error) {
     console.error("Error fetching leaderboard data:", error.message);
-    return res
-      .status(500)
-      .json({ message: "Internal Server Error", error: error.message });
+    return res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message,
+    });
   }
 };
 

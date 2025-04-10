@@ -2,25 +2,29 @@ import { motion } from "framer-motion";
 import { GfgCoin } from "../../Assets";
 import { useMemo } from "react";
 
-const LeaderboardHero = ({ topThree, isTeam=false, minimumPassingMark }) => {
+const LeaderboardHero = ({ topThree, isTeam = false }) => {
   // Dynamic calculation of days left in the month
   const daysLeftInMonth = useMemo(() => {
     const today = new Date();
-    const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    const lastDayOfMonth = new Date(
+      today.getFullYear(),
+      today.getMonth() + 1,
+      0
+    );
     const daysLeft = lastDayOfMonth.getDate() - today.getDate();
     return daysLeft;
   }, []);
-  
+
   const medalColors = [
     "bg-gradient-to-br from-[#C0C0C0] to-[#A9A9A9] border-[#C0C0C0]", // Silver (2nd Place)
     "bg-gradient-to-br from-[#FFD700] to-[#FFA500] border-[#FFD700]", // Gold (1st Place)
-    "bg-gradient-to-br from-[#CD7F32] to-[#8B4513] border-[#CD7F32]"  // Bronze (3rd Place)
+    "bg-gradient-to-br from-[#CD7F32] to-[#8B4513] border-[#CD7F32]", // Bronze (3rd Place)
   ];
 
   const podiumHeights = [
     "h-36", // 2nd Place (Silver)
     "h-48", // 1st Place (Gold)
-    "h-32"  // 3rd Place (Bronze)
+    "h-32", // 3rd Place (Bronze)
   ];
 
   const [gold, silver, bronze] = topThree;
@@ -40,7 +44,13 @@ const LeaderboardHero = ({ topThree, isTeam=false, minimumPassingMark }) => {
             w-36 shadow-lg 
             ${podiumHeights[index]} 
             ${medalColors[index]}
-            ${index === 0 ? "rounded-tl-lg" : index === 1 ? "rounded-t-lg" : "rounded-tr-lg"}
+            ${
+              index === 0
+                ? "rounded-tl-lg"
+                : index === 1
+                ? "rounded-t-lg"
+                : "rounded-tr-lg"
+            }
             relative
           `}
         >
@@ -55,15 +65,15 @@ const LeaderboardHero = ({ topThree, isTeam=false, minimumPassingMark }) => {
           <div className="text-center pb-4">
             <h3 className="text-white font-bold">{member.name}</h3>
             <p className="text-white/90 text-sm inline-flex justify-center items-center px-2 py-0.5 bg-white/20 rounded-full">
-              {member.points} 
+              {member.points}
               <img src={GfgCoin} alt="GfgCoin" className="w-6 h-6 ml-1" />
             </p>
           </div>
         </motion.div>
       ))}
-      
+
       {/* Days left in month indicator */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
@@ -73,9 +83,11 @@ const LeaderboardHero = ({ topThree, isTeam=false, minimumPassingMark }) => {
       >
         <span className="flex items-center">
           <span className="w-2 h-2 bg-emerald-400 rounded-full mr-2"></span>
-          {daysLeftInMonth === 0 ? "Last Day!" : 
-           daysLeftInMonth === 1 ? "1 Day Left" : 
-           `${daysLeftInMonth} Days Left`}
+          {daysLeftInMonth === 0
+            ? "Last Day!"
+            : daysLeftInMonth === 1
+            ? "1 Day Left"
+            : `${daysLeftInMonth} Days Left`}
         </span>
       </motion.div>
     </motion.div>

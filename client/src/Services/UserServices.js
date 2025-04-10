@@ -71,13 +71,13 @@ const toggleSubscribeFunction = async (userToken) => {
 
 // Fetch Leaderboard Data API
 const fetchLeaderboardDataFunction = async (
-  { page = 1, limit = 10 },
+  { page = 1, limit = 10, search = "" },
   token
 ) => {
   return await commonrequest(
     "POST",
     `${BACKEND_URL}/api/v1/user/get-leaderboard-data`,
-    { page, limit },
+    { page, limit, search },
     { Authorization: `Bearer ${token}` }
   );
 };
