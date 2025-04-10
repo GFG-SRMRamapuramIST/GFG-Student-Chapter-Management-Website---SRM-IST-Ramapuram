@@ -1,10 +1,10 @@
 import ReactGA from "react-ga4";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 // Importing the Icons
-import { IoPersonOutline, IoWarningOutline } from "react-icons/io5";
-import { FaSpinner } from "react-icons/fa";
+import { IoPersonOutline, IoWarningOutline, IoCloseOutline } from "react-icons/io5";
+import { FaSpinner, FaSearch } from "react-icons/fa";
 
 import { LeaderboardHero, LeaderboardTable } from "../Components";
 
@@ -28,8 +28,12 @@ const Leaderboard = () => {
   const { fetchLeaderboardDataFunction } = UserServices();
 
   const [activeTab, setActiveTab] = useState("individual");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchVisible, setIsSearchVisible] = useState(false);
+  const [searching, setSearching] = useState(false);
 
   const [leaderboardData, setLeaderboardData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [topThreeUsers, setTopThreeUsers] = useState([]);
 
   const [loading, setLoading] = useState(true);
@@ -54,6 +58,37 @@ const Leaderboard = () => {
   useEffect(() => {
     calculatePassingMarks();
   }, [passingPercentage, perDayPracticePoint, perContestPoint]);
+
+  // Debounced search handler
+  const debouncedSearch = useCallback(
+    (query) => {
+      if (!query.trim()) {
+        setFilteredData(leaderboardData);
+        return;
+      }
+
+      setSearching(true);
+      console.log(`Searching for ${query}`);
+      
+      // API call here
+      const filtered = leaderboardData.filter((user) =>
+        user.name.toLowerCase().includes(query.toLowerCase())
+      );
+      
+      setFilteredData(filtered);
+      setSearching(false);
+    },
+    [leaderboardData]
+  );
+
+  // Handle search input changes with debounce
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      debouncedSearch(searchQuery);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery, debouncedSearch]);
 
   useEffect(() => {
     const fetchLeaderboardData = async () => {
@@ -83,6 +118,7 @@ const Leaderboard = () => {
           }));
 
           setLeaderboardData(formattedData);
+          setFilteredData(formattedData); // Initialize filtered data with all data
           if (currentPage == 1) {
             setTopThreeUsers(formattedData.slice(0, 3));
           }
@@ -121,6 +157,12 @@ const Leaderboard = () => {
     }, 300);
   };
 
+  // Clear search and reset data
+  const clearSearch = () => {
+    setSearchQuery("");
+    setFilteredData(leaderboardData);
+  };
+
   return (
     <div className="min-h-screen">
       <motion.div
@@ -141,27 +183,27 @@ const Leaderboard = () => {
           </div>
         ) : (
           <>
-            {/* <div className="flex justify-center self-center mx-auto space-x-4 p-3 rounded-lg mb-2 w-fit bg-gfgsc-green-200">
-              {tabs.map((tab) => (
-                <motion.button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className={`
-                  flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200
-                  ${
-                    activeTab === tab.id
-                      ? "bg-gfgsc-green text-white"
-                      : "text-gfg-black hover:bg-hover-gray"
-                  }
-                `}
-                >
-                  {tab.icon}
-                  <span>{tab.label}</span>
-                </motion.button>
-              ))}
-            </div> */}
+            {/* Search Bar */}
+            <div className="flex justify-center mb-2">
+              <div className="relative w-64 md:w-96 lg:w-1/2">
+                <input
+                  type="text"
+                  placeholder="Search users..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-10 py-2 rounded-full border border-green-300 focus:border-gfgsc-green focus:outline-none focus:ring-2 focus:ring-gfgsc-green/20 shadow-sm text-sm"
+                />
+                <FaSearch className="absolute left-3.5 top-2.5 text-green-500" />
+                {searchQuery && (
+                  <button 
+                    onClick={clearSearch}
+                    className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600"
+                  >
+                    <IoCloseOutline className="w-5 h-5" />
+                  </button>
+                )}
+              </div>
+            </div>
 
             <AnimatePresence mode="wait">
               <motion.div
@@ -175,16 +217,27 @@ const Leaderboard = () => {
                   isTeam={false}
                   minimumPassingMark={minimumPassingMark}
                 />
-                <LeaderboardTable
-                  data={leaderboardData}
-                  isTeam={false}
-                  minimumPassingMark={minimumPassingMark}
-                />
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={handlePageChange}
-                />
+                
+                {searching ? (
+                  <div className="flex justify-center my-8">
+                    <FaSpinner className="animate-spin text-2xl text-gfgsc-green" />
+                  </div>
+                ) : (
+                  <>
+                    <LeaderboardTable
+                      data={filteredData}
+                      isTeam={false}
+                      minimumPassingMark={minimumPassingMark}
+                    />
+                    {!searchQuery && (
+                      <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={handlePageChange}
+                      />
+                    )}
+                  </>
+                )}
               </motion.div>
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
@@ -222,40 +275,6 @@ const Leaderboard = () => {
                         automatically removed from the website at the end of the
                         month.{" "}
                       </p>
-
-                      {/* <div className="mt-3 bg-white/50 backdrop-blur-sm p-2 rounded border border-red-200">
-                        <p className="text-xs text-red-600 italic">
-                          The minimum passing score is determined using the
-                          following formula:
-                        </p>
-                        <div className="space-y-1">
-                          <p className="text-[0.6rem] md:text-xs text-red-600 italic flex items-center">
-                            <GoDotFill className="inline mr-1 flex-shrink-0" />
-                            Expected points per day from practicing questions ={" "}
-                            {perDayPracticePoint}
-                          </p>
-                          <p className="text-[0.6rem] md:text-xs text-red-600 italic flex items-center">
-                            <GoDotFill className="inline mr-1 flex-shrink-0" />
-                            Expected points per contest = {perContestPoint}
-                          </p>
-                          <p className="text-[0.6rem] md:text-xs text-red-600 italic flex items-center">
-                            <GoDotFill className="inline mr-1 flex-shrink-0" />
-                            Passing percentage = {passingPercentage}%
-                          </p>
-                          <p className="text-[0.6rem] md:text-xs text-red-600 italic">
-                            Passing score = floor(((30 X {perDayPracticePoint})
-                            + (4 X {perContestPoint})) X 0.{passingPercentage})
-                            = {minimumPassingMark}
-                          </p>
-                          <p className="text-[0.6rem] md:text-xs text-red-600 italic">
-                            Here, 30 represents the default number of days in a
-                            month (regardless of whether the month has 28, 29,
-                            30, or 31 days), and 4 represents the required
-                            number of contests per month (even if more than four
-                            contests are available).
-                          </p>
-                        </div>
-                      </div> */}
                     </div>
                   </div>
                 </div>

@@ -31,7 +31,10 @@ const ResourceCard = ({ resource }) => {
             {resource.title}
           </h3>
 
-          <p className="text-gray-600 mb-6 line-clamp-2 text-sm">
+          <p
+            className="text-gray-600 mb-6 line-clamp-2 text-sm"
+            title={resource.description}
+          >
             {resource.description}
           </p>
 
@@ -180,9 +183,20 @@ const AllResources = () => {
 
           <div className="relative group">
             <motion.button
-              whileHover={hasMinimumRole(userRole, ROLES.COREMEMBER) ? { scale: 1.02 } : {}}
-              whileTap={hasMinimumRole(userRole, ROLES.COREMEMBER) ? { scale: 0.98 } : {}}
-              onClick={() => hasMinimumRole(userRole, ROLES.COREMEMBER) && setShowCreateModal(true)}
+              whileHover={
+                hasMinimumRole(userRole, ROLES.COREMEMBER)
+                  ? { scale: 1.02 }
+                  : {}
+              }
+              whileTap={
+                hasMinimumRole(userRole, ROLES.COREMEMBER)
+                  ? { scale: 0.98 }
+                  : {}
+              }
+              onClick={() =>
+                hasMinimumRole(userRole, ROLES.COREMEMBER) &&
+                setShowCreateModal(true)
+              }
               disabled={!hasMinimumRole(userRole, ROLES.COREMEMBER)}
               className={`flex items-center justify-center gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-xl transition-all duration-300 w-full sm:w-auto shadow-lg ${
                 hasMinimumRole(userRole, ROLES.COREMEMBER)
@@ -193,7 +207,7 @@ const AllResources = () => {
               <FaPlus className="text-sm" />
               <span>Create Resource</span>
             </motion.button>
-            
+
             {!hasMinimumRole(userRole, ROLES.COREMEMBER) && (
               <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 w-max px-3 py-1 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity">
                 Only core team members can create resources

@@ -108,13 +108,11 @@ export {
 };
 
 // Resources Page Components
-import ResourceCard from "./Resources/ResourceCard";
 import AddResourceModal from "./Resources/AddResourceModal";
 import EditResourceModal from "./Resources/EditResourceModal";
 import CreateResourceSetModal from "./Resources/CreateResourceSetModal";
 
 export {
-  ResourceCard,
   AddResourceModal,
   EditResourceModal,
   CreateResourceSetModal,
