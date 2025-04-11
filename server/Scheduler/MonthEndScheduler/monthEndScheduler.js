@@ -35,9 +35,7 @@ async function runMonthEndTasks() {
       backupDataScheduler,
       resetDataScheduler,
       autoKickScheduler,
-      passingPercentage,
-      perDayPracticePoint,
-      perContestPoint,
+      passingMarks,
     } = config;
 
     if (achievementScheduler) {
@@ -74,11 +72,7 @@ async function runMonthEndTasks() {
 
     if (autoKickScheduler) {
       try {
-        await autoKickFunction(
-          passingPercentage,
-          perDayPracticePoint,
-          perContestPoint
-        );
+        await autoKickFunction(passingMarks);
       } catch (error) {
         console.error(chalk.red("Error in Auto Kick Function:"), error.message);
         await sendEmail(
