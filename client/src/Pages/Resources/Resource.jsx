@@ -422,7 +422,8 @@ const Resource = () => {
                         <FaExternalLinkAlt />
                       </a>
                     </h3>
-                    <p className="text-sm text-gray-600 line-clamp-2">
+                    <p className="text-sm text-gray-600 line-clamp-2"
+                    title={video.videoDescription}>
                       {video.videoDescription}
                     </p>
                   </div>

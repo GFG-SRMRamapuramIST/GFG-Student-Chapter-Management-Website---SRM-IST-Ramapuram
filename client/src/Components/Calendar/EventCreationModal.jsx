@@ -9,7 +9,7 @@ import {
 import { FaSpinner } from "react-icons/fa";
 
 // Components
-import { RotatingCloseButton } from "../../Utilities";
+import { RotatingCloseButton, ToastMsg } from "../../Utilities";
 
 const EventCreationModal = ({ isOpen, onClose, onSave }) => {
   const [loading, setLoading] = useState(false);
@@ -38,6 +38,21 @@ const EventCreationModal = ({ isOpen, onClose, onSave }) => {
     }
   }, [formData.date]);
 
+  // Reset non-required fields when event type changes
+  useEffect(() => {
+    if (eventType === "festival") {
+      setFormData(prev => ({
+        ...prev,
+        link: "",
+        startTime: "",
+        endTime: "",
+        description: "",
+        attendees: "all",
+        platform: "leetcode",
+      }));
+    }
+  }, [eventType]);
+
   // *** Event Creation Modal Handles ***
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,29 +60,39 @@ const EventCreationModal = ({ isOpen, onClose, onSave }) => {
     // Prevent contest scheduling on the last day of month
     if (eventType === "contest" && isLastDayOfMonth) {
       // Instead of just returning, show a toast message
-      const { ToastMsg } = require("../../Utilities");
       ToastMsg("Contests cannot be scheduled on the last day of the month", "error");
       return;
     }
     
     setLoading(true); // Start loading
     
-    const eventData = {
-      name: formData.title,
-      link: formData.link,
-      date: formData.date, // Fixed key typo from 'data' to 'date'
-      time: formData.startTime,
-      type: eventType,
-      ...(eventType === "meeting"
-        ? {
-          description: formData.description,
-          attendees: formData.attendees,
-        }
-        : {
-          platform: formData.platform,
-          endTime: formData.endTime,
-        }),
-    };
+    let eventData;
+    
+    // Format event data based on type
+    if (eventType === "festival") {
+      eventData = {
+        name: formData.title,
+        date: formData.date,
+        type: eventType,
+      };
+    } else {
+      eventData = {
+        name: formData.title,
+        link: formData.link,
+        date: formData.date,
+        time: formData.startTime,
+        type: eventType,
+        ...(eventType === "meeting"
+          ? {
+            description: formData.description,
+            attendees: formData.attendees,
+          }
+          : {
+            platform: formData.platform,
+            endTime: formData.endTime,
+          }),
+      };
+    }
       
     // console.log("Form Data:", formData);
     // console.log("Event Data:", eventData);
@@ -122,7 +147,7 @@ const EventCreationModal = ({ isOpen, onClose, onSave }) => {
                   <RiCalendarLine className="text-gfgsc-green w-6 h-6" />
                 </div>
                 <h3 className="text-xl font-semibold text-gfg-black">
-                  Schedule {eventType === "meeting" ? "Meeting" : "Contest"}
+                  Schedule {eventType === "meeting" ? "Meeting" : eventType === "contest" ? "Contest" : "Festival"}
                 </h3>
               </div>
               <RotatingCloseButton onClick={onClose} />
@@ -150,6 +175,16 @@ const EventCreationModal = ({ isOpen, onClose, onSave }) => {
                 >
                   Contest
                 </button>
+                <button
+                  onClick={() => setEventType("festival")}
+                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
+                    eventType === "festival"
+                      ? "bg-white text-gfg-black shadow-sm"
+                      : "text-gray-500"
+                  }`}
+                >
+                  Festival
+                </button>
               </div>
             </div>
 
@@ -168,21 +203,23 @@ const EventCreationModal = ({ isOpen, onClose, onSave }) => {
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Link
-                </label>
-                <input
-                  type="url"
-                  name="link"
-                  value={formData.link}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gfgsc-green"
-                  required
-                />
-              </div>
+              {eventType !== "festival" && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Link
+                  </label>
+                  <input
+                    type="url"
+                    name="link"
+                    value={formData.link}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gfgsc-green"
+                    required
+                  />
+                </div>
+              )}
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className={`grid ${eventType !== "festival" ? "grid-cols-2" : ""} gap-4`}>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Date
@@ -200,19 +237,22 @@ const EventCreationModal = ({ isOpen, onClose, onSave }) => {
                     <p className="text-red-500 text-xs mt-1">Contests cannot be scheduled on the last day of the month</p>
                   )}
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Start Time
-                  </label>
-                  <input
-                    type="time"
-                    name="startTime"
-                    value={formData.startTime}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gfgsc-green"
-                    required
-                  />
-                </div>
+                
+                {eventType !== "festival" && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Start Time
+                    </label>
+                    <input
+                      type="time"
+                      name="startTime"
+                      value={formData.startTime}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gfgsc-green"
+                      required
+                    />
+                  </div>
+                )}
               </div>
 
               {eventType === "contest" && (
@@ -282,6 +322,19 @@ const EventCreationModal = ({ isOpen, onClose, onSave }) => {
                     </select>
                   </div>
                 </>
+              )}
+
+              {/* Festival Event Type Info */}
+              {eventType === "festival" && (
+                <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-md">
+                  <div className="flex">
+                    <div className="ml-3">
+                      <p className="text-sm text-blue-700">
+                        Festival events only require a title and date. They will appear as special markers on the calendar.
+                      </p>
+                    </div>
+                  </div>
+                </div>
               )}
 
               <div className="flex justify-end pt-4">

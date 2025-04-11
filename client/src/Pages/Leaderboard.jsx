@@ -57,7 +57,7 @@ const Leaderboard = () => {
           limit: itemsPerPage,
           search: debouncedSearchUser,
         });
-        //console.log(response);
+        console.log(response);
 
         if (response.status == 200) {
           setMinimumPassingMarks(response.data.minimumPassingMark);
@@ -142,16 +142,7 @@ const Leaderboard = () => {
           Leaderboard
         </h1>
 
-        {loading ? (
-          <div className="p-6 flex items-center justify-center">
-            <div className="flex flex-col items-center gap-4">
-              <FaSpinner className="animate-spin text-4xl text-gfgsc-green" />
-              <p className="text-gray-600">Loading leaderboard...</p>
-            </div>
-          </div>
-        ) : (
-          <>
-            {/* Search Bar */}
+        {/* Search Bar */}
             <div className="flex justify-center mb-2">
               <div className="relative w-64 md:w-96 lg:w-1/2">
                 <input
@@ -172,6 +163,17 @@ const Leaderboard = () => {
                 )}
               </div>
             </div>
+
+        {loading ? (
+          <div className="p-6 flex items-center justify-center">
+            <div className="flex flex-col items-center gap-4">
+              <FaSpinner className="animate-spin text-4xl text-gfgsc-green" />
+              <p className="text-gray-600">Loading leaderboard...</p>
+            </div>
+          </div>
+        ) : (
+          <>
+            
 
             <AnimatePresence mode="wait">
               <motion.div
