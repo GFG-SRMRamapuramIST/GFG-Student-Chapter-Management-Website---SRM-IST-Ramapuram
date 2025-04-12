@@ -30,50 +30,62 @@ const UserTable = ({
   pageData,
   searchData,
   sortDirection,
+  positionState,
+  protectionState,
+  onApplyFilters,
+  onResetFilters,
 }) => {
   const { pageInfo, setPageInfo } = pageData;
   const { searchUser, setSearchUser } = searchData;
-  
+
   // Multi-select filters state
   const [showFilters, setShowFilters] = useState(false);
-  const [selectedPositions, setSelectedPositions] = useState([]);
-  const [selectedProtectionStatus, setSelectedProtectionStatus] = useState("");
-  
+  const { selectedPositions, setSelectedPositions } = positionState;
+  const { selectedProtectionStatus, setSelectedProtectionStatus } =
+    protectionState;
+
   // List of all possible positions
-  const allPositions = ["ADMIN", "COREMEMBER", "VICEPRESIDENT", "PRESIDENT", "MEMBER", "USER"];
-  
+  const allPositions = [
+    "ADMIN",
+    "COREMEMBER",
+    "VICEPRESIDENT",
+    "PRESIDENT",
+    "MEMBER",
+    "USER",
+  ];
+
   // Handle filter changes
   const handlePositionFilterChange = (position) => {
-    setSelectedPositions(prev => 
-      prev.includes(position) 
-        ? prev.filter(p => p !== position)
+    setSelectedPositions((prev) =>
+      prev.includes(position)
+        ? prev.filter((p) => p !== position)
         : [...prev, position]
     );
   };
-  
+
   const handleProtectionStatusFilterChange = (status) => {
-    setSelectedProtectionStatus(prev => prev === status ? "" : status);
+    setSelectedProtectionStatus((prev) => (prev === status ? "" : status));
   };
-  
-  // Apply filters 
+
+  // Apply filters
   const applyFilters = () => {
-    console.log("Applying filters:", {
+    console.log("Child Component - Applying filters:", {
       positions: selectedPositions,
-      protectionStatus: selectedProtectionStatus
+      protectionStatus: selectedProtectionStatus,
     });
-    
-    // API call here
-    
+
+    // Invoke the parent's callback function
+    onApplyFilters();
+
     setShowFilters(false);
   };
-  
-  // Reset filters
+
+  // Reset Filters Function
   const resetFilters = () => {
-    setSelectedPositions([]);
-    setSelectedProtectionStatus("");
-    
-    console.log("Filters reset");
-    // API call here
+    console.log("Child Component - Filters reset");
+
+    // Notify parent about the reset
+    onResetFilters();
   };
 
   return (
@@ -236,12 +248,12 @@ const UserTable = ({
               className="bg-green-50 border border-green-200 rounded-full px-3 py-1 text-xs flex items-center"
             >
               <span className="text-green-700">{position}</span>
-              <button
+              {/* <button
                 onClick={() => handlePositionFilterChange(position)}
                 className="ml-2 text-green-500 hover:text-green-700"
               >
                 <RiCloseLine className="w-3 h-3" />
-              </button>
+              </button> */}
             </div>
           ))}
 
@@ -523,6 +535,16 @@ UserTable.propTypes = {
     setSearchUser: PropTypes.func.isRequired,
   }).isRequired,
   sortDirection: PropTypes.oneOf(["asc", "desc"]).isRequired,
+  positionState: PropTypes.shape({
+    selectedPositions: PropTypes.array.isRequired,
+    setSelectedPositions: PropTypes.string.isRequired,
+  }).isRequired,
+  protectionState: PropTypes.shape({
+    selectedProtectionStatus: PropTypes.func.isRequired,
+    setSelectedProtectionStatus: PropTypes.func.isRequired,
+  }).isRequired,
+  onApplyFilters: PropTypes.func.isRequired,
+  onResetFilters: PropTypes.func.isRequired,
 };
 
 export default UserTable;

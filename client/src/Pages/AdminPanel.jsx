@@ -50,39 +50,6 @@ const AdminPanel = () => {
     "ADMIN",
   ];
 
-  const fetchUsersData = async () => {
-    try {
-      setLoading(true);
-      const response = await fetchAllUsers({
-        page: pageInfo.currentPage,
-        limit: pageInfo.itemsPerPage,
-        search: debouncedSearchUser,
-        sortOrder: sortDirection === "asc" ? 1 : -1,
-      });
-
-      if (response.status === 200) {
-        setUsers(response.data.data);
-        //console.log("Users Data: ", response.data.data);
-        setPageInfo({
-          currentPage: parseInt(response.data.currentPage, 10),
-          itemsPerPage: parseInt(response.data.limit, 10),
-          totalPages: parseInt(response.data.totalPages, 10),
-        });
-      } else {
-        ToastMsg("Error in fetching Users data, please try later!", "error");
-        console.error(
-          "Fetch Users Data Error: ",
-          response.response.data.message
-        );
-      }
-    } catch (error) {
-      ToastMsg("Internal Server Error!", "error");
-      console.error("Fetch Users Data Error: ", error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const [confirmationState, setConfirmationState] = useState({
     isOpen: false,
     type: "info",
@@ -347,17 +314,109 @@ const AdminPanel = () => {
   const [pageInfo, setPageInfo] = useState({
     currentPage: 1,
     itemsPerPage: 20,
-    totalPage: null,
+    totalPages: null,
   });
   const [searchUser, setSearchUser] = useState("");
   const [debouncedSearchUser, setDebouncedSearchUser] = useState(searchUser);
   const [sortDirection, setSortDirection] = useState("asc");
 
+  const [selectedPositions, setSelectedPositions] = useState([]);
+  const [selectedProtectionStatus, setSelectedProtectionStatus] = useState("");
+
+  const positionState = {
+    selectedPositions,
+    setSelectedPositions,
+  };
+
+  const protectionState = {
+    selectedProtectionStatus,
+    setSelectedProtectionStatus,
+  };
+
+  const fetchUsersData = async ({
+    page = 1,
+    limit = 20,
+    search = "",
+    sortOrder = 1,
+    roles = [],
+    protected: isProtected,
+  } = {}) => {
+    try {
+      setLoading(true);
+      const response = await fetchAllUsers({
+        page,
+        limit,
+        search,
+        sortOrder,
+        roles,
+        protected: isProtected,
+      });
+
+      if (response.status === 200) {
+        setUsers(response.data.data);
+        //console.log("Users Data: ", response.data.data);
+        setPageInfo({
+          currentPage: parseInt(response.data.currentPage || 1, 10), // Fallback to 1
+          itemsPerPage: parseInt(response.data.limit || 20, 10), // Fallback to 20
+          totalPages: parseInt(response.data.totalPages || 1, 10), // Fallback to 1
+        });
+      } else {
+        ToastMsg("Error in fetching Users data, please try later!", "error");
+        console.error(
+          "Fetch Users Data Error: ",
+          response.response.data.message
+        );
+      }
+    } catch (error) {
+      ToastMsg("Internal Server Error!", "error");
+      console.error("Fetch Users Data Error: ", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle Apply Filters
+  const handleApplyFilters = async () => {
+    // Use the latest state values
+    const currentPositions = selectedPositions;
+    const currentProtectionStatus = selectedProtectionStatus;
+
+    await fetchUsersData({
+      page: pageInfo.currentPage,
+      limit: pageInfo.itemsPerPage,
+      search: debouncedSearchUser,
+      sortOrder: sortDirection === "asc" ? 1 : -1,
+      roles: currentPositions,
+      protected:
+        currentProtectionStatus === "protected"
+          ? true
+          : currentProtectionStatus === "unprotected"
+          ? false
+          : undefined,
+    });
+  };
+
+  // Handle Reset Filters
+  const handleResetFilters = async () => {
+    // Reset state
+    setSelectedPositions([]);
+    setSelectedProtectionStatus("");
+
+    // Fetch with reset values
+    await fetchUsersData({
+      page: 1, // Reset to first page
+      limit: pageInfo.itemsPerPage,
+      search: "",
+      sortOrder: 1,
+      roles: [],
+      protected: undefined,
+    });
+  };
+
   // Fetch user data or allowed emails data baed on active tab on initial load
   useEffect(() => {
     const fetchData = async () => {
       const response = await verifyUserToken(userToken, dispatch, navigate);
-      //console.log(response);
 
       if (response?.role !== "ADMIN") {
         ToastMsg("Un-authorized access! Only ADMIN allowed!", "error");
@@ -366,7 +425,20 @@ const AdminPanel = () => {
       }
 
       if (activeTab === "users") {
-        fetchUsersData();
+        // Pass parameters explicitly
+        await fetchUsersData({
+          page: pageInfo.currentPage,
+          limit: pageInfo.itemsPerPage,
+          search: debouncedSearchUser,
+          sortOrder: sortDirection === "asc" ? 1 : -1,
+          roles: selectedPositions,
+          protected:
+            selectedProtectionStatus === "protected"
+              ? true
+              : selectedProtectionStatus === "unprotected"
+              ? false
+              : undefined,
+        });
       } else {
         fetchAllowedEmailsData();
       }
@@ -501,6 +573,10 @@ const AdminPanel = () => {
             pageData={{ pageInfo, setPageInfo }}
             searchData={{ searchUser, setSearchUser }}
             sortDirection={sortDirection}
+            positionState={positionState}
+            protectionState={protectionState}
+            onApplyFilters={handleApplyFilters}
+            onResetFilters={handleResetFilters}
           />
         ))}
 
