@@ -57,7 +57,7 @@ const Leaderboard = () => {
           limit: itemsPerPage,
           search: debouncedSearchUser,
         });
-        console.log(response);
+        //console.log(response);
 
         if (response.status == 200) {
           setMinimumPassingMarks(response.data.minimumPassingMark);
