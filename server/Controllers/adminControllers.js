@@ -1172,6 +1172,101 @@ exports.resetAchievements = async (req, res) => {
   }
 };
 
+//18. Toggle user's protected status
+exports.toggleProtected = async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    const { userId } = req.body;
+
+    // Validate input
+    if (!token) return res.status(401).json({ message: "No token provided" });
+    if (!userId) return res.status(400).json({ message: "No user ID provided" });
+
+    // Verify and authorize token
+    const authResult = await verifyAndAuthorize(token, ["ADMIN"]);
+    if (authResult.status !== 200) {
+      return res
+        .status(authResult.status)
+        .json({ message: authResult.message });
+    }
+
+    // Find the user
+    const user = await Users.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // Toggle the `protected` value
+    user.protected = !user.protected;
+    await user.save();
+
+    return res.status(200).json({
+      message: `User's protected status toggled successfully`,
+      protected: user.protected,
+    });
+  } catch (error) {
+    console.error("Error toggling protected status:", error.message);
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
+};
+
+//19. Update user's total solved questions
+exports.updateQuestionCount = async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    const { userId, delta } = req.body;
+
+    // Validate input
+    if (!token) return res.status(401).json({ message: "No token provided" });
+    if (!userId || delta === undefined) {
+      return res.status(400).json({ 
+        message: "Missing required fields: userId or delta" 
+      });
+    }
+    if (typeof delta !== "number" || !Number.isInteger(delta)) {
+      return res.status(400).json({ 
+        message: "Delta must be an integer value" 
+      });
+    }
+
+    // Verify and authorize token
+    const authResult = await verifyAndAuthorize(token, ["ADMIN"]);
+    if (authResult.status !== 200) {
+      return res.status(authResult.status)
+                .json({ message: authResult.message });
+    }
+
+    // Find and update user
+    const user = await Users.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Calculate new value with floor at 0
+    const newTotal = Math.max(user.totalQuestionSolved + delta, 0);
+    
+    // Update only if changed
+    if (newTotal !== user.totalQuestionSolved) {
+      user.totalQuestionSolved = newTotal;
+      await user.save();
+    }
+
+    return res.status(200).json({
+      message: "Question count updated successfully",
+      // totalQuestionSolved: user.totalQuestionSolved,
+      // previousCount: user.totalQuestionSolved - delta,
+      // deltaApplied: delta
+    });
+    
+  } catch (error) {
+    console.error("Error updating question count:", error.message);
+    return res.status(500).json({ 
+      message: "Internal server error", 
+      error: error.message 
+    });
+  }
+};
+
 /************************** APIs For Teams **************************
 
 //11. Update team size API

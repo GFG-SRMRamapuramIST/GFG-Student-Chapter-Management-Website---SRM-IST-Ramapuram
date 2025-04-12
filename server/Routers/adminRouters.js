@@ -35,6 +35,9 @@ router.use(express.static(path.resolve(__dirname, "Public")));
 
 17. Reset achievement API - "{BACKEND_URL}/api/v1/admin/reset-achievement"
 
+18. Toggle user's protected status API - "{BACKEND_URL}/api/v1/admin/toggle-protected-status"
+19. Update user's total solved questions API - "{BACKEND_URL}/api/v1/admin/update-points"
+
 **********************************************************
 */
 
@@ -97,6 +100,15 @@ router.get("/fetch-constant-values", adminControllers.getConstantValues);
 
 //17. Reset achievement API
 router.post("/reset-achievement", adminControllers.resetAchievements);
+
+//18. Toggle user's protected status
+router.post(
+  "/toggle-protected-status",
+  adminControllers.toggleProtected
+);
+
+//19. Update user's total solved questions
+router.post("/update-points", adminControllers.updateQuestionCount);
 
 /************************** APIs For Teams **************************
 //11. Update team size API
