@@ -4,8 +4,10 @@ import { useNavigate } from "react-router-dom";
 // Importing Icons
 import { IoChevronForwardOutline } from "react-icons/io5";
 import { GfgCoin } from "../../Assets";
+import { TiArrowSortedUp } from "react-icons/ti";
 
 const LeaderboardTable = ({ data, isTeam = false, minimumPassingMark }) => {
+  // console.log(data);
   const navigate = useNavigate();
 
   const columns = isTeam
@@ -45,6 +47,11 @@ const LeaderboardTable = ({ data, isTeam = false, minimumPassingMark }) => {
     return "bg-transparent border border-gfgsc-green text-gfgsc-green";
   };
 
+  // Animation for points increased indicator
+  const pointsIncreasedVariants = {
+    initial: { opacity: 0, y: 10 },
+    animate: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+  };
 
   return (
     <div className="!z-10 bg-white rounded-xl shadow-md overflow-x-scroll overflow-y-hidden">
@@ -68,6 +75,9 @@ const LeaderboardTable = ({ data, isTeam = false, minimumPassingMark }) => {
         <tbody>
           {data.map((item, index) => {
             const isInDanger = item.points < minimumPassingMark;
+            const hasIncreasedPoints =
+              item.pointsIncreased && item.pointsIncreased > 0;
+
             return (
               <motion.tr
                 key={item.id}
@@ -105,12 +115,27 @@ const LeaderboardTable = ({ data, isTeam = false, minimumPassingMark }) => {
                       </div>
                     </td>
                     <td className="flex items-center justify-center px-2 py-4 whitespace-nowrap text-right text-sm font-medium ">
-                      {item.points}
-                      <img
-                        src={GfgCoin}
-                        alt="GfgCoin"
-                        className="w-6 h-6 ml-1"
-                      />
+                      <div className="flex flex-col items-end">
+                        <div className="flex items-center">
+                          {item.points}
+                          <img
+                            src={GfgCoin}
+                            alt="GfgCoin"
+                            className="w-6 h-6 ml-1"
+                          />
+                        </div>
+                        {hasIncreasedPoints && (
+                          <motion.div
+                            initial="initial"
+                            animate="animate"
+                            variants={pointsIncreasedVariants}
+                            className="flex items-center text-xs text-green-600 font-semibold mt-1"
+                          >
+                            <TiArrowSortedUp className="w-3 h-3 mr-0.5" />+
+                            {item.pointsIncreased}
+                          </motion.div>
+                        )}
+                      </div>
                     </td>
                   </>
                 ) : (
@@ -142,13 +167,31 @@ const LeaderboardTable = ({ data, isTeam = false, minimumPassingMark }) => {
                     </td>
                     {/* <td className="px-4 py-4 whitespace-nowrap text-sm">{item.team}</td> */}
                     <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <div className="inline-flex items-center justify-center">
-                        {item.points}
-                        <img
-                          src={GfgCoin}
-                          alt="GfgCoin"
-                          className="w-6 h-6 ml-1"
-                        />
+                      <div className="flex flex-col items-end">
+                        <div className="inline-flex items-center justify-center">
+                          {item.points}
+                          <img
+                            src={GfgCoin}
+                            alt="GfgCoin"
+                            className="w-6 h-6 ml-1"
+                          />
+                          {/* Points increased indicator */}
+                          <div>
+                            {hasIncreasedPoints ? (
+                              <motion.div
+                                initial="initial"
+                                animate="animate"
+                                variants={pointsIncreasedVariants}
+                                className="flex items-center text-xs text-green-600 font-semibold mx-1"
+                              >
+                                {/* <TiArrowSortedUp className="w-3 h-3 mr-0.5" /> */}
+                                +{item.pointsIncreased}
+                              </motion.div>
+                            ) : (
+                              ""
+                            )}
+                          </div>
+                        </div>
                       </div>
                     </td>
                     <td className="pr-4 py-4 whitespace-nowrap text-right">

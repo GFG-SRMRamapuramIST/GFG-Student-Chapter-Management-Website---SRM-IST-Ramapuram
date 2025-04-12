@@ -82,10 +82,10 @@ const EditProfile = () => {
     try {
       setLoading(true);
       formData.append("profilePicture", file);
-      console.log("Profile Picture Upload:", file);
+      // console.log("Profile Picture Upload:", file);
 
       const response = await changeProfilePicFunction(formData);
-      console.log(response);
+      // console.log(response);
       if (response.status == 200) {
         ToastMsg(response.data.message, "success");
       } else {

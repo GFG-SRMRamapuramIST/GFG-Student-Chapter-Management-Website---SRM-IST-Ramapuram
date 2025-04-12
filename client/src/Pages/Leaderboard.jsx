@@ -72,6 +72,7 @@ const Leaderboard = () => {
               user.academicYear
             )} Year`,
             points: user.totalQuestionSolved,
+            pointsIncreased: user.pointsIncreased
           }));
 
           setLeaderboardData(formattedData);

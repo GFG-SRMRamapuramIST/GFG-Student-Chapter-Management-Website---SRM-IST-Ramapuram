@@ -444,7 +444,7 @@ const SignUp = () => {
 
     try {
       const response = await AuthServices.registerFunction(formData);
-      console.log(response);
+      // console.log(response);
       if (response.status === 200) {
         ToastMsg(response.data.message, "success");
       } else {
@@ -515,7 +515,6 @@ const SignUp = () => {
           htmlFor="profilePicture"
           className="cursor-pointer"
           onClick={(e) => {
-            console.log("Label clicked");
             e.currentTarget.querySelector('input[type="file"]')?.click();
           }}
         >

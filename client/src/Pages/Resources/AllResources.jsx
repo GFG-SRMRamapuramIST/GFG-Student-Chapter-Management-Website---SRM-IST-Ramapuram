@@ -153,7 +153,7 @@ const AllResources = () => {
         ToastMsg(response.data.message, "success");
       } else {
         ToastMsg(response.response.data.message, "error");
-        console.log(response);
+        // console.log(response);
       }
     } catch (error) {
       ToastMsg("Internal Server Error", "error");

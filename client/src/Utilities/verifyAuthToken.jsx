@@ -6,7 +6,6 @@ import ToastMsg from "./ToastMsg";
 const verifyUserToken = async (userToken, dispatch, navigate) => {
   try {
     const response = await AuthServices.verifyAuthToken(userToken);
-    console.log(response);
     if (response.status === 200 && response.data.message === "Token is valid") {
       return { userId: response.data.userId, role: response.data.role }; // Do nothing if the token is valid
     }
