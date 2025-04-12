@@ -109,6 +109,18 @@ const Dashboard = () => {
           });
         });
 
+        // Transform festivals data
+        response.data.festivals.forEach((festival) => {
+          const festivalDate = new Date(festival.date);
+
+          transformedEvents.push({
+            type: "festival",
+            name: festival.title,
+            date: festivalDate.toISOString().split("T")[0], // Only the date part
+            eventId: festival._id, // Festival ID
+          });
+        });
+
         setEvents(transformedEvents);
         //console.log(transformedEvents);
       } else {

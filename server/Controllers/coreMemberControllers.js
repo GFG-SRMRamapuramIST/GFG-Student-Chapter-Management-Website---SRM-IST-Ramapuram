@@ -18,6 +18,7 @@ const {
   Resources,
   Announcement,
   VideoResources,
+  Festival,
 } = require("../Models");
 /*
 ************************** APIs **************************
@@ -53,6 +54,9 @@ const {
 25. Edit a video resource API
 26. Fetch all video resource API
 27. Fetch all videos of a video resource API
+
+28. Add a new festival API
+29. Delete a festival API
 
 **********************************************************
 */
@@ -520,7 +524,7 @@ exports.deleteMoMLink = async (req, res) => {
 
 //20. Get contest & meetind data API
 exports.fetchDashboardCalenderData = async (req, res) => {
-  const token = req.headers.authorization?.split(" ")[1]; // Extract token
+  const token = req.headers.authorization?.split(" ")[1];
   if (!token) {
     return res.status(401).json({ message: "No token provided" });
   }
@@ -537,24 +541,31 @@ exports.fetchDashboardCalenderData = async (req, res) => {
       0
     );
 
-    const contests = await DailyContests.find({
-      date: { $gte: startOfMonth, $lte: endOfMonth },
-    });
-
-    const meetings = await Notice.find({
-      meetingDate: { $gte: startOfMonth, $lte: endOfMonth },
-    });
+    // Fetch all three data types in parallel
+    const [contests, meetings, festivals] = await Promise.all([
+      DailyContests.find({
+        date: { $gte: startOfMonth, $lte: endOfMonth },
+      }),
+      Notice.find({
+        meetingDate: { $gte: startOfMonth, $lte: endOfMonth },
+      }),
+      Festival.find({
+        date: { $gte: startOfMonth, $lte: endOfMonth },
+      }),
+    ]);
 
     res.status(200).json({
-      message: "Dashboard Calender data fetched successfully!",
+      message: "Dashboard Calendar data fetched successfully!",
       contests,
       meetings,
+      festivals,
     });
   } catch (error) {
-    console.error("Error fetching Dashboard Calender data:", error.message);
-    return res
-      .status(500)
-      .json({ message: "Internal Server Error", error: error.message });
+    console.error("Error fetching Dashboard Calendar data:", error.message);
+    return res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message,
+    });
   }
 };
 
@@ -1444,6 +1455,132 @@ exports.fetchAllVideosOfVideoResource = async (req, res) => {
     return res
       .status(500)
       .json({ message: "Internal Server Error", error: error.message });
+  }
+};
+
+//****************************************************************************** */
+
+//******************************* FESTIVAL APIs **********************************/
+//28. Add a new festival API
+exports.addFestival = async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    const { title, date } = req.body;
+
+    // Authorization check
+    const authResult = await verifyAndAuthorize(token, [
+      "ADMIN",
+      "COREMEMBER",
+      "VICEPRESIDENT",
+      "PRESIDENT",
+    ]);
+    if (authResult.status !== 200) {
+      return res.status(authResult.status).json({ message: authResult.message });
+    }
+
+    // Validate input
+    if (!title || !date) {
+      return res.status(400).json({ message: "Both title and date are required" });
+    }
+
+    // Date validation
+    const festivalDate = new Date(date);
+    const currentDate = new Date();
+    
+    // Check if date is valid
+    if (isNaN(festivalDate.getTime())) {
+      return res.status(400).json({ message: "Invalid date format" });
+    }
+
+    // Ensure date is in the future (at least tomorrow)
+    const tomorrow = new Date(currentDate);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(0, 0, 0, 0);
+
+    if (festivalDate < tomorrow) {
+      return res.status(400).json({
+        message: "Festival date must be at least one day in the future"
+      });
+    }
+
+    // Check for existing festival on the same date
+    const existingFestival = await Festival.findOne({ 
+      date: {
+        $gte: new Date(festivalDate.setHours(0, 0, 0, 0)),
+        $lt: new Date(festivalDate.setHours(23, 59, 59, 999))
+      }
+    });
+
+    if (existingFestival) {
+      return res.status(400).json({
+        message: "Only one festival can be added per day"
+      });
+    }
+
+    // Create and save new festival
+    const newFestival = new Festival({
+      title: title.trim(),
+      date: festivalDate,
+      createdBy: authResult.userId
+    });
+
+    await newFestival.save();
+
+    return res.status(200).json({
+      message: "Festival added successfully!",
+      data: newFestival
+    });
+
+  } catch (error) {
+    console.error("Error adding festival:", error.message);
+    return res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message
+    });
+  }
+};
+
+//29. Delete a festival API
+exports.deleteFestival = async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1]; // Extract token from Authorization header
+    const { festivalId } = req.body; // Festival ID passed in the request body
+
+    // Authorization check
+    const authResult = await verifyAndAuthorize(token, [
+      "ADMIN",
+      "COREMEMBER",
+      "VICEPRESIDENT",
+      "PRESIDENT",
+    ]);
+    if (authResult.status !== 200) {
+      return res.status(authResult.status).json({ message: authResult.message });
+    }
+
+    // Validate input
+    if (!festivalId) {
+      return res.status(400).json({ message: "Festival ID is required" });
+    }
+
+    // Check if the festival exists
+    const festival = await Festival.findById(festivalId);
+    if (!festival) {
+      return res.status(404).json({ message: "Festival not found" });
+    }
+
+    // Delete the festival
+    await Festival.findByIdAndDelete(festivalId);
+
+    return res.status(200).json({
+      message: "Festival deleted successfully!",
+      deletedFestival: festival,
+    });
+  } catch (error) {
+    console.error("Error deleting festival:", error.message);
+    return res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message,
+    });
   }
 };
 

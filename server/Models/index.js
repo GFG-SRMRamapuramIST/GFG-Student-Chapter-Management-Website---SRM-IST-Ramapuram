@@ -8,6 +8,7 @@ const ConstantValue = require("./constantSchema");
 const potdSchema = require("./potdSchema");
 const Announcement = require("./announcementSchema");
 const VideoResources = require("./videoResourceSchema");
+const Festival = require("./festicalSchema");
 
 module.exports = {
   Users,
@@ -20,4 +21,5 @@ module.exports = {
   potdSchema,
   Announcement,
   VideoResources,
+  Festival,
 };

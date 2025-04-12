@@ -285,6 +285,32 @@ const fetchAllVideoOfVideoResourceFunction = async (
   );
 };
 
+// Festival creation API
+const createFestivalFunction = async (
+  { title, date },
+  userToken
+) => {
+  return await commonrequest(
+    "POST",
+    `${BACKEND_URL}/api/v1/core-member/add-festival`,
+    { title, date },
+    { Authorization: `Bearer ${userToken}` }
+  );
+};
+
+// Festival deletion API
+const deleteFestivalFunction = async (
+  { festivalId },
+  userToken
+) => {
+  return await commonrequest(
+    "DELETE",
+    `${BACKEND_URL}/api/v1/core-member/delete-festival`,
+    { festivalId },
+    { Authorization: `Bearer ${userToken}` }
+  );
+};
+
 // Wrapper to use token inside React components
 const CoreMemberServices = () => {
   const userToken = useAuthToken();
@@ -332,6 +358,8 @@ const CoreMemberServices = () => {
       fetchAllVideoResourcesFunction(params, userToken),
     fetchAllVideoOfVideoResourceFunction: (params) =>
       fetchAllVideoOfVideoResourceFunction(params, userToken),
+    createFestivalFunction: (params) => createFestivalFunction(params, userToken),
+    deleteFestivalFunction: (params) => deleteFestivalFunction(params, userToken),
   };
 };
 

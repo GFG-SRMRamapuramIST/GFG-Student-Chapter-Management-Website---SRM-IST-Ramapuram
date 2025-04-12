@@ -39,6 +39,10 @@ const router = new express.Router();
 26. Fetch all video resource API - "{BACKEND_URL}/api/v1/core-member/fetch-all-video-resource"
 27. Fetch all videos of a video resource API - "{BACKEND_URL}/api/v1/core-member/fetch-all-video"
 
+28. Add festival API - "{BACKEND_URL}/api/v1/core-member/add-festival"
+29. Delete festival API - "{BACKEND_URL}/api/v1/core-member/delete-festival"
+30. Get all festival API - "{BACKEND_URL}/api/v1/core-member/get-all-festival"
+
 **********************************************************
 */
 
@@ -142,5 +146,12 @@ router.post(
 );
 
 /*******************************************************************************/
+
+/******************************* FESTIVAL APIs **********************************/
+// Add festival API
+router.post("/add-festival", coreMemberControllers.addFestival);
+
+// Delete festival API
+router.delete("/delete-festival", coreMemberControllers.deleteFestival);
 
 module.exports = router;

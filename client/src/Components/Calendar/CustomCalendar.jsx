@@ -89,8 +89,11 @@ const TodayView = ({ events, onEventClick }) => {
 const CustomCalendar = ({ events, fetchDashBoardCalenderData }) => {
   const { userRole } = useUser();
 
-  const { meetingCreationFunction, contestCreationFunction } =
-    CoreMemberServices();
+  const {
+    meetingCreationFunction,
+    contestCreationFunction,
+    createFestivalFunction,
+  } = CoreMemberServices();
 
   const [selectedDate, setSelectedDate] = useState(null);
   const [currentView, setCurrentView] = useState("month");
@@ -106,6 +109,7 @@ const CustomCalendar = ({ events, fetchDashBoardCalenderData }) => {
     }
   };
 
+  // Meeting creation function
   const handleMeetingCreationFunction = async (meetingData) => {
     //console.log(meetingData)
     try {
@@ -126,17 +130,25 @@ const CustomCalendar = ({ events, fetchDashBoardCalenderData }) => {
     }
   };
 
+  // Contest creation function
   const handleContestCreationFunction = async (contestData) => {
     try {
       // Check if contest is scheduled for last day of the month
       const contestDate = new Date(contestData.date);
-      const lastDayOfMonth = new Date(contestDate.getFullYear(), contestDate.getMonth() + 1, 0).getDate();
-      
+      const lastDayOfMonth = new Date(
+        contestDate.getFullYear(),
+        contestDate.getMonth() + 1,
+        0
+      ).getDate();
+
       if (contestDate.getDate() === lastDayOfMonth) {
-        ToastMsg("Contests cannot be scheduled on the last day of the month", "error");
+        ToastMsg(
+          "Contests cannot be scheduled on the last day of the month",
+          "error"
+        );
         return;
       }
-      
+
       const response = await contestCreationFunction(contestData);
       //console.log(response);
 
@@ -149,6 +161,26 @@ const CustomCalendar = ({ events, fetchDashBoardCalenderData }) => {
     } catch (error) {
       ToastMsg("Internal Server Error!", "error");
       console.error("Meeting creation error:", error);
+    } finally {
+      fetchDashBoardCalenderData();
+    }
+  };
+
+  // Festival creation function
+  const handleFestivalCreationFunction = async (festivalData) => {
+    try {
+      const response = await createFestivalFunction(festivalData);
+      //console.log(response);
+
+      if (response.status == 200) {
+        ToastMsg(response.data.message, "success");
+      } else {
+        ToastMsg(response.response.data.message, "error");
+        console.log(response.response.data.message);
+      }
+    } catch (error) {
+      ToastMsg("Internal Server Error!", "error");
+      console.error("Festival creation error:", error);
     } finally {
       fetchDashBoardCalenderData();
     }
@@ -167,7 +199,7 @@ const CustomCalendar = ({ events, fetchDashBoardCalenderData }) => {
         compulsory: eventData.attendees,
       };
       await handleMeetingCreationFunction(formatedMeetingData);
-    } else {
+    } else if (eventData.type == "contest") {
       const formatedContestData = {
         contestName: eventData.name,
         contestLink: eventData.link,
@@ -183,6 +215,14 @@ const CustomCalendar = ({ events, fetchDashBoardCalenderData }) => {
 
       console.log("Formatted Contest Data:", formatedContestData);
       await handleContestCreationFunction(formatedContestData);
+    } else {
+      const formatedEventData = {
+        title: eventData.name,
+        date: eventData.date,
+      };
+
+      console.log("Formatted Event Data:", formatedEventData);
+      await handleFestivalCreationFunction(formatedEventData);
     }
   };
   // *************** Event Creation Handler Ends Here *********************
@@ -206,9 +246,9 @@ const CustomCalendar = ({ events, fetchDashBoardCalenderData }) => {
   };
 
   const getEventsForDate = (date) => {
-    if (!date) return { meetings: 0, contests: 0, events: [] };
+    if (!date) return { meetings: 0, contests: 0, festivals: 0, events: [] };
 
-    const dayEvents = events.filter((event) => {
+    const dayEvents = events?.filter((event) => {
       const eventDate = new Date(event.start_time);
       return eventDate.toDateString() === date.toDateString();
     });
@@ -216,6 +256,7 @@ const CustomCalendar = ({ events, fetchDashBoardCalenderData }) => {
     return {
       meetings: dayEvents.filter((e) => e.type === "meeting").length,
       contests: dayEvents.filter((e) => e.type === "contest").length,
+      festivals: dayEvents.filter((e) => e.type === "festival").length,
       events: dayEvents,
     };
   };
@@ -223,7 +264,10 @@ const CustomCalendar = ({ events, fetchDashBoardCalenderData }) => {
   // Check if a date is the last day of the month
   const isLastDayOfMonth = (date) => {
     if (!date) return false;
-    return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate() === date.getDate();
+    return (
+      new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate() ===
+      date.getDate()
+    );
   };
 
   const days = getCurrentMonthDates();
@@ -291,7 +335,7 @@ const CustomCalendar = ({ events, fetchDashBoardCalenderData }) => {
           ))}
 
           {days.map((date, idx) => {
-            const { meetings, contests } = getEventsForDate(date);
+            const { meetings, contests, festivals } = getEventsForDate(date);
             const isToday =
               date && date.toDateString() === new Date().toDateString();
             const hasEvents = meetings > 0 || contests > 0;
@@ -307,8 +351,8 @@ const CustomCalendar = ({ events, fetchDashBoardCalenderData }) => {
                 } ${
                   isToday
                     ? "bg-gfgsc-green-200/20 ring-2 ring-gfgsc-green"
-                    : isLastDay 
-                    ? "bg-red-100" 
+                    : isLastDay
+                    ? "bg-red-100"
                     : idx % 7 === 0 && date // Check if Sunday and has date
                     ? "bg-gfgsc-green-200/50"
                     : ""
@@ -327,7 +371,9 @@ const CustomCalendar = ({ events, fetchDashBoardCalenderData }) => {
                     </span>
                     {isLastDay && (
                       <div className="hidden group-hover:flex absolute top-0 left-0 right-0 bottom-0 bg-red-100/80 rounded-2xl justify-center items-center">
-                        <span className="text-xs text-red-700 font-medium">No activity day</span>
+                        <span className="text-xs text-red-700 font-medium">
+                          No activity day
+                        </span>
                       </div>
                     )}
                     {hasEvents && (
@@ -342,6 +388,14 @@ const CustomCalendar = ({ events, fetchDashBoardCalenderData }) => {
                           <div className="flex items-center gap-1 text-xs bg-[#00895e] text-white rounded-full px-1 sm:px-2 py-0.5">
                             <RiVideoLine className="hidden sm:inline w-3 h-3" />
                             <span className="hidden md:inline">{meetings}</span>
+                          </div>
+                        )}
+                        {festivals > 0 && (
+                          <div className="flex items-center gap-1 text-xs bg-[#00895e] text-white rounded-full px-1 sm:px-2 py-0.5">
+                            <RiVideoLine className="hidden sm:inline w-3 h-3" />
+                            <span className="hidden md:inline">
+                              {festivals}
+                            </span>
                           </div>
                         )}
                       </div>
