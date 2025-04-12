@@ -7,7 +7,6 @@ import { GfgCoin } from "../../Assets";
 import { TiArrowSortedUp } from "react-icons/ti";
 
 const LeaderboardTable = ({ data, isTeam = false, minimumPassingMark }) => {
-  // console.log(data);
   const navigate = useNavigate();
 
   const columns = isTeam
@@ -73,10 +72,8 @@ const LeaderboardTable = ({ data, isTeam = false, minimumPassingMark }) => {
           </tr>
         </thead>
         <tbody>
-          {data.map((item, index) => {
+          {data.map((item) => {
             const isInDanger = item.points < minimumPassingMark;
-            const hasIncreasedPoints =
-              item.pointsIncreased && item.pointsIncreased > 0;
 
             return (
               <motion.tr
@@ -124,17 +121,15 @@ const LeaderboardTable = ({ data, isTeam = false, minimumPassingMark }) => {
                             className="w-6 h-6 ml-1"
                           />
                         </div>
-                        {hasIncreasedPoints && (
-                          <motion.div
-                            initial="initial"
-                            animate="animate"
-                            variants={pointsIncreasedVariants}
-                            className="flex items-center text-xs text-green-600 font-semibold mt-1"
-                          >
-                            <TiArrowSortedUp className="w-3 h-3 mr-0.5" />+
-                            {item.pointsIncreased}
-                          </motion.div>
-                        )}
+                        <motion.div
+                          initial="initial"
+                          animate="animate"
+                          variants={pointsIncreasedVariants}
+                          className="flex items-center text-xs text-green-600 font-semibold mt-1"
+                        >
+                          <TiArrowSortedUp className="w-3 h-3 mr-0.5" />+
+                          {item.pointsIncreased}
+                        </motion.div>
                       </div>
                     </td>
                   </>
@@ -177,19 +172,15 @@ const LeaderboardTable = ({ data, isTeam = false, minimumPassingMark }) => {
                           />
                           {/* Points increased indicator */}
                           <div>
-                            {hasIncreasedPoints ? (
-                              <motion.div
-                                initial="initial"
-                                animate="animate"
-                                variants={pointsIncreasedVariants}
-                                className="flex items-center text-xs text-green-600 font-semibold mx-1"
-                              >
-                                {/* <TiArrowSortedUp className="w-3 h-3 mr-0.5" /> */}
-                                +{item.pointsIncreased}
-                              </motion.div>
-                            ) : (
-                              ""
-                            )}
+                            <motion.div
+                              initial="initial"
+                              animate="animate"
+                              variants={pointsIncreasedVariants}
+                              className="flex items-center text-xs text-green-600 font-semibold mx-1"
+                            >
+                              {/* <TiArrowSortedUp className="w-3 h-3 mr-0.5" /> */}
+                              +{item.pointsIncreased}
+                            </motion.div>
                           </div>
                         </div>
                       </div>
