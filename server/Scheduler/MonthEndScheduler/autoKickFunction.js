@@ -14,6 +14,7 @@ const autoKickFunction = async (passingMarks) => {
     const usersToDelete = await Users.find({
       totalQuestionSolved: { $lt: passingMarks },
       role: { $ne: "ADMIN" },
+      protected: { $ne: true },
     });
 
     if (!usersToDelete.length) {

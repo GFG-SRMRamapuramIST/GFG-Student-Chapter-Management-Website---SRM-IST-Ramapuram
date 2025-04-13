@@ -22,6 +22,7 @@ async function resetData() {
       user.totalQuestionSolved = 0;
 
       user.subscribed = true;
+      user.protected = false;
 
       user.avgPerDay = 0;
       user.maxStreak = 0;
