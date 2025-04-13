@@ -126,6 +126,10 @@ const updatePracticeQuestionsCount = async () => {
 
       await user.save();
 
+      // Delay for 2 seconds before fetching data for next user
+      // This is to avoid hitting the API rate limit or getting our IP blocked
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
       console.log(
         chalk.green(`Updated ${user.email} - Increment: ${increment}`)
       );

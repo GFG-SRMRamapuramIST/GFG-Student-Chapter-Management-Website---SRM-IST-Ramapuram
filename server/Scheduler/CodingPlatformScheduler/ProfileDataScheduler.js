@@ -85,6 +85,7 @@ const updateUserCodingPlatformsDataScheduler = async (user, isRegistering) => {
         updateData["platforms.codechef"] = {
           ...existing,
           ...codechefData,
+          verified: existing.verified,
         };
       }
     }
@@ -99,6 +100,7 @@ const updateUserCodingPlatformsDataScheduler = async (user, isRegistering) => {
         updateData["platforms.codeforces"] = {
           ...existing,
           ...codeforcesData,
+          verified: existing.verified,
         };
       }
     }
@@ -136,6 +138,10 @@ cron.schedule("59 23 * * 6", async () => {
   if (users.length > 0) {
     for (const user of users) {
       await updateUserCodingPlatformsDataScheduler(user, false); // Process one user at a time
+
+      // Delay for 5 seconds before fetching data for next user
+      // This is to avoid hitting the API rate limit or getting our IP blocked
+      await new Promise((resolve) => setTimeout(resolve, 5000));
     }
     console.log(
       chalk.bgGreen.bold("Coding Profile Data Update Scheduler Completed.")
