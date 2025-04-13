@@ -4,5 +4,6 @@ import AuthLayout from "./AuthLayout";
 import AppLayout from "./AppLayout";
 import PracticeLayout from "./PracticeLayout";
 import ResourcesLayout from "./ResourcesLayout";
+import AdminLayout from "./AdminLayout";
 
-export { RootLayout, AuthLayout, AppLayout, PracticeLayout, ResourcesLayout };
+export { RootLayout, AuthLayout, AppLayout, PracticeLayout, ResourcesLayout, AdminLayout };

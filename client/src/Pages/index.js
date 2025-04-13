@@ -1,6 +1,11 @@
 import LandingPage from "./LandingPage";
 import AboutUs from "./AboutUs";
-import AdminPanel from "./AdminPanel";
+
+// Admin Routes
+import AdminPanel from "./admin/AdminPanel";
+import UserManagement from "./admin/UserManagement";
+import SchedulerSettings from "./admin/SchedulerSettings";
+import AllowedEmails from "./admin/AllowedEmails";
 
 // Auth Routes
 import Login from "./Auth/Login";
@@ -37,6 +42,9 @@ export {
   LandingPage,
   AboutUs,
   AdminPanel,
+  UserManagement,
+  SchedulerSettings,
+  AllowedEmails,
   Dashboard,
   Login,
   SignUp,

@@ -23,6 +23,9 @@ import {
   ProfileComparison,
   AllResources,
   Resource,
+  UserManagement,
+  AllowedEmails,
+  SchedulerSettings,
 } from "./Pages";
 import {
   AuthLayout,
@@ -30,6 +33,7 @@ import {
   AppLayout,
   PracticeLayout,
   ResourcesLayout,
+  AdminLayout,
 } from "./Layouts";
 
 // Auth routes (public)
@@ -47,10 +51,19 @@ const authRoutes = {
 const appRoutes = {
   element: <AppLayout />,
   children: [
-    { path: "admin", element: <AdminPanel /> },
     { path: "dashboard", element: <Dashboard /> },
     { path: "leaderboard", element: <Leaderboard /> },
     // { path: "teams", element: <Teams /> },
+    {
+      path: "admin",
+      element: <AdminLayout />,
+      children: [
+        { index: true, element: <AdminPanel /> },
+        { path: "users", element: <UserManagement /> },
+        { path: "emails", element: <AllowedEmails /> },
+        { path: "scheduler", element: <SchedulerSettings /> },
+      ],
+    },
     {
       path: "practice",
       element: <PracticeLayout />,
