@@ -157,12 +157,12 @@ const LeaderboardTable = ({ data, isTeam = false, minimumPassingMark }) => {
                         {item.position}
                       </span>
                     </td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm">
+                    <td className="px</td>-4 py-4 whitespace-nowrap text-sm">
                       {item.academicYear}
                     </td>
                     {/* <td className="px-4 py-4 whitespace-nowrap text-sm">{item.team}</td> */}
                     <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <div className="flex flex-col items-end">
+                      <div className="flex flex-col items-end relative group/tooltip">
                         <div className="inline-flex items-center justify-center">
                           {item.points}
                           <img
@@ -181,6 +181,15 @@ const LeaderboardTable = ({ data, isTeam = false, minimumPassingMark }) => {
                               {/* <TiArrowSortedUp className="w-3 h-3 mr-0.5" /> */}
                               +{item.pointsIncreased}
                             </motion.div>
+                          </div>
+                        </div>
+                        
+                        {/* Tooltip */}
+                        <div className="absolute right-0 bottom-full mb-2 opacity-0 group-hover/tooltip:opacity-100 transition-opacity duration-200 pointer-events-none">
+                          <div className="bg-gray-800 text-white text-xs rounded-lg p-2 shadow-lg">
+                            <div className="whitespace-nowrap">Points Increased = <span className="text-green-400">+{item.pointsIncreased}</span></div>
+                            <div className="whitespace-nowrap">Net Points = <span className="font-medium">{item.points}</span></div>
+                            <div className="absolute top-full right-3 w-0 h-0 border-8 border-transparent border-t-gray-800"></div>
                           </div>
                         </div>
                       </div>

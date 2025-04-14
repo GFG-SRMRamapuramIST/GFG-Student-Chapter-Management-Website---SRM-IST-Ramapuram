@@ -60,7 +60,7 @@ const Dashboard = () => {
     try {
       const response = await getDashboardCalenderDataFunction();
 
-      //console.log(response.data);
+      // console.log(response.data);
       if (response.status === 200) {
         const transformedEvents = [];
 

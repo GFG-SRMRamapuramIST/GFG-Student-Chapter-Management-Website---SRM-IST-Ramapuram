@@ -16,6 +16,7 @@ import {
   RiEditLine,
   RiDeleteBin6Line,
   RiInformationLine,
+  RiCake2Line, // Added as alternate festival icon
 } from "react-icons/ri";
 
 import { platformIcons } from "../../Constants";
@@ -23,10 +24,37 @@ import { RotatingCloseButton, ToastMsg } from "../../Utilities";
 
 // Importing APIs
 import { CoreMemberServices } from "../../Services";
+import { GiPartyPopper, GiSparkles } from "react-icons/gi";
 
 // ============ Constants ============
 const ATTENDEE_OPTIONS = ["ALL", "CORE"];
 const PLATFORM_OPTIONS = ["leetcode", "codechef", "codeforces"];
+
+// Simple confetti component for festivals
+const FestivalConfetti = () => {
+  return (
+    <div className="absolute top-0 left-0 right-0 h-24 overflow-hidden pointer-events-none">
+      {[...Array(30)].map((_, i) => (
+        <div
+          key={i}
+          className="absolute w-2 h-2 rounded-full animate-confetti"
+          style={{
+            backgroundColor: ['#ff0', '#f0f', '#0ff', '#f00', '#0f0'][i % 5],
+            left: `${Math.random() * 100}%`,
+            top: `-5%`,
+            animationDelay: `${Math.random() * 3}s`,
+            animationDuration: `${Math.random() * 2 + 2}s`,
+          }}
+        />
+      ))}
+    </div>
+  );
+};
+
+// CSS for sparkling effect
+const sparkleStyle = {
+  animation: 'sparkle 1.5s infinite alternate',
+};
 
 const EventModal = ({
   selectedDate,
@@ -39,8 +67,9 @@ const EventModal = ({
     deleteContestFunction,
     createMoMFunction,
     deleteMoMFunction,
+    deleteFestivalFunction, // Assuming this function exists or will be added
   } = CoreMemberServices();
-  //console.log(events);
+  
   // ============ State Management ============
   const [loading, setLoading] = useState(false);
 
@@ -51,6 +80,7 @@ const EventModal = ({
   // Filter events by type
   const meetings = events.filter((e) => e.type === "meeting");
   const contests = events.filter((e) => e.type === "contest");
+  const festivals = events.filter((e) => e.type === "festival");
 
   // ============ Event Modal Handlers ============
   const toggleEventExpand = (idx, type) => {
@@ -63,7 +93,6 @@ const EventModal = ({
   const handleMeetingDeleteFunction = async (dateId, noticeId) => {
     try {
       const response = await deleteMeetingFunction({ dateId, noticeId });
-      //console.log(response)
       if (response.status == 200) {
         ToastMsg(response.data.message, "success");
       } else {
@@ -82,7 +111,6 @@ const EventModal = ({
   const handleContestDeleteFunction = async (dateId, contestId) => {
     try {
       const response = await deleteContestFunction({ dateId, contestId });
-      //console.log(response)
       if (response.status == 200) {
         ToastMsg(response.data.message, "success");
       } else {
@@ -97,14 +125,37 @@ const EventModal = ({
     }
   };
 
+  // Deleting a festival api call
+  const handleFestivalDeleteFunction = async (festivalId) => {
+    try {
+      // Assuming you have a festival delete API function
+      if (deleteFestivalFunction) {
+        const response = await deleteFestivalFunction({ festivalId });
+        if (response.status == 200) {
+          ToastMsg(response.data.message, "success");
+        } else {
+          ToastMsg(response.response.data.message, "error");
+        }
+      } else {
+        ToastMsg("Festival deletion not implemented", "error");
+      }
+    } catch (error) {
+      ToastMsg("Internal Server Error!", "error");
+      console.error("Festival deletion error:", error);
+    } finally {
+      onClose;
+      fetchDashBoardCalenderData();
+    }
+  };
+
   const handleDelete = (event) => {
     setExpandedEvent(null);
-    //console.log("Deleting event with dateId:", event.dateId);
-    //console.log("Deleting event with eventId:", event.eventId);
-    if (event.type == "meeting") {
+    if (event.type === "meeting") {
       handleMeetingDeleteFunction(event.dateId, event.eventId);
-    } else {
+    } else if (event.type === "contest") {
       handleContestDeleteFunction(event.dateId, event.eventId);
+    } else if (event.type === "festival") {
+      handleFestivalDeleteFunction(event.eventId);
     }
   };
 
@@ -120,9 +171,7 @@ const EventModal = ({
       const dateId = event.dateId;
       const noticeId = event.eventId;
       const MoMLink = momContent;
-      //console.log(dateId, noticeId, MoMLink);
       const response = await createMoMFunction({ dateId, noticeId, MoMLink });
-      //console.log(response);
       if (response.status == 200) {
         ToastMsg(response.data.message, "success");
       } else {
@@ -146,7 +195,6 @@ const EventModal = ({
       const dateId = event.dateId;
       const noticeId = event.eventId;
       const response = await deleteMoMFunction({ dateId, noticeId });
-      //console.log(response);
       if (response.status == 200) {
         ToastMsg(response.data.message, "success");
       } else {
@@ -166,28 +214,42 @@ const EventModal = ({
   // ============ Render Helper Functions ============
   const renderEventCard = (event, idx, type) => {
     const isExpanded = expandedEvent === `${type}-${idx}`;
-    const Icon =
-      type === "contest" ? platformIcons[event.platform] : RiVideoLine;
+    let Icon;
+    
+    if (type === "contest") {
+      Icon = platformIcons[event.platform] || RiTrophyLine;
+    } else if (type === "festival") {
+      Icon = GiPartyPopper;
+    } else {
+      Icon = RiVideoLine;
+    }
 
     return (
-      <div key={event.id} className="space-y-2">
-        <motion.div
-          whileHover={{ scale: 1.02 }}
-          className={`flex items-center gap-4 p-4 bg-gradient-to-br ${
-            type === "contest"
-              ? "from-[#002b46] to-[#004b7c]"
-              : "from-[#00895e] to-[#00b377]"
-          } text-white rounded-2xl shadow-lg cursor-pointer`}
-          onClick={() => toggleEventExpand(idx, type)}
-        >
-          <div className="p-2 bg-white/10 rounded-xl">
+      <div key={event.id || idx} className="space-y-2">
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            className={`flex items-center gap-4 p-4 bg-gradient-to-br ${
+              type === "contest"
+                ? "from-[#002b46] to-[#004b7c]"
+                : type === "festival"
+                ? "from-gfgsc-pink to-[#c94287]"
+                : "from-[#00895e] to-[#00b377]"
+            } text-white rounded-2xl shadow-lg cursor-pointer ${
+              type === "festival" ? "relative overflow-hidden" : ""
+            }`}
+            onClick={() => toggleEventExpand(idx, type)}
+          >
+          
+          <div className={`p-2 bg-white/10 rounded-xl ${type === "festival" ? "z-10" : ""}`}>
             <Icon className="w-5 h-5" />
           </div>
 
-          <div className="flex-1">
+          <div className="flex-1 z-10">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <h5 className="font-medium">{event.name}</h5>
+                <h5 className={`font-medium ${type === "festival" ? "flex items-center" : ""}`}>
+                  {event.name}
+                </h5>
                 {type === "meeting" && (
                   <span className="px-2 py-1 bg-white/10 rounded-full text-xs flex items-center gap-1">
                     <RiTeamLine className="w-3 h-3" />
@@ -197,15 +259,6 @@ const EventModal = ({
               </div>
 
               <div className="flex items-center gap-2">
-                {/* <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleEditStart(event, type, idx);
-                  }}
-                  className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
-                >
-                  <RiEditLine className="w-4 h-4" />
-                </button> */}
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -219,10 +272,13 @@ const EventModal = ({
             </div>
 
             <p className="text-sm text-white/80">
-              {new Date(event.start_time).toLocaleTimeString("en-US", {
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
+              {type === "festival" 
+                ? "All Day Event"
+                : new Date(event.start_time).toLocaleTimeString("en-US", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })
+              }
             </p>
           </div>
         </motion.div>
@@ -233,7 +289,9 @@ const EventModal = ({
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              className="bg-white border border-gray-200 rounded-xl p-4 space-y-4"
+              className={`bg-white border border-gray-200 rounded-xl p-4 space-y-4 ${
+                type === "festival" ? "bg-gradient-to-br from-purple-50 to-pink-50 border-pink-200" : ""
+              }`}
             >
               <div className="space-y-4">
                 {type === "meeting" && (
@@ -247,31 +305,56 @@ const EventModal = ({
                     </p>
                   </div>
                 )}
-
-                <div className="flex flex-col gap-2">
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <RiLinkM className="w-4 h-4" />
-                    <a
-                      href={event.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline"
-                    >
-                      {type === "meeting" ? "Join Meeting" : "View Contest"}
-                    </a>
+                
+                {type === "festival" ? (
+                  <div className="p-4 text-center">
+                    <div className="flex justify-center mb-4">
+                      <div className="p-3 bg-pink-100 rounded-full">
+                        <RiCake2Line className="w-8 h-8 text-pink-600" />
+                      </div>
+                    </div>
+                    <h4 className="text-xl font-bold text-pink-600" style={sparkleStyle}>
+                      Happy {event.name}!
+                    </h4>
+                    <p className="mt-2 text-gray-600">
+                      Enjoy your day and celebrate with your loved ones.
+                    </p>
+                    <div className="mt-4 flex justify-center">
+                      <div className="inline-flex space-x-1">
+                        {[...Array(5)].map((_, i) => (
+                          <span key={i} className="text-2xl animate-bounce" style={{ animationDelay: `${i * 0.1}s` }}>
+                            {["✨", "🎉", "🎊", "🎈", "🎁"][i]}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
                   </div>
+                ) : (
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <RiLinkM className="w-4 h-4" />
+                      <a
+                        href={event.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline"
+                      >
+                        {type === "meeting" ? "Join Meeting" : "View Contest"}
+                      </a>
+                    </div>
 
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <RiTimeLine className="w-4 h-4" />
-                    <span>
-                      Start:{" "}
-                      {new Date(event.start_time).toLocaleString("en-US", {
-                        dateStyle: "full",
-                        timeStyle: "short",
-                      })}
-                    </span>
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <RiTimeLine className="w-4 h-4" />
+                      <span>
+                        Start:{" "}
+                        {new Date(event.start_time).toLocaleString("en-US", {
+                          dateStyle: "full",
+                          timeStyle: "short",
+                        })}
+                      </span>
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {type === "meeting" && (
                   <div className="space-y-3 border-t pt-4">
@@ -378,6 +461,21 @@ const EventModal = ({
         </div>
 
         <div className="space-y-6">
+          {/* Festivals Section */}
+          {festivals.length > 0 && (
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <GiSparkles className="w-5 h-5 text-pink-600" />
+                <h4 className="font-medium text-pink-600">Festivals</h4>
+              </div>
+              <div className="space-y-3">
+                {festivals.map((festival, idx) =>
+                  renderEventCard(festival, idx, "festival")
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Contests Section */}
           {contests.length > 0 && (
             <div>
@@ -426,21 +524,24 @@ EventModal.propTypes = {
   selectedDate: PropTypes.instanceOf(Date).isRequired,
   events: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      type: PropTypes.oneOf(["meeting", "contest"]).isRequired,
+      id: PropTypes.string,
+      type: PropTypes.oneOf(["meeting", "contest", "festival"]).isRequired,
       name: PropTypes.string.isRequired,
-      start_time: PropTypes.string.isRequired,
-      end_time: PropTypes.string.isRequired,
-      link: PropTypes.string.isRequired,
+      start_time: PropTypes.string,
+      end_time: PropTypes.string,
+      link: PropTypes.string,
       createdBy: PropTypes.string,
       // Meeting specific props
       description: PropTypes.string,
       attendees: PropTypes.oneOf(ATTENDEE_OPTIONS),
       // Contest specific props
       platform: PropTypes.oneOf(PLATFORM_OPTIONS),
+      // Festival specific props
+      date: PropTypes.string,
     })
   ).isRequired,
   onClose: PropTypes.func.isRequired,
+  fetchDashBoardCalenderData: PropTypes.func.isRequired,
 };
 
 export default EventModal;

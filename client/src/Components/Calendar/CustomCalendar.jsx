@@ -19,14 +19,19 @@ import { ToastMsg } from "../../Utilities";
 import { CoreMemberServices } from "../../Services";
 import { useUser } from "../../Context/UserContext";
 import { hasMinimumRole, ROLES } from "../../Utilities/roleUtils";
+import { GiPartyPopper } from "react-icons/gi";
 
 const TodayView = ({ events, onEventClick }) => {
   const todayEvents = events
     .filter((event) => {
-      const eventDate = new Date(event.start_time);
+      const eventDate = new Date(event.start_time || event.date);
       return eventDate.toDateString() === new Date().toDateString();
     })
-    .sort((a, b) => new Date(a.start_time) - new Date(b.start_time));
+    .sort((a, b) => {
+      const dateA = new Date(a.start_time || a.date);
+      const dateB = new Date(b.start_time || b.date);
+      return dateA - dateB;
+    });
 
   return todayEvents.length > 0 ? (
     todayEvents.map((event, idx) => (
@@ -37,19 +42,25 @@ const TodayView = ({ events, onEventClick }) => {
         className={`flex items-center gap-4 p-4 rounded-2xl shadow-lg cursor-pointer ${
           event.type === "contest"
             ? "bg-gradient-to-br from-[#002b46] to-[#004b7c] text-white"
+            : event.type === "festival"
+            ? "bg-gradient-to-br from-[#8a2387] to-[#e94057] text-white"
             : "bg-gradient-to-br from-[#00895e] to-[#00b377] text-white"
         }`}
       >
         <div className="p-2 bg-white/10 rounded-xl">
           {event.type === "contest" ? (
             <RiTrophyLine className="w-5 h-5" />
+          ) : event.type === "festival" ? (
+            <GiPartyPopper className="w-5 h-5" />
           ) : (
             <RiVideoLine className="w-5 h-5" />
           )}
         </div>
         <div className="flex-1">
           <div className="flex items-center gap-2">
-            <h5 className="font-medium">{event.name}</h5>
+            <h5 className="font-medium">
+              {event.type === "festival" && "🎉 "}{event.name}
+            </h5>
             {event.type === "meeting" && (
               <div className="flex items-center gap-1 px-2 py-1 bg-white/10 rounded-full text-xs">
                 <IoPeople className="w-3 h-3" />
@@ -58,7 +69,8 @@ const TodayView = ({ events, onEventClick }) => {
             )}
           </div>
           <p className="text-sm text-white/80">
-            {new Date(event.start_time).toLocaleTimeString("en-US", {
+            {event.type === "festival" ? "All Day Event"
+            : new Date(event.start_time).toLocaleTimeString("en-US", {
               hour: "2-digit",
               minute: "2-digit",
             })}
@@ -86,9 +98,30 @@ const TodayView = ({ events, onEventClick }) => {
   );
 };
 
+// Simple confetti effect component
+const Confetti = () => {
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      {[...Array(20)].map((_, i) => (
+        <div
+          key={i}
+          className="absolute w-1 h-1 rounded-full animate-confetti"
+          style={{
+            backgroundColor: ['#ff0', '#f0f', '#0ff', '#f00', '#0f0'][i % 5],
+            left: `${Math.random() * 100}%`,
+            top: `-5%`,
+            animationDelay: `${Math.random() * 3}s`,
+            animationDuration: `${Math.random() * 2 + 2}s`,
+          }}
+        />
+      ))}
+    </div>
+  );
+};
+
 const CustomCalendar = ({ events, fetchDashBoardCalenderData }) => {
   const { userRole } = useUser();
-
+  
   const {
     meetingCreationFunction,
     contestCreationFunction,
@@ -249,8 +282,13 @@ const CustomCalendar = ({ events, fetchDashBoardCalenderData }) => {
     if (!date) return { meetings: 0, contests: 0, festivals: 0, events: [] };
 
     const dayEvents = events?.filter((event) => {
-      const eventDate = new Date(event.start_time);
-      return eventDate.toDateString() === date.toDateString();
+      if (event.type === "festival") {
+        const festivalDate = new Date(event.date);
+        return festivalDate.toDateString() === date.toDateString();
+      } else {
+        const eventDate = new Date(event.start_time);
+        return eventDate.toDateString() === date.toDateString();
+      }
     });
 
     return {
@@ -338,8 +376,9 @@ const CustomCalendar = ({ events, fetchDashBoardCalenderData }) => {
             const { meetings, contests, festivals } = getEventsForDate(date);
             const isToday =
               date && date.toDateString() === new Date().toDateString();
-            const hasEvents = meetings > 0 || contests > 0;
+            const hasEvents = meetings > 0 || contests > 0 || festivals > 0;
             const isLastDay = date && isLastDayOfMonth(date);
+            const hasFestival = festivals > 0;
 
             return (
               <motion.button
@@ -351,6 +390,8 @@ const CustomCalendar = ({ events, fetchDashBoardCalenderData }) => {
                 } ${
                   isToday
                     ? "bg-gfgsc-green-200/20 ring-2 ring-gfgsc-green"
+                    : hasFestival
+                    ? "bg-gradient-to-br from-purple-50 to-pink-50 border border-pink-200"
                     : isLastDay
                     ? "bg-red-100"
                     : idx % 7 === 0 && date // Check if Sunday and has date
@@ -358,17 +399,38 @@ const CustomCalendar = ({ events, fetchDashBoardCalenderData }) => {
                     : ""
                 }`}
                 disabled={!date || !hasEvents}
-                title={isLastDay ? "No activity day" : ""}
+                title={
+                  isLastDay 
+                    ? "No activity day" 
+                    : hasFestival
+                    ? "Festival day! 🎉"
+                    : ""
+                }
               >
                 {date && (
                   <div className="h-full flex flex-col">
                     <span
                       className={`text-sm ${
-                        isToday ? "font-bold text-gfgsc-green" : "text-gray-700"
+                        isToday ? "font-bold text-gfgsc-green" : 
+                        hasFestival ? "font-bold text-pink-600" : "text-gray-700"
                       }`}
                     >
                       {date.getDate()}
+                      {hasFestival && <span> 🎉</span>}
                     </span>
+                    
+                    {/* Confetti effect for festival dates */}
+                    {/* {hasFestival && (
+                      <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.3 }}
+                        className="absolute inset-0"
+                      >
+                        <Confetti />
+                      </motion.div>
+                    )} */}
+                    
                     {isLastDay && (
                       <div className="hidden group-hover:flex absolute top-0 left-0 right-0 bottom-0 bg-red-100/80 rounded-2xl justify-center items-center">
                         <span className="text-xs text-red-700 font-medium">
@@ -376,6 +438,7 @@ const CustomCalendar = ({ events, fetchDashBoardCalenderData }) => {
                         </span>
                       </div>
                     )}
+                    
                     {hasEvents && (
                       <div className="absolute sm:inset-x-2 bottom-0 sm:bottom-1 md:bottom-2 flex sm:flex-col gap-1">
                         {contests > 0 && (
@@ -391,8 +454,8 @@ const CustomCalendar = ({ events, fetchDashBoardCalenderData }) => {
                           </div>
                         )}
                         {festivals > 0 && (
-                          <div className="flex items-center gap-1 text-xs bg-[#00895e] text-white rounded-full px-1 sm:px-2 py-0.5">
-                            <RiVideoLine className="hidden sm:inline w-3 h-3" />
+                          <div className="flex items-center gap-1 text-xs bg-gfgsc-pink text-white rounded-full px-1 sm:px-2 py-0.5">
+                            <GiPartyPopper className="hidden sm:inline w-3 h-3" />
                             <span className="hidden md:inline">
                               {festivals}
                             </span>
