@@ -5,8 +5,13 @@ import { ConfirmationPopup, ToastMsg } from "../../Utilities";
 import { AdminServices } from "../../Services";
 
 const UserManagement = () => {
-  const { fetchAllUsers, promoteUser, demoteUser, deleteUserAccount } =
-    AdminServices();
+  const {
+    fetchAllUsers,
+    promoteUser,
+    demoteUser,
+    deleteUserAccount,
+    toggleProtectedStatus,
+  } = AdminServices();
 
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState([]);
@@ -191,12 +196,16 @@ const UserManagement = () => {
         message: `Are you sure you want to remove protection from ${user.name}?`,
         onConfirm: async () => {
           try {
-            // TODO: API CALL TO UNPROTECT USER
-            console.log(`Unprotecting user with id: ${user._id}`);
-            ToastMsg("User unprotected successfully", "success");
+            const response = await toggleProtectedStatus({ userId: user._id });
+            //console.log(response);
+            if (response.status === 200) {
+              ToastMsg(response.data.message, "success");
+            } else {
+              ToastMsg(response.response.data.message, "error");
+            }
           } catch (error) {
-            ToastMsg("Error unprotecting user", "error");
-            console.error("Error unprotecting user:", error);
+            console.error("Error removing protection of the user:", error);
+            ToastMsg("Error removing protection of the user", "error");
           } finally {
             fetchUsersData();
           }
@@ -210,12 +219,15 @@ const UserManagement = () => {
         message: `Are you sure you want to protect ${user.name}?`,
         onConfirm: async () => {
           try {
-            // TODO: API CALL TO PROTECT USER
-            console.log(`Protecting user with id: ${user._id}`);
-            ToastMsg("User protected successfully", "success");
+            const response = await toggleProtectedStatus({ userId: user._id });
+            if (response.status === 200) {
+              ToastMsg(response.data.message, "success");
+            } else {
+              ToastMsg(response.response.data.message, "error");
+            }
           } catch (error) {
-            ToastMsg("Error protecting user", "error");
-            console.error("Error protecting user:", error);
+            console.error("Error protecting the user:", error);
+            ToastMsg("Error protecting the user", "error");
           } finally {
             fetchUsersData();
           }

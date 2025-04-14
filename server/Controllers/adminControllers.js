@@ -834,7 +834,8 @@ exports.toggleProtected = async (req, res) => {
 
     // Validate input
     if (!token) return res.status(401).json({ message: "No token provided" });
-    if (!userId) return res.status(400).json({ message: "No user ID provided" });
+    if (!userId)
+      return res.status(400).json({ message: "No user ID provided" });
 
     // Verify and authorize token
     const authResult = await verifyAndAuthorize(token, ["ADMIN"]);
@@ -847,6 +848,14 @@ exports.toggleProtected = async (req, res) => {
     // Find the user
     const user = await Users.findById(userId);
     if (!user) return res.status(404).json({ message: "User not found" });
+
+    // Check if the user has the role of ADMIN
+    if (user.role === "ADMIN") {
+      return res.status(500).json({
+        message:
+          "ADMINs are always protected and cannot have their protected status set to false",
+      });
+    }
 
     // Toggle the `protected` value
     user.protected = !user.protected;

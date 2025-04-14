@@ -144,6 +144,16 @@ const resetAchievement = async (userToken) => {
   );
 };
 
+// Toggle user's protected status
+const toggleProtectedStatus = async ({userId},userToken) => {
+  return await commonrequest(
+    "POST",
+    `${BACKEND_URL}/api/v1/admin/toggle-protected-status`,
+    {userId},
+    { Authorization: `Bearer ${userToken}` }
+  );
+}
+
 // Wrapper to use token inside React components
 const AdminServices = () => {
   const userToken = useAuthToken();
@@ -160,6 +170,7 @@ const AdminServices = () => {
     fetchConstantValues: () => fetchConstantValues(userToken),
     editConstantValues: (params) => editConstantValues(params, userToken),
     resetAchievement: () => resetAchievement(userToken),
+    toggleProtectedStatus: (params) => toggleProtectedStatus(params,userToken),
   };
 };
 
