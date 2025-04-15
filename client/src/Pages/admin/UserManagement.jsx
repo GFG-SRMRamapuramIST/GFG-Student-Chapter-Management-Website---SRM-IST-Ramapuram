@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { FaSpinner } from "react-icons/fa";
-import { UserTable } from "../../Components";
+import { AddPointsPopup, UserTable } from "../../Components";
 import { ConfirmationPopup, ToastMsg } from "../../Utilities";
 import { AdminServices } from "../../Services";
 
@@ -37,6 +37,12 @@ const UserManagement = () => {
     title: "",
     message: "",
     onConfirm: () => {},
+  });
+
+  // Add Points popup state
+  const [pointsPopupState, setPointsPopupState] = useState({
+    isOpen: false,
+    user: null,
   });
 
   // Position hierarchy for promotion/demotion
@@ -267,8 +273,34 @@ const UserManagement = () => {
     });
   };
 
+  // Handle points update
+  const handleAddPoints = (user) => {
+    setPointsPopupState({
+      isOpen: true,
+      user,
+    });
+  };
+
+  const handlePointsSubmit = async ({ userId, points, reason }) => {
+    try {
+      setLoading(true);
+
+      // API Calls
+      ToastMsg("Points updated successfully", "success");
+      console.log("Points updated successfully", { userId, points, reason });
+      // API CALLS
+
+    } catch (error) {
+      console.error("Error updating points:", error);
+      ToastMsg(error.response?.data?.message || "Error updating points", "error");
+    } finally {
+      setLoading(false);
+      fetchUsersData();
+    }
+  };
+
   return (
-    <>
+    <div className="relative">
       <ConfirmationPopup
         isOpen={confirmationState.isOpen}
         onClose={() =>
@@ -278,6 +310,13 @@ const UserManagement = () => {
         type={confirmationState.type}
         title={confirmationState.title}
         message={confirmationState.message}
+      />
+
+      <AddPointsPopup
+        isOpen={pointsPopupState.isOpen}
+        onClose={() => setPointsPopupState({ ...pointsPopupState, isOpen: false })}
+        user={pointsPopupState.user}
+        onSubmit={handlePointsSubmit}
       />
 
       {loading ? (
@@ -291,6 +330,7 @@ const UserManagement = () => {
           handleDemote={handleDemote}
           handleDelete={handleDelete}
           handleProtect={handleProtect}
+          handleAddPoints={handleAddPoints}
           handleNextBtnClick={handleNextBtnClick}
           handlePrevBtnClick={handlePrevBtnClick}
           handleSortOrderChange={handleSortOrderChange}
@@ -306,7 +346,7 @@ const UserManagement = () => {
           onResetFilters={handleResetFilters}
         />
       )}
-    </>
+    </div>
   );
 };
 

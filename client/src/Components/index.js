@@ -91,8 +91,9 @@ import UserTable from "./Admin/UserTable";
 import AllowedEmailsForm from "./Admin/AllowedEmailsForm";
 import AllowedEmailsTable from "./Admin/AllowedEmailsTable";
 import SchedulerControls from "./Admin/SchedulerControls";
+import AddPointsPopup from "./Admin/AddPointsPopup";
 
-export { UserTable, AllowedEmailsForm, AllowedEmailsTable, SchedulerControls };
+export { UserTable, AllowedEmailsForm, AllowedEmailsTable, SchedulerControls, AddPointsPopup };
 
 // Practice Page Components
 import AddProblemModal from "./Practice/AddProblemModal";

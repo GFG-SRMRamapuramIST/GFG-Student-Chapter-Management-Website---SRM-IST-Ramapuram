@@ -1,5 +1,8 @@
 import PropTypes from "prop-types";
 import { useState } from "react";
+import { CgAdd } from "react-icons/cg";
+import { GiCoins } from "react-icons/gi";
+import { IoAdd } from "react-icons/io5";
 
 // Icons
 import {
@@ -14,7 +17,7 @@ import {
   RiShieldFill,
   RiShieldLine,
   RiFilterLine,
-  RiCloseLine
+  RiCloseLine,
 } from "react-icons/ri";
 import { Link } from "react-router-dom";
 
@@ -24,6 +27,7 @@ const UserTable = ({
   handleDemote,
   handleDelete,
   handleProtect,
+  handleAddPoints,
   handleNextBtnClick,
   handlePrevBtnClick,
   handleSortOrderChange,
@@ -383,6 +387,17 @@ const UserTable = ({
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     <div className="flex space-x-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleAddPoints(user);
+                        }}
+                        className="p-2 text-green-600 hover:text-green-800 hover:bg-green-100 rounded-full transition-colors"
+                        title="Manage Points"
+                      >
+                        <IoAdd className="w-5 h-5" />
+                      </button>
+
                       {/* Dynamic protect/unprotect button based on user's protected status */}
                       <button
                         onClick={() => handleProtect(user)}
@@ -519,6 +534,7 @@ UserTable.propTypes = {
   handleDemote: PropTypes.func.isRequired,
   handleDelete: PropTypes.func.isRequired,
   handleProtect: PropTypes.func.isRequired,
+  handleAddPoints: PropTypes.func.isRequired,
   handleNextBtnClick: PropTypes.func.isRequired,
   handlePrevBtnClick: PropTypes.func.isRequired,
   handleSortOrderChange: PropTypes.func.isRequired,

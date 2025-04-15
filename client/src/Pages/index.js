@@ -2,10 +2,10 @@ import LandingPage from "./LandingPage";
 import AboutUs from "./AboutUs";
 
 // Admin Routes
-import AdminPanel from "./admin/AdminPanel";
-import UserManagement from "./admin/UserManagement";
-import SchedulerSettings from "./admin/SchedulerSettings";
-import AllowedEmails from "./admin/AllowedEmails";
+import AdminPanel from "./Admin/AdminPanel";
+import UserManagement from "./Admin/UserManagement";
+import SchedulerSettings from "./Admin/SchedulerSettings";
+import AllowedEmails from "./Admin/AllowedEmails";
 
 // Auth Routes
 import Login from "./Auth/Login";
