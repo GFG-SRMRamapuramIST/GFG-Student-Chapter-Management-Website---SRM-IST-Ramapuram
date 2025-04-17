@@ -14,7 +14,6 @@ const EventCreationModal = ({ isOpen, onClose, onSave }) => {
   const [loading, setLoading] = useState(false);
   const [eventType, setEventType] = useState("meeting");
   const [isLastDayOfMonth, setIsLastDayOfMonth] = useState(false);
-  const [sendEmail, setSendEmail] = useState(false);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -25,6 +24,7 @@ const EventCreationModal = ({ isOpen, onClose, onSave }) => {
     description: "",
     attendees: "all",
     platform: "leetcode",
+    sendEmail: false,
   });
 
   // Check if selected date is the last day of the month
@@ -53,6 +53,7 @@ const EventCreationModal = ({ isOpen, onClose, onSave }) => {
         description: "",
         attendees: "all",
         platform: "leetcode",
+        sendEmail: false,
       }));
     }
   }, [eventType]);
@@ -89,6 +90,7 @@ const EventCreationModal = ({ isOpen, onClose, onSave }) => {
         date: formData.date,
         time: formData.startTime,
         type: eventType,
+        sendEmail: formData.sendEmail,
         ...(eventType === "meeting"
           ? {
               description: formData.description,
@@ -119,6 +121,7 @@ const EventCreationModal = ({ isOpen, onClose, onSave }) => {
         description: "",
         attendees: "all",
         platform: "LeetCode",
+        sendEmail: false,
       });
       onClose();
     }
@@ -127,6 +130,11 @@ const EventCreationModal = ({ isOpen, onClose, onSave }) => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Handle the toggle separately since it's not a standard input
+  const handleToggleSendEmail = () => {
+    setFormData((prev) => ({ ...prev, sendEmail: !prev.sendEmail }));
   };
 
   // *** Event Creation Modal Handles ENDS ***
@@ -365,28 +373,28 @@ const EventCreationModal = ({ isOpen, onClose, onSave }) => {
                   >
                     <div
                       className="relative flex items-center justify-center"
-                      onClick={() => setSendEmail(!sendEmail)}
+                      onClick={handleToggleSendEmail}
                     >
                       <input
                         type="checkbox"
-                        checked={sendEmail}
-                        onChange={() => setSendEmail(!sendEmail)}
+                        checked={formData.sendEmail}
+                        onChange={handleToggleSendEmail}
                         className="sr-only"
                       />
                       <div
                         className={`w-14 h-7 rounded-full transition-colors duration-300 ${
-                          sendEmail ? "bg-gfgsc-green" : "bg-gray-300"
+                          formData.sendEmail ? "bg-gfgsc-green" : "bg-gray-300"
                         } cursor-pointer flex items-center ${
-                          sendEmail ? "justify-end" : "justify-start"
+                          formData.sendEmail ? "justify-end" : "justify-start"
                         } px-1`}
                       >
                         <motion.div
                           layout
                           className={`w-5 h-5 rounded-full ${
-                            sendEmail ? "bg-white" : "bg-white"
+                            formData.sendEmail ? "bg-white" : "bg-white"
                           } shadow-md flex items-center justify-center`}
                         >
-                          {sendEmail && (
+                          {formData.sendEmail && (
                             <motion.div
                               initial={{ scale: 0 }}
                               animate={{ scale: 1 }}
@@ -399,7 +407,7 @@ const EventCreationModal = ({ isOpen, onClose, onSave }) => {
                       </div>
                     </div>
                     <label
-                      onClick={() => setSendEmail(!sendEmail)}
+                      onClick={handleToggleSendEmail}
                       className="text-sm font-medium text-gray-700 cursor-pointer select-none flex items-center"
                     >
                       <span>Send notification emails to all participants</span>
