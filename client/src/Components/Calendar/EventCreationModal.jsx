@@ -1,20 +1,20 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 
 // Icons
-import {
-  RiCalendarLine,
-} from "react-icons/ri";
+import { RiCalendarLine } from "react-icons/ri";
 import { FaSpinner } from "react-icons/fa";
 
 // Components
 import { RotatingCloseButton, ToastMsg } from "../../Utilities";
+import { IoMail } from "react-icons/io5";
 
 const EventCreationModal = ({ isOpen, onClose, onSave }) => {
   const [loading, setLoading] = useState(false);
   const [eventType, setEventType] = useState("meeting");
   const [isLastDayOfMonth, setIsLastDayOfMonth] = useState(false);
+  const [sendEmail, setSendEmail] = useState(false);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -31,7 +31,11 @@ const EventCreationModal = ({ isOpen, onClose, onSave }) => {
   useEffect(() => {
     if (formData.date) {
       const selectedDate = new Date(formData.date);
-      const lastDay = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0).getDate();
+      const lastDay = new Date(
+        selectedDate.getFullYear(),
+        selectedDate.getMonth() + 1,
+        0
+      ).getDate();
       setIsLastDayOfMonth(selectedDate.getDate() === lastDay);
     } else {
       setIsLastDayOfMonth(false);
@@ -41,7 +45,7 @@ const EventCreationModal = ({ isOpen, onClose, onSave }) => {
   // Reset non-required fields when event type changes
   useEffect(() => {
     if (eventType === "festival") {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         link: "",
         startTime: "",
@@ -56,18 +60,21 @@ const EventCreationModal = ({ isOpen, onClose, onSave }) => {
   // *** Event Creation Modal Handles ***
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Prevent contest scheduling on the last day of month
     if (eventType === "contest" && isLastDayOfMonth) {
       // Instead of just returning, show a toast message
-      ToastMsg("Contests cannot be scheduled on the last day of the month", "error");
+      ToastMsg(
+        "Contests cannot be scheduled on the last day of the month",
+        "error"
+      );
       return;
     }
-    
+
     setLoading(true); // Start loading
-    
+
     let eventData;
-    
+
     // Format event data based on type
     if (eventType === "festival") {
       eventData = {
@@ -84,16 +91,16 @@ const EventCreationModal = ({ isOpen, onClose, onSave }) => {
         type: eventType,
         ...(eventType === "meeting"
           ? {
-            description: formData.description,
-            attendees: formData.attendees,
-          }
+              description: formData.description,
+              attendees: formData.attendees,
+            }
           : {
-            platform: formData.platform,
-            endTime: formData.endTime,
-          }),
+              platform: formData.platform,
+              endTime: formData.endTime,
+            }),
       };
     }
-      
+
     // console.log("Form Data:", formData);
     // console.log("Event Data:", eventData);
 
@@ -147,7 +154,12 @@ const EventCreationModal = ({ isOpen, onClose, onSave }) => {
                   <RiCalendarLine className="text-gfgsc-green w-6 h-6" />
                 </div>
                 <h3 className="text-xl font-semibold text-gfg-black">
-                  Schedule {eventType === "meeting" ? "Meeting" : eventType === "contest" ? "Contest" : "Festival"}
+                  Schedule{" "}
+                  {eventType === "meeting"
+                    ? "Meeting"
+                    : eventType === "contest"
+                    ? "Contest"
+                    : "Festival"}
                 </h3>
               </div>
               <RotatingCloseButton onClick={onClose} />
@@ -219,7 +231,11 @@ const EventCreationModal = ({ isOpen, onClose, onSave }) => {
                 </div>
               )}
 
-              <div className={`grid ${eventType !== "festival" ? "grid-cols-2" : ""} gap-4`}>
+              <div
+                className={`grid ${
+                  eventType !== "festival" ? "grid-cols-2" : ""
+                } gap-4`}
+              >
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Date
@@ -234,10 +250,12 @@ const EventCreationModal = ({ isOpen, onClose, onSave }) => {
                     required
                   />
                   {isLastDayOfMonth && eventType === "contest" && (
-                    <p className="text-red-500 text-xs mt-1">Contests cannot be scheduled on the last day of the month</p>
+                    <p className="text-red-500 text-xs mt-1">
+                      Contests cannot be scheduled on the last day of the month
+                    </p>
                   )}
                 </div>
-                
+
                 {eventType !== "festival" && (
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -330,20 +348,77 @@ const EventCreationModal = ({ isOpen, onClose, onSave }) => {
                   <div className="flex">
                     <div className="ml-3">
                       <p className="text-sm text-blue-700">
-                        Festival events only require a title and date. They will appear as special markers on the calendar.
+                        Festival events only require a title and date. They will
+                        appear as special markers on the calendar.
                       </p>
                     </div>
                   </div>
                 </div>
               )}
 
+              {/* Send Email Checkbox for Meetings and Contests */}
+              {eventType !== "festival" && (
+                <div className="pt-2">
+                  <motion.div
+                    className="flex items-center space-x-3"
+                    whileTap={{ scale: 0.97 }}
+                  >
+                    <div
+                      className="relative flex items-center justify-center"
+                      onClick={() => setSendEmail(!sendEmail)}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={sendEmail}
+                        onChange={() => setSendEmail(!sendEmail)}
+                        className="sr-only"
+                      />
+                      <div
+                        className={`w-14 h-7 rounded-full transition-colors duration-300 ${
+                          sendEmail ? "bg-gfgsc-green" : "bg-gray-300"
+                        } cursor-pointer flex items-center ${
+                          sendEmail ? "justify-end" : "justify-start"
+                        } px-1`}
+                      >
+                        <motion.div
+                          layout
+                          className={`w-5 h-5 rounded-full ${
+                            sendEmail ? "bg-white" : "bg-white"
+                          } shadow-md flex items-center justify-center`}
+                        >
+                          {sendEmail && (
+                            <motion.div
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              className="text-gfgsc-green"
+                            >
+                              <IoMail size={12} />
+                            </motion.div>
+                          )}
+                        </motion.div>
+                      </div>
+                    </div>
+                    <label
+                      onClick={() => setSendEmail(!sendEmail)}
+                      className="text-sm font-medium text-gray-700 cursor-pointer select-none flex items-center"
+                    >
+                      <span>Send notification emails to all participants</span>
+                    </label>
+                  </motion.div>
+                </div>
+              )}
+
               <div className="flex justify-end pt-4">
                 <button
                   type="submit"
-                  disabled={loading || (eventType === "contest" && isLastDayOfMonth)}
-                  className={`px-6 py-2 ${eventType === "contest" && isLastDayOfMonth 
-                    ? "bg-gray-400 cursor-not-allowed" 
-                    : "bg-gfgsc-green hover:bg-gfgsc-green-600"} text-white rounded-xl transition-colors`}
+                  disabled={
+                    loading || (eventType === "contest" && isLastDayOfMonth)
+                  }
+                  className={`px-6 py-2 ${
+                    eventType === "contest" && isLastDayOfMonth
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-gfgsc-green hover:bg-gfgsc-green-600"
+                  } text-white rounded-xl transition-colors`}
                 >
                   {loading ? (
                     <FaSpinner className="animate-spin inline-block" />
@@ -360,9 +435,9 @@ const EventCreationModal = ({ isOpen, onClose, onSave }) => {
 };
 
 EventCreationModal.propTypes = {
-    isOpen: PropTypes.bool.isRequired,
-    onClose: PropTypes.func.isRequired,
-    onSave: PropTypes.func.isRequired,
-  };
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onSave: PropTypes.func.isRequired,
+};
 
 export default EventCreationModal;
