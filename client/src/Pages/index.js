@@ -24,6 +24,10 @@ import PracticeSet from "./Practice/PracticeSet";
 import Resource from "./Resources/Resource";
 import AllResources from "./Resources/AllResources";
 
+// Roadmaps Route
+import Roadmap from "./Roadmaps/Roadmap";
+import AllRoadmaps from "./Roadmaps/AllRoadmaps";
+
 // User Profile Routes
 import Profile from "./UserProfile/Profile";
 import EditProfile from "./UserProfile/EditProfile";
@@ -62,5 +66,7 @@ export {
   Practice,
   PracticeSet,
   Resource,
-  AllResources
+  AllResources,
+  Roadmap,
+  AllRoadmaps,
 };

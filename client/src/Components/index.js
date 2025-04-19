@@ -118,3 +118,8 @@ export {
   EditResourceModal,
   CreateResourceSetModal,
 };
+
+// Roadmaps Page Components
+import RoadmapVisualizer from "./Roadmaps/RoadmapVisualizer "; 
+
+export { RoadmapVisualizer };

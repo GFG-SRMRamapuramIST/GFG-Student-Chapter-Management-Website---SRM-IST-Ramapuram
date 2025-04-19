@@ -16,7 +16,7 @@ const RootLayout = () => {
   const { pathname } = useLocation();
 
   // ************ Verify User Token Starts Here ************
-  const { tokenVerified, userRole, updateUserState } = useUser();
+  const { tokenVerified, updateUserState } = useUser();
 
   const userToken = useSelector((state) => state.auth?.userToken);
   const verifyUserToken = async (userToken) => {

@@ -26,6 +26,8 @@ import {
   UserManagement,
   AllowedEmails,
   SchedulerSettings,
+  AllRoadmaps,
+  Roadmap,
 } from "./Pages";
 import {
   AuthLayout,
@@ -78,6 +80,13 @@ const appRoutes = {
       children: [
         { index: true, element: <AllResources /> },
         { path: ":id", element: <Resource /> },
+      ],
+    },
+    {
+      path: "roadmaps",
+      children: [
+        { index: true, element: <AllRoadmaps /> },
+        { path: ":id", element: <Roadmap /> },
       ],
     },
     {

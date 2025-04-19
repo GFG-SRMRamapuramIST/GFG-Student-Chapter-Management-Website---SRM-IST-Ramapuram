@@ -1,8 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  FaBars,
-  FaTimes,
   FaLightbulb,
   FaCode,
   FaUserCircle,
@@ -239,12 +237,20 @@ export default function UserManual() {
     <div className="min-h-screen py-6 px-4 sm:px-6 lg:px-8" ref={contentRef}>
       <div className=" mx-auto">
         {/* Page Title */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gfgsc-green">User Manual</h1>
-          <p className="mt-2 text-gray-600">
-            Everything you need to know about using our platform
-          </p>
-        </div>
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8"
+        >
+          <div className="max-w-4xl mx-auto text-center">
+            <h1 className="text-4xl font-bold text-gray-800 mb-4">
+              User Manual
+            </h1>
+            <p className="text-gray-600 text-lg leading-relaxed">
+              Everything you need to know about using our platform
+            </p>
+          </div>
+        </motion.div>
 
         {/* Mobile Section Selector Dropdown */}
         <div className="mb-6 lg:hidden">
