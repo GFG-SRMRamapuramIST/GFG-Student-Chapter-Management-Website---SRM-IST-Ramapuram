@@ -154,6 +154,16 @@ const toggleProtectedStatus = async ({userId},userToken) => {
   );
 }
 
+// Update user's total solved questions
+const updateTotalQuestionSolvedOfUser = async ({userId, points}, userToken) => {
+  return await commonrequest(
+    "POST",
+    `${BACKEND_URL}/api/v1/admin/update-points`,
+    {userId, delta: points},
+    { Authorization: `Bearer ${userToken}` }
+  );
+}
+
 // Wrapper to use token inside React components
 const AdminServices = () => {
   const userToken = useAuthToken();
@@ -171,6 +181,7 @@ const AdminServices = () => {
     editConstantValues: (params) => editConstantValues(params, userToken),
     resetAchievement: () => resetAchievement(userToken),
     toggleProtectedStatus: (params) => toggleProtectedStatus(params,userToken),
+    updateTotalQuestionSolvedOfUser: (params) => updateTotalQuestionSolvedOfUser(params, userToken)
   };
 };
 

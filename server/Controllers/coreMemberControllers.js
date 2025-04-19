@@ -83,8 +83,15 @@ const verifyAndAuthorize = async (token, allowedRoles) => {
 exports.createContest = async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1]; // Extract token from Authorization header
-    const { contestName, contestLink, platform, startTime, endTime, date } =
-      req.body;
+    const {
+      contestName,
+      contestLink,
+      platform,
+      startTime,
+      endTime,
+      date,
+      toSendEmail,
+    } = req.body;
 
     // Use the helper function for authorization
     const authResult = await verifyAndAuthorize(token, [
@@ -196,18 +203,20 @@ exports.createContest = async (req, res) => {
     /* *********** Contest Scheduler ends here ************** */
 
     /* *********** Contest notification system starts here ************ */
-    // Get the subscribed users' emails based on the compulsory role
-    const recipients = await getSubscribedUsers("ALL");
+    if (toSendEmail) {
+      // Get the subscribed users' emails based on the compulsory role
+      const recipients = await getSubscribedUsers("ALL");
 
-    // Send email notification
-    const subject = "Contest Added";
-    const message = `
-    Hello everyone, <br> We are writing to inform you that a contest has been added. Details given below: <br> ${contestName} <br> ${platformMap[lowerCasePlatform]} <br> Start Date/Time: ${contestStartDateTime} <br> Participating in this contest would help you learn and grow as a coder, so don't miss out. <br> For more details, please visit our official website.`;
+      // Send email notification
+      const subject = "Contest Added";
+      const message = `
+      Hello everyone, <br> We are writing to inform you that a contest has been added. Details given below: <br> ${contestName} <br> ${platformMap[lowerCasePlatform]} <br> Start Date/Time: ${contestStartDateTime} <br> Participating in this contest would help you learn and grow as a coder, so don't miss out. <br> For more details, please visit our official website.`;
 
-    await sendEmail(recipients, subject, message);
+      await sendEmail(recipients, subject, message);
 
-    // Delay for 5 seconds before sending the next email
-    await new Promise((resolve) => setTimeout(resolve, 5000));
+      // Delay for 5 seconds before sending the next email
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+    }
     /* *********** Contest notification system ends here ************ */
 
     return res.status(200).json({
@@ -305,6 +314,7 @@ exports.createNotice = async (req, res) => {
       meetingDate,
       meetingTime,
       compulsory,
+      toSendEmail, // flag to send email
     } = req.body;
 
     const authResult = await verifyAndAuthorize(token, [
@@ -319,7 +329,14 @@ exports.createNotice = async (req, res) => {
         .json({ message: authResult.message });
     }
 
-    if (!title || !meetingLink || !meetingDate || !meetingTime || !compulsory) {
+    if (
+      !title ||
+      !meetingLink ||
+      !meetingDate ||
+      !meetingTime ||
+      !compulsory ||
+      !toSendEmail
+    ) {
       return res.status(400).json({ message: "Missing required fields." });
     }
 
@@ -366,16 +383,18 @@ exports.createNotice = async (req, res) => {
     // Get the subscribed users' emails based on the compulsory role
     const recipients = await getSubscribedUsers(compulsoryTo);
 
-    // Send email notification
-    const subject = "Meeting Scheduled";
-    const message = `
-    Hello everyone, <br>We are writing to inform you that a meeting is scheduled for you to attend. Details given below: <br> ${title} <br> ${description} <br> Start Date/Time: ${meetingDate} at ${meetingTime} <br> Participating in this meeting would help you learn and grow, so don't miss out. <br> For more details, please visit our official website.`;
-    // meeting link not attached here because google can block it as spam
+    if (toSendEmail) {
+      // Send email notification
+      const subject = "Meeting Scheduled";
+      const message = `
+      Hello everyone, <br>We are writing to inform you that a meeting is scheduled for you to attend. Details given below: <br> ${title} <br> ${description} <br> Start Date/Time: ${meetingDate} at ${meetingTime} <br> Participating in this meeting would help you learn and grow, so don't miss out. <br> For more details, please visit our official website.`;
+      // meeting link not attached here because google can block it as spam
 
-    await sendEmail(recipients, subject, message);
+      await sendEmail(recipients, subject, message);
 
-    // Delay for 5 seconds before sending the next email
-    await new Promise((resolve) => setTimeout(resolve, 5000));
+      // Delay for 5 seconds before sending the next email
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+    }
 
     res
       .status(200)

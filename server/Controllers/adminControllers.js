@@ -27,6 +27,7 @@ const {
 8. Delete Users from website API
 9. Promote user one rank above API
 10. Demote user one rank below API
+
 11. Update team size API
 12. Create team API
 13. Delete team API
@@ -36,6 +37,9 @@ const {
 16. Fetch Constant Values API
 
 17. Reset achievement API
+
+18. Toggle user's protected status
+19. Update user's total solved questions
 
 **********************************************************
 */
@@ -915,7 +919,7 @@ exports.updateQuestionCount = async (req, res) => {
     }
 
     return res.status(200).json({
-      message: "Question count updated successfully",
+      message: "Points updated successfully!",
       // totalQuestionSolved: user.totalQuestionSolved,
       // previousCount: user.totalQuestionSolved - delta,
       // deltaApplied: delta

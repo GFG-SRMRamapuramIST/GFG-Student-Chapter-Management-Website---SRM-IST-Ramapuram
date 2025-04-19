@@ -28,7 +28,8 @@ const AddPointsPopup = ({ isOpen, onClose, user, onSubmit }) => {
   // Handle submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    const finalPoints = pointsType === "increment" ? pointsAmount : -pointsAmount;
+    const finalPoints =
+      pointsType === "increment" ? pointsAmount : -pointsAmount;
     onSubmit({ userId: user._id, points: finalPoints });
     onClose();
   };
@@ -61,7 +62,9 @@ const AddPointsPopup = ({ isOpen, onClose, user, onSubmit }) => {
           >
             {/* Header */}
             <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-              <h3 className="text-xl font-semibold text-gray-800">Manage Points</h3>
+              <h3 className="text-xl font-semibold text-gray-800">
+                Manage Points
+              </h3>
               <RotatingCloseButton onClick={onClose} />
             </div>
 
@@ -72,14 +75,23 @@ const AddPointsPopup = ({ isOpen, onClose, user, onSubmit }) => {
                 <div className="flex items-center gap-4">
                   <div className="relative">
                     <img
-                      src={user?.pfp || "https://ui-avatars.com/api/?name=User"}
+                      src={
+                        user?.profilePicture ||
+                        "https://ui-avatars.com/api/?name=User"
+                      }
                       alt={user?.name}
                       className="w-16 h-16 rounded-full object-cover ring-2 ring-gfgsc-green ring-offset-2"
                     />
                     <div className="absolute -bottom-1 -right-1 bg-white rounded-full shadow p-1">
                       <div className="flex items-center bg-gfgsc-green/10 px-2 py-0.5 rounded-full">
-                        <span className="font-bold text-gfgsc-green text-sm">{user?.points || 0}</span>
-                        <img src={GfgCoin} alt="points" className="w-3.5 h-3.5 ml-1" />
+                        <span className="font-bold text-gfgsc-green text-sm">
+                          {user?.totalQuestionSolved || 0}
+                        </span>
+                        <img
+                          src={GfgCoin}
+                          alt="points"
+                          className="w-3.5 h-3.5 ml-1"
+                        />
                       </div>
                     </div>
                   </div>
@@ -123,7 +135,10 @@ const AddPointsPopup = ({ isOpen, onClose, user, onSubmit }) => {
 
                 {/* Points Amount */}
                 <div>
-                  <label htmlFor="points" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label
+                    htmlFor="points"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
                     Points Amount
                   </label>
                   <div className="relative rounded-md shadow-sm">
@@ -133,7 +148,11 @@ const AddPointsPopup = ({ isOpen, onClose, user, onSubmit }) => {
                       id="points"
                       min="1"
                       value={pointsAmount}
-                      onChange={(e) => setPointsAmount(Math.max(1, parseInt(e.target.value) || 1))}
+                      onChange={(e) =>
+                        setPointsAmount(
+                          Math.max(1, parseInt(e.target.value) || 1)
+                        )
+                      }
                       className="block w-full rounded-md border-gray-300 pl-4 pr-12 py-3 focus:border-gfgsc-green focus:ring focus:ring-gfgsc-green/20 focus:ring-opacity-50 text-gray-800"
                     />
                     <div className="absolute inset-y-0 right-0 flex items-center pr-3">
@@ -143,10 +162,10 @@ const AddPointsPopup = ({ isOpen, onClose, user, onSubmit }) => {
                 </div>
 
                 {/* Result Preview */}
-                <motion.div 
+                <motion.div
                   className={`rounded-lg p-4 ${
-                    pointsType === "increment" 
-                      ? "bg-green-50 border border-green-100" 
+                    pointsType === "increment"
+                      ? "bg-green-50 border border-green-100"
                       : "bg-red-50 border border-red-100"
                   }`}
                   initial={{ opacity: 0.8, scale: 0.98 }}
@@ -158,14 +177,23 @@ const AddPointsPopup = ({ isOpen, onClose, user, onSubmit }) => {
                       New Points Total:
                     </span>
                     <div className="flex items-center">
-                      <span className={`font-bold text-lg ${
-                        pointsType === "increment" 
-                          ? "text-green-700" 
-                          : "text-red-700"
-                      }`}>
-                        {user?.points + (pointsType === "increment" ? pointsAmount : -pointsAmount)}
+                      <span
+                        className={`font-bold text-lg ${
+                          pointsType === "increment"
+                            ? "text-green-700"
+                            : "text-red-700"
+                        }`}
+                      >
+                        {user?.totalQuestionSolved +
+                          (pointsType === "increment"
+                            ? pointsAmount
+                            : -pointsAmount)}
                       </span>
-                      <img src={GfgCoin} alt="points" className="w-5 h-5 ml-1" />
+                      <img
+                        src={GfgCoin}
+                        alt="points"
+                        className="w-5 h-5 ml-1"
+                      />
                     </div>
                   </div>
                   <div className="text-xs flex items-center gap-1">

@@ -230,6 +230,7 @@ const CustomCalendar = ({ events, fetchDashBoardCalenderData }) => {
         meetingTime:
           eventData.time.length === 5 ? `${eventData.time}:00` : eventData.time,
         compulsory: eventData.attendees,
+        toSendEmail: eventData.sendEmail,
       };
       await handleMeetingCreationFunction(formatedMeetingData);
     } else if (eventData.type == "contest") {
@@ -244,6 +245,7 @@ const CustomCalendar = ({ events, fetchDashBoardCalenderData }) => {
             ? `${eventData.endTime}:00`
             : eventData.endTime,
         date: eventData.date,
+        toSendEmail: eventData.sendEmail,
       };
 
       console.log("Formatted Contest Data:", formatedContestData);

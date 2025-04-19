@@ -8,13 +8,29 @@ const useAuthToken = () => useSelector((state) => state.auth?.userToken);
 
 // Create a meeting API
 const meetingCreationFunction = async (
-  { title, description, meetingLink, meetingDate, meetingTime, compulsory },
+  {
+    title,
+    description,
+    meetingLink,
+    meetingDate,
+    meetingTime,
+    compulsory,
+    toSendEmail,
+  },
   userToken
 ) => {
   return await commonrequest(
     "POST",
     `${BACKEND_URL}/api/v1/core-member/create-meeting`,
-    { title, description, meetingLink, meetingDate, meetingTime, compulsory },
+    {
+      title,
+      description,
+      meetingLink,
+      meetingDate,
+      meetingTime,
+      compulsory,
+      toSendEmail,
+    },
     { Authorization: `Bearer ${userToken}` }
   );
 };
@@ -37,7 +53,7 @@ const createMoMFunction = async ({ dateId, noticeId, MoMLink }, userToken) => {
     { dateId, noticeId, MoMLink },
     { Authorization: `Bearer ${userToken}` }
   );
-}
+};
 
 // Delete mom for a meeting API
 const deleteMoMFunction = async ({ dateId, noticeId }, userToken) => {
@@ -47,17 +63,25 @@ const deleteMoMFunction = async ({ dateId, noticeId }, userToken) => {
     { dateId, noticeId },
     { Authorization: `Bearer ${userToken}` }
   );
-}
+};
 
 // Create a contest API
 const contestCreationFunction = async (
-  { contestName, contestLink, platform, startTime, endTime, date },
+  { contestName, contestLink, platform, startTime, endTime, date, toSendEmail },
   userToken
 ) => {
   return await commonrequest(
     "POST",
     `${BACKEND_URL}/api/v1/core-member/create-contest`,
-    { contestName, contestLink, platform, startTime, endTime, date },
+    {
+      contestName,
+      contestLink,
+      platform,
+      startTime,
+      endTime,
+      date,
+      toSendEmail,
+    },
     { Authorization: `Bearer ${userToken}` }
   );
 };

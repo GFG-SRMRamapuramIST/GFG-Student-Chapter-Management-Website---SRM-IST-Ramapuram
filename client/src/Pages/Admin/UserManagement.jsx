@@ -11,6 +11,7 @@ const UserManagement = () => {
     demoteUser,
     deleteUserAccount,
     toggleProtectedStatus,
+    updateTotalQuestionSolvedOfUser,
   } = AdminServices();
 
   const [loading, setLoading] = useState(false);
@@ -281,18 +282,23 @@ const UserManagement = () => {
     });
   };
 
-  const handlePointsSubmit = async ({ userId, points, reason }) => {
+  const handlePointsSubmit = async ({ userId, points }) => {
+    console.log("Points updated successfully", { userId, points });
     try {
       setLoading(true);
+      const response = await updateTotalQuestionSolvedOfUser({
+        userId,
+        points,
+      });
 
-      // API Calls
-      ToastMsg("Points updated successfully", "success");
-      console.log("Points updated successfully", { userId, points, reason });
-      // API CALLS
-
+      if (response.status == 200) {
+        ToastMsg(response.data.message, "success");
+      } else {
+        ToastMsg(response.response.data.message, "error");
+      }
     } catch (error) {
-      console.error("Error updating points:", error);
-      ToastMsg(error.response?.data?.message || "Error updating points", "error");
+      console.error("Error adding point for the user:", error);
+      ToastMsg("Error adding point for the user", "error");
     } finally {
       setLoading(false);
       fetchUsersData();
