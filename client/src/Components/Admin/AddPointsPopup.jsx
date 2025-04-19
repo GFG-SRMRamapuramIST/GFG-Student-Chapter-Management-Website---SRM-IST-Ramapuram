@@ -1,10 +1,16 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+
 import { GfgCoin } from "../../Assets";
+
+// Importing Icons
+import { FaSpinner } from "react-icons/fa";
 import { HiOutlinePlusSm, HiOutlineMinusSm } from "react-icons/hi";
+
 import { RotatingCloseButton } from "../../Utilities";
 
 const AddPointsPopup = ({ isOpen, onClose, user, onSubmit }) => {
+  const [loading, setLoading] = useState(false);
   const [pointsType, setPointsType] = useState("increment");
   const [pointsAmount, setPointsAmount] = useState(1);
 
@@ -26,12 +32,19 @@ const AddPointsPopup = ({ isOpen, onClose, user, onSubmit }) => {
   };
 
   // Handle submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const finalPoints =
-      pointsType === "increment" ? pointsAmount : -pointsAmount;
-    onSubmit({ userId: user._id, points: finalPoints });
-    onClose();
+    try {
+      setLoading(true);
+      const finalPoints =
+        pointsType === "increment" ? pointsAmount : -pointsAmount;
+      await onSubmit({ userId: user._id, points: finalPoints });
+    } catch (error) {
+      console.error("Error updating points:", error);
+    } finally {
+      setLoading(false);
+      onClose();
+    }
   };
 
   // Prevent clicks inside the popup from closing it
@@ -228,12 +241,20 @@ const AddPointsPopup = ({ isOpen, onClose, user, onSubmit }) => {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={handleSubmit}
+                disabled={loading}
                 className={`px-4 py-2 rounded-md text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 ${
                   pointsType === "increment"
                     ? "bg-gfgsc-green hover:bg-gfgsc-green/90 focus:ring-green-500"
                     : "bg-red-500 hover:bg-red-600 focus:ring-red-500"
                 }`}
               >
+                {loading ? (
+                  <>
+                    <div className="flex justify-center items-center h-64">
+                      <FaSpinner className="animate-spin text-3xl sm:text-4xl text-gfgsc-green" />
+                    </div>
+                  </>
+                ) : null}
                 {pointsType === "increment" ? "Add Points" : "Deduct Points"}
               </motion.button>
             </div>
